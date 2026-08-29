@@ -1,2 +1,33 @@
+# Python caches and build artifacts
 __pycache__/
 *.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+credentials.json
+secrets.json
+
+# Local editor, operating-system, and temporary files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+*.tmp
+*.bak
+*.swp
+~$*

@@ -1,4 +1,29 @@
 {
   "schema_version": 1,
-  "projects": []
+  "projects": [
+    {
+      "project_id": "PROJECT-ZYH-OTTER-001",
+      "project_name": "獭叔今天去巡海",
+      "root": "C:\\Users\\Lenovo\\Documents\\Codex\\SD Film Projects\\PROJECT-ZYH-OTTER-001",
+      "lifecycle": "active"
+    },
+    {
+      "project_id": "PROJECT-RAIN-REUNION-001",
+      "project_name": "雨夜重逢",
+      "root": "C:\\Users\\Lenovo\\Documents\\Codex\\SD Film Projects\\PROJECT-RAIN-REUNION-001",
+      "lifecycle": "active"
+    },
+    {
+      "project_id": "PROJECT-ROUTING-VALIDATION-20260825-001",
+      "project_name": "SD Workflow Routing Validation 2026-08-25",
+      "root": "C:\\Users\\Lenovo\\Documents\\Codex\\SD Film Projects\\PROJECT-ROUTING-VALIDATION-20260825-001",
+      "lifecycle": "active"
+    },
+    {
+      "project_id": "PROJECT-WATER-GUN-MONSTER-001",
+      "project_name": "水枪怪",
+      "root": "C:\\Users\\Lenovo\\Documents\\Codex\\SD Film Projects\\PROJECT-WATER-GUN-MONSTER-001",
+      "lifecycle": "active"
+    }
+  ]
 }
