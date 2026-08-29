@@ -325,28 +325,16 @@ knowledge/sequence/
 
 AI视频模型相关知识。
 
-Required：
+STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video_generation_workflow.md`拥有。本索引不复制Resource Gate；它只提供以下发现入口，实际读取范围以当前Workflow判定为准：
 
-- knowledge/knowledge_application_reflection.md
-- knowledge/11_seedance_adapter.md
-- knowledge/prompt_compilation/state08_projection.md
-- knowledge/clip_planning/continuity_and_projection.md
-- 当前项目Confirmed Clip Production Plan
-
-Conditional：
-
-- knowledge/camera_language/
-- knowledge/transitions/（两个及以上分镜、已知下一镜或存在断点）
-- knowledge/lighting/
-- knowledge/color/
-
-
-按镜头内容追加：
-
-- knowledge/performance/
-- knowledge/sound_language/
-- knowledge/fx/
-- knowledge/sequence/（存在多个Generation Unit时）
+- Preflight与参考预算：`knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
+- Prompt编译与投影：`knowledge/knowledge_application_reflection.md`、`knowledge/prompt_compilation/`
+- 模型适配：`knowledge/11_seedance_adapter.md`
+- Clip连续性：`knowledge/clip_planning/`
+- 镜头与运镜：`knowledge/camera_language/`
+- 转场：`knowledge/transitions/`
+- 光色：`knowledge/lighting/`、`knowledge/color/`
+- 表演、声音、FX与Sequence：`knowledge/performance/`、`knowledge/sound_language/`、`knowledge/fx/`、`knowledge/sequence/`
 
 
 用途：

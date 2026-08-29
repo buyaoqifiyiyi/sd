@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import argparse
 import json
+import shutil
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -340,6 +341,112 @@ Next Workflow: Project Setup Workflow
     def test_installed_chat_work_routing_passes(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         self.assertEqual(run_quiet(validator.validate_state_routing, skill_root, True), 0)
+
+    def test_modular_skill_entrypoint_stays_small_and_route_only(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        skill_path = skill_root / "SKILL.md"
+        skill = skill_path.read_text(encoding="utf-8")
+        self.assertLessEqual(len(skill.encode("utf-8")), 18000)
+        self.assertLessEqual(len((skill_root / "config.md").read_text(encoding="utf-8").encode("utf-8")), 6000)
+        for marker in (
+            "## System Role",
+            "## Production Pipeline",
+            "## STATE Overview",
+            "## Global Priority",
+            "## Activation Entry",
+            "## Runtime Reload Entry",
+            "## Main Workflow Routing",
+            "## Auxiliary Workflow Routing",
+            "## External Rules Index",
+        ):
+            self.assertIn(marker, skill)
+        self.assertNotIn("### Canonical Portable State Schema", skill)
+        self.assertNotIn("TC IN\n2.", skill)
+
+    def test_global_runtime_rules_are_installed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        for relative in (
+            "rules/runtime_reload.md",
+            "rules/state_source.md",
+            "rules/chat_compatibility.md",
+            "rules/progression_rules.md",
+            "rules/activation_rules.md",
+            "rules/completion_gate.md",
+            "rules/compatibility_mapping.md",
+            "rules/resource_loading.md",
+        ):
+            self.assertTrue((skill_root / relative).is_file(), relative)
+
+    def test_routing_validator_rejects_competing_state_source_owner(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            workspace = copied / "references" / "project_workspace.md"
+            workspace.write_text(
+                workspace.read_text(encoding="utf-8")
+                + "\nActive Project Root/project_status.md > portable_project_status.md\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_audio_router_bypass(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            activation = copied / "rules" / "activation_rules.md"
+            activation.write_text(
+                activation.read_text(encoding="utf-8")
+                + "\n显式声音请求直接调用`workflows/20_seed_audio_voice_asset_workflow.md`。\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_untruthful_reload_contract(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            runtime = copied / "rules" / "runtime_reload.md"
+            runtime.write_text(
+                runtime.read_text(encoding="utf-8").replace("禁止报告`RELOADED`", "可以报告`RELOADED`"),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_completion_owner_overlap(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            contract = copied / "references" / "project_state_contract.md"
+            contract.write_text(
+                contract.read_text(encoding="utf-8") + "\n## State Transition Protocol\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_competing_state08_schema(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            workflow = copied / "workflows" / "11_video_generation_workflow.md"
+            workflow.write_text(
+                workflow.read_text(encoding="utf-8")
+                + "\n### 时长：\n### 画幅：\n### 参考资产：\n### 首帧参考：\n### 尾帧限制：\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_portable_schema_is_owned_by_state_contract(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        contract = (skill_root / "references" / "project_state_contract.md").read_text(encoding="utf-8")
+        self.assertIn("### Canonical Portable State Schema", contract)
+        self.assertIn("State Status: NOT_STARTED", contract)
+        self.assertIn("Next Workflow: 01_project_setup_workflow.md", contract)
+        self.assertIn("## State Control", contract)
 
     def test_init_creates_state_v2_and_ledgers(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

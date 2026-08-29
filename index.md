@@ -259,6 +259,15 @@ SD Film
 ├── portable_project_status.md # 普通Chat最小状态镜像；Work/Codex中不覆盖真实Project Root
 │
 ├── rules/
+│   ├── runtime_reload.md
+│   ├── state_source.md
+│   ├── chat_compatibility.md
+│   ├── progression_rules.md
+│   ├── activation_rules.md
+│   ├── completion_gate.md
+│   ├── compatibility_mapping.md
+│   ├── resource_loading.md
+│   └── 01—05 production rules
 │
 ├── workflows/
 │

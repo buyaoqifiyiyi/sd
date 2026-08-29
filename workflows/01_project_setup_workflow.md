@@ -62,7 +62,7 @@ STATE-01 Script Analysis
 
 # Project Workspace Gate
 
-在判断现有项目或初始化新项目之前：如当前输入包含“调用SD”、“重新调用SD”、“重新加载SD”、“按当前Skill继续”或无歧义同义表达，必须先执行`SKILL.md`的Runtime Skill Reload Gate，重读当前安装入口并取得Skill Version / Build ID。未触发Reload时，已安装的普通Chat使用当前激活的Skill instructions。
+在判断现有项目或初始化新项目之前，先按`rules/runtime_reload.md`判断并执行任何已触发的Runtime Reload。本Workflow不重复维护重载词、读取顺序或Reload Status语义。
 
 在当前运行环境能够提供已安装Skill资源时读取：
 
@@ -70,22 +70,18 @@ references/project_workspace.md
 
 references/project_state_contract.md
 
-本地文件访问确实可用时，先读取project_registry.json并解析唯一Active Project Root；Root不可用时再fallback到Portable State。
+本地文件访问确实可用时，按`references/project_workspace.md`读取`project_registry.json`并解析Active Project Root候选；随后只按`rules/state_source.md`选定唯一State Source。本Workflow不复制State Source优先级或fallback细节。
 
-按以下优先级选择State Source：
+只有`rules/state_source.md`确认当前没有任何项目证据并选择初始化分支时，才建立新项目。Work/Codex必须先确定唯一Project ID与独立Project Root；普通Chat按`rules/chat_compatibility.md`初始化Portable STATE-00并继续收集项目基础信息。
 
-`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 当前可验证Project Context（先规范化为Portable State） > 无项目证据时初始化 STATE-00 Project Setup`
-
-Work/Codex新项目必须先确定唯一Project ID与独立Project Root。普通Chat无法创建或读取本机Project Root时，在Portable State中初始化STATE-00并继续收集项目基础信息；不得因本机路径不可访问而停止。
-
-继续现有项目时，如果运行环境确实提供本地文件访问，必须先解析Active Project Root；实际不可访问时才使用Portable State。选择Root状态时读取：
+继续现有项目且Selected State Source是Active Project Root时读取：
 
 - project_manifest.json
 - project_status.md
 - project_bible.md
 - asset_registry.md
 
-Work/Codex中，本Workflow未限定的项目文件名全部指向Active Project Root。普通Chat Portable模式中，project_status.md指向当前任务最新的portable_project_status.md，其他项目资料使用当前对话已确认内容或已附加文件。
+本Workflow中的文件别名按`references/project_workspace.md`解释；普通Chat的可用资料与输出行为按`rules/chat_compatibility.md`解释。
 
 禁止在Skill安装根目录的兼容入口初始化完整项目状态；Portable STATE-00只写最小状态镜像。
 
@@ -111,9 +107,7 @@ Work/Codex中，本Workflow未限定的项目文件名全部指向Active Project
 启动本Workflow。
 
 
-如果当前已经存在项目：
-
-优先使用可访问且Project ID一致的Active Project Root/project_status.md；Root不可用时使用portable_project_status.md；两者都不可用时先从当前可验证Project Context重建并规范化Portable State；无项目证据时才初始化Portable STATE-00。若本机路径不可访问，直接fallback，不得写入`BLOCKED`。当前对话中明确提供的完整Portable文档或附件属于Portable State；历史聊天中的Skill描述不是状态源。
+如果当前已经存在项目，先按`rules/state_source.md`验证其Selected State Source，再判断是否继续当前项目或建立新项目。本Workflow不根据“最近项目”、孤立路径或历史Skill描述自行选择状态。
 
 
 判断：
@@ -172,7 +166,7 @@ templates/18_artifact_revision_ledger.md
 
 已有信息是否需要保留。
 
-如果Root不可访问但Portable State可用，读取Portable State并继续；两者都不可用时先尝试从当前可验证Project Context重建Portable State，无项目证据时才初始化Portable STATE-00。不得把路径不可访问本身记录为BLOCKED。
+读取`rules/state_source.md`已经选定并验证的来源；本Workflow不得根据路径可见性自行改变选择或初始化新状态。
 
 
 ---
@@ -218,7 +212,7 @@ Project Status：
 
 普通Chat只初始化或刷新portable_project_status.md，不伪造本机文件已经创建。
 
-普通Chat无法读取Portable资源正文时，必须复制`SKILL.md`中Portable State Schema Gate的Canonical Minimal Schema。不得输出简化状态摘要，不得把State Status写成READY或INITIALIZED，不得把Next Workflow写成自然语言别名。
+普通Chat无法读取Portable资源正文时，必须复制`references/project_state_contract.md`中的Canonical Portable State Schema。不得输出简化状态摘要，不得把State Status写成READY或INITIALIZED，不得把Next Workflow写成自然语言别名。
 
 
 ---
@@ -853,7 +847,7 @@ Next Action：
 02_script_analysis_workflow.md
 ```
 
-完成上述状态写入后，按references/project_state_contract.md同步Portable State。普通Chat必须输出更新后的完整Portable State；Work/Codex的Portable同步失败不影响真实Project Root中的STATE-00完成。
+完成上述状态决定后，只按`references/project_state_contract.md`执行字段写回与Portable同步；本Workflow不复制环境分支或同步失败语义。
 
 
 ---

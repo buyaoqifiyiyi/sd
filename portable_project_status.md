@@ -81,8 +81,6 @@ None
 
 ## Portable Update Rule
 
-- 每次开始 Workflow 前先读取可访问且Project ID一致的Active Project Root/project_status.md；Root不可访问时读取当前任务最新可用的本文件内容。本机绝对路径不可访问不是错误。
-- 普通 Chat 每次状态推进或保存后，必须在回复中给出更新后的完整 Portable State，供下一轮继续。
-- Work/Codex 成功更新 Active Project Root 的 `project_status.md` 后，同步本文件的状态字段、任务、Checkpoint、Artifact摘要、资产锁、Review控制与Revision；同步失败只记录 `Portable Sync Status：PENDING`，不得回滚真实项目状态或中断主 Pipeline。
-- 所有环境均按“可访问且Project ID一致的Active Project Root/project_status.md → 本文件 → 初始化STATE-00”选择State Source。当前对话中明确提供的完整Portable文档或附件仍属于本文件这一层；历史聊天文本、聊天摘要与口头阶段描述不是状态源。
-- 项目ID不一致时不得合并。Work/Codex用真实项目状态刷新本文件；普通 Chat 无法确认身份时初始化新的 Portable STATE-00。
+- 每次开始Workflow前只按`rules/state_source.md`选择唯一State Source；本文件不维护选择优先级或运行环境fallback规则。
+- 每次状态变化后只按`references/project_state_contract.md`写回、同步或输出完整Portable State；本文件不维护字段、顺序或失败语义的竞争副本。
+- Project ID不一致时不得合并；具体身份候选解析由`references/project_workspace.md`负责。

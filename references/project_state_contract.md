@@ -10,34 +10,22 @@
 
 ## Authority
 
-- 当前项目身份优先来自可访问Active Project Root的`project_manifest.json`与`project_status.md`；Root不可访问时来自有效Portable State中的Project ID；前两者缺失时，可从可读交付物、稳定ID/Revision、Completion Gate证据与用户明确确认中重建。历史聊天中的Skill描述、Pipeline、Workflow规则、模糊口头阶段与仅出现于文本中的路径不构成身份或状态证据。
-- 当前生产状态由按`references/project_workspace.md`选择的State Source持有：可访问且Project ID一致的Active Project Root状态优先，其次是`portable_project_status.md`，再次是当前可验证Project Context；第三级必须先规范化为Portable State。只有没有项目证据时才初始化STATE-00。
-- Workflow拥有状态转换行为；本合同拥有状态字段及其语义。
+- Active Project Root的发现与项目身份候选核验由`references/project_workspace.md`拥有；State Source的选择优先级、fallback与运行环境差异只由`rules/state_source.md`拥有。
+- Completion Gate与Transition Decision由`rules/completion_gate.md`和当前Workflow拥有；本合同只拥有决定作出后的状态字段、字段语义、Canonical Portable State Schema、Revision与持久化写回。
 - Template拥有阶段交付格式，不拥有项目状态。
 - Validator只检查确定性状态不变量。
 
 ---
 
-## State Source Authority
+## Selected State Source Field Contract
 
-每次Workflow开始前都必须重新确认Selected State Source：
+每次Workflow开始前先按`rules/state_source.md`选定唯一State Source。本合同不重新定义其优先级或fallback行为，只验证并保存选择结果：
 
-```text
-可访问且Project ID一致的Active Project Root/project_status.md
->
-portable_project_status.md
->
-当前可验证的Project Context（先规范化为Portable State）
->
-无项目证据时初始化 STATE-00 Project Setup
-```
-
-- 当前对话中明确提供的完整Portable文档或附件属于第二级Portable State。第三级当前可验证Project Context不能直接路由；必须先只保留有证据的项目事实、补齐Canonical Portable Schema并记录`Project Context normalized`，然后才作为Portable State使用。
-- Work/Codex：可访问且Project ID一致的Active Project Root是状态真源、本地项目文件与交付物的持久化目标。
-- 普通Chat：本机Root、Skill安装目录或Registry实际不可读时，直接fallback到Portable State；不得因`C:\Users\Lenovo\Documents\...`不可访问而停止、报错或写入`BLOCKED`。
-- 路径只出现在文本中不代表可访问；必须以实际读取是否成功判断。
-- Project ID不一致时不自动合并。Work/Codex以Canonical状态刷新Portable；普通Chat无法确认当前项目身份时初始化新的Portable STATE-00。
-- Portable模式不授权虚构缺失资产或剧情事实；它只消除本机路径依赖。真正缺少当前Workflow必需输入时仍记录Pending Decision。
+- `Selected State Source`写实际采用的Root状态路径、`portable_project_status.md`或规范化后的Portable来源。
+- `Source Selection Reason`写本次选择依据，不得把仅出现于文本中的路径记为已读取来源。
+- `Project ID`必须与被选来源和Active Project身份一致；不一致时不得在本合同层静默合并。
+- 从Project Context重建的候选必须先补齐Canonical Portable Schema，只迁移有证据的事实，并在Version History记录`Project Context normalized`。
+- Portable模式不授权虚构缺失资产、剧情事实、确认或Completion；真正缺少当前Workflow必需输入时仍记录Pending Decision。
 
 ---
 
@@ -118,9 +106,85 @@ Last Updated
 
 Portable State Availability允许`EMPTY`或`READY`；Portable Sync Status允许`SYNCED`、`PORTABLE_ONLY`或`PENDING`。
 
-### Portable Schema Non-Invention Gate
+### Canonical Portable State Schema
 
-普通Chat初始化、恢复或更新Portable State时，必须复制`SKILL.md`的Canonical Minimal Schema或可实际读取的`portable_project_status.md`结构，只替换字段值和区块内容。
+本节是Portable State字段、顺序与标准区块的唯一规范来源。`portable_project_status.md`是可读写的Canonical基线实例；`SKILL.md`、Rules、Workflow和Validator只能引用本节，不得复制或发明竞争Schema。
+
+普通Chat无法读取`portable_project_status.md`正文时，也必须使用下列Canonical Minimal Schema，只替换字段值和区块内容：
+
+```text
+# SD Film Portable Project Status
+
+State Routing Contract Version: 1
+Portable State Availability: READY
+State Source Mode: PORTABLE
+Canonical Project Root: UNAVAILABLE
+Portable Snapshot Of: <Project ID or NEW PROJECT / UNASSIGNED>
+Portable Sync Status: PORTABLE_ONLY
+
+- Status Schema Version: 2
+- Project ID: <PROJECT-...>
+- Project Name: <name or 未命名项目>
+- Current State: STATE-00
+- State Status: NOT_STARTED
+- Script Status: Source Material
+- Completed States: None
+- State Source: portable_project_status.md
+- Active Workflow: 01_project_setup_workflow.md
+- Last Completed Step: None
+- Last Successful Checkpoint: Portable State Initialized
+- Next Workflow: 01_project_setup_workflow.md
+- Return Route: None
+- Pending Decision: <required input or None>
+- Revision ID: REV-0000
+- Last Updated: <current timestamp>
+- Updated At: <current timestamp>
+
+## State Control
+- Selected State Source: portable_project_status.md
+- Source Selection Reason: Active Project Root unavailable
+- Portable State Availability: READY
+- Portable Sync Status: PORTABLE_ONLY
+
+## Completed Tasks
+None
+
+## Pending Tasks
+- STATE-00 Project Setup
+- STATE-01 Script Analysis
+- STATE-02 Asset Discovery
+- STATE-03 Asset Development
+- STATE-04 Visual Development
+- STATE-05 Scene Breakdown
+- STATE-06 Detailed Shot Design
+- STATE-07 Clip Production
+- STATE-08 Clip-based Video Prompt / Video Generation
+- STATE-09 Review
+
+## Active Artifacts
+None
+
+## Confirmed Assets
+None
+
+## Visual Direction Lock
+None
+
+## Continuity And Open Risks
+- Active Project Root unavailable; Work/Codex must re-resolve the Canonical State before writing.
+
+## Review Control
+- Review Result: NOT_REVIEWED
+- Affected IDs: None
+- Return Route: None
+- Recheck Scope: None
+- Review Artifact: None
+
+## Version History
+- REV-0000: Portable State initialized; no production Workflow completed.
+```
+
+普通Chat初始化、恢复或更新Portable State时，必须复制本节或可实际读取的`portable_project_status.md`结构，只替换字段值和区块内容。
 
 禁止：
 
@@ -131,7 +195,7 @@ Portable State Availability允许`EMPTY`或`READY`；Portable Sync Status允许`
 - 用`Portable State Metadata`、`Current Session Mode`、`Local Path Compatibility`、`Routing Validation`或其他自创区块替代九个Required Sections。
 - 把Portable声明为可以覆盖Work/Codex中可访问Active Project Root的全局权威状态。
 
-如果普通Chat无法读取Skill资源正文，仍必须使用`SKILL.md`内嵌的Canonical Minimal Schema，不能以资源不可访问为理由降级Schema。
+如果普通Chat无法读取Skill资源正文，仍必须使用本合同中的Canonical Minimal Schema，不能以资源不可访问为理由降级Schema。
 
 收到旧版或自创Portable文本时先执行Schema Migration。只迁移有明确证据的字段，不把路由验证声明当作生产阶段完成证据。`READY / INITIALIZED`且没有完成Workflow证据时规范化为`NOT_STARTED`；自然语言Workflow名称规范化为实际文件名；补齐全部Required Header与Required Sections，并在Version History记录迁移。迁移完成前该文本不得作为Valid State Source。
 
@@ -144,7 +208,7 @@ Portable State Availability允许`EMPTY`或`READY`；Portable Sync Status允许`
 1. 先更新Selected State Source的状态字段、任务、Checkpoint、Active Artifacts、资产锁摘要、Review控制、Revision与Version History。
 2. Work/Codex若使用Active Project Root，真实`project_status.md`成功落盘后再同步`portable_project_status.md`。Portable同步失败只写`Portable Sync Status：PENDING`，不得回滚真实状态、报错停止或改变下一Workflow。
 3. 普通Chat若使用Portable State，每次状态变化后在回复中输出更新后的完整`portable_project_status.md`，并把`Portable State Availability`设为`READY`、`Portable Sync Status`设为`PORTABLE_ONLY`。
-4. Work/Codex重新获得本地访问时，先读取Active Project Root并核对Project ID；身份一致时Root状态优先并刷新Portable。不得静默合并或覆盖不同项目的状态。
+4. Work/Codex重新获得本地访问时，重新调用`rules/state_source.md`；如果它选中身份一致的Active Project Root，再以Root状态刷新Portable。不得静默合并或覆盖不同项目的状态。
 
 ### Portable Required Field Writeback
 
@@ -156,7 +220,9 @@ Portable State Availability允许`EMPTY`或`READY`；Portable Sync Status允许`
 
 ---
 
-## State Transition Protocol
+## State Mutation And Writeback Protocol
+
+`rules/completion_gate.md`与当前Workflow先作出`ENTER`、`COMPLETE`、`AUXILIARY_NOT_APPLICABLE`、`REVIEW_RETURN`或`REVIEW_PASS`决定。本合同不重新判断是否满足Completion Gate，只把已获准决定确定性地投影到状态字段并持久化。
 
 ### Canonical Route Label Invariant
 
@@ -166,18 +232,11 @@ Portable State Availability允许`EMPTY`或`READY`；Portable Sync Status允许`
 
 ### Runtime Reload Compatibility Mapping
 
-Reload后以最新Pipeline的Artifact与Completion Gate语义映射旧状态，不按旧STATE编号硬复制：
+旧State、旧Storyboard路由和旧Portable Schema的迁移行为统一由`rules/compatibility_mapping.md`拥有。本合同只要求迁移后的字段符合Canonical Route Label Invariant与Canonical Portable State Schema，并在Version History保存迁移证据；不得重写Accepted Unaffected Artifacts。
 
-- 保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、Visual Direction、已完成Checkpoint、已接受Artifact、用户明确约束和未受影响Revision。
-- 旧状态把`STATE-07`标注为`Storyboard`，且存在Confirmed Detailed Shot Design但没有Confirmed Clip Production Plan时，映射为当前`STATE-07 Clip Production`与`10_clip_production_workflow.md`。
-- 同一旧标注如已有Confirmed Clip Production Plan，映射为`STATE-08 Clip-based Video Prompt / Video Generation`与`11_video_generation_workflow.md`。
-- 同一旧标注如Detailed Shot Design尚未通过Completion Gate，映射为`STATE-06 Detailed Shot Design`与`09_shot_design_workflow.md`。
-- Storyboard交付物保留为Optional/Auxiliary Artifact，不计入Completed States，不要求重做，也不进入STATE-08参考资产。
-- 任何其他旧名称冲突都映射到能消费现有已确认成果的最近当前State / Checkpoint；只迁移路由字段与必要状态摘要，不重写Accepted Unaffected Artifacts。
+### Apply ENTER Decision
 
-### Enter Workflow
-
-开始Workflow前：
+收到合法`ENTER`决定后：
 
 - `Current State`写入对应STATE。
 - `State Status`设为`IN_PROGRESS`。
@@ -188,9 +247,9 @@ Reload后以最新Pipeline的Artifact与Completion Gate语义映射旧状态，�
 
 STATE-01另有硬门槛：`Script Status`必须为`Production-Locked`。`Source Material`、`Adaptation Draft`或`Optimized Proposal`不得写STATE-01 COMPLETE，必须保留`02_script_analysis_workflow.md`为Active / Next Workflow，并在Pending Decision记录需要分类、目标/范围决定、后续优化或用户确认。
 
-### Complete Workflow
+### Apply COMPLETE Decision
 
-只有Completion Gate全部通过后：
+只有上游已作出合法`COMPLETE`决定后：
 
 - `State Status`设为`COMPLETE`。
 - `Last Completed Step`写入完成的Workflow或辅助步骤。
@@ -200,15 +259,15 @@ STATE-01另有硬门槛：`Script Status`必须为`Production-Locked`。`Source 
 - `Revision ID`递增。
 - 按Persistence And Synchronization更新或刷新Portable State。
 
-### Not Applicable Auxiliary Workflow
+### Apply AUXILIARY_NOT_APPLICABLE Decision
 
-辅助Workflow不适用时：
+收到合法`AUXILIARY_NOT_APPLICABLE`决定后：
 
 - 不改变主STATE编号。
 - 在Completed Tasks记录`Not Applicable`及理由。
 - `Last Successful Checkpoint`记录该判定。
 
-### Review Result
+### Apply REVIEW_RETURN / REVIEW_PASS Decision
 
 STATE-09必须额外记录：
 
@@ -276,4 +335,4 @@ Revision ID格式：`REV-0001`、`REV-0002`……。
 
 ## Final Principle
 
-Selected State Source不是普通进度摘要，而是项目恢复和状态推进的控制记录。所有环境均按`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 当前可验证Project Context（规范化为Portable State） > 无项目证据时初始化STATE-00`选择；Work/Codex以身份一致的Active Project Root为真源，普通Chat不依赖本机路径继续同一主Pipeline。历史聊天中的Skill定义永远不参与状态选择；只有可验证的Project Context事实可在前两级缺失时用于重建Portable State。
+Selected State Source不是普通进度摘要，而是项目恢复和状态推进的控制记录。其选择与运行时行为统一服从`rules/state_source.md`；本合同只保存已验证选择、Canonical状态字段和写回结果。历史聊天中的Skill定义永远不参与状态选择；只有按State Source Rule验证并规范化的项目事实才能进入持久状态。

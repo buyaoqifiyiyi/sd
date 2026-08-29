@@ -19,10 +19,13 @@
 
 | Layer | Owns | Must Not Own |
 |---|---|---|
+| SKILL | 身份、版本、系统角色、主Pipeline、STATE总览、全局优先级、Activation/Reload入口、Workflow路由、外部索引 | 详细行为规则、阶段算法、完整状态Schema、最终输出Schema |
+| Config | 运行默认值、资源索引、能力开关 | Pipeline行为、完成门槛、专业方法、最终输出Schema |
 | Rules | 行为边界、禁止项、优先级、连续性约束 | 阶段内容生成、最终排版 |
 | Workflows | 阶段转换、执行步骤、路由、完成门槛 | 与Template竞争的最终Schema |
 | Knowledge | 专业判断、设计方法、内部分析维度 | STATE、项目进度、最终字段 |
 | Templates | 对应阶段的字段、顺序、编号与排版 | Pipeline路由、专业判断 |
+| References | 状态、项目空间、资产锁与模块接口合同 | 阶段交付格式、专业生成算法 |
 | Project Files | 单项目状态、已确认事实、生产交付物；Portable仅持有最小路由镜像 | 通用Skill规则、绕过State Source优先级或静默合并不同Project ID |
 | Validators | 可确定的结构、不变量与引用检查 | 审美、剧情质量与导演判断 |
 
@@ -48,6 +51,20 @@
 ---
 
 ## Stable Interface Rules
+
+### Global Runtime Rule Owners
+
+- Runtime Reload：`rules/runtime_reload.md`
+- State Source：`rules/state_source.md`
+- Chat Compatibility：`rules/chat_compatibility.md`
+- Progression：`rules/progression_rules.md`
+- Activation：`rules/activation_rules.md`
+- Completion Gate：`rules/completion_gate.md`
+- Compatibility Mapping：`rules/compatibility_mapping.md`
+- Resource Loading：`rules/resource_loading.md`
+- Canonical Portable State Schema：`references/project_state_contract.md`
+
+其他模块只能引用这些所有者，不得在`SKILL.md`、`config.md`、References、Knowledge、Templates、兼容入口或各Workflow中维护竞争副本。`SKILL.md`可保留激活/重载入口和路由索引，但不得复制完整运行协议。
 
 ### Additive By Default
 
@@ -155,7 +172,7 @@ Module Type：显式调用的Optional/Auxiliary Workflow + Knowledge + 独立Tem
 
 Required Inputs及唯一来源：角色年龄、性别、身份、性格、对白功能、情绪基调与可观察说话行为来自用户当前明确输入、已确认Script Analysis、Project Bible或Active CHAR Version；不得从外貌、导演标签、题材或竹雀示例反推。必要事实不足时保持Pending或请求最小必要输入。
 
-Output拥有者：`templates/21_seed_audio_voice_asset.md`独占Voice Profile、Seed Audio Voice Sample Prompt与Voice Audio Reference Handoff的最终字段、顺序和排版；`workflows/20_seed_audio_voice_asset_workflow.md`拥有显式触发、执行、完成与返回路由；`knowledge/sound_language/voice_generation.md`只拥有声学推导、试听覆盖、喜剧节奏与Audio Reference选择方法。`templates/04_character_asset_prompt.md`与`templates/10_video_prompt.md`不得替代本模块Schema。
+Router与Output拥有者：`workflows/audio_router.md`独占显式触发判定与`AUDIO / ORIGINAL WORKFLOW`路由；`workflows/20_seed_audio_voice_asset_workflow.md`只在Positive Route后拥有执行、完成与返回调用前Checkpoint；`templates/21_seed_audio_voice_asset.md`独占Voice Profile、Seed Audio Voice Sample Prompt与Voice Audio Reference Handoff的最终字段、顺序和排版；`knowledge/sound_language/voice_generation.md`只拥有声学推导、试听覆盖、喜剧节奏与Audio Reference选择方法。`templates/04_character_asset_prompt.md`与`templates/10_video_prompt.md`不得替代本模块Schema。
 
 允许读取：用户当前输入、Active Project Root中的`project_bible.md`、`asset_registry.md`、相关已确认剧本/分析交付物与角色对白证据。允许写入：独立交付物，以及用户明确要求保存/更新时同一CHAR-ID与Version中的Voice Profile、Voice Sample Prompt及经确认的Voice Audio Reference元数据；不创建独立视觉Asset ID，不把音频自动登记为视觉Canonical Reference。
 
@@ -165,9 +182,9 @@ Output拥有者：`templates/21_seed_audio_voice_asset.md`独占Voice Profile、
 
 禁止修改：角色身份、剧本台词事实、Active Version、视觉资产、主Pipeline、STATE-08 Seedance Schema以及未经用户或项目事实确认的口音、方言或病理声音特征。
 
-冲突路由：角色事实冲突返回事实拥有者；台词字数或逐镜表演容量冲突返回STATE-06；音频授权、来源或候选未确认时停在本模块Pending/Candidate，不登记为Confirmed；未显式触发时立即返回原Workflow路由，不创建Not Applicable记录。
+冲突路由：角色事实冲突返回事实拥有者；台词字数或逐镜表演容量冲突返回STATE-06；音频授权、来源或候选未确认时停在本模块Pending/Candidate，不登记为Confirmed；Router返回Original Workflow时立即返回原路由，不加载声音资产Workflow或创建Not Applicable记录。
 
-Validator可检查的不变量：具有显式触发证据；默认包含`Generate speech only.`、`Target duration`、两条录音声明、八条禁止音频类型声明，以及`Speaker → Voice characteristics → Speaking rhythm（需要时）→ Performance style → Avoid → Read naturally`顺序；唯一Template引用正确；Audio Reference元数据绑定同一CHAR Version并记录来源与授权；A/B/C路由样例分别为触发/不触发/不触发。
+Validator可检查的不变量：所有声音身份Intent先进入唯一`workflows/audio_router.md`；只有Positive Route加载声音资产Workflow；具有显式触发证据；默认包含`Generate speech only.`、`Target duration`、两条录音声明、八条禁止音频类型声明，以及`Speaker → Voice characteristics → Speaking rhythm（需要时）→ Performance style → Avoid → Read naturally`顺序；唯一Template引用正确；Audio Reference元数据绑定同一CHAR Version并记录来源与授权；A/B/C路由样例分别为触发/不触发/不触发。
 
 竹雀的孔老板、老板娘、吴御史、诸葛亮只作为项目Voice Bible示例，不是全局默认人设或音色模板。
 
@@ -193,7 +210,7 @@ Output拥有者：Character、Environment、Prop与FX的最终阶段字段分别
 
 允许读取：Selected State Source、Active Project Root中的project_bible.md、asset_registry.md、Script/Asset Discovery交付物与当前资产依赖。允许写入：同一Asset ID和Version的Asset Tier、Board ID、Item ID、Image Prompts、Prompt Confirmation、Candidate References、Image Confirmation、Canonical References、Visual Production Status及其Prompt / Image / Confirmed状态投影；完整项目文件只写Active Project Root。
 
-下游消费者：STATE-04 Visual Development、STATE-05 Scene Breakdown、STATE-06 Detailed Shot Design、STATE-07 Clip Production、STATE-08 Prompt/Generation与Review。
+下游消费者：STATE-04 Visual Development、STATE-05 Scene Breakdown、STATE-06 Detailed Shot Design、STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与Review。
 
 不变量：`Visual Production Status`只使用`Prompt Draft`、`Prompt Confirmed`、`Image Generated`、`Asset Confirmed`；Prompt确认与图片确认独立；Prompt Draft不得调用图片生成；Image Generated只登记Candidate References；Asset Confirmed必须有图片批准依据，才可Active并登记Canonical References；工具不可用不把文字设定升级为confirmed asset。`Prompt Status / Image Status / Confirmed Status`必须与该生命周期严格映射；任何Core Asset、Support Board或Support Item在图片确认前都不得confirmed。Support必须有唯一Board ID / Item ID映射和Canonical Board Reference区域/标签对应关系。
 
@@ -513,7 +530,7 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 允许读取：Confirmed Clip Production Plan、Detailed Shot Design、Spatial Blocking、Asset Registry、Reference Budget、Transition、相邻Clip边界与实际首尾帧。允许写入：Clip Plan中的Preflight记录、既有预算/连续性/风险栏目及STATE-08内部Projection / QA记录。
 
-下游消费者：STATE-07 Clip Production、STATE-08 Video Generation与STATE-09 Review。
+下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
 不变量：视觉连续、剧情连续、主动切场/切世界三选一；只有视觉连续强制正式引用上一尾帧；每分镜先锁定World-State再筛选资产；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且最终≤9；任一适用项失败不得确认Clip Plan或输出STATE-08 Prompt。
 
@@ -594,7 +611,7 @@ Module Type：项目控制Reference与辅助Workflow。
 
 输出拥有者：项目状态字段由references/project_state_contract.md拥有；恢复记录由templates/17_execution_ledger.md与templates/18_artifact_revision_ledger.md拥有。
 
-必须从可验证Checkpoint继续，保持Accepted Unaffected Artifacts，不创建新主STATE。按`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 初始化STATE-00`选择State Source；普通Chat本机路径不可访问时直接fallback到Portable，不得报错、`BLOCKED`、停止或要求用户重新提供路径。禁止把历史聊天文本当作状态、选择最近项目、静默合并不同Project ID、重写成功Checkpoint之前内容，或在第三次同类失败后继续盲重试。
+必须从可验证Checkpoint继续，保持Accepted Unaffected Artifacts，不创建新主STATE。State Source只按`rules/state_source.md`选择；本模块不得复制优先级或Chat fallback细节。禁止把历史聊天文本当作状态、选择最近项目、静默合并不同Project ID、重写成功Checkpoint之前内容，或在第三次同类失败后继续盲重试。
 
 ---
 

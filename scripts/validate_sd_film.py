@@ -165,6 +165,14 @@ POSTER_SECTIONS = (
     "## Quality Check",
 )
 MODULE_FILES = (
+    "rules/runtime_reload.md",
+    "rules/state_source.md",
+    "rules/chat_compatibility.md",
+    "rules/progression_rules.md",
+    "rules/activation_rules.md",
+    "rules/completion_gate.md",
+    "rules/compatibility_mapping.md",
+    "rules/resource_loading.md",
     "knowledge/script_adaptation.md",
     "knowledge/adaptation/short_form_drama_adapter.md",
     "knowledge/fx/index.md",
@@ -486,31 +494,136 @@ def validate_state_routing(root: Path, as_json: bool = False) -> int:
     errors: list[str] = []
     warnings: list[str] = []
     root = root.resolve()
-    core_files = (
-        "SKILL.md",
-        "config.md",
-        "references/project_workspace.md",
-        "references/project_state_contract.md",
-        "rules/01_pipeline_rules.md",
-        "workflows/01_project_setup_workflow.md",
-        "workflows/workflow_map.md",
-        "workflows/18_project_resume_workflow.md",
-    )
-    for relative in core_files:
+    routing_markers = {
+        "SKILL.md": ("STATE-00", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "rules/state_source.md"),
+        "config.md": ("Portable Baseline", "rules/state_source.md", "references/project_state_contract.md"),
+        "rules/runtime_reload.md": ("Skill Version", "Build ID", "rules/state_source.md"),
+        "rules/state_source.md": ("portable_project_status.md", "Active Project Root", "STATE-00"),
+        "rules/chat_compatibility.md": ("portable_project_status.md", "Active Project Root", "STATE-00"),
+        "rules/compatibility_mapping.md": ("STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "Storyboard"),
+        "references/project_workspace.md": ("portable_project_status.md", "Active Project Root", "STATE-00"),
+        "references/project_state_contract.md": ("Canonical Portable State Schema", "portable_project_status.md", "STATE-00"),
+        "rules/01_pipeline_rules.md": ("rules/state_source.md", "references/project_workspace.md", "rules/chat_compatibility.md"),
+        "workflows/01_project_setup_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+        "workflows/workflow_map.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+        "workflows/18_project_resume_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+    }
+    for relative, required_markers in routing_markers.items():
         path = root / relative
         if not path.is_file():
             errors.append(f"Missing state-routing file: {relative}")
             continue
         text = read_text(path)
-        for marker in ("portable_project_status.md", "STATE-00"):
+        for marker in required_markers:
             if marker not in text:
                 errors.append(f"{relative} missing state-routing marker: {marker}")
-        if "Active Project Root" not in text and "active-project-root" not in text:
-            errors.append(f"{relative} missing Active Project Root priority marker")
+
+    # Meaningful ownership checks: marker presence alone does not prove that a
+    # global rule still has one owner or that callers preserve its routing.
+    markdown_paths: list[Path] = []
+    for relative in (
+        "SKILL.md",
+        "config.md",
+        "project_status.md",
+        "portable_project_status.md",
+        "project_bible.md",
+        "asset_registry.md",
+    ):
+        candidate = root / relative
+        if candidate.is_file():
+            markdown_paths.append(candidate)
+    for directory in ("rules", "workflows", "knowledge", "templates", "references"):
+        base = root / directory
+        if base.is_dir():
+            markdown_paths.extend(base.rglob("*.md"))
+
+    state_source_owner = "rules/state_source.md"
+    state_source_example = "references/regression_scenarios.md"
+    competing_priority = re.compile(
+        r"(?:可访问且Project ID一致的)?Active Project Root/project_status\.md\s*(?:>|→)\s*(?:有效的)?portable_project_status\.md"
+    )
+    competing_heading = re.compile(r"^##\s+State Source (?:Selection|Authority)\s*$", re.MULTILINE)
+    for path in markdown_paths:
+        relative = path.relative_to(root).as_posix()
+        if relative in {state_source_owner, state_source_example}:
+            continue
+        text = read_text(path)
+        if competing_priority.search(text) or competing_heading.search(text):
+            errors.append(
+                f"Competing State Source selection rules found in {relative}; "
+                f"selection priority is owned only by {state_source_owner}"
+            )
+
     skill_text = read_text(root / "SKILL.md") if (root / "SKILL.md").is_file() else ""
-    for marker in ("Portable State Schema Gate", "State Status: NOT_STARTED", "Next Workflow: 01_project_setup_workflow.md", "## State Control"):
-        if marker not in skill_text:
-            errors.append(f"SKILL.md missing embedded Portable schema marker: {marker}")
+    activation_path = root / "rules" / "activation_rules.md"
+    activation_text = read_text(activation_path) if activation_path.is_file() else ""
+    audio_router_path = root / "workflows" / "audio_router.md"
+    audio_router_text = read_text(audio_router_path) if audio_router_path.is_file() else ""
+    voice_workflow_path = root / "workflows" / "20_seed_audio_voice_asset_workflow.md"
+    voice_workflow_text = read_text(voice_workflow_path) if voice_workflow_path.is_file() else ""
+    audio_invariants = (
+        ("SKILL.md", skill_text, "| 用户显式请求声音身份资产 | `workflows/audio_router.md` |"),
+        ("rules/activation_rules.md", activation_text, "唯一Router `workflows/audio_router.md`"),
+        ("rules/activation_rules.md", activation_text, "ROUTE: AUDIO / SEED-AUDIO Voice Asset"),
+        ("workflows/audio_router.md", audio_router_text, "ROUTE: ORIGINAL WORKFLOW"),
+        ("workflows/20_seed_audio_voice_asset_workflow.md", voice_workflow_text, "唯一Router：`workflows/audio_router.md`"),
+        ("workflows/20_seed_audio_voice_asset_workflow.md", voice_workflow_text, "ROUTE: AUDIO / SEED-AUDIO Voice Asset"),
+    )
+    for relative, text, marker in audio_invariants:
+        if marker not in text:
+            errors.append(f"AUDIO unique-router invariant missing in {relative}: {marker}")
+    direct_audio_call = re.compile(r"调用.*workflows/20_seed_audio_voice_asset_workflow\.md")
+    for path in markdown_paths:
+        relative = path.relative_to(root).as_posix()
+        for line_number, line in enumerate(read_text(path).splitlines(), start=1):
+            if direct_audio_call.search(line) and not (
+                "workflows/audio_router.md" in line and ("AUDIO Route" in line or "ROUTE: AUDIO" in line)
+            ):
+                errors.append(
+                    f"Direct AUDIO workflow call bypasses the unique router: {relative}:{line_number}"
+                )
+
+    runtime_path = root / "rules" / "runtime_reload.md"
+    runtime_text = read_text(runtime_path) if runtime_path.is_file() else ""
+    for trigger in ("调用SD", "调用sd", "重新调用SD", "重新加载SD", "按当前Skill继续"):
+        if trigger not in skill_text or trigger not in runtime_text:
+            errors.append(f"Runtime Reload trigger is not discoverable in both SKILL.md and runtime_reload.md: {trigger}")
+    for marker in ("RELOADED", "UNAVAILABLE", "禁止报告`RELOADED`", "实际重新读取权威`SKILL.md`"):
+        if marker not in runtime_text:
+            errors.append(f"runtime_reload.md missing truthful Reload Status invariant: {marker}")
+    if "只有实际重读权威入口并取得版本字段才可报告`RELOADED`" not in skill_text:
+        errors.append("SKILL.md Runtime Reload Entry does not prevent false RELOADED status")
+
+    state_contract = root / "references" / "project_state_contract.md"
+    state_contract_text = read_text(state_contract) if state_contract.is_file() else ""
+    completion_path = root / "rules" / "completion_gate.md"
+    completion_text = read_text(completion_path) if completion_path.is_file() else ""
+    if "## State Transition Protocol" in state_contract_text:
+        errors.append("project_state_contract.md competes with completion_gate.md for transition decisions")
+    for marker in ("## State Mutation And Writeback Protocol", "### Apply ENTER Decision", "### Apply COMPLETE Decision"):
+        if marker not in state_contract_text:
+            errors.append(f"project_state_contract.md missing deterministic mutation contract: {marker}")
+    for marker in ("## Transition Decisions", "references/project_state_contract.md", "本规则只决定允许哪一种Transition Decision"):
+        if marker not in completion_text:
+            errors.append(f"completion_gate.md missing decision-owner invariant: {marker}")
+
+    # A complete user-facing STATE-08 field skeleton may only live in its
+    # Template. Other modules may name fields for semantics, but not reproduce
+    # the ordered schema as headings.
+    state08_schema_headings = ("### 时长：", "### 画幅：", "### 参考资产：", "### 首帧参考：", "### 尾帧限制：")
+    for path in markdown_paths:
+        relative = path.relative_to(root).as_posix()
+        if relative == "templates/10_video_prompt.md":
+            continue
+        text = read_text(path)
+        if all(marker in text for marker in state08_schema_headings):
+            errors.append(
+                f"Competing STATE-08 final field skeleton found in {relative}; "
+                "templates/10_video_prompt.md is the only schema owner"
+            )
+    for marker in ("### Canonical Portable State Schema", "State Status: NOT_STARTED", "Next Workflow: 01_project_setup_workflow.md", "## State Control"):
+        if marker not in state_contract_text:
+            errors.append(f"project_state_contract.md missing canonical Portable schema marker: {marker}")
     state_writers = (
         "workflows/01_project_setup_workflow.md",
         "workflows/02_script_analysis_workflow.md",
@@ -1812,6 +1925,11 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
     skill_path = root / "SKILL.md"
     if skill_path.is_file():
         text = read_text(skill_path)
+        if len(text.encode("utf-8")) > 18000:
+            errors.append("SKILL.md exceeds the modular entrypoint hard limit of 18 KB")
+        for forbidden_entrypoint_marker in ("### Canonical Portable State Schema", "Portable State Schema Gate"):
+            if forbidden_entrypoint_marker in text:
+                errors.append(f"SKILL.md duplicates an external owner: {forbidden_entrypoint_marker}")
         frontmatter_match = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
         if not frontmatter_match:
             errors.append("SKILL.md has invalid YAML frontmatter boundaries")
@@ -1834,6 +1952,9 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
             body = text[frontmatter_match.end():]
             if re.search(r"^[ ]{0,3}\[TODO:[^\n]*\][ \t]*$", body, re.MULTILINE):
                 errors.append("SKILL.md contains an unfinished TODO placeholder")
+    config_path = root / "config.md"
+    if config_path.is_file() and len(read_text(config_path).encode("utf-8")) > 6000:
+        errors.append("config.md exceeds the modular configuration hard limit of 6 KB")
     directors = root / "knowledge" / "visual_styles" / "directors"
     if directors.is_dir():
         files = sorted(directors.glob("*.md"))
@@ -1852,20 +1973,33 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         if legacy_path.is_file() and "Legacy Project File Pointer" not in read_text(legacy_path):
             errors.append(f"Skill root still contains mutable project data: {legacy_name}")
     routing_errors_before = len(errors)
-    routing_core_files = (
-        "SKILL.md",
-        "config.md",
-        "references/project_workspace.md",
-        "references/project_state_contract.md",
-        "rules/01_pipeline_rules.md",
-        "workflows/01_project_setup_workflow.md",
-        "workflows/workflow_map.md",
-        "workflows/18_project_resume_workflow.md",
-    )
-    for relative in routing_core_files:
+    routing_core_markers = {
+        "SKILL.md": ("rules/state_source.md", "references/project_state_contract.md"),
+        "config.md": ("Portable Baseline", "rules/state_source.md"),
+        "rules/runtime_reload.md": ("Skill Version", "Build ID"),
+        "rules/state_source.md": ("portable_project_status.md", "Active Project Root"),
+        "rules/chat_compatibility.md": ("portable_project_status.md", "Active Project Root"),
+        "rules/progression_rules.md": ("rules/completion_gate.md", "Last Successful Checkpoint"),
+        "rules/activation_rules.md": ("Optional/Auxiliary", "Explicit-Only"),
+        "rules/completion_gate.md": ("Completion Gate", "references/project_state_contract.md"),
+        "rules/compatibility_mapping.md": ("STATE-07 Clip Production", "Storyboard"),
+        "rules/resource_loading.md": ("Template Uniqueness", "workflows/11_video_generation_workflow.md"),
+        "references/project_workspace.md": ("portable_project_status.md", "Active Project Root"),
+        "references/project_state_contract.md": ("Canonical Portable State Schema", "portable_project_status.md"),
+        "rules/01_pipeline_rules.md": ("rules/state_source.md", "references/project_workspace.md", "rules/chat_compatibility.md"),
+        "workflows/01_project_setup_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+        "workflows/workflow_map.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+        "workflows/18_project_resume_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+    }
+    for relative, required_markers in routing_core_markers.items():
         path = root / relative
-        if not path.is_file() or "portable_project_status.md" not in read_text(path):
-            errors.append(f"Chat/Work state routing marker missing: {relative}")
+        if not path.is_file():
+            errors.append(f"Chat/Work state routing file missing: {relative}")
+            continue
+        routing_text = read_text(path)
+        for marker in required_markers:
+            if marker not in routing_text:
+                errors.append(f"Chat/Work state routing marker missing in {relative}: {marker}")
     if len(errors) > routing_errors_before:
         warnings.append("Run the routing validator for the complete state-writer report")
     forbidden_route_patterns = {
@@ -1953,7 +2087,16 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/color/foundations.md": ("Core Corrections", "Atomic Color Model", "Responsibility Boundary", "Skin And Neutral Rule", "Prompt Compiler", "Prompt Quality Gate"),
         "knowledge/color/tone_patterns.md": ("CLR-01", "CLR-09", "Selection Rule"),
         "knowledge/color/color_continuity.md": ("Continuity Ledger", "Lighting Interaction", "STATE-08 Projection", "Stable Downgrade"),
-        "SKILL.md": ("Script Adaptation And Optimization Gate", "Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate", "A 无明显优化必要", "B 有轻度优化空间", "C 有明显结构问题", "Production Script Proposal输出后必须再次停止", "knowledge/script_adaptation.md", "knowledge/adaptation/short_form_drama_adapter.md", "STATE-03 Visual Asset Production Gate", "Prompt Draft", "Image Generated", "state08_projection.md", "knowledge/lighting/", "knowledge/color/", "knowledge/poster_design/", "knowledge/clip_planning/", "10_clip_production_workflow.md", "20_clip_plan.md", "17_poster_design_workflow.md", "五个基础资源", "knowledge/transitions/index.md", "Direct Cut", "camera_movement/selection_matrix.md", "每个Clip", "单Clip交付制", "四项STATE-08边界硬门槛"),
+        "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md"),
+        "rules/runtime_reload.md": ("Reload Sequence", "Skill Definition", "Project Context", "Compatibility Mapping Result"),
+        "rules/state_source.md": ("Selection Priority", "当前可验证的Project Context", "Project ID不一致", "Storyboard只能"),
+        "rules/chat_compatibility.md": ("普通Chat不是缩减模式", "Portable Execution", "Behavior Parity"),
+        "rules/progression_rules.md": ("Advance Gate", "Authorization Boundary", "纯推进命令"),
+        "rules/activation_rules.md": ("Intent Is Goal, Not Current State", "Optional Storyboard Isolation", "AUDIO / SEED-AUDIO Explicit-Only"),
+        "rules/completion_gate.md": ("Completion Decision", "STATE-03", "STATE-07", "STATE-08", "Persistence"),
+        "rules/compatibility_mapping.md": ("Preservation Set", "Canonical Route", "Legacy Storyboard Mislabel Mapping", "Portable Schema Migration"),
+        "rules/resource_loading.md": ("Loading Order", "Actual Read Gate", "Responsibility Boundaries", "Template Uniqueness"),
+        "references/project_state_contract.md": ("Canonical Portable State Schema", "State Status: NOT_STARTED", "Next Workflow: 01_project_setup_workflow.md", "## State Control"),
         "references/project_state_contract.md": ("State Status", "Last Successful Checkpoint", "Review Result", "Revision ID", "Source Material", "Adaptation Draft", "Optimized Proposal", "Production-Locked"),
         "references/asset_lock_contract.md": ("Active Version", "Canonical Reference", "Immutable Traits", "Supersedes"),
         "references/artifact_revision_contract.md": ("Generation Run Record", "Retry Isolation", "Based On", "Accepted"),

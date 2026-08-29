@@ -842,7 +842,7 @@ Review Report保存到：
 # Status Update
 
 
-审核后更新Selected State Source，并服从`references/project_state_contract.md`。Work/Codex先写Active Project Root再同步Portable；普通Chat写Portable并输出更新后的完整副本。
+审核后把`rules/completion_gate.md`作出的Review Decision按`references/project_state_contract.md`写回Selected State Source；本Workflow不复制Root / Portable同步顺序。
 
 PASS：
 

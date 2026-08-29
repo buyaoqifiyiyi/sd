@@ -565,7 +565,7 @@ asset_registry更新。
 
 project_status.md
 
-完成写入后同步或输出更新后的完整Portable State，并执行references/project_state_contract.md的`Portable Required Field Writeback`；Portable同步失败不得改变下一Workflow。
+完成决定作出后，只按`references/project_state_contract.md`执行状态字段、Portable Required Field Writeback与同步；本Workflow不复制同步失败语义。
 
 
 

@@ -168,7 +168,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 输入：旧对话缓存声称`STATE-07`对应`Storyboard`，磁盘当前`SKILL.md`却声明`STATE-07 Clip Production`并包含更新的Skill Version / Build ID。
 
-PASS：重新完整读取当前安装`SKILL.md`，记录`Reload Status: RELOADED`及磁盘版Skill Version / Build ID；当前安装Pipeline覆盖旧对话的Skill描述；再读取config、适用Rules、状态References、映射后Workflow与其依赖。
+PASS：按`rules/runtime_reload.md`重新完整读取当前安装`SKILL.md`，记录`Reload Status: RELOADED`及磁盘版Skill Version / Build ID；当前安装Pipeline覆盖旧对话的Skill描述；再读取config、适用Rules、状态References、映射后Workflow与其依赖。
 
 FAIL：继续把Storyboard当作固定STATE-07；用历史摘要覆盖磁盘Skill；未实际重读却声称`RELOADED`；强制用户新建对话或项目。
 

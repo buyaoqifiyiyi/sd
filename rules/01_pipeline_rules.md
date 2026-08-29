@@ -52,21 +52,7 @@ Clip Production
 
 # Project Isolation
 
-执行任何Workflow前，在当前运行环境能够读取对应已安装Skill资源时按照：
-
-references/project_workspace.md
-
-选择State Source；Active Project Root必须以实际读取成功且Project ID一致为准：
-
-```text
-可访问且Project ID一致的Active Project Root/project_status.md
->
-portable_project_status.md
->
-当前可验证的Project Context（先规范化为Portable State）
->
-无项目证据时初始化 STATE-00 Project Setup
-```
+执行任何Workflow前，先由`references/project_workspace.md`解析项目身份候选，再严格按`rules/state_source.md`选择唯一State Source。本规则不复制其优先级或运行时fallback细节。
 
 所有未限定路径的：
 
@@ -84,9 +70,9 @@ portable_project_status.md
 
 因为另一个项目最近被使用，就自动把它当作当前项目。
 
-当用户输入“调用SD”、“重新调用SD”、“重新加载SD”、“按当前Skill继续”或无歧义同义表达时，必须先执行`SKILL.md`的Runtime Skill Reload Gate：重读当前安装入口，取得Skill Version / Build ID，再加载config、适用Rules、状态References、当前Workflow及其Knowledge / Template依赖。当前安装Skill文件高于对话中的旧Skill描述。
+当前输入命中`rules/runtime_reload.md`的Trigger时，必须先完成该规则定义的重载与状态报告，再解析项目或Workflow。本规则不维护重载词、读取顺序或Reload Status的竞争副本。
 
-普通Chat不是简化模式，必须完整执行STATE-00至STATE-09。无法访问本机Skill目录、Project Root、Registry或本地文件系统时，不得停止状态推进、报错、写入`BLOCKED`、退回旧Pipeline或要求用户重新提供路径；先fallback到Portable State，再在必要时从当前可验证Project Context重建Portable State，只有没有项目证据时才初始化STATE-00。历史聊天中的Skill规则、Pipeline或Workflow描述不得作为状态源；可读交付物、稳定ID/Revision、Completion Gate证据与用户明确确认可用于保留Project Context。只有存在多个实际可访问且合理的项目候选时，才需要确认项目身份。
+普通Chat不是简化模式，必须完整执行STATE-00至STATE-09。状态来源与本机资源不可用时的行为统一服从`rules/state_source.md`与`rules/chat_compatibility.md`；历史聊天中的Skill规则、Pipeline或Workflow描述不得作为状态源。
 
 如果可访问项目身份无法唯一确认：
 
@@ -611,9 +597,9 @@ Portable State还必须同步Script Status、Completed States、Confirmed Assets
 
 只有Completion Gate通过后才允许写COMPLETE。
 
-状态保存必须遵守`references/project_state_contract.md`的Persistence And Synchronization：Work/Codex先写真实Project Root再同步Portable；普通Chat写Portable并在回复中输出更新后的完整副本。Portable同步失败不得中断主Pipeline或回滚真实状态。
+状态保存只服从`references/project_state_contract.md`的Persistence And Synchronization；本Pipeline Rule不复制Root / Portable顺序、字段或失败语义。
 
-普通Chat输出的完整Portable副本必须逐字段服从`SKILL.md`的Portable State Schema Gate。禁止自创Portable Schema；`READY`和`INITIALIZED`不得作为State Status，Next Workflow必须使用实际文件名。
+普通Chat输出的完整Portable副本必须逐字段服从`references/project_state_contract.md`的Canonical Portable State Schema。禁止自创Portable Schema；`READY`和`INITIALIZED`不得作为State Status，Next Workflow必须使用实际文件名。
 
 STATE-09只有Review Result为PASS时才允许写STATE-09 Complete；REVISE或REBUILD必须记录Return Route并保持Review闭环未完成。
 

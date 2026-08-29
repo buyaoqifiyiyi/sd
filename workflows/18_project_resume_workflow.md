@@ -17,7 +17,7 @@
 - Review返回REVISE / REBUILD。
 - SHOT或UNIT需要重试。
 - Active Artifact与project_status.md记录不一致。
-- 用户以“调用SD”、“重新调用SD”、“重新加载SD”或“按当前Skill继续”要求在旧对话中继续项目。
+- 用户在旧对话中继续项目，并命中`rules/runtime_reload.md`定义的Runtime Reload Trigger。
 
 正常连续执行且状态清楚时不触发。
 
@@ -25,7 +25,7 @@
 
 ## Required Resources
 
-- 当前安装版`SKILL.md`（触发Runtime Reload时必须本轮重读）
+- `rules/runtime_reload.md`与当前安装版`SKILL.md`（触发Runtime Reload时必须本轮重读）
 - config.md与当前路由适用的rules/
 - references/project_workspace.md
 - references/project_state_contract.md
@@ -44,9 +44,9 @@
 
 ## Step 1: Resolve Project
 
-如当前输入触发Runtime Skill Reload Gate，先重读当前安装版`SKILL.md`并取得Skill Version / Build ID，再进入项目解析。当前安装Skill文件高于旧对话中的Skill描述。
+如当前输入触发Runtime Skill Reload，先完整执行`rules/runtime_reload.md`并取得合法Reload Status，再进入项目解析。本Workflow不维护触发词、加载顺序或成功判定。
 
-按`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 当前可验证Project Context（规范化为Portable State） > 无项目证据时初始化STATE-00`选择State Source。本地文件访问确实可用时先解析唯一Active Project Root；不可用时fallback到Portable；前两级缺失时，只从可读交付物、稳定ID/Revision、Completion Gate证据与用户明确确认重建最小Portable State。本机资源不可读时不得停止、报错、写入`BLOCKED`、选择最近项目或要求用户重新提供路径。历史聊天中的Skill规则、Pipeline或Workflow描述不得作为Checkpoint或State Source。只有多个实际可访问候选无法唯一判断时才确认。
+先由`references/project_workspace.md`解析Active Project候选，再按`rules/state_source.md`选择唯一State Source。本Workflow只消费选择结果并验证恢复证据，不复制优先级、fallback、Project ID冲突或Chat运行差异的全局规则。
 
 ---
 
@@ -54,9 +54,9 @@
 
 检查所有可访问资料与Selected State Source的Project ID、State Schema、Revision ID、Active Workflow和Next Workflow，并验证所有持久路由字段及Pending Tasks使用当前主Pipeline标准名称。Portable模式不因本机Manifest、Bible或Registry不可读而失败。
 
-Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或使用自然语言Workflow别名，先按`SKILL.md`的Portable State Schema Gate迁移；没有生产Workflow完成证据时保持STATE-00 NOT_STARTED。迁移完成前不得把该候选当作有效Checkpoint。
+Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或使用自然语言Workflow别名，先按`references/project_state_contract.md`的Canonical Portable State Schema与`rules/compatibility_mapping.md`迁移；没有生产Workflow完成证据时保持STATE-00 NOT_STARTED。迁移完成前不得把该候选当作有效Checkpoint。
 
-如发现 STATE-06 / STATE-08 使用非标准短名、STATE-07 被标成 Storyboard，或待办表仍按 Shot Design、Storyboard、Video Generation 三项连续排列，先按 `references/project_state_contract.md` 的Runtime Reload Compatibility Mapping迁移。映射以可验证Artifact和Completion Gate为准：已确认Detailed Shot Design但无Clip Plan则进入当前STATE-07；已确认Clip Plan则进入STATE-08；Detailed Shot Design未完成则回到STATE-06的最近安全Checkpoint。Storyboard只保留为Optional/Auxiliary Artifact，不得据旧状态直接选择Storyboard Workflow。
+如发现 STATE-06 / STATE-08 使用非标准短名、STATE-07 被标成 Storyboard，或待办表仍按 Shot Design、Storyboard、Video Generation 三项连续排列，先按`rules/compatibility_mapping.md`迁移。映射以可验证Artifact和Completion Gate为准；Storyboard只保留为Optional/Auxiliary Artifact，不得据旧状态直接选择Storyboard Workflow。
 
 迁移与Reload必须保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、已完成Checkpoint、Accepted Unaffected Artifacts与用户明确约束。只更新旧路由标签和必要状态摘要，不得因Skill升级强制重开或重做。
 

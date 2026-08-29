@@ -456,7 +456,7 @@ Professional Detailed Shot Script（专业详细分镜脚本）。
 正式SHOT由STATE-06重新创建；不得沿用Source Script Label作为正式镜号，也不得在本阶段预划Clip。
 
 
-每个正式Shot按`templates/08_shot_design_prompt.md`固定输出：镜号、TC IN、TC OUT、时长(s)、景别、焦段、场景/美术、画面内容/构图、人物动作、摄影机/镜头、摄影参数、镜头调度、光线/色彩、画面特效/转场、台词/旁白/口播、音效/BGM、AI制作备注、素材/资产。
+每个正式Shot必须逐项、按顺序使用`templates/08_shot_design_prompt.md`当前定义的全部字段；Workflow Map不复制字段骨架。
 
 其中镜头调度必须完整表达摄影机运动、人物调度、两者配合/触发与镜头结束状态；画面内容/构图必须建立前中后景与主体位置、遮挡/反射/景深等层次；光线/色彩必须说明叙事功能与起止色光状态。
 
@@ -936,11 +936,9 @@ Series Management主要负责：
 - 未显式命中时，AUDIO模块优先级为零；不得因对白存在、角色分析、Clip/Seedance请求或声音资产缺失而自动调用。
 - 同一请求同时显式要求视频与音色资产时分别路由、分别输出，不混合Template。
 
-未进入独立AUDIO模块的影视生产任务再选择State Source：
+未进入独立AUDIO模块的影视生产任务按`rules/state_source.md`选择唯一State Source；本地图发现只由`references/project_workspace.md`负责，状态字段与写回只由`references/project_state_contract.md`负责。
 
-`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 当前可验证Project Context（先规范化为Portable State） > 无项目证据时初始化STATE-00 Project Setup`。
-
-当用户输入“调用SD”、“重新调用SD”、“重新加载SD”、“按当前Skill继续”或无歧义同义表达时，必须在AUDIO Router与State Source选择前执行`SKILL.md`的Runtime Skill Reload Gate，重读当前安装入口并取得Skill Version / Build ID。未触发Reload时使用当前激活的instructions。本机Skill目录、Project Root或Registry不可读时直接进入下一可用来源，不得停止、报错、写入`BLOCKED`或要求用户重新提供路径。Work/Codex中的Active Project Root仍是本地交付物的持久化目标。
+如当前输入命中Runtime Reload Trigger，必须在AUDIO Router与State Source选择前完整执行`rules/runtime_reload.md`。本Workflow Map不维护重载词、成功判定或State Source优先级的竞争副本。
 
 
 然后：
@@ -1124,10 +1122,4 @@ STATE-09 Review。
 STATE-09 Review。
 
 
-所有Workflow执行前：
-
-优先检查：
-
-references/project_workspace.md。
-
-按优先级选择State Source。运行环境确实提供本地文件访问时先尝试解析Active Project Root并读取身份一致的project_status.md；Root不可用时读取Portable State；两者都不可用时先从当前可验证Project Context重建Portable State；无项目证据时才初始化STATE-00。历史聊天中的Skill描述不得作为State Source。
+所有Workflow执行前，先由`references/project_workspace.md`解析项目候选，再严格按`rules/state_source.md`选择唯一State Source，并按`references/project_state_contract.md`验证字段。本Workflow Map只消费路由结果，不维护选择优先级或fallback细节。

@@ -388,7 +388,7 @@ Asset Design
 - Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、项目视觉风格、一致性限制、必要负面限制与适用生成参数。
 - `Visual Production Status: Prompt Draft`时必须停止并等待用户确认。
 - 同步状态必须为`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`。
-- 只有用户对当前Prompt Revision明确说出“确认生成该图”“按此Prompt生成”或其他无歧义、指向该具体Revision的生成授权后，才可写`Prompt Confirmed`并调用图片生成工具。单独的“继续 / 下一步 / 下一个 / next”始终只是纯推进指令，即使只有一个待确认Prompt Package也不得视为Prompt确认或图片生成授权；必须服从SKILL.md中的`Advance Command Completion / Anti-Duplication Hard Gate`。
+- 只有用户对当前Prompt Revision明确说出“确认生成该图”“按此Prompt生成”或其他无歧义、指向该具体Revision的生成授权后，才可写`Prompt Confirmed`并调用图片生成工具。单独的“继续 / 下一步 / 下一个 / next”始终只是纯推进指令，即使只有一个待确认Prompt Package也不得视为Prompt确认或图片生成授权；必须服从`rules/progression_rules.md`。
 - Prompt发生任何实质修改后返回`Prompt Draft`，旧确认不得自动继承。
 
 ## Image Gate

@@ -271,7 +271,7 @@ Core与Support都必须执行同一双确认闭环。Support Board图片确认�
 
 本Workflow不得读取`knowledge/sound_language/voice_generation.md`，不得输出Voice Profile、Seed Audio Voice Sample Prompt或Audio Reference，也不得把角色有对白视为音色制作授权。
 
-只有用户当前请求显式要求音色提示词、音色制作、角色声音、Seed Audio、配音音色、声音资产或同义角色声音身份制作时，才由路由器独立调用`workflows/20_seed_audio_voice_asset_workflow.md`并严格使用`templates/21_seed_audio_voice_asset.md`。该显式辅助模块的完成与否不进入Character Visual Asset Completion Gate。
+只有用户当前请求显式要求音色提示词、音色制作、角色声音、Seed Audio、配音音色、声音资产或同义角色声音身份制作时，才退出本Workflow并读取唯一`workflows/audio_router.md`；只有其返回AUDIO Route才调用`workflows/20_seed_audio_voice_asset_workflow.md`并严格使用`templates/21_seed_audio_voice_asset.md`。该显式辅助模块的完成与否不进入Character Visual Asset Completion Gate。
 
 
 ---
@@ -537,7 +537,7 @@ Core独立图片或Support Reference Board已经生成或回传，并经用户�
 
 project_status.md
 
-这里的状态文件是按references/project_state_contract.md选定的State Source。普通Chat使用Portable State；Work/Codex先写Active Project Root再同步Portable。
+这里的状态文件是`rules/state_source.md`选定的Selected State Source；所有字段与写回只按`references/project_state_contract.md`执行。
 
 
 

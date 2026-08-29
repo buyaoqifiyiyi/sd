@@ -2,7 +2,7 @@
 
 ## Runtime Skill Source
 
-作为已安装Skill运行时，未触发Reload可使用当前激活的instructions。当用户输入“调用SD”、“重新调用SD”、“重新加载SD”、“按当前Skill继续”或无歧义同义表达时，必须在解析项目前执行`SKILL.md`的Runtime Skill Reload Gate。本地环境完整重读`C:\Users\Lenovo\.codex\skills\sd\SKILL.md`；其他环境通过已安装Skill资源机制刷新当前入口。旧对话中的Skill描述不是权威Skill Source。普通Chat无法访问本机目录时，必须继续按State Source优先级fallback，不得报错、`BLOCKED`、停止或要求用户重新提供路径。
+作为已安装Skill运行时，Runtime Reload是否触发及如何报告只服从`rules/runtime_reload.md`，并在解析项目前执行。旧对话中的Skill描述不是权威Skill Source。普通Chat无法访问本机目录时，继续按`rules/state_source.md`选择下一可用来源。
 
 ## Purpose
 
@@ -24,7 +24,7 @@ Skill 安装目录保存通用的 `SKILL.md`、Rules、Workflows、Knowledge、T
 
 禁止把新项目的可变数据直接写回 Skill 安装根目录。
 
-`portable_project_status.md`是唯一例外：它只保存恢复与路由所需的最小状态镜像，不保存完整项目资产或阶段交付物。它在所有环境中按State Source优先级参与路由；Work/Codex中的Active Project Root仍是身份一致时完整项目文件与交付物的本地持久化目标。
+`portable_project_status.md`是唯一例外：它只保存恢复与路由所需的最小状态镜像，不保存完整项目资产或阶段交付物。它是否被选作State Source只服从`rules/state_source.md`；本文件仅定义其工作区位置与本地项目文件的关系。
 
 ---
 
@@ -70,7 +70,7 @@ Skill 安装目录保存通用的 `SKILL.md`、Rules、Workflows、Knowledge、T
 
 ## Active Project Resolution
 
-运行环境确实提供本地文件访问时，必须先按以下顺序解析Active Project；解析成功且Project ID一致时，其`project_status.md`优先于Portable State：
+运行环境确实提供本地文件访问时，按以下顺序解析Active Project候选并提供Project ID、路径与可访问性证据；是否采用其`project_status.md`只由`rules/state_source.md`决定：
 
 1. 用户在当前任务中明确指定的 Project Root 或 Project ID。
 2. 当前工作目录或其父目录中可确认的 `project_manifest.json`。
@@ -83,30 +83,11 @@ Active Project 只对当前任务上下文生效。`project_registry.json` 不�
 
 ---
 
-## State Source Selection
+## State Source Integration
 
-开始任何Workflow前，必须按以下顺序选择状态源：
+本文件输出经过身份核验的Active Project Root候选、Manifest与Registry证据；随后由`rules/state_source.md`选择唯一State Source。Portable候选的字段合法性和写回由`references/project_state_contract.md`验证。本文件不得维护State Source优先级、fallback或Chat运行差异的竞争副本。
 
-1. 可访问且Project ID一致的Active Project Root中的`project_status.md`。
-2. 当前任务中最新可用的`portable_project_status.md`；优先当前对话明确提供的最新完整Portable文档或附件，其次是运行环境可读取的已安装Skill副本。
-3. 如果以上来源都不可用，使用当前可验证Project Context：可读交付物、稳定ID/Revision、已通过Completion Gate的证据与用户明确确认。必须先按`references/project_state_contract.md`重建并规范化为Portable State。
-4. 只有没有任何可验证项目证据时，才在Portable State中初始化`STATE-00 Project Setup`。
-
-固定优先级：
-
-```text
-可访问且Project ID一致的Active Project Root/project_status.md
->
-portable_project_status.md
->
-当前可验证的Project Context（先规范化为Portable State）
->
-无项目证据时初始化 STATE-00 Project Setup
-```
-
-本机绝对路径不可访问、`project_registry.json`不可访问或工具不支持本地文件系统时，不得报错、停止、写入`BLOCKED`或跳回旧 Pipeline；必须直接进入下一可用State Source。只有项目身份或必要生产事实确实冲突且无法安全判断时，才按对应Workflow请求确认。
-
-普通 Chat 中的“可用 Portable State”优先指当前对话明确提供或最新一次完整输出的`portable_project_status.md`；Skill内副本是启动基线。对话中的旧Skill规则、Pipeline或Workflow描述不得作为State Source。只有可验证的项目事实才能在前两级缺失时进入第三级，并且必须先规范化为Portable State。Work/Codex中可访问且Project ID一致的Active Project Root始终优先，是本地项目文件与交付物的持久化目标。任何状态写回仍须核对Project ID，不得静默合并不同项目。
+如果存在多个合理Root候选且无法唯一确认，本文件返回候选与身份冲突，不选择“最近项目”、不合并Project ID，也不覆盖任何项目。路径或Registry实际不可读时只报告不可用性，由State Source Rule决定下一来源。
 
 ---
 
@@ -154,7 +135,7 @@ STATE-00 必须先确定 Project ID 和 Project Root，再初始化项目文件�
 
 ## Existing Project Rule
 
-Work/Codex继续项目时必须读取 Active Project Root 中的 Manifest 和三个核心项目文件。普通 Chat 无法读取本机Project Root时，改读Portable State与当前对话已有项目资料，不要求用户仅为路径访问问题重复上传。
+当`rules/state_source.md`选中Active Project Root时，继续项目必须读取其中的Manifest和三个核心项目文件；选中Portable或规范化Project Context时，按`rules/chat_compatibility.md`读取当前可用资料，不要求用户仅为路径访问问题重复上传。
 
 如果 Manifest 与任一项目文件中的 Project ID 不一致：
 

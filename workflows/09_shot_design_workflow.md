@@ -365,31 +365,9 @@ COV-001（如适用）
 # Shot Design Parameters
 
 
-每个Shot必须包含：
-
-
 ## Professional Detailed Shot Script Schema Gate
 
-每个正式SHOT必须先完成下列专业分镜字段，且字段名称与顺序只以`templates/08_shot_design_prompt.md`为准：
-
-1. 镜号
-2. TC IN
-3. TC OUT
-4. 时长(s)
-5. 景别
-6. 焦段
-7. 场景 / 美术
-8. 画面内容 / 构图
-9. 人物动作
-10. 摄影机 / 镜头
-11. 摄影参数
-12. 镜头调度
-13. 光线 / 色彩
-14. 画面特效 / 转场
-15. 台词 / 旁白 / 口播
-16. 音效 / BGM
-17. AI制作备注
-18. 素材 / 资产
+每个正式SHOT必须逐项完成`templates/08_shot_design_prompt.md`当前定义的全部专业分镜字段，并严格保留该Template的字段名称、顺序、编号与排版。本Workflow只定义字段语义、生产方法与校验，不复制完整字段骨架。
 
 ### Timecode Contract
 
@@ -415,19 +393,19 @@ COV-001（如适用）
 - `AI制作备注`至少记录Start Boundary、End-Frame Constraint、Next-Shot Handoff、Execution Risk / Seedance稳定等级、口型/动作/FX并发负荷、稳定降级、Coverage映射、禁止项，并以独立子项明确`角色一致性`、`环境一致性`、`道具一致性`与`生成风险 / 控制项`；不得把内部Director Decision Notes或Knowledge Reflection写入正式表格。
 - `素材 / 资产`逐项列出本镜实际使用的Canonical Character / Environment / Prop / FX / Voice or Audio Reference、合法首尾帧及Active Version/用途；Storyboard、分镜板、拼图或Detailed Shot Design截图不得作为视频参考资产。
 
-以上十八项属于同一SHOT的统一生产记录，不能用多个互相矛盾的简化描述拼接。内部Camera Language Decision、Execution Risk与Director Decision负责推导和审核；正式用户可见交付只输出Template拥有的专业字段，不暴露内部逐步决策或Knowledge Reflection。
+Template定义的全部字段属于同一SHOT的统一生产记录，不能用多个互相矛盾的简化描述拼接。内部Camera Language Decision、Execution Risk与Director Decision负责推导和审核；正式用户可见交付只输出Template拥有的专业字段，不暴露内部逐步决策或Knowledge Reflection。
 
 
 ## Per-Shot Structure Parity And Batch Delivery Gate
 
 在正式输出前，先计算Total Shots与每镜预计内容密度，再决定单批或多批交付。该决定只控制每批包含的SHOT范围，不得改变单镜结构。
 
-1. 每个正式SHOT必须逐项完成同一套十八字段；任一字段为空、被省略、改名、缩写、与其他既定字段合并，或以全局说明代替时，该SHOT不得输出。
+1. 每个正式SHOT必须逐项完成Template当前定义的全部字段；任一字段为空、被省略、改名、缩写、与其他既定字段合并，或以全局说明代替时，该SHOT不得输出。
 2. 每个SHOT还必须通过最低语义覆盖核对：Shot编号、时间、场景、景别、镜头/机位、焦段、构图、人物位置关系、画面描述、人物情绪、动作重点、台词、音效、环境声、光线/色彩、转场逻辑、角色一致性、环境一致性、道具一致性、生成风险/控制项均能在Template指定字段中被独立定位。
 3. 单镜与批量使用同一字段顺序、同一完成标准和相同内容密度。禁止只让首镜、样例镜或高风险镜使用完整模板，再把其他镜头降级为“景别 + 机位 + 画面描述 + 台词 + 音效”等简表。
 4. 禁止使用“同上”“沿用上一镜”“见前文”“其余一致”“略”或空白单元格。连续事实也要在当前SHOT中明确写出继承状态与本镜锁定；确实不适用时写`不适用`及理由。
 5. 一次无法完整容纳全部SHOT时，自动拆成连续批次。默认每批4—5个SHOT；单镜内容特别长时可减少，内容较短且仍能完整保留全部字段时可适度增加。批次边界只能位于SHOT之间，绝不能把一个SHOT拆到两个批次。
-6. 每批按`Batch NN / Total｜SHOT-xxx—SHOT-yyy`标识，并重复完整十八列表头。完成一批后直接从下一个尚未输出的SHOT继续，不询问是否允许压缩；若运行环境要求本轮结束，则保存`Last Fully Delivered Shot`与`Next Undelivered Shot`续批Checkpoint，下一次输出只从该未交付SHOT继续，不重复、不遗漏、不重排已交付镜头。
+6. 每批按`Batch NN / Total｜SHOT-xxx—SHOT-yyy`标识，并重复Template的完整列表头。完成一批后直接从下一个尚未输出的SHOT继续，不询问是否允许压缩；若运行环境要求本轮结束，则保存`Last Fully Delivered Shot`与`Next Undelivered Shot`续批Checkpoint，下一次输出只从该未交付SHOT继续，不重复、不遗漏、不重排已交付镜头。
 7. `Timeline And Coverage Summary`只在最后一批全部SHOT交付后输出。中间批只做本批结构、时间码与相邻边界自检，不得用批次摘要替代逐镜内容。
 
 任何批次中只要一个SHOT没有通过上述检查，必须减少本批SHOT数量或继续拆批；唯一允许的调整是批次规模，绝不能压缩单镜结构。
@@ -895,7 +873,7 @@ FX-001（如适用）
 # Director Decision Notes
 
 
-Professional Detailed Shot Script的十八项正式字段、内部Camera Language Decision、Blocking、边界合同与Cinematic Logic Check全部完成后，STATE-06确认结束前必须读取并执行：
+Professional Detailed Shot Script的全部Template字段、内部Camera Language Decision、Blocking、边界合同与Cinematic Logic Check全部完成后，STATE-06确认结束前必须读取并执行：
 
 `knowledge/director_decision_layer.md`
 
@@ -952,7 +930,7 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 
 □ 所有Spatial Blocking结果完整标注场景边界、固定结构 / 关键道具、A/B/C起终点与路径、C1/C2/C3位置 / 朝向、180度轴线、关键视线、Clip首尾站位及Previous Clip End State → Next Clip First Frame Reference
 
-□ 正式输出为`Professional Detailed Shot Script`，每个SHOT均完整填写镜号、TC IN、TC OUT、时长(s)、景别、焦段、场景/美术、画面内容/构图、人物动作、摄影机/镜头、摄影参数、镜头调度、光线/色彩、画面特效/转场、台词/旁白/口播、音效/BGM、AI制作备注、素材/资产
+□ 正式输出为`Professional Detailed Shot Script`，每个SHOT均完整填写`templates/08_shot_design_prompt.md`当前定义的全部字段
 
 □ Artifact Status为Confirmed且具有唯一Artifact Revision；STATE-07只能引用该Artifact与匹配Revision
 
@@ -998,7 +976,7 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 
 □ 所有战斗、双主体、对峙、对话、追逐与相向运动镜头均已完成Relational Screen Geometry锁定；首帧与尾帧几何可复核，攻击/视线/水流等来源—目标方向一致
 
-□ Professional Detailed Shot Script已把Confirmed Spatial Blocking Result投影到现有十八字段，没有新增表头，也没有把Top-down Blocking Map列为Canonical / STATE-08参考资产
+□ Professional Detailed Shot Script已把Confirmed Spatial Blocking Result投影到现有Template字段，没有新增表头，也没有把Top-down Blocking Map列为Canonical / STATE-08参考资产
 
 
 □ 所有镜头具有动作目标
@@ -1089,9 +1067,9 @@ STATE-07 Clip Production
 
 templates/08_shot_design_prompt.md
 
-Workflow负责Spatial Blocking Decision、镜头判断、参数设计、时间码核算、边界合同、Coverage映射和完成门槛；Template独占Professional Detailed Shot Script的十八个用户可见字段、顺序、编号和排版。
+Workflow负责Spatial Blocking Decision、镜头判断、参数设计、时间码核算、边界合同、Coverage映射和完成门槛；Template独占Professional Detailed Shot Script的全部用户可见字段、顺序、编号和排版。
 
-单镜交付与批量交付必须执行同一Template结构。多批输出的批次范围、续批Checkpoint和自动继续策略只改变交付切片，不改变十八字段Schema；默认每批4—5个完整SHOT，可按实际长度调整。
+单镜交付与批量交付必须执行同一Template结构。多批输出的批次范围、续批Checkpoint和自动继续策略只改变交付切片，不改变Template Schema；默认每批4—5个完整SHOT，可按实际长度调整。
 
 本Workflow中的参数章节只定义必须准备的语义，不得作为另一套输出Schema。
 

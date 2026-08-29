@@ -16,7 +16,7 @@
 
 # 2. Trigger Condition
 
-执行前读取references/project_state_contract.md、references/artifact_revision_contract.md与适用的knowledge/quality/，按State Source优先级确认当前Accepted Unaffected Artifacts。普通Chat本机Root不可读时自动使用Portable State。
+执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`与适用的`knowledge/quality/`，确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
 
 
 当用户要求：

@@ -14,7 +14,7 @@
 
 执行前必须确认：
 
-- State Source已按`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 初始化STATE-00`选定；普通Chat不因本机Skill目录、Project Root或Registry不可访问而报错、`BLOCKED`或停止
+- State Source已按`rules/state_source.md`选定；本Workflow不复制其优先级或Chat fallback细节
 - Script Analysis与Asset Discovery已经识别该效果需求
 - 涉及的Character、Environment、Prop已有ID或明确处于待开发状态
 - 效果具有剧情、空间或视觉功能

@@ -139,13 +139,11 @@ Video Generation是：
 
 ## Front-Lock Rule
 
-每个Clip Prompt Package在任何风格、人物一致性、环境一致性、音色或分镜描述之前，必须先完成并输出前置锁定信息。最终顺序唯一由`templates/10_video_prompt.md`拥有，语义顺序固定为：
+每个Clip Prompt Package在任何风格、人物一致性、环境一致性、音色或分镜描述之前，必须先完成`templates/10_video_prompt.md`定义的全部前置锁定信息，并严格使用该Template的字段、顺序、编号与排版。本Workflow不复制最终骨架。
 
-`# CLIP-X｜标题 Seedance视频提示词 → 时长：→ 画幅：→ 参考资产：→ 首帧参考：→ 尾帧限制：→ 主风格：→ 人物一致性：→ 环境一致性：→ 音色特征：→ 分镜内容 → 反向提示词：`
+Voice/Audio Reference不得导致Template中的任何无条件字段被删除；Reference Override时在Template指定位置写明声音身份由Reference锁定且不得文字重定义。每个分镜完整重复Template当前定义的全部分镜字段，不得另增竞争字段；相关边界语义映射到Template指定的结尾状态位置。
 
-`音色特征：`是无条件固定字段，不得因Voice/Audio Reference而删除；Reference Override时只写明声音身份由Reference锁定且不得文字重定义。每个分镜严格重复Template定义的十个字段，不得另增“与下一镜衔接”字段，相关边界语义统一进入“镜头结尾状态”。
-
-【参考资产】【首帧参考】【尾帧限制】不得移动到分镜之后或Prompt末尾，不得降级为备注，也不得由后续文字描述覆盖。
+参考资产、首帧与尾帧限制等前置锁定语义必须位于Template指定位置，不得降级为备注，也不得由后续文字描述覆盖。
 
 【参考资产】先读取`references/asset_lock_contract.md`，优先引用Asset Registry中Active Version与Canonical References。上一Clip尾帧只能锁定已确认的状态、构图、空间与动作边界，不能覆盖Confirmed Asset的角色身份、服装身份、环境结构、道具结构或Active Version。后续【主风格】【人物一致性】【环境一致性】和逐镜文字只能补充允许变化与执行过程，不得重设前置资产。
 
@@ -890,7 +888,7 @@ Director Decision先决定方向；Knowledge Reflection只从已读取知识中�
 
 # Read Project State
 
-首先按`references/project_workspace.md`与`references/project_state_contract.md`选择State Source，再读取其状态：`可访问且Project ID一致的Active Project Root/project_status.md > portable_project_status.md > 初始化STATE-00`。已安装的普通Chat不重新读取本机`SKILL.md`，本机Skill目录、Project Root或Registry不可读时直接fallback到Portable，不得报错、`BLOCKED`或停止；全部状态源都不可用时初始化STATE-00，不得直接留在STATE-08。历史聊天文本或摘要不得证明项目已经到达STATE-08。
+首先由`references/project_workspace.md`解析项目候选，按`rules/state_source.md`选择并读取唯一State Source，再按`references/project_state_contract.md`验证字段。本Workflow不复制Chat fallback、初始化或Project ID冲突规则；历史聊天中的Skill描述或未验证摘要不得证明项目已经到达STATE-08。
 
 
 确认：
@@ -2889,7 +2887,7 @@ Template还必须执行Clip Duration / No-Timeline过滤：
 
 写入前必须交叉核对Confirmed Clip Production Plan：标题中的CLIP-xxx与计划一对一、Shot列表一致、平台生成时长一致且位于4—15秒。
 
-Template还必须执行Package完整性过滤：每个`# CLIP-X｜标题 Seedance视频提示词`后必须按固定顺序完成`时长：`至`音色特征：`全部全局字段，再出现Clip表列出的全部`分镜X`；每个分镜完整重复十个固定字段，最后完成本段`反向提示词：`。不得出现方头括号旧章节、独立CLIP标题字段、条件字段删除或额外分镜字段。
+Template还必须执行Package完整性过滤：每个Clip按Template当前顺序完成全部全局字段、Clip表列出的全部正式分镜、每镜全部字段与段末限制。不得出现旧章节、独立竞争标题字段、条件字段删除或额外分镜字段。
 
 
 Workflow不得覆盖：
@@ -3068,7 +3066,7 @@ templates/10_video_prompt.md
 
 检查。
 
-逐Clip执行两遍固定结构校验：Template Mapping后一次，交付前一次。标题必须严格匹配`# CLIP-X｜标题 Seedance视频提示词`；九个前置全局字段与末尾`反向提示词：`各出现且只出现一次并按固定顺序；每个`分镜X`完整重复十个字段；所有字段非空；不得出现方头括号旧章节、独立CLIP标题字段、条件删除、额外字段、“同上/沿用前文/略”或跨Clip共享。批量输出仍逐Clip独立校验；过长时在完整Clip之间自动分批。任一项失败不得输出，必须修正后重新校验。
+逐Clip执行两遍固定结构校验：Template Mapping后一次，交付前一次。逐项核对`templates/10_video_prompt.md`当前定义的标题、全局字段、正式分镜、每镜字段、段末限制、顺序、非空性和字段唯一性；不得出现旧章节、竞争标题或字段、条件删除、“同上/沿用前文/略”或跨Clip共享。批量输出仍逐Clip独立校验；过长时在完整Clip之间自动分批。任一项失败不得输出，必须修正后重新校验。
 
 
 ---
@@ -3609,7 +3607,7 @@ templates/10_video_prompt.md
 - Active Artifacts：登记Prompt路径与Revision ID
 - Next Workflow：13_review_workflow.md
 
-任何检查失败时不得写STATE-08 Complete。应按Error Routing返回对应Workflow，并保留最后一个成功Checkpoint。状态变化后再次同步或输出完整Portable State，并执行references/project_state_contract.md的`Portable Required Field Writeback`；Portable同步失败不得改变返回路由。
+任何检查失败时不得写STATE-08 Complete。应按Error Routing返回对应Workflow，并保留最后一个成功Checkpoint；状态字段、Portable Required Field Writeback与同步只按`references/project_state_contract.md`执行。
 
 
 ---

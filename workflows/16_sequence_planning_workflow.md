@@ -61,8 +61,8 @@ Not Applicable必须记录理由，不得静默跳过。
 
 ## Required Inputs
 
-- 可访问时的Active Project Root与project_manifest.json；普通Chat本机Root不可读时使用Portable模式
-- 按优先级选定的project_status.md或portable_project_status.md
+- `rules/state_source.md`选定的唯一State Source
+- Selected State Source允许读取时的project_manifest.json与项目身份信息
 - project_bible.md
 - asset_registry.md
 - 已确认Scene Breakdown

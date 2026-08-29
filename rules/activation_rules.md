@@ -1,0 +1,35 @@
+# Activation And Intent Routing
+
+## Automatic Activation
+
+当用户目标涉及以下任一范围时自动激活SD Film：
+
+- 剧本改编、分析、优化、导演化或制作拆解
+- AI影视项目初始化、项目恢复或制作流程推进
+- 角色、环境、道具、FX资产设计与一致性管理
+- 视觉开发、场景拆解、电影海报或Key Art
+- Detailed Shot Design、镜头语言、Clip Production
+- AI视频生成、Seedance视频提示词、图生视频参考
+- 最终Review、连续性检查或局部返修
+
+## Explicit Activation
+
+用户明确说“调用SD”“用SD Film”“按SD流程”“重新加载SD”或无歧义等价表达时激活。凡`SKILL.md` Runtime Reload Entry或`rules/runtime_reload.md`列出的重载表达，必须先完成Runtime Reload，再进行意图、State Source与Workflow路由；Activation不得把重载降级成仅激活。
+
+## Intent Is Goal, Not Current State
+
+用户提到“视频Prompt”“Seedance”“海报”“Storyboard”等通常描述目标，不证明前置阶段已经完成。激活后必须先按`rules/state_source.md`确认当前State，并按主Pipeline补齐Completion Gate，不能依据关键词直接跳转。
+
+例外仅限已有有效State Source与Confirmed Artifact明确证明前置阶段已完成，或当前请求是独立辅助交付且其Workflow允许在主STATE不变时执行。
+
+## Optional Storyboard Isolation
+
+- 只有用户明确请求Storyboard、故事板或分镜图时，才调用`workflows/10_storyboard_workflow.md`与`templates/09_storyboard_prompt.md`。
+- Storyboard是Optional/Auxiliary Artifact，不是独立STATE，不进入Completed States，不是固定Next Workflow，也不得替代Detailed Shot Design或Clip Production。
+- Storyboard产物不得作为STATE-08 Canonical Reference；合法首/尾帧与其他图生视频Source Data按对应Workflow和Template处理。
+
+## AUDIO / SEED-AUDIO Explicit-Only
+
+只有用户明确请求“音色提示词、音色制作、角色声音、Seed Audio、配音音色、Voice Asset或声音身份资产”时，才读取唯一Router `workflows/audio_router.md`。只有Router返回`ROUTE: AUDIO / SEED-AUDIO Voice Asset`，才可调用`workflows/20_seed_audio_voice_asset_workflow.md`及其Knowledge与Template；返回`ROUTE: ORIGINAL WORKFLOW`时不得加载声音资产Workflow或其依赖。
+
+普通视频制作、人物分析、角色视觉资产、Storyboard、Clip、Seedance、对白、音效或“声音设计”不得自动触发声音身份资产制作。未激活时，STATE-08只继承已有Confirmed Voice Reference / Voice Profile；不存在时按其Workflow写明回退，不得自动返回STATE-03或创建声音身份。

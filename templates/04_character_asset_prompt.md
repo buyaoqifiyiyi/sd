@@ -211,7 +211,7 @@ Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Productio
 
 ## Voice Asset Isolation
 
-不得根据角色有对白、旁白、画外音、通话、呼喊或潜在对白需求自动创建音色资产。只有用户当前请求显式要求音色提示词、音色制作、角色声音、Seed Audio、配音音色或声音资产时，才退出本Template并独立调用`workflows/20_seed_audio_voice_asset_workflow.md`与`templates/21_seed_audio_voice_asset.md`；其输出不得混入本角色视觉资产结构。
+不得根据角色有对白、旁白、画外音、通话、呼喊或潜在对白需求自动创建音色资产。只有用户当前请求显式要求音色提示词、音色制作、角色声音、Seed Audio、配音音色或声音资产时，才退出本Template并读取唯一`workflows/audio_router.md`；只有其返回AUDIO Route才调用`workflows/20_seed_audio_voice_asset_workflow.md`与`templates/21_seed_audio_voice_asset.md`。其输出不得混入本角色视觉资产结构。
 
 
 # Prompt Rule

@@ -4,7 +4,7 @@
 
 本Template只定义FX Asset记录结构。
 
-它不是STATE-08 Video Prompt Template，不得替代templates/10_video_prompt.md。
+它不是STATE-08 Clip-based Video Prompt / Video Generation Template，不得替代templates/10_video_prompt.md。
 
 ---
 

@@ -1349,7 +1349,7 @@ STATE-06 Detailed Shot Design。
 
 不是：
 
-STATE-08 Video Prompt Schema。
+STATE-08 Clip-based Video Prompt / Video Generation Schema。
 
 
 ---
@@ -1900,7 +1900,7 @@ STATE-04禁止输出：
 
 project_status.md
 
-完成写入后同步或输出更新后的完整Portable State，并执行references/project_state_contract.md的`Portable Required Field Writeback`；Portable同步失败不得改变STATE-04到STATE-05的路由。
+完成决定作出后，只按`references/project_state_contract.md`执行状态字段、Portable Required Field Writeback与同步；本Workflow不复制同步失败语义。
 
 
 当前状态：

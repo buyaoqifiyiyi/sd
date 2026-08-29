@@ -63,7 +63,7 @@ Core与Support均执行相同的提示词确认与图片确认闭环。Support B
 
 # 3. Input
 
-执行前必须按references/project_workspace.md选择State Source：可访问且Project ID一致的Active Project Root/project_status.md优先，其次是Portable State；两者都不可用时初始化STATE-00。普通Chat不因本机Skill目录、Project Root或Registry不可访问而报错、`BLOCKED`或停止。然后读取当前运行环境可提供的适用资源：
+执行前先由`references/project_workspace.md`解析项目候选，并按`rules/state_source.md`选定唯一State Source；本Workflow不复制其优先级或Chat fallback细节。然后读取当前运行环境可提供的适用资源：
 
 - project_status.md
 - project_bible.md
