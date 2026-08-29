@@ -7,9 +7,9 @@ description: AI影视虚拟制片生产系统，用于剧本改编与分析、�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.08.29-r3
+Skill Version: 2026.08.29-r4
 
-Build ID: sd-film-2026.08.29-r3
+Build ID: sd-film-2026.08.29-r4
 
 每次正式修改必须同步更新这两个字段：同日递增`rN`，跨日使用新的`YYYY.MM.DD-r1`。它们是版本唯一真源；`config.md`、Workflow和Project State不得维护竞争副本。
 
@@ -44,8 +44,8 @@ Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Opt
 |---|---|---|---|
 | STATE-00 | Project Setup | 项目身份、项目基础信息、状态与资产登记入口 | `workflows/01_project_setup_workflow.md` |
 | STATE-01 | Script Analysis | 已分类、必要时改编/优化并获确认的Production-Locked Script | `workflows/02_script_analysis_workflow.md` |
-| STATE-02 | Asset Discovery | 角色、环境、道具、FX清单及Core/Support分级 | `workflows/03_asset_discovery_workflow.md` |
-| STATE-03 | Asset Development | 经Prompt确认与图片确认的Canonical视觉资产 | 对应资产Workflow |
+| STATE-02 | Asset Discovery | 已分类并可路由的角色、环境、道具与FX需求 | `workflows/03_asset_discovery_workflow.md` |
+| STATE-03 | Asset Development | 经对应资产Workflow确认的Canonical视觉资产 | 对应资产Workflow |
 | STATE-04 | Visual Development | 已确认的项目视觉方向与场景视觉基准 | `workflows/07_visual_development_workflow.md` |
 | STATE-05 | Scene Breakdown | Scene / Sequence / Unit结构和生产拆解 | `workflows/08_scene_breakdown_workflow.md` |
 | STATE-06 | Detailed Shot Design | 可执行、逐镜完整的Detailed Shot Design | `workflows/09_shot_design_workflow.md` |
@@ -91,10 +91,10 @@ Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Opt
 |---|---|---|---|
 | STATE-00 | `workflows/01_project_setup_workflow.md` | `templates/00_project_start_template.md` | 初始化状态、Project Bible与Asset Registry入口 |
 | STATE-01 | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Script Status必须到`Production-Locked`才能完成 |
-| STATE-02 | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 对CHAR / ENV / PROP做Core/Support分级，正式FX按规则路由 |
-| STATE-03 Character | `workflows/04_character_asset_workflow.md` | `templates/04_character_asset_prompt.md` | Prompt确认→生成→图片确认→Canonical登记 |
-| STATE-03 Environment | `workflows/05_environment_asset_workflow.md` | `templates/05_environment_asset_prompt.md` | 同一双确认闭环 |
-| STATE-03 Prop | `workflows/06_prop_asset_workflow.md` | `templates/06_prop_asset_prompt.md` | 同一双确认闭环 |
+| STATE-02 | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 完成资产分类并路由至对应开发Workflow |
+| STATE-03 Character | `workflows/04_character_asset_workflow.md` | `templates/04_character_asset_prompt.md` | 按Workflow完成Character资产开发与确认 |
+| STATE-03 Environment | `workflows/05_environment_asset_workflow.md` | `templates/05_environment_asset_prompt.md` | 按Workflow完成Environment资产开发与确认 |
+| STATE-03 Prop | `workflows/06_prop_asset_workflow.md` | `templates/06_prop_asset_prompt.md` | 按Workflow完成Prop资产开发与确认 |
 | STATE-03 FX（条件） | `workflows/15_fx_asset_workflow.md` | `templates/13_fx_asset_prompt.md` | 仅正式FX Asset；Inline Effect不新增资产流程 |
 | STATE-04 | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 视觉方向必须转成可执行语言 |
 | STATE-05 | `workflows/08_scene_breakdown_workflow.md` | `templates/07_scene_design_prompt.md` | Scene / Sequence / Unit事实拥有者 |

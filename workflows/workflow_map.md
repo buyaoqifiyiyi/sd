@@ -1,1125 +1,178 @@
-# Workflow Map
-
-# SD Film 工作流索引
-
+# SD Film Workflow Map
 
 ## Purpose
 
-本文件用于快速查看SD Film影视生产流程。
+本文件只负责主Pipeline、STATE关系、Workflow / Template路由和辅助流程边界。它不拥有阶段算法、资源门槛、Completion Checklist或最终输出Schema。
 
-用于：
+执行时：
 
-- Workflow路由
-- STATE识别
-- 前后阶段关系确认
-- 辅助Workflow调用
+1. 命中Runtime Reload Trigger时，先完整执行`rules/runtime_reload.md`。
+2. 按`references/project_workspace.md`解析项目候选。
+3. 按`rules/state_source.md`选择唯一State Source，并由`references/project_state_contract.md`验证与写回状态。
+4. 读取当前Workflow全文及其Required / Applicable / Conditional Resources。
+5. 最终字段、顺序与排版只服从当前Template。
 
-具体执行规则：
+## Core Production Pipeline
 
-以对应Workflow文件和rules为准。
+固定主Pipeline：
 
-
----
-
-# Core Production Pipeline
-
-SD Film主生产流程固定为：
-
+```text
 STATE-00 Project Setup
-
-↓
-
-STATE-01 Script Analysis
-
-↓
-
-STATE-02 Asset Discovery
-
-↓
-
-STATE-03 Asset Development
-
-↓
-
-STATE-04 Visual Development
-
-↓
-
-STATE-05 Scene Breakdown
-
-↓
-
-STATE-06 Detailed Shot Design
-
-↓
-
-STATE-07 Clip Production
-
-↓
-
-STATE-08 Clip-based Video Prompt / Video Generation
-
-↓
-
-STATE-09 Review
-
-
-Editing不作为独立STATE插入主Pipeline。
-
-
----
-
-# STATE-00
-
-## Project Setup
-
-对应Workflow：
-
-01_project_setup_workflow.md
-
-
-输入：
-
-用户项目素材。
-
-
-可以包括：
-
-- 剧本
-- 小说
-- 故事大纲
-- 剧情文本
-- 世界观
-- 项目设定
-
-
-输出：
-
-项目初始化信息。
-
-
-主要更新：
-
-- project_manifest.json
-- project_bible.md
-- asset_registry.md
-- project_status.md
-
-
-完成后进入：
-
-STATE-01 Script Analysis。
-
-
----
-
-# STATE-01
-
-## Script Analysis
-
-对应Workflow：
-
-02_script_analysis_workflow.md
-
-
-输入：
-
-项目初始化信息。
-
-用户原始故事素材。
-
-
-输出：
-
-剧本分析结果。
-
-除用户明确“不要改剧本 / 严格按这个版本制作 / 已定稿”外，入口固定执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`。报告只指出问题、影响和方向，并以A无明显优化必要、B有轻度优化空间、C有明显结构问题三档询问用户；不得自动改写。用户明确同意优化后，Class C才经Script Adaptation形成Adaptation Draft再进入优化；A/B直接进入优化且不强制改编。Production Script Proposal输出后再次等待确认。全部子流程仍属于STATE-01，不新增STATE。
-
-只有Class C已获改编/优化授权，且目标为短剧、竖屏剧情或1—3分钟剧情视频时加载Short-form Drama Adapter；其他类型不强制套用短剧规则。用户拒绝优化时原稿锁定；用户明确锁定剧本时跳过机会报告、改编和改写，只完成Script Analysis。
-
-
-包括：
-
-- 剧情结构
-- 人物
-- 环境
-- 道具
-- 重要视觉信息
-
-
-完成后进入：
-
-STATE-02 Asset Discovery。
-
-进入条件：
-
-`Script Status: Production-Locked`。`Source Material`、`Adaptation Draft`或`Optimized Proposal`均不得推进；用户明确要求不改或已定稿时，原版本完成分析后可以直接锁定。
-
-
----
-
-# STATE-02
-
-## Asset Discovery
-
-对应Workflow：
-
-03_asset_discovery_workflow.md
-
-
-输入：
-
-剧本分析结果。
-
-
-输出：
-
-资产需求清单。
-
-
-识别：
-
-- Character Asset
-- Environment Asset
-- Prop Asset
-- 必要FX Asset
-
-
-完成后进入：
-
-STATE-03 Asset Development。
-
-
----
-
-# STATE-03
-
-## Asset Development
-
-STATE-03由多个资产Workflow共同组成。
-
-
-根据Asset Discovery结果：
-
-按实际需要调用。
-
-每个视觉资产统一执行且不得合并确认Gate：
-
-`Asset Design → Image Prompt Generation → 用户确认提示词 → Image Generation → 用户确认图片 → Asset Registry`
-
-只有图片确认后才能成为Active / Canonical / confirmed asset；工具不可用时停在完整Prompt与确认Checkpoint，STATE-03保持IN_PROGRESS。
-
-
----
-
-## Character Asset
-
-对应Workflow：
-
-04_character_asset_workflow.md
-
-
-输入：
-
-角色资产需求。
-
-
-输出：
-
-已确认Character Visual Asset；至少包含角色定义、已确认三视图Prompt、已确认面部特写Prompt、必要状态变体Prompt与经确认的Canonical角色图片。角色声音资产不属于本Workflow的默认输出；只有用户显式请求时才由独立`AUDIO / SEED-AUDIO Voice Asset`模块处理。
-
-
----
-
-## Environment Asset
-
-对应Workflow：
-
-05_environment_asset_workflow.md
-
-
-输入：
-
-环境资产需求。
-
-
-输出：
-
-已确认Environment Asset；至少包含环境定义、已确认主参考图Prompt、必要多视角/关键区域Prompt与经确认的Canonical环境图片。
-
-
----
-
-## Prop Asset
-
-对应Workflow：
-
-06_prop_asset_workflow.md
-
-
-输入：
-
-道具资产需求。
-
-
-输出：
-
-已确认Prop Asset；至少包含道具定义、已确认主参考图Prompt、必要状态/细节Prompt与经确认的Canonical道具图片。
-
-
----
-
-## FX Asset
-
-对应辅助Workflow：
-
-15_fx_asset_workflow.md
-
-输入：
-
-需要复用、绑定或跨镜头追踪的效果资产需求。
-
-输出：
-
-已确认FX Asset及连续性合同。
-
-无正式FX需求时：
-
-在Asset Discovery中明确不适用，或保留为Inline Effect。
-
----
-
-STATE-03完成条件：
-
-当前项目需要的Character、Environment、Prop与FX核心视觉资产均达到`Visual Production Status: Asset Confirmed`并处于Active，或对应类别明确确认无需建立。
-
-
-完成后进入：
-
-STATE-04 Visual Development。
-
-
----
-
-# STATE-04
-
-## Visual Development
-
-对应Workflow：
-
-07_visual_development_workflow.md
-
-
-输入：
-
-- Script Analysis
-- 已确认Character Asset
-- 已确认Environment Asset
-- 已确认Prop Asset
-- 已确认FX Asset（如适用）
-- 用户视觉要求
-- Visual Style Reference
-
-
-输出：
-
-统一Visual Direction。
-
-
-包括：
-
-- Visual Concept
-- Cinematography
-- Camera Language Direction
-- Lighting
-- Color
-- Environment Treatment
-- Texture
-- Emotion
-- Performance Direction
-- Sound Direction
-- 必要Cinematic Parameters
-
-
-完成后进入：
-
-STATE-05 Scene Breakdown。
-
-
----
-
-# STATE-05
-
-## Scene Breakdown
-
-对应Workflow：
-
-08_scene_breakdown_workflow.md
-
-
-输入：
-
-- 剧情信息
-- Visual Direction
-- 已确认资产
-
-
-输出：
-
-Scene Breakdown。
-
-用户原剧本中的“镜头1 / Scene 1 / 段落A / Clip A”只作为Source Script Label追溯；STATE-05不得创建SHOT或CLIP ID。
-
-
-负责：
-
-把剧情组织成可进行镜头设计的场景结构。
-
-
-条件性辅助Workflow：
-
-16_sequence_planning_workflow.md
-
-
-触发于：
-
-- 多Scene连续段
-- 密集Coverage需求
-- 多Generation Unit
-- 蒙太奇、追逐、战斗、群戏、复杂对白或复杂FX链
-
-
-输出：
-
-Sequence Plan，包含SEQ、BEAT、COV、UNIT与State Ledger。
-
-
-条件性辅助Workflow：
-
-17_poster_design_workflow.md
-
-
-触发于：
-
-- 用户明确请求电影海报、Key Art、One-sheet、先导/正式/角色海报、Poster Prompt或标题字
-- 已确认影片事实、核心资产与Visual Direction足以支持海报设计
-
-
-输出：
-
-Poster Design Package，写入Active Project Root的`poster_design/`目录。
-
-所属位置：STATE-04 Visual Development辅助，不创建主STATE，不修改STATE-08 Schema。
-
-
-简单项目：
-
-记录Sequence Planning Not Applicable及理由。
-
-
-完成后进入：
-
-STATE-06 Detailed Shot Design。
-
-
----
-
-# STATE-06
-
-## Detailed Shot Design
-
-对应Workflow：
-
-09_shot_design_workflow.md
-
-
-输入：
-
-- Scene Breakdown
-- Sequence Plan或Not Applicable记录
-- Visual Direction
-- Character Asset
-- Environment Asset
-- Prop Asset
-- FX Asset或Inline Effect（如适用）
-- Camera Language Knowledge
-- Performance Knowledge（如适用）
-- Sound Language Knowledge（如适用）
-- FX Knowledge（如适用）
-- Sequence Knowledge与Coverage Requirements（如适用）
-
-
-输出：
-
-Professional Detailed Shot Script（专业详细分镜脚本）。
-
-正式SHOT由STATE-06重新创建；不得沿用Source Script Label作为正式镜号，也不得在本阶段预划Clip。
-
-
-每个正式Shot必须逐项、按顺序使用`templates/08_shot_design_prompt.md`当前定义的全部字段；Workflow Map不复制字段骨架。
-
-其中镜头调度必须完整表达摄影机运动、人物调度、两者配合/触发与镜头结束状态；画面内容/构图必须建立前中后景与主体位置、遮挡/反射/景深等层次；光线/色彩必须说明叙事功能与起止色光状态。
-
-
-注意：
-
-STATE-06字段属于镜头设计生产信息。内部Director Decision Notes读取该专业分镜，但不新增STATE、不改变表头，也不随正式输出暴露。
-
-不得直接作为STATE-08最终Seedance Prompt Schema。
-
-
-完成后进入：
-
-STATE-07 Clip Production。
-
-
----
-
-# STATE-07
-
-## Clip Production
-
-对应Workflow：
-
-10_clip_production_workflow.md
-
-
-输入：
-
-- Confirmed Detailed Shot Design
-- 实际可读的Detailed Shot Design Artifact / Portable Checkpoint及匹配Revision
-- Sequence Plan（如适用）
-- 已确认资产
-- Visual Direction
-
-
-输出：
-
-Confirmed Clip Production Plan；把正式 Shot 按场景、时间、动作、摄影机、空间、道具、模型复杂度与4—15秒生成窗口组织为 CLIP-001、CLIP-002……。
-
-
-每个 Clip 必须确认：
-
-- 包含哪些 Shot 及其原顺序
-- 起始状态与连续动作
-- 人物/环境空间关系、轴线、视线与行进方向
-- 摄影机/构图/焦段/对焦执行路径
-- 道具身份、持有者、位置、方向与状态连续性
-- 结尾状态、稳定尾帧与下一Clip Handoff
-- 模型执行风险、降级与可复算4—15秒时长
-
-
-完成后进入：
-
-STATE-08 Clip-based Video Prompt / Video Generation。
-
-Template：`templates/20_clip_plan.md`。
-
-Shot 是导演镜头设计单位；Clip 是 AI 视频生成执行单位。Storyboard 仅为用户明确请求时调用的 Optional/Auxiliary Workflow，不绑定 STATE，也不参与本阶段完成门槛。
-
-Source Script Label、SCENE、BEAT、COV与UNIT均不得直接改名或一对一映射为CLIP；UNIT不是Clip。缺少Confirmed Detailed Shot Design Artifact、匹配Revision、STATE-06 Complete证据或完整正式SHOT清单时，不得创建任何暂定或正式CLIP ID。
-
-
----
-
-# STATE-08
-
-## Clip-based Video Prompt / Video Generation
-
-对应Workflow：
-
-11_video_generation_workflow.md
-
-
-输入：
-
-- Confirmed Detailed Shot Design
-- Confirmed Clip Production Plan
-- Sequence Plan（如适用）
-- Character Asset
-- Environment Asset
-- Prop Asset
-- FX Asset或Inline Effect（如适用）
-- Visual Direction
-- Camera Language
-- Performance Direction
-- Sound Direction
-- Continuity Information
-
-
-执行辅助：
-
-knowledge/11_seedance_adapter.md
-
-knowledge/performance/（有人物表演时）
-
-knowledge/sound_language/（存在声音设计时）
-
-knowledge/fx/（存在FX时）
-
-knowledge/sequence/（存在Sequence Plan时）
-
-
-最终输出格式：
-
-templates/10_video_prompt.md
-
-
-输出：
-
-Seedance Video Prompt。
-
-
-STATE-08负责：
-
-将已经确认的影视生产设计转换为AI视频模型可执行的信息。
-
-
-不得：
-
-重新设计角色。
-
-重新设计环境。
-
-无原因改变剧情。
-
-直接继承STATE-06的字段格式作为最终Prompt Schema。
-
-
-完成后进入：
-
-STATE-09 Review。
-
-
----
-
-# STATE-09
-
-## Review
-
-对应Workflow：
-
-13_review_workflow.md
-
-
-输入：
-
-- AI生成结果
-- Project Bible
-- Asset Registry
-- Shot Design
-- Sequence Plan与Coverage Matrix（如适用）
-- Visual Direction
-- Continuity Information
-
-
-输出：
-
-Review Report。
-
-
-审核：
-
-- Character Consistency
-- Environment Consistency
-- Prop Consistency
-- FX Continuity
-- Performance
-- Dialogue / Lip-sync
-- Sound Continuity
-- Coverage Completion
-- Generation Unit Handoff
-- Motion
-- Camera
-- Visual Style
-
-
-审核结果：
-
-PASS
-
-REVISE
-
-REBUILD
-
-
----
-
-## PASS
-
-当前结果符合项目要求。
-
-STATE-09完成。
-
-
-更新：
-
-project_status.md
-
-
-状态：
-
-STATE-09 Complete。
-
-
----
-
-## REVISE
-
-存在可修复问题。
-
-根据问题类型：
-
-返回对应Workflow。
-
-
-例如：
-
-人物问题
-
-→ Character Asset Workflow
-
-
-环境问题
-
-→ Environment Asset Workflow
-
-
-道具问题
-
-→ Prop Asset Workflow
-
-
-镜头或动作问题
-
-→ Shot Design Workflow
-
-
-视频执行层局部调整
-
-→ Editing Workflow
-
-
-修改完成后：
-
-重新进入STATE-09 Review。
-
-
----
-
-## REBUILD
-
-存在严重问题。
-
-返回：
-
-对应资产阶段
-
-或
-
-Shot Design阶段。
-
-
-重新执行相关生产步骤后：
-
-再次进入后续流程。
-
-
-最终必须：
-
-重新Review。
-
-
----
-
-# Auxiliary Workflow
-
-以下Workflow不占用固定STATE。
-
-它们属于：
-
-按需辅助流程。
-
----
-
-# AUDIO / SEED-AUDIO Voice Asset Workflow
-
-对应：
-
-20_seed_audio_voice_asset_workflow.md
-
-路由器：`workflows/audio_router.md`
-
-定位：仅在用户显式请求音色提示词、音色制作、角色声音、Seed Audio、配音音色、声音资产、Voice Profile或角色音色样本Prompt时调用的独立辅助模块。
-
-唯一输出Template：
-
-templates/21_seed_audio_voice_asset.md
-
-显式不触发：普通视频制作、角色分析、Character Asset、Detailed Shot Design、Clip Production、STATE-08 Seedance提示词，以及“继续视频制作 / 下一个Clip / 下一步 / 继续 / 下一个”。角色有对白或下游缺少Voice Profile都不能自动触发。
-
-该模块不创建新STATE；完成后返回调用前Checkpoint。没有显式音色请求时直接按原Workflow Map路由，不生成任何音色资产。
-
----
-
-# Project Resume And Retry Workflow
-
-对应：
-
-18_project_resume_workflow.md
-
-定位：中断恢复、Review退回、生成重试与Checkpoint验证。
-
-它不创建新STATE，不选择最近项目，不重写已接受产物。
-
-
----
-
-# Sequence Planning Workflow
-
-对应：
-
-16_sequence_planning_workflow.md
-
-
-定位：
-
-STATE-05中Scene Breakdown与STATE-06 Detailed Shot Design之间的条件性长序列、Coverage和Generation Unit规划。
-
-
-它不创建新STATE，也不创建SHOT ID。
-
-
-触发时必须在STATE-06前完成；不触发时必须记录Not Applicable理由。
-
-
----
-
-# Editing Workflow
-
-对应：
-
-12_editing_workflow.md
-
-
-定位：
-
-已有AI视频结果的局部修改与优化。
-
-
-触发条件：
-
-用户明确要求：
-
-- 修改视频
-- 延长镜头
-- 改变动作
-- 改变摄影
-- 调整视觉
-- 修复局部一致性
-
-
-或：
-
-Review判断当前问题可以通过局部视频调整解决。
-
-
-Editing负责：
-
-- Motion Adjustment
-- Camera Adjustment
-- Visual Adjustment
-- Continuity Adjustment
-
-
-Editing原则：
-
-保持原镜头。
-
-优先局部修改。
-
-避免无必要重新生成完全不同内容。
-
-
-Editing不是：
-
-新的固定STATE。
-
-
-Editing完成后：
-
-必须重新进入：
-
-STATE-09 Review
-
-
-确认修改结果。
-
-
----
-
-# Series Management Workflow
-
-对应：
-
-14_series_management_workflow.md
-
-
-定位：
-
-系列项目、连续剧集或多集内容管理。
-
-
-它不替代：
-
-单集内部Production Pipeline。
-
-
-系列项目中的每一个制作单元：
-
-仍然按照：
-
-STATE-00
-
-↓
-
-STATE-01
-
-↓
-
-STATE-02
-
-↓
-
-STATE-03
-
-↓
-
-STATE-04
-
-↓
-
-STATE-05
-
-↓
-
-STATE-06
-
-↓
-
-STATE-07
-
-↓
-
-STATE-08
-
-↓
-
-STATE-09
-
-
-执行。
-
-
-Series Management主要负责：
-
-跨项目或跨集管理。
-
-
----
-
-# Workflow Routing Principle
-
-先读取并执行`workflows/audio_router.md`中的`AUDIO / SEED-AUDIO Explicit Trigger Gate`：
-
-- 当前用户请求明确要求音色提示词、音色制作、角色声音、Seed Audio、配音音色、声音资产、Voice Profile或同义角色声音身份制作时，声音资产部分优先进入`20_seed_audio_voice_asset_workflow.md`，严格使用`templates/21_seed_audio_voice_asset.md`。该辅助模块不要求先推进主Pipeline。
-- 未显式命中时，AUDIO模块优先级为零；不得因对白存在、角色分析、Clip/Seedance请求或声音资产缺失而自动调用。
-- 同一请求同时显式要求视频与音色资产时分别路由、分别输出，不混合Template。
-
-未进入独立AUDIO模块的影视生产任务按`rules/state_source.md`选择唯一State Source；本地图发现只由`references/project_workspace.md`负责，状态字段与写回只由`references/project_state_contract.md`负责。
-
-如当前输入命中Runtime Reload Trigger，必须在AUDIO Router与State Source选择前完整执行`rules/runtime_reload.md`。本Workflow Map不维护重载词、成功判定或State Source优先级的竞争副本。
-
-
-然后：
-
-根据当前STATE调用对应Workflow。
-
-
-禁止：
-
-仅根据用户关键词直接跳到后期Workflow。
-
-
-用户请求：
-
-代表最终目标。
-
-
-不代表：
-
-当前执行阶段。
-
-
----
-
-# Main Workflow Table
-
-| STATE | Stage | Workflow |
+→ STATE-01 Script Analysis
+→ STATE-02 Asset Discovery
+→ STATE-03 Asset Development
+→ STATE-04 Visual Development
+→ STATE-05 Scene Breakdown
+→ STATE-06 Detailed Shot Design
+→ STATE-07 Clip Production
+→ STATE-08 Clip-based Video Prompt / Video Generation
+→ STATE-09 Review
+```
+
+Editing不作为独立STATE插入主Pipeline。Storyboard只在用户显式请求时作为Optional/Auxiliary Workflow执行，不创建STATE，也不改变固定路由。
+
+## Main Workflow Routing
+
+| STATE | Stage | Workflow | Final template owner | Core result |
+|---|---|---|---|---|
+| STATE-00 | Project Setup | `workflows/01_project_setup_workflow.md` | `templates/00_project_start_template.md` | 已建立项目身份、工作空间与状态入口 |
+| STATE-01 | Script Analysis | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Production-Locked Script及分析结果 |
+| STATE-02 | Asset Discovery | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 已分类并可路由的CHAR / ENV / PROP / FX需求 |
+| STATE-03 | Asset Development | 对应资产Workflow | 对应资产Template | 已确认并登记的Canonical视觉资产 |
+| STATE-04 | Visual Development | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 已确认的可执行Visual Direction |
+| STATE-05 | Scene Breakdown | `workflows/08_scene_breakdown_workflow.md` | `templates/07_scene_design_prompt.md` | Scene / Sequence / Unit生产拆解 |
+| STATE-06 | Detailed Shot Design | `workflows/09_shot_design_workflow.md` | `templates/08_shot_design_prompt.md` | Confirmed Professional Detailed Shot Script |
+| STATE-07 | Clip Production | `workflows/10_clip_production_workflow.md` | `templates/20_clip_plan.md` | Confirmed Clip Production Plan |
+| STATE-08 | Clip-based Video Prompt / Video Generation | `workflows/11_video_generation_workflow.md` | `templates/10_video_prompt.md` | 按Confirmed Clip编译并验证的最终视频执行Prompt |
+| STATE-09 | Review | `workflows/13_review_workflow.md` | `templates/16_review_report.md` | PASS或带最小Return Route的REVISE / REBUILD |
+
+## STATE Route Boundaries
+
+### STATE-00 Project Setup
+
+- Required boundary：新项目、无法验证的项目上下文，或State Source合法指向STATE-00。
+- Authority：`workflows/01_project_setup_workflow.md`。
+- Next route：仅在其Completion Checklist通过后进入`workflows/02_script_analysis_workflow.md`。
+
+### STATE-01 Script Analysis
+
+- Required boundary：读取项目输入和当前Script Status。
+- Authority：`workflows/02_script_analysis_workflow.md`；剧本改编、优化、授权与锁定细则不得在本地图复制。
+- Completion boundary：只有`Script Status: Production-Locked`才可进入STATE-02。
+
+### STATE-02 Asset Discovery
+
+- Required boundary：消费Production-Locked Script与STATE-01分析结果。
+- Authority：`workflows/03_asset_discovery_workflow.md`与`rules/02_asset_rules.md`；资产分级算法和Board规则不得在本地图复制。
+- Next route：按已确认需求进入对应STATE-03资产Workflow。
+
+### STATE-03 Asset Development
+
+| Asset route | Workflow | Template |
 |---|---|---|
-| STATE-00 | Project Setup | 01_project_setup_workflow.md |
-| STATE-01 | Script Analysis | 02_script_analysis_workflow.md |
-| STATE-02 | Asset Discovery | 03_asset_discovery_workflow.md |
-| STATE-03 | Asset Development | 04 / 05 / 06 Asset Workflows |
-| STATE-04 | Visual Development | 07_visual_development_workflow.md |
-| STATE-05 | Scene Breakdown | 08_scene_breakdown_workflow.md |
-| STATE-06 | Detailed Shot Design | 09_shot_design_workflow.md |
-| STATE-07 | Clip Production | 10_clip_production_workflow.md |
-| STATE-08 | Clip-based Video Prompt / Video Generation | 11_video_generation_workflow.md |
-| STATE-09 | Review | 13_review_workflow.md |
+| Character | `workflows/04_character_asset_workflow.md` | `templates/04_character_asset_prompt.md` |
+| Environment | `workflows/05_environment_asset_workflow.md` | `templates/05_environment_asset_prompt.md` |
+| Prop | `workflows/06_prop_asset_workflow.md` | `templates/06_prop_asset_prompt.md` |
+| Formal FX（条件） | `workflows/15_fx_asset_workflow.md` | `templates/13_fx_asset_prompt.md` |
 
+- Authority：资产生产Gate、确认闭环、Active Version和Canonical Reference由对应Workflow、`rules/02_asset_rules.md`与`references/asset_lock_contract.md`定义。
+- Completion boundary：当前项目所需资产全部通过对应Completion Checklist，或对应类别已合法记录Not Applicable。
 
-辅助Workflow：
+### STATE-04 Visual Development
 
-12_editing_workflow.md
+- Required boundary：消费Production-Locked Script、已确认资产和用户视觉要求。
+- Authority：`workflows/07_visual_development_workflow.md`。
+- Next route：完成可执行Visual Direction后进入STATE-05。
 
-14_series_management_workflow.md
+### STATE-05 Scene Breakdown
 
-15_fx_asset_workflow.md
+- Required boundary：消费已锁剧本、Visual Direction与Confirmed Assets。
+- Authority：`workflows/08_scene_breakdown_workflow.md`；本阶段不创建正式SHOT或CLIP ID。
+- Conditional route：满足条件时调用`workflows/16_sequence_planning_workflow.md`；不适用时按其合同记录Not Applicable。
+- Next route：完成Scene / Sequence / Unit拆解后进入STATE-06。
 
-16_sequence_planning_workflow.md
+### STATE-06 Detailed Shot Design
 
-17_poster_design_workflow.md
+- Required boundary：消费Scene Breakdown、适用的Sequence Plan、Visual Direction与Confirmed Assets。
+- Authority：`workflows/09_shot_design_workflow.md`；Spatial Blocking、Camera Language、Director Decision与逐镜完整性细则不得在本地图复制。
+- Output owner：`templates/08_shot_design_prompt.md`。
+- Next route：Confirmed Detailed Shot Design通过Completion Gate后进入STATE-07。
 
-18_project_resume_workflow.md
+### STATE-07 Clip Production
 
-20_seed_audio_voice_asset_workflow.md（仅用户显式请求角色音色资产时调用；不绑定STATE）
+- Required boundary：必须有实际可读、Revision匹配且已确认的Detailed Shot Design Artifact。
+- Authority：`workflows/10_clip_production_workflow.md`；Shot到Clip的组织、时长、Preflight、Reference Budget与连续性算法不得在本地图复制。
+- Output owner：`templates/20_clip_plan.md`。
+- Next route：Confirmed Clip Production Plan通过Completion Gate后进入STATE-08。
 
-10_storyboard_workflow.md（仅用户明确请求时调用的 Optional/Auxiliary Storyboard，不绑定 STATE）
+Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Script Label、SCENE、BEAT、COV与UNIT均不得直接改名或机械映射为CLIP。
 
-10_shot_execution_plan_workflow.md、19_clip_planning_workflow.md（仅旧项目兼容，不参与新项目路由）
+### STATE-08 Clip-based Video Prompt / Video Generation
 
+- Required boundary：必须消费Confirmed Clip Production Plan、Confirmed Detailed Shot Design、适用资产、Visual Direction与连续性事实。
+- Authority：`workflows/11_video_generation_workflow.md`；它拥有资源清单、语义编译、Preflight、Knowledge Reflection、Projection与验证流程。
+- Final schema owner：`templates/10_video_prompt.md`。Workflow、Rules、Knowledge、Adapter和本地图都不得维护竞争Schema。
+- Image-to-video boundary：`templates/11_image_to_video_prompt.md`只拥有参考帧Source Data与边界约束。
+- Next route：最终Prompt通过Template与Workflow验证后进入STATE-09。
 
-它们不创建新的主Pipeline STATE。
+### STATE-09 Review
 
+- Required boundary：必须实际检查生成结果及适用的项目事实、资产、镜头、Clip与连续性记录。
+- Authority：`workflows/13_review_workflow.md`。
+- PASS：完成STATE-09。
+- REVISE / REBUILD：携带最小Return Route回到事实或设计拥有者，修复后重新进入STATE-09。
 
----
+## Auxiliary Workflow Routing
 
-# Correct Main Flow
+以下Workflow不占用固定STATE：
 
-正确：
+| Intent / condition | Workflow | Template / contract | Boundary |
+|---|---|---|---|
+| 用户显式请求Storyboard | `workflows/10_storyboard_workflow.md` | `templates/09_storyboard_prompt.md` | Optional/Auxiliary；不替代STATE-06/07，不进入STATE-08 Canonical Reference |
+| 用户显式请求声音身份资产 | `workflows/audio_router.md` | AUDIO Route → `workflows/20_seed_audio_voice_asset_workflow.md` → `templates/21_seed_audio_voice_asset.md` | 必须先过唯一Router；普通视频、Clip、Seedance、对白或声音设计不自动触发 |
+| 中断恢复、Review退回或生成重试 | `workflows/18_project_resume_workflow.md` | `references/project_state_contract.md` | 从已验证Checkpoint恢复，不创建STATE |
+| Sequence级Coverage规划 | `workflows/16_sequence_planning_workflow.md` | `templates/14_sequence_plan.md` | 条件执行；不创建SHOT或CLIP ID |
+| 电影海报 / Key Art | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付 |
+| 已有视频结果的局部修改 | `workflows/12_editing_workflow.md` | `templates/12_edit_prompt.md` | 修复后必须返回STATE-09 Review |
+| 系列项目管理 | `workflows/14_series_management_workflow.md` | `templates/19_series_status.md` | 不替代单个制作单元的完整主Pipeline |
 
-Project Setup
+### Storyboard Isolation
 
-↓
+Storyboard只在用户明确请求时调用`workflows/10_storyboard_workflow.md`。它不进入Completed States，不成为固定Next Workflow，不参与Clip划分，也不得作为STATE-08 Canonical Reference。
 
-Script Analysis
+### AUDIO / SEED-AUDIO Explicit Trigger Gate
 
-↓
+当前请求明确要求音色提示词、音色制作、角色声音、Seed Audio、配音音色、声音资产、Voice Profile或同义声音身份制作时，先读取`workflows/audio_router.md`：
 
-Asset Discovery
+- Router返回`ROUTE: AUDIO / SEED-AUDIO Voice Asset`时，才进入`workflows/20_seed_audio_voice_asset_workflow.md`。
+- Router返回`ROUTE: ORIGINAL WORKFLOW`时，声音资产模块优先级为零，继续原Workflow路由。
+- 同一请求同时明确要求视频与音色资产时，分别路由、分别使用Template，不混合Schema。
 
-↓
+## Legacy Compatibility
 
-Asset Development
+- `workflows/10_shot_execution_plan_workflow.md`
+- `workflows/19_clip_planning_workflow.md`
 
-↓
+以上仅用于旧项目兼容，不参与新项目主路由。旧State、旧Storyboard标签与旧Portable Schema统一按`rules/compatibility_mapping.md`基于Artifact和Completion Gate迁移。
 
-Visual Development
+## Resume And Revision Loop
 
-↓
+```text
+STATE-09 Review
+→ 定位最小受影响范围
+→ 返回对应Workflow修复
+→ 重新生成或修改
+→ STATE-09 Review
+```
 
-Scene Breakdown
+修订只影响必要范围，保留Accepted Unaffected Artifacts。纯推进命令服从`rules/progression_rules.md`；恢复与重试调用`workflows/18_project_resume_workflow.md`。
 
-↓
+## Ownership Boundaries
 
-Detailed Shot Design
-
-↓
-
-Clip Production
-
-↓
-
-Clip-based Video Prompt / Video Generation
-
-↓
-
-Review
-
-
----
-
-# Revision Loop
-
-生成结果存在问题时：
-
-Clip-based Video Prompt / Video Generation
-
-↓
-
-Review
-
-↓
-
-定位问题
-
-↓
-
-对应Workflow修复
-
-↓
-
-必要时Editing
-
-↓
-
-重新生成或修改
-
-↓
-
-Review
-
-
-Review是：
-
-质量闭环入口。
-
-
-Editing是：
-
-修复工具。
-
-
-不得把二者的职责混淆。
-
-
----
-
-# Final Principle
-
-Workflow Map只负责：
-
-描述SD Film阶段关系与Workflow路由。
-
-
-主Pipeline固定结束于：
-
-STATE-09 Review。
-
-
-12_editing_workflow.md：
-
-是按需修复Workflow。
-
-不是STATE-09。
-
-
-13_review_workflow.md：
-
-才对应：
-
-STATE-09 Review。
-
-
-所有Workflow执行前，先由`references/project_workspace.md`解析项目候选，再严格按`rules/state_source.md`选择唯一State Source，并按`references/project_state_contract.md`验证字段。本Workflow Map只消费路由结果，不维护选择优先级或fallback细节。
+- `rules/`：跨阶段约束与全局行为。
+- `workflows/`：阶段输入、步骤、资源、Completion Checklist和错误路由。
+- `knowledge/`：专业判断方法，不拥有主路由或最终格式。
+- `templates/`：用户可见最终Schema的唯一所有者。
+- `references/`：状态、项目工作空间、资产锁与模块合同。
+
+最终原则：本地图只告诉运行时“当前应读哪个Workflow与Template”。它不得重新实现被指向文件中的算法、字段骨架或完成规则。
