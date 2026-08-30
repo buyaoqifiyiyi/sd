@@ -12,8 +12,9 @@
 - Sound Arc：对白、环境声、动作声、呼吸与Foley；STATE-08默认禁止生成背景音乐、配乐、BGM、主题音乐与氛围音乐，只有用户显式要求由Seedance为明确指定的Clip生成背景音乐时例外
 - Exit State：稳定尾帧与下一 Clip 可用锚点
 - Tail-Frame Use Mode：直接作为下一Clip起始帧 / 仅作为下一Clip连续性参考 / 不继承（说明原因）
-- Tail-Frame Availability：实际存在、可访问且已确认时统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`；不存在时只保留文字End State与待取得需求，不得列为实际资产
-- Reference Budget Audit：按`knowledge/reference_budget.md`记录原始候选、连续性预留、去重/整合/裁剪、最终真实清单与总数；Direct / Reference-Only所需尾帧只有实际存在、可访问且已确认时才进入Projected Final Count，无图时只记录文字承接或待取得需求
+- Tail-Frame Requirement：在既有Continuity Decision内按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`，不得由资产是否已存在反向决定
+- Tail-Frame Availability：`YES`且实际存在、可访问、已确认时统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`；尚未提供时主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，标记“待用户提供/待上传”，不得列为实际资产；`NO`不要求截图
+- Reference Budget Audit：按`knowledge/reference_budget.md`记录原始候选、连续性预留、去重/整合/裁剪、最终真实清单与总数；`Tail Frame Required = YES`无论是否已上传都进入Projected Final Count预留，只有实际存在、可访问且已确认时才进入最终真实清单
 
 ## Knowledge-To-Prompt Projection
 
@@ -49,6 +50,6 @@ Clip 表中的“知识投影摘要”不是知识名称清单，而是以下模
 - 使用`# CLIP-X｜标题 Seedance视频提示词`作为区块标题，在`时长：`写明4—15秒的平台生成时长；不得创建独立CLIP标题字段
 - 在【主风格】之前输出一次【首帧参考】与【尾帧限制】，只在Package末尾输出一次【反向提示词】
 - 最后一分镜与`尾帧限制：`定义本Clip新的稳定结束状态；实际生成、提取并确认后登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
-- 下一 G Package依据自动判定结果和资产可用性：实际尾帧图可用时直接作为起始帧或第一顺位连续性参考，并在`首帧参考：`写固定承接句；无实际尾帧图时只以文字End State承接；经确认断点则明确不继承
+- 下一 G Package先依据当前Clip Start Requirement标记`Tail Frame Required = YES / NO`，再检查资产可用性：`YES`且实际尾帧图可用时直接作为起始帧或第一顺位连续性参考，并在`首帧参考：`写固定承接句；`YES`但未上传时主动请求用户截图、草案标记“待用户提供/待上传”且暂停最终可执行版；`NO`时可仅以文字End State承接或建立新首帧
 
 同一 Clip 内非末分镜的“与下一镜衔接”必须明确“同一 Clip 连续长镜头生成、不中断、不硬切”；Clip 末分镜必须说明与下一 Clip 的连接方式或最后一段收尾。

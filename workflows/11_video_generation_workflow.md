@@ -158,13 +158,13 @@ Voice/Audio Reference不得导致Template中的任何无条件字段被删除；
 - 摄影机边界、关系轴、道具、环境、光线、综合色彩与持续声音
 - 上一Clip已经完成的动作是否会被重播，下一Clip动作是否被提前
 
-先从`视觉连续 / Visual Continuity`、`剧情连续 / Narrative Continuity Only`、`主动切场 / 切世界 / Motivated Scene-or-World Change`中选择一个主分类，再映射Handoff。只有视觉连续允许以下第1或第2类，并且仍需实际尾帧图存在、可访问、已确认后才正式引用；无图时只作文字承接。剧情连续或主动切场 / 切世界必须进入第3类，不得机械引用。
+先从`视觉连续 / Visual Continuity`、`剧情连续 / Narrative Continuity Only`、`主动切场 / 切世界 / Motivated Scene-or-World Change`中选择一个主分类，再映射Handoff，并根据当前Clip首帧是否需要严格视觉承接，在同一Previous-Clip Continuity Decision中标记`Tail Frame Required = YES / NO`。需求判定必须先于资产可用性检查，不得因为系统当前没有尾帧图而把`YES`改成`NO`。Direct / Reference-Only需要精确继承上一可见状态时为`YES`；剧情连续、主动切场 / 切世界或画面独立重建时为`NO`。
 
 判定结果只允许以下三类Handoff：
 
-1. `Direct Start-Frame Handoff`：同场景、同动作连续，且当前Clip能够从上一尾帧的同一空间、动作阶段与镜头几何直接开始。若上一Clip存在实际可用最终尾帧图、定格图或经确认截图，必须按`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入【参考资产】，并在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`；若实际尾帧图不存在，不得虚构，只以文字承接上一Clip End State。
-2. `Reference-Only Handoff`：剧情与人物/道具/环境状态连续，但当前Clip因已确认的景别、机位、视角或构图变化不能从同帧构图直接起步。若实际尾帧图可用，必须按同一`REF-TAIL`命名正式列入【参考资产】，在【首帧参考】写同一固定承接句，并继续声明“仅作连续性参考”及兼容的新构图边界；若无实际尾帧图，不得创建占位资产，只作文字承接。
-3. `Motivated Discontinuity / No Formal Tail Reference`：剧情连续但画面独立重建，或跨场景、切世界、时间跳跃及其他已确认叙事断点。上一尾帧不得列入【参考资产】，也不得作为当前Clip生成输入；只在编译前用于核对人物身份、服装、道具后果、情绪与整体视觉连续性。【首帧参考】必须声明“上一尾帧不作正式参考资产，仅作连续性核对”，写明主分类、断点与依据当前新场景Confirmed Asset / Scene初始状态重建的原因。
+1. `Direct Start-Frame Handoff`：同场景、同动作连续，且当前Clip必须从上一尾帧的同一空间、动作阶段与镜头几何直接开始，标记`Tail Frame Required = YES`。若上一Clip存在实际可用最终尾帧图、定格图或经确认截图，按`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入【参考资产】，并在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`；若尚未提供，必须主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，草案标记“待用户提供/待上传”，不得形成最终可执行版Prompt。
+2. `Reference-Only Handoff`：剧情与人物/道具/环境状态连续，当前Clip虽有已确认的景别、机位、视角或构图变化，仍需要上一尾帧精确锁定人物/空间状态时，标记`Tail Frame Required = YES`。实际尾帧可用后按同一`REF-TAIL`命名正式列入【参考资产】，在【首帧参考】写同一固定承接句，并声明“仅作连续性参考”及兼容的新构图边界；若尚未提供，执行与Direct相同的主动截图请求与草案暂停规则。
+3. `Motivated Discontinuity / No Formal Tail Reference`：剧情连续但画面独立重建，或跨场景、切世界、时间跳跃、构图无需连续及其他已确认叙事断点，标记`Tail Frame Required = NO`。不得要求用户截图；上一尾帧不列入【参考资产】，也不作为当前Clip生成输入，只在编译前用于核对人物身份、服装、道具后果、情绪与整体视觉连续性。【首帧参考】声明“上一尾帧不作正式参考资产，仅作连续性核对”，写明主分类、断点与依据当前新场景Confirmed Asset / Scene初始状态重建的原因。
 
 无法唯一判定时使用`Unresolved Handoff`并返回上游成对复核，不得把上一尾帧默认塞入【参考资产】。
 
@@ -172,9 +172,9 @@ Voice/Audio Reference不得导致Template中的任何无条件字段被删除；
 
 【首帧参考】是当前Clip对上一Clip尾帧的承接合同，不是泛化的开场画面描述，也不是任意参考图清单。
 
-G02及以后必须依据Previous-Clip Continuity Decision明确选择“直接继承”“仅作连续性参考”或“跨场景不作正式参考资产、仅作连续性核对”。G01没有上一Clip时，明确写“首段，无上一Clip尾帧”，并从已确认Scene初始状态、开场资产或合法首帧建立。
+G02及以后必须依据Previous-Clip Continuity Decision明确选择“直接继承”“仅作连续性参考”或“不作正式参考资产、文字核对/重建”，并在同一内容中标记`Tail Frame Required = YES / NO`。G01没有上一Clip时，明确写“首段，无上一Clip尾帧；Tail Frame Required = NO”，并从已确认Scene初始状态、开场资产或合法首帧建立。
 
-无论采用哪种模式，【首帧参考】都必须把边界落实为可执行首帧：人物姿态、位置与左右关系、身体朝向与视线、距离、摄影机起始位置与轴线侧、景别、主体构图与前中后景、环境、天气、光线、关键道具状态、动作起始阶段和情绪状态。Direct模式不得重新摆位或重播动作；Reference-Only模式必须说明有动机的新机位/景别/视角/构图及与上一尾帧兼容的状态；无实际尾帧图时必须明确“不虚构参考资产”并从文字End State与Canonical基础资产承接；跨场景模式不得把旧场景空间、构图或光线带入新场景。
+无论采用哪种模式，【首帧参考】都必须把边界落实为可执行首帧：人物姿态、位置与左右关系、身体朝向与视线、人物间距离、摄影机起始位置与轴线侧、景别、主体构图与前中后景、环境、天气、光线、关键道具状态、动作起始阶段和情绪状态。Direct模式不得重新摆位或重播动作；Reference-Only模式必须说明有动机的新机位/景别/视角/构图及与上一尾帧兼容的状态。`Tail Frame Required = YES`但尾帧尚未上传时必须主动请求用户截图，草案明确“REF-TAIL-XX｜CLIP-XX尾帧参考：待用户提供/待上传”，不得把文字End State冒充最终可执行起镜依据；`NO`时可从文字End State与Canonical基础资产承接或重建。跨场景模式不得把旧场景空间、构图或光线带入新场景。
 
 ## End Frame Constraint Rule
 
@@ -194,7 +194,7 @@ G02及以后必须依据Previous-Clip Continuity Decision明确选择“直接�
 
 每个Clip必须形成：
 
-`上一Clip尾帧 → 当前Clip参考资产（有实际尾帧图时）/文字End State（无图时） → 当前Clip首帧参考 → 当前Clip生成 → 当前Clip尾帧限制 → 下一Clip尾帧承接`
+`上一Clip生成完成 → 判断是否需要严格承接 → 若需要则请求用户截取尾帧 → 上传并命名REF-TAIL → 加入当前Clip参考资产 → 首帧明确引用 → 当前Clip生成 → 当前Clip尾帧限制 → 下一Clip承接`
 
 当前Clip的首帧、逐镜“起始状态”、逐镜“镜头结尾状态”和Package【尾帧限制】必须描述同一条可复算状态链。禁止首帧后瞬间跳位，禁止无过程换手/换向/换场，禁止尾帧与下一Clip首帧承接判定互相矛盾。
 
@@ -205,8 +205,8 @@ Template Mapping后、交付前必须逐Package检查：
 - Markdown Clip标题、`时长：`、`画幅：`、`参考资产：`、`首帧参考：`、`尾帧限制：`是否完整，且后三个前置字段严格位于`主风格：`之前
 - 【参考资产】是否逐项引用实际Canonical Asset并写明用途/锁定约束，且没有被后续临时文字覆盖
 - 是否完成Reference Budget Check：当前Clip无关项已删除、重复项已去除、必需连续性帧已计入、最终图片数≤9；只在超限风险触发后整合同类非角色信息；没有虚构总图/空间关系图/动作关系图；每个核心角色仍有独立外貌基准
-- G02及以后是否已先完成空间/动作连续性与实际尾帧可用性判定，再决定上一`REF-TAIL-XX｜CLIP-XX尾帧参考`是否正式进入【参考资产】；无实际尾帧图时是否没有虚构资产
-- 【首帧参考】是否明确Direct、Reference-Only、视觉连续但无实际尾帧图的文字承接或跨场景No Formal Tail Reference；使用实际尾帧时是否包含固定承接句；是否具备人物姿态/位置/朝向/距离、摄影机、景别、构图、环境/天气、道具、动作、光线与情绪状态
+- G02及以后是否先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`，再检查实际尾帧可用性；`YES`无图时是否主动请求用户截图、标记“待用户提供/待上传”、只输出草案且没有虚构资产；`NO`时是否未要求截图
+- 【首帧参考】是否明确Direct、Reference-Only、非严格文字承接或跨场景No Formal Tail Reference；`YES`使用实际尾帧时是否包含固定承接句；是否具备人物姿态/位置/朝向/距离、摄影机、景别、构图、环境/天气、道具、动作、光线与情绪状态
 - 【尾帧限制】是否定义当前Clip新的结束状态，包含人物/摄影机/道具/环境最终状态，稳定可冻结，并禁止最后1秒开启新复杂动作；只有实际生成、提取并确认后才登记当前`REF-TAIL-XX｜CLIP-XX尾帧参考`
 - Previous Clip End State与Next Clip First Frame Reference是否形成合法连续链或明确断点
 
@@ -324,7 +324,7 @@ Clip Production Plan用于：
 读取、描述或引用Storyboard图片、线稿、分镜板、漫画格、接触表、拼图或任何多画面材料。
 
 
-【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference与合法首尾帧；上一Clip尾帧只有在Direct或Reference-Only判定成立，并且实际尾帧图存在、可访问且已确认时，才以`REF-TAIL-XX｜CLIP-XX尾帧参考`正式引用。无实际尾帧图时不得虚构，只在【首帧参考】与首镜“起始状态”文字承接；跨场景时通常不引用。不得使用Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
+【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference与合法首尾帧；上一Clip尾帧需求先由`Tail Frame Required = YES / NO`决定。`YES`且实际尾帧图存在、可访问、已确认时，才以`REF-TAIL-XX｜CLIP-XX尾帧参考`正式引用；未提供时不得虚构，主动请求用户截图并把草案标记为“待用户提供/待上传”，最终可执行版暂停。`NO`不要求截图，可在【首帧参考】与首镜“起始状态”文字承接或重建。不得使用Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
 
 
 ---
@@ -1122,7 +1122,7 @@ Clip Movement Plan Hard Gate：
 
 在分析镜头目的、运行Knowledge Reflection或撰写任何最终Prompt句子前，逐Clip读取STATE-07 Preflight记录，并按实际资产、实际首尾帧与Confirmed Clip Production Plan重跑`knowledge/clip_preflight_check.md`最终版：
 
-1. **Continuity Classification**：三选一锁定`视觉连续 / 剧情连续 / 主动切场或切世界`。视觉连续映射Direct / Reference-Only后必须再核验实际尾帧图；存在、可访问且已确认时正式引用，不存在时保持连续性意图但只作文字承接，禁止虚构资产。剧情连续或主动切场必须No Formal Tail Reference，从当前Scene / World-State / Start Boundary重建。
+1. **Continuity Classification / Tail Frame Requirement**：三选一锁定`视觉连续 / 剧情连续 / 主动切场或切世界`，并先按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`再核验实际尾帧图：存在、可访问且已确认时正式引用；未提供时主动请求用户截图、标记“待用户提供/待上传”并暂停最终可执行版，禁止虚构资产。`NO`不要求截图，从文字End State或当前Scene / World-State / Start Boundary承接或重建。
 2. **World-State Check**：逐分镜确认现实、幻想、耳中玉境或其他已确认层，以及Pre/Post Transition阶段。删除未出场、未使用及当前阶段不适用资产。完全在耳中玉境的Clip不得引用现实标准耳勺；只有转换Clip可按阶段使用现实与武器化两种状态。
 3. **Character Count Lock**：逐分镜核对`角色 × 精确数量`。唯一角色必须在正向Prompt目标中明确唯一一只/名、前中后景无第二个同类，并准备复制、分身、镜像、背景第二只/名、相似替身的反向限制。
 4. **Spatial Composition Lock**：追逐/战斗/对峙/多人镜头逐项核对前后景、左右、朝向、运动轴、摄影机轴线侧、正脸许可与同景深许可。追逐默认后追前逃，禁止双方并排正对镜头、海报式合影和群像站桩。
@@ -2635,7 +2635,7 @@ G03开始：
 - 连续继承是否保持人物位置、左右关系、朝向、视线、动作阶段、情绪、道具、环境、摄影机与持续声音
 - 场景/时间/剪辑断点是否只改变已获剧情授权的状态
 - 是否存在为衔接而新增剧情或提前执行下一镜动作
-- Continuous Handoff时，是否已依据边界与实际尾帧可用性自动选择：把可用的前一段`REF-TAIL-XX｜CLIP-XX尾帧参考`直接作为后一段起始帧，或仅作为第一顺位连续性参考并重建兼容边界；无实际尾帧图时只用文字End State承接且未虚构资产
+- Continuous Handoff时，是否先依据当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`；`YES`且尾帧可用时把前一段`REF-TAIL-XX｜CLIP-XX尾帧参考`直接作为后一段起始帧或第一顺位连续性参考，未提供时主动请求用户截图、草案标记待上传并暂停最终可执行版；`NO`时才可只用文字End State承接或重建
 - Motivated Discontinuity时，后一G段是否明确不继承前一尾帧、说明重建原因并只保留已确认锚点
 
 
@@ -2692,9 +2692,9 @@ Coverage遗漏返回Sequence Planning或Shot Design，不在STATE-08临时创造
 - 每个Clip区块重复完整全局锁定字段，并拥有自己的前置`首帧参考：`、`尾帧限制：`与末尾`反向提示词：`
 - 禁止跨Clip合并、遗漏、重排或重复分镜
 - 同一Clip内非末分镜通过“同一Clip连续生成”逐项继承；末分镜负责跨Clip衔接与尾帧
-- Direct Start-Frame Handoff的G02及以后，先确认同场景/同动作连续并核验实际尾帧图。可用时把上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入【参考资产】，在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`并从该帧逐项继续；不可用时不列资产，只以文字End State承接
-- Reference-Only Handoff的G02及以后，实际尾帧图可用时把上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入【参考资产】，在【首帧参考】写同一固定承接句后声明仅作连续性参考，并说明有动机的机位/景别/视角/构图变化与兼容边界；不可用时不虚构资产，只作文字承接
-- Motivated Discontinuity不伪造尾帧连续；跨场景时通常不把上一尾帧列入【参考资产】，在【首帧参考】明确“上一尾帧不作正式参考资产，仅作人物和视觉连续性核对”、重建原因与保留锚点
+- Direct Start-Frame Handoff的G02及以后标记`Tail Frame Required = YES`。可用时把上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入【参考资产】，在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`并从该帧逐项继续；未提供时主动请求用户截图，草案标记“待用户提供/待上传”，最终可执行版暂停
+- Reference-Only Handoff的G02及以后如仍需上一尾帧锁定人物/空间状态，同样标记`Tail Frame Required = YES`；可用时正式列入【参考资产】并写固定承接句后声明仅作连续性参考，未提供时执行同一主动请求与暂停规则
+- Motivated Discontinuity、明显时间跳跃或构图无需连续标记`Tail Frame Required = NO`，不要求用户截图；不把上一尾帧列入【参考资产】，在【首帧参考】明确文字核对/重建原因与保留锚点
 
 默认交付模式是Single-Clip Checkpoint：多Clip项目本轮只输出当前待处理的一个Clip及其G段，完成该Package全部章节后停止，等待用户审核、修改或确认。用户只说“下一个”“下一步”或“继续”时，只推进并输出下一个尚未交付Clip，不得倾倒剩余全部Clip；完整视频提示词是项目最终目标，不是本轮批量交付授权。
 
@@ -2743,11 +2743,11 @@ Template需要的数据。
 
 已通过的Clip Preflight语义副本：连续性三选一主分类；逐分镜World-State；角色精确数量与唯一性；追逐/战斗/多人空间构图；关键道具形态/尺寸/持有/悬浮/转换状态；适用转场五要素。该副本只用于把语义映射到现有字段，不成为新栏目。
 
-`参考资产：`清单：显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference与合法首尾帧，并逐项写明用途和锁定约束；已确认资产不得被临时文字描述覆盖。上一Clip尾帧只有在Previous-Clip Continuity Decision判定为Direct或Reference-Only且实际尾帧图存在、可访问、已确认时，才以`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入；跨场景或无实际尾帧图时不列入，后者只用文字End State承接。
+`参考资产：`清单：显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference与合法首尾帧，并逐项写明用途和锁定约束；已确认资产不得被临时文字描述覆盖。上一Clip尾帧先由Previous-Clip Continuity Decision中的`Tail Frame Required = YES / NO`决定需求；`YES`且实际尾帧图存在、可访问、已确认时，以`REF-TAIL-XX｜CLIP-XX尾帧参考`正式列入；未提供时不列入真实清单，主动请求用户截图并在草案标记“待用户提供/待上传”；`NO`不要求截图且不列入旧尾帧。
 
-在序列化该清单前，先按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；只有视觉连续的Direct / Reference-Only且实际尾帧图存在、可访问、已确认时才加入上一尾帧，无图时只作文字承接；剧情连续或主动切场 / 切世界不得加入。再按`knowledge/reference_budget.md`以实际图片文件/帧复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增上一尾帧时至少释放1位。最终只传递≤9张真实存在且已确认的图片参考；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
+在序列化该清单前，先按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；`Tail Frame Required = YES`时无论尾帧是否已上传都预留1个Projected位，只有实际尾帧图存在、可访问、已确认时才加入最终真实清单，未提供时不得虚构；`NO`不预留旧尾帧。再按`knowledge/reference_budget.md`复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增或待上传上一尾帧时按10计算并至少释放1位。最终只传递≤9张真实存在且已确认的图片参考；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
 
-`首帧参考：`写明上一Clip尾帧的引用判定与当前Clip可执行首帧。Direct与Reference-Only在实际尾帧图可用时必须引用对应`REF-TAIL-XX｜CLIP-XX尾帧参考`并逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`；无实际尾帧图时明确“不虚构参考资产”，只用文字End State与Canonical基础资产承接；跨场景明确上一尾帧不作正式参考资产、仅作连续性核对，并从新场景Confirmed Asset / Scene初始状态重建。无论哪种模式都逐项描述人物姿态、位置、朝向、视线、距离、摄影机起始位置、景别、主体构图、环境、天气、道具、动作起始状态、光线与情绪状态。
+`首帧参考：`写明上一Clip尾帧的引用判定、`Tail Frame Required = YES / NO`与当前Clip可执行首帧。`YES`且实际尾帧图可用时必须引用对应`REF-TAIL-XX｜CLIP-XX尾帧参考`并逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`；未提供时草案明确“REF-TAIL-XX｜CLIP-XX尾帧参考：待用户提供/待上传”，不得形成最终可执行版。`NO`时用文字End State与Canonical基础资产承接，或从新场景Confirmed Asset / Scene初始状态重建。无论哪种模式都逐项描述人物姿态、位置、朝向、视线、人物间距离、摄影机起始位置、景别、主体构图、环境、天气、道具、动作起始状态、光线与情绪状态。
 
 `尾帧限制：`在分镜之前前置锁定当前Clip新的最终交付状态，逐项描述人物最终位置/动作/视线/情绪、摄影机最终状态、道具和环境最终状态，以及下一Clip预计如何使用；必须可冻结、可继承，最后1秒不得开启新复杂动作。实际生成、提取并确认后才按当前Clip编号登记为新的`REF-TAIL-XX｜CLIP-XX尾帧参考`；不得沿用上一Clip尾帧名。
 
@@ -2787,7 +2787,7 @@ Template需要的数据。
 
 叙事性场景切换时，明确判定上一尾帧属于“实体首帧继承”（Direct Start-Frame Handoff）还是“状态基准参考”（Reference-Only Handoff）；若不继承则说明已确认断点、重建原因与保留锚点。
 
-当前段的新尾帧结束状态，以及实际生成、提取并确认后的资产名`REF-TAIL-XX｜CLIP-XX尾帧参考`；自动判定下一段用途为直接起始帧、仅连续性参考、无实际尾帧图时文字承接、不作正式参考资产仅作连续性核对（跨场景原因），或最终收束。
+当前段的新尾帧结束状态，以及实际生成、提取并确认后的资产名`REF-TAIL-XX｜CLIP-XX尾帧参考`；按下一Clip是否严格视觉承接标记`Tail Frame Required = YES / NO`，再记录实际用途为直接起始帧、仅连续性参考、待用户提供/待上传、非严格文字承接、不作正式参考资产仅作连续性核对（跨场景原因），或最终收束。
 
 当前段独立`反向提示词：`；默认首个非空内容行固定逐字为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”。只有用户显式要求由Seedance为当前Clip生成背景音乐时才可省略，且不得把例外扩展到其他Clip。
 
@@ -3114,7 +3114,7 @@ STATE-08。
 
 是否已按`knowledge/clip_preflight_check.md`执行STATE-08最终版并为PASS：
 
-- Continuity Classification是否在视觉连续、剧情连续、主动切场/切世界中三选一；视觉连续是否先核验实际尾帧图，可用时正式引用、无图时只作文字承接且未虚构资产；剧情连续或主动切场是否没有机械引用。
+- Continuity Classification是否在视觉连续、剧情连续、主动切场/切世界中三选一；是否先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`、再核验实际尾帧图；`YES`无图时是否主动请求用户截图、草案标记“待用户提供/待上传”且最终可执行版暂停；`NO`时是否未要求截图并采用文字承接或重建。
 - 每个分镜是否明确World-State；参考资产是否只含当前阶段实际存在/出场/使用项；完全位于耳中玉境等转换后世界的Clip是否排除现实阶段环境/道具。
 - 每个分镜是否锁定角色精确数量；唯一角色是否在正向字段明确唯一一只/名和前中后景无第二个同类，并在反向提示词禁止复制、分身、镜像重复、背景第二个与相似替身。
 - 追逐/战斗/对峙/多人镜头是否锁定前后景、左右、朝向、关系轴、运动方向、正脸许可与同景深许可；追逐是否默认后追前逃并禁止双方并排正对镜头、海报式合影和群像站桩。
@@ -3128,7 +3128,7 @@ STATE-08。
 
 ## First-Frame Check
 
-是否每个分镜的“起始状态”明确首帧来源或首帧要求。Continuous Handoff是否从上一分镜“镜头结尾状态”、实际可用的上一Clip`REF-TAIL-XX｜CLIP-XX尾帧参考`或无图时的文字End State继续，且没有重新初始化人物站位、动作阶段、环境、道具、摄影机边界或轴线；是否不存在虚构尾帧资产。
+是否每个分镜的“起始状态”明确首帧来源或首帧要求。`Tail Frame Required = YES`时是否从实际可用的上一Clip`REF-TAIL-XX｜CLIP-XX尾帧参考`继续，未上传时是否仅形成待用户提供/待上传草案并暂停最终可执行版；`NO`时是否从文字End State、当前Scene或合法新首帧继续；是否没有重新初始化人物站位、动作阶段、环境、道具、摄影机边界或轴线，且不存在虚构尾帧资产。
 
 ---
 
@@ -3283,7 +3283,7 @@ Reference Override分支是否只在台词层保留“轻声说、无奈地说�
 
 每个Clip区块均在`主风格：`之前完整输出`首帧参考：`与`尾帧限制：`，无条件输出`音色特征：`，并在末尾输出`反向提示词：`；`尾帧限制：`定义当前Clip新的结束状态，实际生成、提取并确认后才登记为对应`REF-TAIL-XX｜CLIP-XX尾帧参考`。
 
-Continuous Handoff的后一Clip先判定Direct或Reference-Only，再核验实际尾帧图。可用时在`参考资产：`、`首帧参考：`和首镜“起始状态”中以统一`REF-TAIL`名称和固定承接句明确引用；不可用时不得虚构，只在`首帧参考：`和首镜“起始状态”中用文字承接。跨场景Motivated Discontinuity不把上一尾帧列为正式参考资产，只用于人物/视觉连续性核对，并明确重建原因。
+Continuous Handoff的后一Clip先按当前Start Requirement标记`Tail Frame Required = YES / NO`，再核验实际尾帧图。`YES`且可用时在`参考资产：`、`首帧参考：`和首镜“起始状态”中以统一`REF-TAIL`名称和固定承接句明确引用；未提供时主动请求用户截图、草案标记“待用户提供/待上传”且暂停最终可执行版。`NO`时不要求截图，可在`首帧参考：`和首镜“起始状态”中文字承接或重建。跨场景Motivated Discontinuity不把上一尾帧列为正式参考资产，只用于必要连续性核对，并明确重建原因。
 
 已知相邻镜头只使用一种主要转场技术，拥有可验证Outgoing Anchor、Cut Point、Incoming Anchor与Direct Cut降级；普通运镜未被误当转场。
 

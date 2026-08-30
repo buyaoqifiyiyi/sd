@@ -70,8 +70,8 @@
 
 内部先确定 `Outgoing Anchor → Cut Point → Incoming Anchor`，再进行以下字段投影：
 
-- **上一G段前置【尾帧限制】**：定义可复用出镜状态；实际生成、提取并确认后保存为`REF-TAIL-XX｜CLIP-XX尾帧参考`。下一Clip先判断空间/动作连续性与资产实际可用性，再决定是否正式引用。
-- **下一G段【参考资产】**：Continuous Handoff且实际尾帧图可用时第一顺位引用上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`；无实际尾帧图时不得虚构，只以文字End State承接；Motivated Discontinuity明确不作为连续首帧参考。
+- **上一G段前置【尾帧限制】**：定义可复用出镜状态；实际生成、提取并确认后保存为`REF-TAIL-XX｜CLIP-XX尾帧参考`。下一Clip先按Start Requirement是否需要严格视觉承接标记`Tail Frame Required = YES / NO`，再检查资产实际可用性。
+- **下一G段【参考资产】**：`YES`且实际尾帧图可用时第一顺位引用上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`；未提供时不得虚构，主动请求用户截图，草案标记“待用户提供/待上传”且暂停最终可执行版；`NO`不要求截图，可文字End State承接或重建；Motivated Discontinuity明确不作为连续首帧参考。
 - **镜头结尾状态**：写出出镜锚点、动作阶段、遮挡/焦点/光态、同期声尾部和稳定窗口。
 - **与下一镜衔接**：写出边界类型、主要转场技术、切点、匹配锚点、继承/重建状态与禁止提前动作。
 - **下一镜起始状态**：从入镜锚点开始，不重复已完成动作。

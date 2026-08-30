@@ -7,9 +7,9 @@ description: AI影视虚拟制片生产系统，用于剧本改编与分析、�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.08.30-r1
+Skill Version: 2026.08.30-r2
 
-Build ID: sd-film-2026.08.30-r1
+Build ID: sd-film-2026.08.30-r2
 
 每次正式修改必须同步更新这两个字段：同日递增`rN`，跨日使用新的`YYYY.MM.DD-r1`。它们是版本唯一真源；`config.md`、Workflow和Project State不得维护竞争副本。
 

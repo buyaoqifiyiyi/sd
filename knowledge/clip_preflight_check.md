@@ -17,7 +17,7 @@
 
 以下三条先于Reference Budget、Prompt润色与模型适配执行：
 
-1. **视觉连续 ≠ 剧情连续，连续性意图 ≠ 资产已经存在。** 先分类，再检查上一Clip是否有实际可用的最终尾帧图、定格图或经确认截图。`视觉连续`且实际尾帧可用时强制正式引用；没有实际尾帧图时不得虚构资产，只以文字承接End State。`剧情连续`或`主动切场 / 切世界`不得机械引用。
+1. **视觉连续 ≠ 剧情连续，尾帧需求 ≠ 尾帧当前可用性。** 先分类并根据当前Clip Start Requirement是否需要严格视觉承接，在既有连续性判定中标记`Tail Frame Required = YES / NO`，再检查上一Clip是否已有实际可用的最终尾帧图、定格图或经确认截图。Direct / Reference-Only需要精确继承上一可见状态时必须为`YES`；图片暂缺不能把需求改成`NO`或把最终执行降级为纯文字承接。`剧情连续`、`主动切场 / 切世界`或画面独立重建通常为`NO`。
 2. **参考资产必须先通过当前世界状态检查。** 资产只有在当前分镜所在时空层实际存在、实际出场或正在执行合法状态转换时，才有资格进入候选清单。
 3. **跨世界镜头必须先设计转场，再生成提示词。** 先锁定转场五要素，再写正式视频执行语句；不得用含糊的“金光一闪 / 突然切换”替代过程，除非用户明确要求这种省略。
 
@@ -25,7 +25,7 @@
 
 每个Clip固定按以下顺序执行，不得把Reference Budget提前到世界状态和连续性分类之前：
 
-`Continuity Classification → World-State Check → Character Count Lock → Spatial Composition Lock → Prop State Check → Transition Check（适用时）→ Reference Asset Check / Budget → PASS或Return Route`
+`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Prop State Check → Transition Check（适用时）→ Reference Asset Check / Budget → PASS或Return Route`
 
 - STATE-07执行前置版：检查设计是否可生成，并把结果写入Clip Plan。任何失败先修Clip设计，禁止确认Clip Plan。
 - STATE-08执行最终版：按实际资产、实际首尾帧和最终逐镜文案复核。任何失败不得Template Mapping、不得输出Prompt；先回到对应拥有者做最小必要修正。
@@ -38,7 +38,7 @@
 
 同一连续时间、空间与动作链，当前Clip首帧需要继承上一Clip可见人物、环境、道具、动作阶段或镜头几何。
 
-- 必须检查上一Clip尾帧资产可用性。实际存在、可访问且已确认可用时，必须按`REF-TAIL-XX｜CLIP-XX尾帧参考`正式引用；不存在时不得虚构，只能以文字完整承接上一Clip End State并继续使用Canonical角色、环境与道具资产。
+- 必须先根据当前Clip首帧是否需要严格视觉承接标记`Tail Frame Required = YES / NO`，再检查上一Clip尾帧资产可用性。Direct / Reference-Only需要精确继承可见人物、空间、动作或镜头几何时必须为`YES`。实际尾帧存在、可访问且已确认可用时，按`REF-TAIL-XX｜CLIP-XX尾帧参考`正式引用；尚未提供时不得虚构，STATE-07 / STATE-08必须主动请求用户从上一Clip最终成片中手动截取最终有效尾帧并作为当前Clip参考资产上传，状态标记为“待用户提供/待上传”。提供前可形成草案，但不得形成最终可执行版Prompt。
 - 构图可直接起步时使用`Direct Start-Frame Handoff`。
 - 已确认的新机位、景别、视角或构图仍依赖上一尾帧锁定人物/空间状态时使用`Reference-Only Handoff`。
 - 当前首帧不得重播已完成动作、无过程换位、换向、换手或换世界。
@@ -51,6 +51,7 @@
 - 只核对仍有效的人物身份、服装、道具后果、情绪或主题锚点。
 - 当前首帧从已确认Scene初始状态、当前世界资产与当前Shot Start Boundary独立重建。
 - 若实际需要上一尾帧锁定画面几何，必须把分类改为`视觉连续`，不得一边声称剧情连续、一边机械引用尾帧。
+- 当前Clip不要求严格视觉承接时标记`Tail Frame Required = NO`，不得要求用户截图；可仅以文字状态核对或建立新的首帧。
 
 ### 3. 主动切场 / 切世界 / Motivated Scene-or-World Change
 
@@ -89,7 +90,7 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 
 1. 当前Clip每个出场核心角色优先保留各自独立三视图/角色锁定图。
 2. 删除未出场角色、未使用环境、未使用道具、未使用动作图与当前World-State不适用的资产。
-3. 去重后，仅在`视觉连续`的Direct / Reference-Only分类下核验上一Clip尾帧：实际存在、可访问且已确认时以`REF-TAIL-XX｜CLIP-XX尾帧参考`加入；不存在时只记录文字承接，不得创建名称占位、伪造路径或计入已提交图片位。`剧情连续`或`主动切场 / 切世界`不得预留该尾帧图片位。
+3. 去重后，读取同一连续性判定中的`Tail Frame Required`：`YES`时无论尾帧当前是否已上传都预留1个Projected连续性图片位；实际存在、可访问且已确认时以`REF-TAIL-XX｜CLIP-XX尾帧参考`加入，未提供时只记录“待用户提供/待上传”并主动请求用户截图，不得创建名称占位、伪造路径、计入已提交图片位或进入最终真实清单。`NO`不得预留旧尾帧图片位，可文字承接或重建。
 4. 按既有Reference Budget阈值计算Projected Final Count，最终必须`≤9`。
 5. 只有信息过多、接近或超过参考位上限时，才整合环境多视角、道具组、空间/动作/使用关系等非角色信息；不得默认整合核心角色。
 6. 不存在、未确认或不能完整覆盖零散信息的“总图”不得虚构进入清单。
@@ -166,7 +167,8 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 | C. 剧情规定小鬼唯一1只 | 正向字段明确“始终只有唯一一只小鬼”，前/中/背景无第二只；反向提示词禁止复制、分身、镜像重复、背景第二只和相似替身 |
 | D. 吴御史追逐小鬼 | 默认后追前逃；小鬼在前方更深景别逃跑，吴御史在后方追击；禁止双方并排正对镜头与海报式合影 |
 | E. 现实→耳中玉境 | 正式Prompt前必须完整定义起点状态、转换媒介、运动方向/过程、终点状态与转场后首个稳定构图；缺一即FAIL |
-| F. 视觉连续但无实际尾帧图 | 保持Direct / Reference-Only连续性意图；`参考资产`不列虚构尾帧，`首帧参考`用文字承接上一Clip End State并依靠Canonical基础资产维持一致性 |
+| F. 严格视觉连续但无实际尾帧图 | `Tail Frame Required = YES`；主动提示用户从上一Clip最终成片手动截取最终有效尾帧并上传；`参考资产`不列虚构尾帧，草案明确标记“待用户提供/待上传”，最终可执行版Prompt暂停 |
+| G. 当前Clip不需要严格视觉承接 | `Tail Frame Required = NO`；不要求截图；按边界选择文字状态承接或从当前Scene / World-State / Start Boundary建立新首帧 |
 
 ## Validator Invariants
 
@@ -174,4 +176,4 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 - `templates/20_clip_plan.md`具有逐Clip Preflight记录与PASS / Return Route。
 - `templates/10_video_prompt.md`不新增Preflight字段，只在既有字段内容合同中承载世界状态、数量、空间、转场与道具语义。
 - Reference Budget在Continuity Classification与World-State过滤之后执行。
-- 六个Acceptance Scenarios与Three Global High-Priority Rules可被静态检索。
+- 七个Acceptance Scenarios与Three Global High-Priority Rules可被静态检索。

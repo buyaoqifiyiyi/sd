@@ -691,6 +691,44 @@ REV-0001
             path.write_text(f"{global_text}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
 
+    def test_state08_tail_required_yes_with_confirmed_asset_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            reference = (
+                "CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。\n"
+                "REF-TAIL-001｜CLIP-001尾帧参考；用途：直接承接上一Clip最终有效尾帧；"
+                "锁定人物姿态、位置、朝向、距离、构图、机位、环境、光线、天气、道具与情绪。"
+            )
+            first_frame = (
+                "Tail Frame Required = YES；Direct Start-Frame Handoff；"
+                "以 REF-TAIL-001｜CLIP-001尾帧参考 为直接承接依据起镜。"
+                "人物位于画面左侧、身体朝右并看向前方；摄影机从轴线同侧低机位起始；"
+                "中景，主体保持左侧构图与清楚前中后景；环境、天气、道具、动作、光线与情绪逐项继承。"
+            )
+            global_text = make_state08_global_sections(
+                2, 2, "2", "10", reference=reference, first_frame=first_frame
+            )
+            fields = make_shot_fields(
+                start_state="第一帧来源：直接继承REF-TAIL-001｜CLIP-001尾帧参考的人物、空间、道具与轴线。"
+            )
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜2\n{fields}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
+    def test_state08_tail_required_yes_pending_upload_is_rejected_as_final(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            first_frame = (
+                "Tail Frame Required = YES；Direct Start-Frame Handoff；"
+                "REF-TAIL-001｜CLIP-001尾帧参考：待用户提供/待上传。"
+                "人物位于画面左侧、身体朝右并保持上一Clip文字End State。"
+            )
+            global_text = make_state08_global_sections(2, 2, "2", "10", first_frame=first_frame)
+            fields = make_shot_fields(start_state="第一帧来源：等待上一Clip最终有效尾帧上传后确定。")
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜2\n{fields}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
+
     def test_state08_multiple_packages_require_explicit_batch_override(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"

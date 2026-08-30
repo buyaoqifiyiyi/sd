@@ -15,7 +15,7 @@
 
 | Clip ID | 包含 Shot（原顺序） | 目标时长 | 生成方式 | 组织依据 | 起始状态 | 结尾状态/尾帧 | 下一Clip连接 |
 |---|---|---:|---|---|---|---|---|
-| CLIP-001 | SHOT-001 / SHOT-001 + SHOT-002 | 10秒 | 单Shot Clip / 多Shot单次连续生成 | 场景、时间、动作、摄影机、空间、道具、复杂度与时长判断 |  | 定义新结束状态；实际生成并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考 | 直接起始帧继承 / 仅连续性参考 / 文字承接（无实际尾帧图） / 不继承（原因） |
+| CLIP-001 | SHOT-001 / SHOT-001 + SHOT-002 | 10秒 | 单Shot Clip / 多Shot单次连续生成 | 场景、时间、动作、摄影机、空间、道具、复杂度与时长判断 |  | 定义新结束状态；实际生成并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考 | 严格承接并引用尾帧 / 严格承接、待用户提供尾帧 / 非严格文字承接 / 新首帧重建（原因） |
 
 ## Clip Detail Cards
 
@@ -28,7 +28,7 @@
 - 生成合同：本 Clip 对应一次生成；即使包含多个 Shot，STATE-08 也只输出一条连续 Prompt，不按 Shot 拆分
 - 起始状态：人物、环境、空间、道具、FX、情绪、摄影机及来源边界
 - Clip Preflight Check（STATE-07前置版；必须先于Reference Budget）：
-  - Temporal / Spatial Continuity Classification：视觉连续 / 剧情连续 / 主动切场或切世界（三选一）；判定证据；上一尾帧是否实际存在、可访问且已确认；允许正式引用时的`REF-TAIL-XX｜CLIP-XX尾帧参考`真实引用；无实际尾帧图时的文字承接；首帧重建依据
+  - Temporal / Spatial Continuity Classification：视觉连续 / 剧情连续 / 主动切场或切世界（三选一）；判定证据；在同一判定中标记`Tail Frame Required = YES / NO`及理由（先按当前Clip是否需严格视觉承接判定，再记录上一尾帧是否实际存在、可访问且已确认）；`YES`且未上传时记录主动请求用户手动截取上一Clip最终成片的最终有效尾帧并标记“待用户提供/待上传”；允许正式引用时记录`REF-TAIL-XX｜CLIP-XX尾帧参考`真实引用；`NO`时记录文字承接或首帧重建依据
   - World-State Map（逐分镜）：当前现实 / 幻想 / 耳中玉境 / 其他已确认层；Pre/Post Transition阶段；实际角色、环境、道具、FX；不适用资产删除结果
   - Character Count Lock（逐分镜）：角色身份 × 精确数量；唯一角色的正向唯一性与前/中/背景无第二个同类锁；复制/分身/镜像/背景重复风险
   - Spatial Composition Lock：前后景、左右、朝向、视线、关系轴、摄影机轴线侧、追逃/攻击/视线路线、正脸/侧背/背身许可、同一景深许可；追逐默认后追前逃并禁止并排合影
@@ -60,7 +60,7 @@
   - 原始候选图片资产（逐项写实际资产ID/名称、Active/Confirmed状态、真实文件/受控ID、当前Clip用途、图片位数）：
   - 删除的当前Clip无关项（未出场角色 / 未使用环境 / 未使用道具 / 未使用动作图 / 其他）及理由：
   - 去重结果（重复文件或未增加信息项；不得把不同核心角色图当作重复）：
-  - 连续性图片位（Direct / Reference-Only上一Clip尾帧、当前首帧或其他合法帧；`REF-TAIL-XX｜CLIP-XX尾帧参考`待加入与已加入分别列出；无实际尾帧图时不得计为已加入）：
+  - 连续性图片位（`Tail Frame Required = YES`时无论是否已上传都预留1个Projected位；`REF-TAIL-XX｜CLIP-XX尾帧参考`的“待用户提供/待上传”与“已加入真实资产”分别列出；待上传不得计为已存在或进入最终清单；`NO`不预留旧尾帧）：
   - Projected Final Count（独立候选 + 必需连续性图片位）：
   - 条件判定（≤7不整合 / 8张检查预留且原则上不整合 / 9张确认无额外需求 / >9触发整合）：
   - 非角色整合（仅在触发时；列真实已确认总图、被完整覆盖的零散图与资产证据；未触发写“不整合”）：
@@ -82,7 +82,7 @@
 
 | From | To | Boundary Class | Outgoing Anchor | Stable End Window | Incoming Anchor | Tail-Frame Use Mode | Next Start-Frame Binding | Sound Bridge | Direct-Cut Downgrade |
 |---|---|---|---|---|---|---|---|---|---|
-| CLIP-001 | CLIP-002 | Continuous Handoff / Motivated Discontinuity |  |  |  | Direct / Reference-Only / Not Inherited |  |  |  |
+| CLIP-001 | CLIP-002 | Continuous Handoff / Motivated Discontinuity |  |  |  | Direct / Reference-Only / Not Inherited | Tail Frame Required = YES / NO；已引用 / 待用户提供/待上传 / 文字承接 / 新首帧 |  |  |
 
 ## Knowledge Projection Ledger
 
@@ -100,7 +100,7 @@
 
 | Clip ID | Continuity Classification | Previous Tail Formal Reference | World-State Check | Character Count Lock | Spatial Composition Lock | Prop State Check | Transition Five Elements | Reference Asset Check | Result / Return Route |
 |---|---|---|---|---|---|---|---|---|---|
-| CLIP-001 | 视觉连续 / 剧情连续 / 主动切场或切世界 | Direct / Reference-Only + Actual Tail Available / Text-Only Carryover（无实际尾帧图） / No Formal Tail Reference | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / N/A / Affected Shot | PASS ≤9 / Affected Asset | PASS / Return Route |
+| CLIP-001 | 视觉连续 / 剧情连续 / 主动切场或切世界 | `Tail Frame Required = YES / NO`；Direct / Reference-Only + Actual Tail Available / 待用户提供或待上传 / Text-Only Carryover（仅非严格承接） / No Formal Tail Reference | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / N/A / Affected Shot | PASS ≤9 / Affected Asset | PASS / Return Route |
 
 ## Coverage And Validation
 
@@ -109,7 +109,7 @@
 - 所有多 Shot Clip 是否通过场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查：
 - 短于4秒的 Shot 是否只在兼容的4—15秒 Clip中执行；超过15秒的 Shot 是否已返回 STATE-06 拆分：
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：
-- 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一；视觉连续是否先核验实际尾帧图，可用时统一命名并正式引用、无图时只作文字承接且未虚构资产；剧情连续或主动切场/切世界是否从当前Scene、World-State和Start Boundary重建：
+- 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一；是否先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`、再核验资产可用性；`YES`无图时是否主动请求用户从上一Clip最终成片截取最终有效尾帧并标记“待用户提供/待上传”，仅输出草案且未虚构资产；`NO`时是否未要求截图并以文字承接或从当前Scene、World-State和Start Boundary重建：
 - 是否逐分镜明确World-State，并删除未出场、未使用或当前阶段不适用的角色/环境/道具/FX；完全位于耳中玉境等转换后世界的Clip是否没有现实阶段道具：
 - 是否逐分镜锁定角色精确数量；剧情唯一角色是否在正向设计中明确唯一一只/名、前中后景无第二个同类，并预置复制/分身/镜像/背景重复禁令：
 - 追逐/战斗/对峙/多人镜头是否锁定前后景、朝向、关系轴、运动方向、正脸许可与同景深许可；追逐是否默认后追前逃并禁止双方并排正对镜头、海报式合影和群像站桩：

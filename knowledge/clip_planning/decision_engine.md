@@ -52,14 +52,15 @@
 - Stable End Window
 - Tail-Frame Asset：实际生成、提取并确认后统一为`REF-TAIL-XX｜CLIP-XX尾帧参考`；生成前只记录End State与待取得需求，不得虚构资产
 - Tail-Frame Use Mode：Direct Start-Frame Handoff / Reference-Only Handoff / Not Inherited
+- Tail-Frame Requirement：在同一连续性判定内按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`；先判需求、后查资产
 - Next Clip Incoming Anchor
 - 声音连续锚点（仅对白、环境声、动作声、呼吸、Foley或剧情内声源）
 - Direct Cut 降级方案
 
 Continuous Handoff必须自动选择一种尾帧用途：
 
-1. **Direct Start-Frame Handoff**：下一Clip在人物、空间、道具、动作阶段、光色、构图和摄影机边界上可从同一画面继续时，先核验上一Clip实际尾帧图；可用时将`REF-TAIL-XX｜CLIP-XX尾帧参考`直接作为下一段起始帧，无图时只用文字End State承接且不得虚构资产。
-2. **Reference-Only Handoff**：剧情与状态连续，但下一Clip有正当的景别、机位、视角或构图变化时，实际尾帧图可用则将统一命名的`REF-TAIL`资产作为第一顺位连续性参考，不要求像素级同帧起步；无图时以文字End State与Canonical基础资产重建兼容起始边界。
-3. **Not Inherited**：Motivated Discontinuity必须明确不继承原因，并保留已确认的身份、道具、情绪或主题锚点。
+1. **Direct Start-Frame Handoff**：下一Clip在人物、空间、道具、动作阶段、光色、构图和摄影机边界上必须从同一画面继续时，标记`Tail Frame Required = YES`；可用时将`REF-TAIL-XX｜CLIP-XX尾帧参考`直接作为下一段起始帧，尚未提供时主动请求用户截图并标记“待用户提供/待上传”，最终可执行版暂停。
+2. **Reference-Only Handoff**：剧情与状态连续，下一Clip虽有正当的景别、机位、视角或构图变化，但仍需上一尾帧锁定人物/空间状态时，同样标记`Tail Frame Required = YES`；实际尾帧可用则将统一命名的`REF-TAIL`资产作为第一顺位连续性参考，未提供时执行同一主动请求与暂停规则。
+3. **Not Inherited**：Motivated Discontinuity、明显时间跳跃、构图无需连续或画面独立重建标记`Tail Frame Required = NO`，不要求截图；明确不继承原因，并保留已确认的身份、道具、情绪或主题锚点。
 
 系统必须依据边界自行判定，并把连续性意图与资产可用性分开检查：不得把所有尾帧机械地当作参考，不得把计划中的尾帧冒充实际资产，也不得在实际尾帧可用且可直接续接时省略`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`这一固定指令。

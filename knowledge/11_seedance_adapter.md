@@ -942,7 +942,7 @@ Continuous Handoff：
 
 保留所有仍然有效的身份、位置、方向、动作阶段、情绪、道具、环境、摄影机与持续声音状态。
 
-生成落地时，只有实际提取并确认的上一段稳定结尾才命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`；下一G段以该实际尾帧为第一顺位参考，并从其可见/可听状态开始，不重新初始化。没有实际尾帧图时不得虚构资产，只按文字End State承接。
+生成落地时，先按下一G段是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`时，实际提取并确认的上一段稳定结尾命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，下一G段以该实际尾帧为第一顺位参考，并从其可见/可听状态开始，不重新初始化；尾帧尚未提供时不得虚构资产，必须主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，草案标记“待用户提供/待上传”且暂停最终可执行版。`NO`时不要求截图，可按文字End State承接或重建。
 
 
 Motivated Discontinuity：
@@ -1380,7 +1380,7 @@ Baseline → Stimulus → Attention Shift → Appraisal → Control / Leakage �
 
 Seedance Prompt应该优先保持：
 
-Continuous Handoff时实际存在、可访问且已确认的上一生成段`REF-TAIL-XX｜CLIP-XX尾帧参考`，用于锁定当前段起始边界；无实际尾帧图时只用文字End State承接。
+先按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`时，实际存在、可访问且已确认的上一生成段`REF-TAIL-XX｜CLIP-XX尾帧参考`用于锁定当前段起始边界；尚未提供时主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，草案标记“待用户提供/待上传”，不得形成最终可执行版Prompt。`NO`时不要求截图，可用文字End State承接或重建首帧。
 
 Character Asset。
 

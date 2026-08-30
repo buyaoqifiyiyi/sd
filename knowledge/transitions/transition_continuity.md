@@ -42,7 +42,7 @@
 
 ## STATE-08 Projection
 
-相邻正式SHOT先由Confirmed Clip Production Plan判定边界：同一Clip内使用逐镜End→Start状态链连续生成；跨Clip边界若有实际生成、可访问且已确认的最终交付帧，使用统一命名`REF-TAIL-XX｜CLIP-XX尾帧参考`传给下一段；若没有实际尾帧图，只以文字End State承接且不得虚构资产；断点边界使用明确的不继承声明。不得跨Clip塞入Shot来回避跨段连续性。
+相邻正式SHOT先由Confirmed Clip Production Plan判定边界：同一Clip内使用逐镜End→Start状态链连续生成；跨Clip先按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`，再检查最终交付帧。`YES`且实际生成、可访问、已确认时，使用统一命名`REF-TAIL-XX｜CLIP-XX尾帧参考`传给下一段；未提供时主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，草案标记“待用户提供/待上传”且暂停最终可执行版。`NO`不要求截图，可文字承接或重建；断点边界使用明确的不继承声明。不得跨Clip塞入Shot来回避跨段连续性。
 
 ### 镜头结尾状态
 
@@ -56,4 +56,4 @@
 
 直接读取入镜锚点。Continuous Handoff 中不得重新初始化人物、道具或动作；Motivated Discontinuity 中只重建已确认的断点状态；Unresolved Handoff 中不得生成。
 
-Continuous Handoff的下一G段在实际尾帧图可用时，必须在【参考资产】写入上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`，在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`，且“起始状态”与该帧一致；无实际尾帧图时【参考资产】不列该项，只用文字完整承接End State。Motivated Discontinuity则写明不继承该尾帧、重建原因和仍保留的状态锚点。
+Continuous Handoff若当前Clip需要严格视觉承接，标记`Tail Frame Required = YES`；实际尾帧图可用时，必须在【参考资产】写入上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`，在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`，且“起始状态”与该帧一致；未提供时不列入【参考资产】，主动请求用户截图，草案标记“待用户提供/待上传”且不形成最终可执行版。Motivated Discontinuity或非严格承接标记`Tail Frame Required = NO`，不要求截图，写明文字承接/重建原因和仍保留的状态锚点。

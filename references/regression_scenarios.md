@@ -56,7 +56,7 @@ FAIL：把单独“继续 / 下一步 / 好的”当作优化授权或Proposal�
 
 ## R05A Detailed Shot Design To Clip Production
 
-输入包含连续对话、动作接力、场景断点与不同逐镜时长的Confirmed Detailed Shot Design。检查所有正式Shot按原顺序且仅进入一个CLIP-xxx；每个Clip为4—15秒；连续低复杂度Shot可合并，跨时空/资产断点和超过15秒候选被拆分或返回STATE-06；Clip内保留起始状态、连续动作、空间/道具/摄影机连续性与结尾状态，Clip末定义新的尾帧限制，实际生成、提取并确认后登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`；STATE-08按CLIP→G一对一输出一条连续Prompt，即使Clip包含多个Shot也不拆Prompt；任何Storyboard视觉材料均不得进入参考资产。
+输入包含连续对话、动作接力、场景断点与不同逐镜时长的Confirmed Detailed Shot Design。检查所有正式Shot按原顺序且仅进入一个CLIP-xxx；每个Clip为4—15秒；连续低复杂度Shot可合并，跨时空/资产断点和超过15秒候选被拆分或返回STATE-06；Clip内保留起始状态、连续动作、空间/道具/摄影机连续性与结尾状态。跨Clip固定执行`上一Clip生成完成 → 判断是否需要严格承接 → 若需要则请求用户截取尾帧 → 上传并命名REF-TAIL → 加入当前Clip参考资产 → 首帧明确引用 → 当前Clip生成 → 当前Clip尾帧限制 → 下一Clip承接`；STATE-08按CLIP→G一对一输出一条连续Prompt，即使Clip包含多个Shot也不拆Prompt；任何Storyboard视觉材料均不得进入参考资产。
 
 ## R05B Source Script Label Namespace
 
@@ -132,7 +132,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ## R11 Reference Budget / 参考资产预算控制
 
-所有案例先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再把Direct / Reference-Only确定需要且实际存在、可访问、已确认的首尾帧计入Projected Final Count；无实际尾帧图时只作文字承接，不得创建占位。最终`参考资产：`只能列真实存在且已确认的资产/帧，图片总数必须≤9；整合只允许在超限风险触发后作用于非角色信息。
+所有案例先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`时尾帧无论是否已上传都预留1个Projected位，只有实际存在、可访问、已确认后才进入最终真实清单；未上传时必须主动请求用户截图并标记“待用户提供/待上传”，不得创建占位或形成最终可执行版Prompt。最终`参考资产：`只能列真实存在且已确认的资产/帧，图片总数必须≤9；整合只允许在超限风险触发后作用于非角色信息。
 
 ### R11-A Seven Candidates
 
@@ -144,7 +144,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ### R11-C Nine Candidates Plus Previous Tail
 
-当前Clip已有9张候选，Previous-Clip Continuity Decision为Direct或Reference-Only，并且上一实际尾帧图存在、可访问且已确认，必须再加入`REF-TAIL-XX｜CLIP-XX尾帧参考`。PASS：Projected Final Count按10张计算，主动去重/整合同类非角色信息或裁剪低优先项，至少释放1位，保留必需尾帧并最终≤9。FAIL：仍声称9张通过、遗漏必需尾帧、超过9张，或合并核心角色图。若实际尾帧图不存在，PASS必须不创建占位、不计图片位，并在首帧参考中用文字End State承接。
+当前Clip已有9张候选，Previous-Clip Continuity Decision为Direct或Reference-Only且当前首帧需要严格视觉承接，因此`Tail Frame Required = YES`。无论上一实际尾帧图是否已经上传，Projected Final Count均按10张计算并至少释放1位；尾帧存在、可访问且已确认后必须以`REF-TAIL-XX｜CLIP-XX尾帧参考`加入最终清单。若尚未提供，PASS必须主动请求用户从上一Clip最终成片截取最终有效尾帧，标记“待用户提供/待上传”，不创建占位、不计入已提交图片且暂停最终可执行版Prompt。FAIL：因尾帧暂缺把需求改为NO、只做文字最终承接、仍声称9张通过、遗漏必需尾帧、超过9张或合并核心角色图。
 
 ### R11-D Twelve Candidates
 
@@ -190,6 +190,34 @@ FAIL：把Script Status降回Source Material；丢失Confirmed Assets、Active V
 
 ---
 
+## R13 Cross-Clip Tail-Frame Requirement Decision
+
+### R13-A Strict Visual Carryover, Tail Not Yet Uploaded
+
+当前Clip必须从上一Clip尾帧精确继续连续动作、人物姿态/站位/朝向/距离、构图、机位关系、环境、光线、天气、道具与情绪，但系统当前没有尾帧图片。
+
+PASS：先按当前Clip Start Requirement标记`Tail Frame Required = YES`，再检查资产；STATE-07 / STATE-08主动提示用户“请从上一Clip最终成片中手动截取最终有效尾帧，并作为当前Clip参考资产上传”；草案明确`REF-TAIL-XX｜CLIP-XX尾帧参考：待用户提供/待上传`，不把它列为已存在图片资产，不伪造路径或上传状态，不形成最终可执行版Prompt。
+
+FAIL：因为系统当前没有图片而标记NO；直接以文字End State形成最终可执行版；假设`REF-TAIL`已存在；不主动请求用户截图。
+
+### R13-B Strict Visual Carryover, Tail Uploaded
+
+续接R13-A，用户已上传并确认上一Clip最终有效尾帧。
+
+PASS：统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`并加入当前Clip`参考资产：`；`首帧参考：`逐字包含`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`，并锁定姿态、位置、朝向、人物间距离、构图、机位关系、环境、光线、天气、道具与情绪；尾帧仍只作连续性锚点，不覆盖角色/环境/道具Canonical资产；当前Clip`尾帧限制：`定义新的结束状态。
+
+FAIL：上传后未加入参考资产；固定承接句缺失；尾帧覆盖基础资产；沿用上一Clip尾帧名作为当前Clip新尾帧。
+
+### R13-C No Strict Visual Carryover
+
+当前Clip为换场、明显时间跳跃或构图无需连续。
+
+PASS：标记`Tail Frame Required = NO`，不要求用户截图；只核对仍有效的身份、服装、道具后果和情绪，或从当前Scene / World-State / Start Boundary建立新首帧。
+
+FAIL：机械要求截图、把旧尾帧塞入参考资产，或把旧场景空间/构图/光线带入新场景。
+
+---
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -200,3 +228,4 @@ FAIL：把Script Status降回Source Material；丢失Confirmed Assets、Active V
 - R10验证Canonical Character Appearance And Form Lock从Asset、Visual Development、Storyboard/Poster、Shot Design、Clip、Prompt Generation、Final Video到Review的全阶段继承，并覆盖非人角色禁止未授权拟人化。
 - R11-A至R11-E验证条件性整合阈值、9张加必需尾帧的真实计数、12张自动压缩到≤9、实际资产存在性和多核心角色独立图硬门槛。
 - R12-A至R12-C验证旧对话缓存不能覆盖当前安装Skill、旧STATE按当前Artifact / Completion Gate映射，并且Production-Locked Script、Confirmed Assets、Checkpoint、Accepted Artifacts与用户约束在Reload后不丢失。
+- R13-A至R13-C验证尾帧需求先于资产可用性判定、严格承接主动请求截图与草案/最终版边界，以及非严格承接不强制截图。
