@@ -894,7 +894,7 @@ Seedance适配必须把每个镜头理解为：
 
 ## Four-Part Boundary Gate
 
-每个Clip适配前必须同时建立：实际参与约束的显式【参考资产】清单、每个分镜的首帧来源/要求、稳定清楚可继承的尾帧接口，以及与前后Clip的Boundary Class。Continuous Handoff直接从上一尾帧继续，不重新初始化人物、动作、环境、道具、摄影机或轴线；叙事性场景切换必须明确“实体首帧继承”或“状态基准参考”，不继承时写明重建原因与保留锚点。任一项缺失时Adapter不得把数据交给Template。
+每个Clip适配前必须同时建立：实际参与约束的显式【参考资产】清单、每个分镜的首帧来源/要求、稳定清楚可继承的尾帧接口，以及与前后Clip的Boundary Class。跨Clip尾帧使用方式必须在既有Handoff中明确为A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B列`REF-TAIL`并分别标注“同镜头连续承接用途”或“空间/站位/景别参考用途”；C不列`REF-TAIL`并写明Canonical资产、Spatial Blocking与文字重建依据。任一项缺失时Adapter不得把数据交给Template。
 
 
 这四项属于内部执行信息。
@@ -940,16 +940,19 @@ Seedance适配必须把每个镜头理解为：
 
 Continuous Handoff：
 
-保留所有仍然有效的身份、位置、方向、动作阶段、情绪、道具、环境、摄影机与持续声音状态。
+保留所有仍然有效的身份、位置、方向、动作阶段、情绪、道具、环境、摄影机与持续声音状态，并进一步区分A/B：
 
-生成落地时，先按下一G段是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`时，实际提取并确认的上一段稳定结尾命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，下一G段以该实际尾帧为第一顺位参考，并从其可见/可听状态开始，不重新初始化；尾帧尚未提供时不得虚构资产，必须主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，草案标记“待用户提供/待上传”且暂停最终可执行版。`NO`时不要求截图，可按文字End State承接或重建。
+- A【同镜头连续承接 / Direct】：上一Clip最后一个镜头继续，目标接近一镜到底。标记`Tail Frame Required = YES`；【参考资产】列`REF-TAIL-XX｜CLIP-XX尾帧参考（同镜头连续承接用途）`；【首帧参考】使用固定直接承接句，并锁定姿态、位置、朝向、距离、动作阶段、构图、景别、机位、环境、光线、天气、道具、情绪与持续声音。
+- B【新镜头参考型 / Reference-Only】：当前Clip另起新镜头重新构图，但需尾帧保持站位、朝向、人物距离、景别衔接、空间关系、道具状态或起始构图。也标记`Tail Frame Required = YES`；【参考资产】列`REF-TAIL-XX｜CLIP-XX尾帧参考（空间/站位/景别参考用途）`；【首帧参考】明确另起新镜头、保持项和允许变化，禁止使用A固定直接承接句。
+
+A/B尾帧尚未提供时仍必须在【参考资产】列统一名称、对应用途及“待用户提供/待上传、未确认”，并提示用户从上一Clip最终成片截取后在实际生成前添加；不得伪造路径或声称已上传/已确认。该声明占Projected位但不计入已提交图片数，Prompt可以完整编译和交付。
 
 
 Motivated Discontinuity：
 
 对已确认的场景切换、时间跳跃、硬切、蒙太奇、闪回或故意跳切，不生成虚假的连接动作；只明确切点、保留锚点以及下一镜经剧情授权的新起始状态。
 
-下一G段必须明确“不继承REF-TAIL-XX｜CLIP-XX尾帧参考”及重建原因；若资产不存在则只写不继承上一Clip End State，不得虚构资产名，防止模型误把断点当作图生视频连续首帧。
+若当前Clip为C【新镜头且无需尾帧】，标记`Tail Frame Required = NO`，不在【参考资产】或【首帧参考】写`REF-TAIL`，只明确不继承上一Clip画面状态、经确认的断点、Canonical基础资产、Spatial Blocking、文字重建原因与保留锚点，防止模型误把断点当作图生视频连续首帧。
 
 
 Unresolved Handoff：
@@ -1380,7 +1383,7 @@ Baseline → Stimulus → Attention Shift → Appraisal → Control / Leakage �
 
 Seedance Prompt应该优先保持：
 
-先按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`时，实际存在、可访问且已确认的上一生成段`REF-TAIL-XX｜CLIP-XX尾帧参考`用于锁定当前段起始边界；尚未提供时主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，草案标记“待用户提供/待上传”，不得形成最终可执行版Prompt。`NO`时不要求截图，可用文字End State承接或重建首帧。
+先判定A/B/C。A/B标记`Tail Frame Required = YES`并把统一`REF-TAIL`名称、对应用途及真实状态直接列入【参考资产】；尚未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句；B说明另起新镜头重新构图且不使用该句。C标记`NO`，不要求截图、不列`REF-TAIL`，依靠Canonical基础资产、Spatial Blocking与文字End State承接或重建首帧。
 
 Character Asset。
 

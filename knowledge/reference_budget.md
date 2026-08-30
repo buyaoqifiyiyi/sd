@@ -8,18 +8,18 @@
 
 ## Count Scope
 
-预算按单个 Clip 独立计算。候选资产只能来自实际存在、可访问且已经确认可用于当前生成的资产或合法首尾帧，包括适用的 Canonical Character / Environment / Prop / FX References 与 Direct / Reference-Only 所需的首尾帧。
+预算按单个 Clip 独立计算。除A/B所需`REF-TAIL`的受控待补充声明外，候选资产只能来自实际存在、可访问且已经确认可用于当前生成的资产或合法首尾帧，包括适用的 Canonical Character / Environment / Prop / FX References 与 Direct / Reference-Only 所需的首尾帧。该例外只允许声明已判定必需、待用户补入的上一Clip尾帧，不扩展到其他未生成或未确认资产。
 
 - 一个实际提交的图片文件或帧占 1 个参考位。
 - Voice/Audio Reference 不属于图片时，不计入 9 张图片上限，但仍必须按声音规则登记；若目标平台把它转换或上传为图片输入，则按实际图片位计数。
-- 未实际存在、未生成、未确认、Candidate 状态、路径/ID无法核验或仅在文字中设想的“总设定图”“空间关系图”“动作关系图”不得进入候选清单或最终`参考资产：`。
+- 未实际存在、未生成、未确认、Candidate 状态、路径/ID无法核验或仅在文字中设想的“总设定图”“空间关系图”“动作关系图”不得进入候选清单或最终`参考资产：`。唯一例外是A/B已经判定必需的`REF-TAIL`待补充声明；它必须同时写用途与“待用户提供/待上传、未确认”，不得冒充现有图片。
 - 非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前分镜World-State不适用的资产及与当前生成无关的资产必须在计数前删除。完全位于转换后世界的Clip不得保留转换前世界的环境或道具形态；只有当前Clip正在执行已确认状态转换时，转换前后资产才可按各自阶段同时作为候选。
-- 上一Clip尾帧是否为必需连续性图片，只由Preflight中当前Clip是否需要严格视觉承接决定，不由图片当前是否存在决定。`Tail Frame Required = YES`时必须预留1个Projected连续性图片位；实际尾帧图存在、可访问并已确认可用于当前生成后，统一以`REF-TAIL-XX｜CLIP-XX尾帧参考`登记并进入最终真实清单。未提供时只记录“待用户提供/待上传”，不得以名称占位、假路径或文字End State冒充图片，也不得计入已提交图片数。`Tail Frame Required = NO`时不得机械加入或预留上一尾帧。
+- 上一Clip尾帧是否必需由Preflight的A/B/C决定，不由图片当前是否存在决定。A【同镜头连续承接】与B【新镜头参考型】均为`Tail Frame Required = YES`并预留1个Projected连续性图片位；【参考资产】必须直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、对应用途类型与真实状态。未提供时写“待用户提供/待上传、未确认”，不得写假路径、不得冒充已上传/已确认图片，也不得计入已提交图片数；实际存在、可访问并已确认后才进入已提交图片清单。C【新镜头且无需尾帧】为`NO`，不得加入或预留上一尾帧。
 - Storyboard、多格分镜板、线稿、拼图、接触表、Blocking Map与设计表截图继续服从既有禁用规则，不因预算紧张而获得引用资格。
 
 ## Conditional Trigger Thresholds
 
-先按World-State删除不适用资产，再统计当前真实候选数；加入已经由`Tail Frame Required = YES`确定的上一Clip尾帧预留位，以及其他合法连续性图片需求，得到`Projected Final Count`。Projected预留不等于真实资产已存在，最终提交清单仍只列已上传、可访问且确认可用的图片：
+先按World-State删除不适用资产，再统计当前真实候选数；加入已经由A/B确定的上一Clip尾帧预留位，以及其他合法连续性图片需求，得到`Projected Final Count`。Projected预留不等于真实资产已存在。【参考资产】可以包含A/B的待补充`REF-TAIL`声明，但“已提交图片清单”仍只计已上传、可访问且确认可用的图片：
 
 - `Projected Final Count ≤ 7`：不整合，直接保留原始独立资产。
 - `Projected Final Count = 8`：原则上不整合；必须检查是否还需为首帧、上一 Clip 尾帧或临时关键资产预留位置。没有额外需求时直接使用 8 张。
@@ -56,11 +56,11 @@
 2. 列出当前 Clip 候选资产，逐项记录实际资产 ID/名称、Active/Confirmed状态、真实引用文件或受控ID、适用World-State / 转换阶段、用途与图片位数。
 3. 删除非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前世界状态不适用的资产及其他无关项。
 4. 去除同一文件重复引用与不增加信息的重复资产；不得把语义不同的核心角色图误判为重复。
-5. 读取Preflight中的`Tail Frame Required = YES / NO`。`YES`时为上一Clip尾帧预留1个Projected位：实际存在、可访问且已确认的尾帧按`REF-TAIL-XX｜CLIP-XX尾帧参考`加入；未提供时记录“待用户提供/待上传”，主动请求用户从上一Clip最终成片截取最终有效尾帧，不得进入最终图片清单或已提交计数，但仍计入Projected Final Count。`NO`不得加入或预留旧尾帧。统计`Projected Final Count`。
+5. 读取Preflight中的A/B/C与`Tail Frame Required = YES / NO`。A/B为上一Clip尾帧预留1个Projected位，并在【参考资产】直接列出统一`REF-TAIL`名称：A标“同镜头连续承接用途”，B标“空间/站位/景别参考用途”。实际存在、可访问且已确认时记录真实引用并计入已提交图片；未提供时写“待用户提供/待上传、未确认”，主动提示用户截取并添加，不计入已提交图片数但仍计入Projected Final Count。C不得加入或预留旧尾帧。统计`Projected Final Count`。
 6. 若最终需求 `≤ 9`，直接使用独立资产，不执行整合；仅 8/9 张时完成预留与连续性复核。
 7. 若最终需求 `> 9`，只对同类非角色信息执行整合。优先选择已经存在且已确认、能完整覆盖对应零散图的总图；新总图必须先完成资产确认闭环。
 8. 再次计数；仍超限时按优先级从低到高裁剪，记录删除项、理由与由何种文字/已保留资产承接信息。
-9. 最终核对每个核心角色仍有独立外貌基准、所有条目真实存在、均属于当前World-State或合法转换阶段、没有重复占位，且图片总数 `≤ 9`。失败时不得确认 Clip Plan、不得输出 STATE-08 Prompt。
+9. 最终核对每个核心角色仍有独立外貌基准；除明确标注待补充的A/B `REF-TAIL`外，所有条目真实存在且均属于当前World-State或合法转换阶段；没有重复占位；Projected Final Count与实际提交图片数均`≤ 9`。待补充`REF-TAIL`不阻止Prompt编译和交付，但实际提交生成前必须补入。其他失败不得确认 Clip Plan或输出STATE-08 Prompt。
 
 ## Retention Priority
 
@@ -83,10 +83,12 @@ STATE-07 在`templates/20_clip_plan.md`现有 Clip Detail Card 内记录预算�
 - Continuity Classification与逐分镜World-State过滤结果
 - 删除无关项与去重结果
 - `Tail Frame Required = YES / NO`及其判定证据；待用户提供/待上传、已加入的连续性图片位分别记录
+- A/B/C尾帧使用方式；只要出现`REF-TAIL`，是否明确标注“同镜头连续承接用途”或“空间/站位/景别参考用途”
 - 是否触发整合及触发原因
 - 总图替代的零散图及总图真实资产证据
 - 裁剪项与理由
 - 最终参考图清单和总数
+- 待补充`REF-TAIL`声明与已提交图片清单分开计数；不得把“待用户提供/待上传、未确认”写成已上传或已确认
 - 每个核心角色独立图检查
 - `PASS ≤ 9` 或 Return Route
 
@@ -99,5 +101,6 @@ STATE-07 在`templates/20_clip_plan.md`现有 Clip Detail Card 内记录预算�
 | C. 候选9张，另需上一Clip尾帧 | 真实需求10张，主动去重/整合/裁剪并至少释放1位，最终≤9 |
 | D. 候选12张 | 自动删除无关项、去重、整合同类非角色信息，仍超限则按优先级裁剪，最终≤9 |
 | E. 多核心角色场景 | 每个核心角色仍保留各自独立三视图/角色锁定图，不合并角色总表 |
-| F. `Tail Frame Required = YES`但无实际尾帧图 | Projected Final Count预留1位；不创建`REF-TAIL`占位、不计入已提交图片；主动请求用户截图并标记“待用户提供/待上传”；只允许Prompt草案，最终可执行版暂停 |
-| G. `Tail Frame Required = NO` | 不预留上一尾帧图片位，不要求用户截图；按当前边界用文字状态承接或新建首帧 |
+| F. A同镜头连续承接但无实际尾帧图 | Projected Final Count预留1位；【参考资产】直接列`REF-TAIL`、同镜头连续承接用途与“待用户提供/待上传、未确认”；不计入已提交图片；Prompt可交付，实际提交生成前补图 |
+| G. B新镜头参考型但无实际尾帧图 | Projected Final Count预留1位；【参考资产】直接列`REF-TAIL`、空间/站位/景别参考用途与“待用户提供/待上传、未确认”；不计入已提交图片；不得误写Direct |
+| H. C新镜头且无需尾帧 | 不加入或预留上一尾帧图片位，不要求用户截图；依靠Canonical基础资产、Spatial Blocking与文字空间规则建立新首帧 |

@@ -132,7 +132,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ## R11 Reference Budget / 参考资产预算控制
 
-所有案例先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`。`YES`时尾帧无论是否已上传都预留1个Projected位，只有实际存在、可访问、已确认后才进入最终真实清单；未上传时必须主动请求用户截图并标记“待用户提供/待上传”，不得创建占位或形成最终可执行版Prompt。最终`参考资产：`只能列真实存在且已确认的资产/帧，图片总数必须≤9；整合只允许在超限风险触发后作用于非角色信息。
+所有案例先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再判定A/B/C。A/B标记`Tail Frame Required = YES`，尾帧无论是否已上传都预留1个Projected位，并在`参考资产：`直接列统一`REF-TAIL`名称、对应用途与真实状态；未上传时写“待用户提供/待上传、未确认”，不计入已提交图片，Prompt可交付但实际提交生成前补图。C标记`NO`，不列或预留上一尾帧。除A/B待补充`REF-TAIL`外，`参考资产：`只能列真实存在且已确认的资产/帧；Projected Final Count与已提交图片数均≤9；整合只允许在超限风险触发后作用于非角色信息。
 
 ### R11-A Seven Candidates
 
@@ -144,7 +144,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ### R11-C Nine Candidates Plus Previous Tail
 
-当前Clip已有9张候选，Previous-Clip Continuity Decision为Direct或Reference-Only且当前首帧需要严格视觉承接，因此`Tail Frame Required = YES`。无论上一实际尾帧图是否已经上传，Projected Final Count均按10张计算并至少释放1位；尾帧存在、可访问且已确认后必须以`REF-TAIL-XX｜CLIP-XX尾帧参考`加入最终清单。若尚未提供，PASS必须主动请求用户从上一Clip最终成片截取最终有效尾帧，标记“待用户提供/待上传”，不创建占位、不计入已提交图片且暂停最终可执行版Prompt。FAIL：因尾帧暂缺把需求改为NO、只做文字最终承接、仍声称9张通过、遗漏必需尾帧、超过9张或合并核心角色图。
+当前Clip已有9张候选，Previous-Clip Continuity Decision为A Direct或B Reference-Only，因此`Tail Frame Required = YES`。无论上一实际尾帧图是否已经上传，Projected Final Count均按10张计算并至少释放1位；【参考资产】必须以`REF-TAIL-XX｜CLIP-XX尾帧参考`列出尾帧，A标“同镜头连续承接用途”，B标“空间/站位/景别参考用途”。若尚未提供，PASS必须标记“待用户提供/待上传、未确认”，不计入已提交图片；Prompt可交付但实际提交生成前补图。FAIL：因尾帧暂缺把需求改为NO、遗漏`REF-TAIL`声明、声称待补充资产已上传/已确认、B误用A固定直接承接句、仍声称9张通过、超过9张或合并核心角色图。
 
 ### R11-D Twelve Candidates
 

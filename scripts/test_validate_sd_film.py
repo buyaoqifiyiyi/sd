@@ -363,6 +363,24 @@ Next Workflow: Project Setup Workflow
         self.assertNotIn("### Canonical Portable State Schema", skill)
         self.assertNotIn("TC IN\n2.", skill)
 
+    def test_cross_clip_tail_frame_abc_contract_is_installed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        template = (skill_root / "templates" / "10_video_prompt.md").read_text(encoding="utf-8")
+        consistency = (skill_root / "rules" / "04_consistency_rules.md").read_text(encoding="utf-8")
+        for marker in (
+            "A【同镜头连续承接",
+            "B【新镜头参考型",
+            "C【新镜头且无需尾帧",
+            "同镜头连续承接用途",
+            "空间/站位/景别参考用途",
+            "待用户提供/待上传、未确认",
+        ):
+            self.assertIn(marker, template)
+            self.assertIn(marker, consistency)
+        self.assertIn("以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。", template)
+        self.assertIn("B不得使用A类", template)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
     def test_global_runtime_rules_are_installed(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         for relative in (

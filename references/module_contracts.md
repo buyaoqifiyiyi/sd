@@ -532,13 +532,13 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；先按当前Clip是否需要严格视觉承接在既有判定中标记`Tail Frame Required = YES / NO`，再检查资产可用性；`YES`且实际尾帧图存在、可访问、已确认时强制正式引用，未提供时主动请求用户从上一Clip最终成片截取最终有效尾帧并上传、标记“待用户提供/待上传”且暂停最终可执行版Prompt；`NO`不要求截图，可文字承接或重建；每分镜先锁定World-State再筛选资产；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且最终≤9；任一适用项失败不得确认Clip Plan或输出STATE-08 Prompt。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每分镜先锁定World-State再筛选资产；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
 冲突路由：剧情/世界事实返回事实拥有者；资产/道具形态返回STATE-03；Shot / Blocking /转场设计返回STATE-06；Clip边界、预算或执行合同返回STATE-07；仅最终文案投影错误留在STATE-08。
 
-Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；七个Acceptance Scenarios和三条高优先级规则存在；所有显式文件引用有效。
+Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；八个Acceptance Scenarios和三条高优先级规则存在；所有显式文件引用有效。
 
 ---
 
@@ -563,7 +563,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 按Confirmed Clip Production Plan一对一创建`# CLIP-X｜标题 Seedance视频提示词`独立Package；每个Package包含该Clip的1个或多个`分镜X`，但整个Clip只生成一条连续Prompt，不按Shot拆分，并拥有完整结尾帧、尾帧用途判定与反向提示词
 - 多Clip项目默认每轮只交付当前一个Clip；“下一个 / 下一步 / 继续”只推进一个Checkpoint。只有用户在当前请求中明确要求全部、一次性、批量或连续输出多个Clip时，才允许同轮输出多个独立Package
 - 每个Clip必须为4—15秒；Clip内分镜保持原顺序、逐镜字段和显式状态链
-- Continuous Handoff先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`；`YES`且实际尾帧图可用时通过上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`建立下一段首帧引用，未提供时主动请求用户截图、标记待上传并暂停最终可执行版；`NO`不要求截图，可文字承接或重建；Motivated Discontinuity明确不继承及重建原因
+- 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
 - 先执行Voice Reference Override Gate：固定字段`音色特征：`始终保留；有适用Voice/Audio Reference时写明Reference锁定且不得文字重定义，并删除其他字段中的全部文字音色描述；无适用Reference但已有Confirmed Voice Profile时以其填充；两者都不存在时使用`No Voice Asset`声明且不得自动触发AUDIO模块；无对白时明确无对白
 
@@ -591,7 +591,7 @@ Module Type：跨镜头边界与转场选择Knowledge。
 - 记录Outgoing Anchor、Cut Point、Incoming Anchor、继承/重建状态、禁止提前动作与Direct Cut降级
 - 投影到上一G段前置【尾帧限制】、下一G段【首帧参考】、按空间/动作连续性条件决定的【参考资产】正式引用，以及“镜头结尾状态”“与下一镜衔接”和下一镜“起始状态”；跨场景时上一尾帧通常不进入下一段【参考资产】，只作人物与视觉连续性核对
 - 同期声音桥只使用对白、环境声、动作声、呼吸、Foley或剧情内声源
-- 同一Clip内使用逐镜状态链；跨Clip先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`，`YES`且实际尾帧图可用时使用`REF-TAIL-XX｜CLIP-XX尾帧参考`连接独立Prompt Package，未提供时主动请求用户截图并暂停最终可执行版；`NO`时才使用文字End State承接或重建；Motivated Discontinuity保留明确不继承声明
+- 同一Clip内使用逐镜状态链；跨Clip明确A/B/C。A/B在下一Package【参考资产】列统一`REF-TAIL`、对应用途与真实状态，缺图时标“待用户提供/待上传、未确认”，Prompt可交付但生成前补图；A使用Direct固定句，B明确另起新镜头且不使用该句；C不列`REF-TAIL`并使用Canonical资产、Spatial Blocking与文字End State承接或重建
 
 禁止：
 

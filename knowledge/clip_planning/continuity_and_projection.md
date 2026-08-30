@@ -11,10 +11,11 @@
 - Lighting / Color Arc：真实光源、方向、强度/光比、色温/偏色、饱和度与资产固有色
 - Sound Arc：对白、环境声、动作声、呼吸与Foley；STATE-08默认禁止生成背景音乐、配乐、BGM、主题音乐与氛围音乐，只有用户显式要求由Seedance为明确指定的Clip生成背景音乐时例外
 - Exit State：稳定尾帧与下一 Clip 可用锚点
-- Tail-Frame Use Mode：直接作为下一Clip起始帧 / 仅作为下一Clip连续性参考 / 不继承（说明原因）
-- Tail-Frame Requirement：在既有Continuity Decision内按当前Clip是否需要严格视觉承接标记`Tail Frame Required = YES / NO`，不得由资产是否已存在反向决定
-- Tail-Frame Availability：`YES`且实际存在、可访问、已确认时统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`；尚未提供时主动请求用户从上一Clip最终成片手动截取最终有效尾帧并上传，标记“待用户提供/待上传”，不得列为实际资产；`NO`不要求截图
-- Reference Budget Audit：按`knowledge/reference_budget.md`记录原始候选、连续性预留、去重/整合/裁剪、最终真实清单与总数；`Tail Frame Required = YES`无论是否已上传都进入Projected Final Count预留，只有实际存在、可访问且已确认时才进入最终真实清单
+- Tail-Frame Use Mode：A【同镜头连续承接 / Direct】/ B【新镜头参考型 / Reference-Only】/ C【新镜头且无需尾帧 / Not Required】
+- Tail-Frame Requirement：A/B标记`Tail Frame Required = YES`，C标记`NO`；不得由资产是否已存在反向决定
+- Tail-Frame Purpose：A写“同镜头连续承接用途”；B写“空间/站位/景别参考用途”；C无`REF-TAIL`。只要出现`REF-TAIL`，用途不得省略
+- Tail-Frame Availability：A/B统一登记`REF-TAIL-XX｜CLIP-XX尾帧参考`；尚未提供时仍列入参考资产声明并写“待用户提供/待上传、未确认”，占Projected位但不计入已提交图片，用户实际生成前补入；存在、可访问、已确认后才写真实引用。C不要求截图、不列尾帧
+- Reference Budget Audit：按`knowledge/reference_budget.md`记录原始候选、连续性预留、去重/整合/裁剪、参考资产声明、已提交图片清单与总数；A/B无论是否已上传都进入Projected Final Count并在声明中列`REF-TAIL`及用途，只有实际存在、可访问且已确认时才计入已提交图片；C不列或预留尾帧
 
 ## Knowledge-To-Prompt Projection
 
@@ -45,11 +46,11 @@ Clip 表中的“知识投影摘要”不是知识名称清单，而是以下模
 每个 G Package：
 
 - 包含 Clip 表列出的1个或多个`分镜X`；单镜Clip按独立镜头执行，多镜Clip写成同一次长镜头中的连续执行阶段
-- `参考资产：`只列预算审计通过的当前Clip实际真实资产；图片参考总数≤9，核心角色各自保留独立三视图/角色锁定图，非角色整合仅在超限风险触发后执行
+- `参考资产：`只列预算审计通过的当前Clip实际真实资产，以及A/B必需但尚待用户补充的`REF-TAIL`受控声明；Projected Final Count≤9，待补充尾帧不计入已提交图片数，核心角色各自保留独立三视图/角色锁定图，非角色整合仅在超限风险触发后执行
 - 保持来源分镜编号、顺序与逐镜字段完整
 - 使用`# CLIP-X｜标题 Seedance视频提示词`作为区块标题，在`时长：`写明4—15秒的平台生成时长；不得创建独立CLIP标题字段
 - 在【主风格】之前输出一次【首帧参考】与【尾帧限制】，只在Package末尾输出一次【反向提示词】
 - 最后一分镜与`尾帧限制：`定义本Clip新的稳定结束状态；实际生成、提取并确认后登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
-- 下一 G Package先依据当前Clip Start Requirement标记`Tail Frame Required = YES / NO`，再检查资产可用性：`YES`且实际尾帧图可用时直接作为起始帧或第一顺位连续性参考，并在`首帧参考：`写固定承接句；`YES`但未上传时主动请求用户截图、草案标记“待用户提供/待上传”且暂停最终可执行版；`NO`时可仅以文字End State承接或建立新首帧
+- 下一 G Package先依据当前Clip Start Requirement判定A/B/C，再检查资产可用性：A/B均在`参考资产：`列统一`REF-TAIL`名称、对应用途和真实状态；A在`首帧参考：`写固定直接承接句，B明确另起新镜头重新构图且不得写该句；未上传时标记“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。C不列`REF-TAIL`，可由Canonical资产、Spatial Blocking与文字End State建立新首帧
 
 同一 Clip 内非末分镜的“与下一镜衔接”必须明确“同一 Clip 连续长镜头生成、不中断、不硬切”；Clip 末分镜必须说明与下一 Clip 的连接方式或最后一段收尾。

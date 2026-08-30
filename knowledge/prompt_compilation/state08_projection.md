@@ -27,7 +27,7 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 
 每个Clip在Reference Budget与Template Mapping前必须读取并执行`knowledge/clip_preflight_check.md`最终版。内部顺序固定为：`Continuity Classification（含Tail Frame Required判定）→ World-State → Character Count → Spatial Composition → Prop State → Transition Five Elements（适用时）→ Reference Asset Check / Budget`。
 
-- 连续性必须在`视觉连续 / 剧情连续 / 主动切场或切世界`中三选一，并先按当前Clip Start Requirement是否需要严格视觉承接标记`Tail Frame Required = YES / NO`，再查资产可用性。`YES`且尾帧已上传、可访问、已确认时，把上一尾帧按`REF-TAIL-XX｜CLIP-XX尾帧参考`写入`参考资产`；未提供时不得虚构，必须主动请求用户从上一Clip最终成片截取最终有效尾帧并上传，草案在`首帧参考`与首镜`起始状态`标记“待用户提供/待上传”，最终可执行版Prompt暂停。`NO`不得要求截图，可文字承接或写明重建依据。
+- 连续性必须在`视觉连续 / 剧情连续 / 主动切场或切世界`中三选一，并在同一判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】，再查资产可用性。A/B均标记`Tail Frame Required = YES`并把统一`REF-TAIL-XX｜CLIP-XX尾帧参考`直接写入`参考资产`：A标“同镜头连续承接用途”，B标“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不声称存在或确认，Prompt可完整交付但实际提交生成前补图。C标记`NO`，不列`REF-TAIL`、不要求截图，可由Canonical基础资产、Spatial Blocking与文字状态承接或重建。
 - 每个分镜明确World-State；只投影当前阶段实际存在、实际出场且适用的角色、环境、道具与FX。完全位于转换后世界的Clip删除转换前资产；转换Clip按Pre/Post阶段投影两种状态及其转换过程。
 - 每个分镜锁定角色精确数量。剧情唯一角色必须在`人物一致性`及适用的`画面描述 / 空间关系`中正向明确唯一一只/名、前中后景无第二个同类，并在`反向提示词`禁止复制、分身、镜像重复、背景第二个与相似替身。
 - 追逐/战斗/多人空间锁投影到`镜头/机位`、`空间关系`、`画面描述`与`镜头结尾状态`。追逐默认后追前逃，禁止并排正对镜头、同景深海报式合影或群像站桩。
@@ -38,16 +38,16 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 
 ## Reference Budget Projection Gate
 
-每个Clip在Clip Preflight通过后才可建立`参考资产：`。读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；`Tail Frame Required = YES`时无论尾帧是否已上传都预留1个Projected位，只有实际存在、可访问、已确认时才加入最终真实清单，未提供时保持“待用户提供/待上传”且不得虚构；`NO`不加入或预留旧尾帧。得到Projected Final Count后执行既有阈值：≤7不整合；8张且无额外帧需求不整合；9张只有在没有未计入的合法连续性需求时允许直接使用；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9必须整合同类非角色信息，仍超限则按规定优先级裁剪，最终≤9。
+每个Clip在Clip Preflight通过后才可建立`参考资产：`。读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；A/B无论尾帧是否已上传都预留1个Projected位，并直接列出统一`REF-TAIL`名称、用途和真实状态；未提供时为“待用户提供/待上传、未确认”，不计入已提交图片数。C不加入或预留旧尾帧。得到Projected Final Count后执行既有阈值：≤7不整合；8张且无额外帧需求不整合；9张只有在没有未计入的合法连续性需求时允许直接使用；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9必须整合同类非角色信息，仍超限则按规定优先级裁剪，最终≤9。
 
 当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
-最终`参考资产：`只能序列化真实存在且已确认的资产/帧，逐项写资产ID或名称、真实引用、用途与锁定约束。上一Clip实际可用尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`；未生成、不可访问或未确认的尾帧不得以名称占位或文字End State冒充图片。不得输出未生成/未确认的总图、空间关系图或动作关系图。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
+最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
 
 每个Clip投影前必须通过四项硬门槛：
 
-1. `参考资产：`显式列出实际使用资产及用途/锁定约束，并在空间/动作连续性判断后决定上一尾帧是否正式引用。
-2. `首帧参考：`在既有内容中标记`Tail Frame Required = YES / NO`并明确Direct、Reference-Only、非严格文字承接、跨场景不作正式参考资产仅作连续性核对或首段无上一尾帧；`YES`未上传时标记“待用户提供/待上传”且只允许草案，使用实际尾帧时逐字包含`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`，并与分镜1“起始状态”一致。
+1. `参考资产：`显式列出实际使用资产及用途/锁定约束；A/B所需`REF-TAIL`缺图时仍直接列名、用途与“待用户提供/待上传、未确认”，并与已提交图片清单分开计数。只要出现`REF-TAIL`，用途类型不可省略。
+2. `首帧参考：`在既有内容中标记A/B/C与`Tail Frame Required = YES / NO`。A逐字包含`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`并完整锁定所有承接维度；B说明参考该尾帧延续站位/朝向/距离/景别/空间/道具或构图逻辑，但当前Clip另起新镜头重新构图，禁止使用A的固定直接承接句；C不列`REF-TAIL`并写Canonical资产、Spatial Blocking与文字重建依据。三类均须与分镜1“起始状态”一致。
 3. “镜头结尾状态”与前置`尾帧限制：`形成稳定、清楚、可冻结、可继承的尾帧接口；当前Clip使用上一尾帧时，必须定义本Clip新的结束状态供下一Clip承接。
 4. “镜头结尾状态”同时明确Continuous Handoff、Motivated Discontinuity或Unresolved Handoff，不另建字段。
 
@@ -68,8 +68,8 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 |---|---|---|
 | Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、4—15秒平台生成时长；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
 | Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
-| Character / Environment / Prop / FX / Voice Assets | 参考资产 | 只列当前Clip实际使用、真实存在且经Reference Budget审计后最终≤9张的图片资产；逐项写资产ID/名称、真实引用、锁定用途与禁止修改特征；核心角色独立图不可合并；Voice/Audio Reference只锁定声音；合法尾帧按Direct/Reference-Only/Not Inherited判定 |
-| Previous Clip / Opening State | 首帧参考 | `Tail Frame Required = YES / NO`；首帧来源；`YES`且有实际尾帧时使用统一`REF-TAIL`名称和固定承接句，未上传时标记待用户提供/待上传且只形成草案；`NO`时文字承接或重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态及唯一承接模式 |
+| Character / Environment / Prop / FX / Voice Assets | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；逐项写资产ID/名称、真实引用或待补充状态、用途与禁止修改特征；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并；Voice/Audio Reference只锁定声音 |
+| Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
 | Clip End State / Next Clip | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
 | Character Continuity / Performance | 人物一致性；主风格 | 外观与状态锁定、表演尺度、跨镜湿润/伤痕/体力/情绪连续性 |
 | Environment / Spatial / Lighting / Color | 环境一致性 | 地点、天气、固定结构、光源方向、色彩来源与锚点、材质响应、运动方向、轴线和背景逻辑 |
@@ -133,9 +133,9 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否正确保留`音色特征：`并执行Reference Override、Voice Profile Fallback、No Voice Asset或无对白四分支内容规则。
 - 是否没有方头括号旧章节、独立CLIP标题字段、“与下一镜衔接”或其他额外字段。
 - `参考资产：`、`首帧参考：`、`尾帧限制：`是否无条件存在且非空。
-- `参考资产：`是否通过Reference Budget Check：最终图片数≤9、无当前Clip无关项、无重复占位、无虚构资产、核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。
+- `参考资产：`是否通过Reference Budget Check：Projected Final Count与已提交图片数≤9、无当前Clip无关项、无重复占位；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。
 - 是否通过Clip Preflight：连续性三选一且尾帧引用正确；逐分镜World-State与资产一致；角色精确数量、追逐/多人空间构图、关键道具状态和适用转场五要素均有现有字段证据；失败设计没有被反向提示词兜底。
-- 是否先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`；`YES`无图时是否主动请求用户截图、标记“待用户提供/待上传”并阻止最终可执行版，只有实际存在、可访问且已确认的尾帧图才以`REF-TAIL-XX｜CLIP-XX尾帧参考`进入`参考资产`；`NO`时是否未要求截图；有图时固定首帧承接句与本Clip新尾帧限制是否完整。
+- 是否明确A/B/C并据此标记`Tail Frame Required = YES / NO`；A/B无图时是否在`参考资产`直接列统一`REF-TAIL`、对应用途与“待用户提供/待上传、未确认”，且未冒充已提交图片；A是否使用固定直接承接句，B是否明确另起新镜头且未使用该句，C是否完全未列`REF-TAIL`；本Clip新尾帧限制是否完整。
 - 每个分镜是否完整重复十个固定字段；下一镜语义是否已进入“镜头结尾状态”。
 - 未触发背景音乐例外时，`反向提示词：`首句是否为固定禁BGM句；例外是否仅作用于用户明确指定的Clip。
 

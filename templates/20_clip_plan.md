@@ -15,7 +15,7 @@
 
 | Clip ID | 包含 Shot（原顺序） | 目标时长 | 生成方式 | 组织依据 | 起始状态 | 结尾状态/尾帧 | 下一Clip连接 |
 |---|---|---:|---|---|---|---|---|
-| CLIP-001 | SHOT-001 / SHOT-001 + SHOT-002 | 10秒 | 单Shot Clip / 多Shot单次连续生成 | 场景、时间、动作、摄影机、空间、道具、复杂度与时长判断 |  | 定义新结束状态；实际生成并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考 | 严格承接并引用尾帧 / 严格承接、待用户提供尾帧 / 非严格文字承接 / 新首帧重建（原因） |
+| CLIP-001 | SHOT-001 / SHOT-001 + SHOT-002 | 10秒 | 单Shot Clip / 多Shot单次连续生成 | 场景、时间、动作、摄影机、空间、道具、复杂度与时长判断 |  | 定义新结束状态；实际生成并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考 | A同镜头连续承接 / B新镜头参考型 / C新镜头且无需尾帧；A/B缺图时待用户补充 |
 
 ## Clip Detail Cards
 
@@ -28,13 +28,13 @@
 - 生成合同：本 Clip 对应一次生成；即使包含多个 Shot，STATE-08 也只输出一条连续 Prompt，不按 Shot 拆分
 - 起始状态：人物、环境、空间、道具、FX、情绪、摄影机及来源边界
 - Clip Preflight Check（STATE-07前置版；必须先于Reference Budget）：
-  - Temporal / Spatial Continuity Classification：视觉连续 / 剧情连续 / 主动切场或切世界（三选一）；判定证据；在同一判定中标记`Tail Frame Required = YES / NO`及理由（先按当前Clip是否需严格视觉承接判定，再记录上一尾帧是否实际存在、可访问且已确认）；`YES`且未上传时记录主动请求用户手动截取上一Clip最终成片的最终有效尾帧并标记“待用户提供/待上传”；允许正式引用时记录`REF-TAIL-XX｜CLIP-XX尾帧参考`真实引用；`NO`时记录文字承接或首帧重建依据
+  - Temporal / Spatial Continuity Classification：视觉连续 / 剧情连续 / 主动切场或切世界（三选一）；判定证据；在同一判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并记录`REF-TAIL-XX｜CLIP-XX尾帧参考`、对应“同镜头连续承接用途”或“空间/站位/景别参考用途”及真实状态；未上传时仍列名并标记“待用户提供/待上传、未确认”，不计入已提交图片。C标记`NO`、不列尾帧，并记录Canonical资产、Spatial Blocking与文字重建依据
   - World-State Map（逐分镜）：当前现实 / 幻想 / 耳中玉境 / 其他已确认层；Pre/Post Transition阶段；实际角色、环境、道具、FX；不适用资产删除结果
   - Character Count Lock（逐分镜）：角色身份 × 精确数量；唯一角色的正向唯一性与前/中/背景无第二个同类锁；复制/分身/镜像/背景重复风险
   - Spatial Composition Lock：前后景、左右、朝向、视线、关系轴、摄影机轴线侧、追逃/攻击/视线路线、正脸/侧背/背身许可、同一景深许可；追逐默认后追前逃并禁止并排合影
   - Prop State Check（逐关键道具）：当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换是否完成、结尾状态与下一镜继承
   - Transition Check（适用时）：起点状态；转换媒介；运动方向/过程；终点状态；转场后首个稳定构图；不适用时写明理由
-  - Reference Asset Check：只列当前World-State实际存在/出场/使用且Confirmed的候选；角色独立图优先；剧情连续/主动切场不机械计入上一尾帧；再进入Reference Budget
+  - Reference Asset Check：除A/B待补充`REF-TAIL`受控声明外，只列当前World-State实际存在/出场/使用且Confirmed的候选；角色独立图优先；C不机械计入上一尾帧；任何`REF-TAIL`必须声明用途；再进入Reference Budget
   - Preflight Result：PASS / FAIL；Affected Clip / Shot；Return Route；修正后重跑结果
 - 连续动作：按 Shot 顺序描述动作、表演、情绪与必要镜头阶段如何连续执行
 - 摄影机与构图路径：机位、轴线侧、景别/视点变化、主要运镜、焦段/对焦、稳定降级
@@ -53,14 +53,14 @@
 - 声音连续性：环境底声/空间底噪；同步动作声、Foley、呼吸、对白或剧情内声源；声音尾部与下一Clip承接
 - 结尾状态：人物、动作、情绪、空间、道具、环境、光态、摄影机与稳定停留点
 - 结尾帧限制：定义本Clip新的稳定结束状态；实际生成、提取并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考
-- 尾帧用途判定：直接作为下一Clip起始帧 / 仅作为下一Clip连续性参考 / 不继承（原因） / 最终收束
+- 尾帧用途判定：A同镜头连续承接用途 / B空间、站位、景别参考用途 / C新镜头且无需尾帧（Canonical资产 + Spatial Blocking + 文字重建依据） / 最终收束
 - 下一Clip Handoff：
 - 模型执行风险与安全降级：
 - Reference Budget Audit：
   - 原始候选图片资产（逐项写实际资产ID/名称、Active/Confirmed状态、真实文件/受控ID、当前Clip用途、图片位数）：
   - 删除的当前Clip无关项（未出场角色 / 未使用环境 / 未使用道具 / 未使用动作图 / 其他）及理由：
   - 去重结果（重复文件或未增加信息项；不得把不同核心角色图当作重复）：
-  - 连续性图片位（`Tail Frame Required = YES`时无论是否已上传都预留1个Projected位；`REF-TAIL-XX｜CLIP-XX尾帧参考`的“待用户提供/待上传”与“已加入真实资产”分别列出；待上传不得计为已存在或进入最终清单；`NO`不预留旧尾帧）：
+  - 连续性图片位（A/B无论是否已上传都预留1个Projected位，并在参考资产声明直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、用途与状态；“待用户提供/待上传、未确认”不得计为已提交图片；C不加入或预留旧尾帧）：
   - Projected Final Count（独立候选 + 必需连续性图片位）：
   - 条件判定（≤7不整合 / 8张检查预留且原则上不整合 / 9张确认无额外需求 / >9触发整合）：
   - 非角色整合（仅在触发时；列真实已确认总图、被完整覆盖的零散图与资产证据；未触发写“不整合”）：
@@ -82,7 +82,7 @@
 
 | From | To | Boundary Class | Outgoing Anchor | Stable End Window | Incoming Anchor | Tail-Frame Use Mode | Next Start-Frame Binding | Sound Bridge | Direct-Cut Downgrade |
 |---|---|---|---|---|---|---|---|---|---|
-| CLIP-001 | CLIP-002 | Continuous Handoff / Motivated Discontinuity |  |  |  | Direct / Reference-Only / Not Inherited | Tail Frame Required = YES / NO；已引用 / 待用户提供/待上传 / 文字承接 / 新首帧 |  |  |
+| CLIP-001 | CLIP-002 | Continuous Handoff / Motivated Discontinuity |  |  |  | A Direct / B Reference-Only / C Not Required | Tail Frame Required = YES / NO；REF-TAIL用途；已引用 / 待用户提供、待上传且未确认 / Canonical资产+Spatial Blocking+文字重建 |  |  |
 
 ## Knowledge Projection Ledger
 
@@ -100,7 +100,7 @@
 
 | Clip ID | Continuity Classification | Previous Tail Formal Reference | World-State Check | Character Count Lock | Spatial Composition Lock | Prop State Check | Transition Five Elements | Reference Asset Check | Result / Return Route |
 |---|---|---|---|---|---|---|---|---|---|
-| CLIP-001 | 视觉连续 / 剧情连续 / 主动切场或切世界 | `Tail Frame Required = YES / NO`；Direct / Reference-Only + Actual Tail Available / 待用户提供或待上传 / Text-Only Carryover（仅非严格承接） / No Formal Tail Reference | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / N/A / Affected Shot | PASS ≤9 / Affected Asset | PASS / Return Route |
+| CLIP-001 | 视觉连续 / 剧情连续 / 主动切场或切世界 | A同镜头连续承接 / B新镜头参考型 / C新镜头且无需尾帧；`Tail Frame Required = YES / NO`；REF-TAIL用途与已引用 / 待用户提供、待上传且未确认 / Canonical资产+Spatial Blocking+文字重建 | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / N/A / Affected Shot | PASS ≤9 / Affected Asset | PASS / Return Route |
 
 ## Coverage And Validation
 
@@ -109,7 +109,7 @@
 - 所有多 Shot Clip 是否通过场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查：
 - 短于4秒的 Shot 是否只在兼容的4—15秒 Clip中执行；超过15秒的 Shot 是否已返回 STATE-06 拆分：
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：
-- 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一；是否先按当前Clip严格视觉承接需求标记`Tail Frame Required = YES / NO`、再核验资产可用性；`YES`无图时是否主动请求用户从上一Clip最终成片截取最终有效尾帧并标记“待用户提供/待上传”，仅输出草案且未虚构资产；`NO`时是否未要求截图并以文字承接或从当前Scene、World-State和Start Boundary重建：
+- 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一并明确A/B/C；A/B是否标记`Tail Frame Required = YES`、在参考资产声明直接列统一`REF-TAIL`名称、对应用途与真实状态，缺图时写“待用户提供/待上传、未确认”且不冒充已提交图片；A/B首帧句式是否正确区分；C是否标记`NO`、不列`REF-TAIL`并以Canonical资产、Spatial Blocking、文字状态或当前Scene / World-State / Start Boundary重建：
 - 是否逐分镜明确World-State，并删除未出场、未使用或当前阶段不适用的角色/环境/道具/FX；完全位于耳中玉境等转换后世界的Clip是否没有现实阶段道具：
 - 是否逐分镜锁定角色精确数量；剧情唯一角色是否在正向设计中明确唯一一只/名、前中后景无第二个同类，并预置复制/分身/镜像/背景重复禁令：
 - 追逐/战斗/对峙/多人镜头是否锁定前后景、朝向、关系轴、运动方向、正脸许可与同景深许可；追逐是否默认后追前逃并禁止双方并排正对镜头、海报式合影和群像站桩：
