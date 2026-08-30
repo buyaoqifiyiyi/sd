@@ -502,7 +502,7 @@ Module Type：STATE-07主流程Workflow / Knowledge。
 - 每个正式分镜必须且仅能进入一个CLIP-xxx
 - 每个Clip确认时长必须为4—15秒；单Shot可短于4秒并进入兼容Clip，超过15秒的Shot返回STATE-06拆分
 - 只有相邻、时空/资产/边界/轴线/动作/运镜兼容且模型可稳定执行的分镜可以合并
-- 每个Clip拥有包含Shot清单、Entry、连续动作、摄影机/空间关系、道具连续性、内部逐镜状态链、稳定Exit、`[Gxx尾帧]`与下一Clip Handoff
+- 每个Clip拥有包含Shot清单、Entry、连续动作、摄影机/空间关系、道具连续性、内部逐镜状态链、稳定Exit、新尾帧限制与下一Clip Handoff；实际生成、提取并确认后统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
 - Knowledge Projection Ledger只记录可执行语义，最终Prompt仍由`templates/10_video_prompt.md`拥有
 
 禁止：
@@ -532,7 +532,7 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；只有视觉连续强制正式引用上一尾帧；每分镜先锁定World-State再筛选资产；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且最终≤9；任一适用项失败不得确认Clip Plan或输出STATE-08 Prompt。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；视觉连续且实际尾帧图存在、可访问、已确认时强制正式引用，无实际尾帧图时只以文字End State承接且不得虚构资产；每分镜先锁定World-State再筛选资产；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且最终≤9；任一适用项失败不得确认Clip Plan或输出STATE-08 Prompt。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
@@ -563,7 +563,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 按Confirmed Clip Production Plan一对一创建`# CLIP-X｜标题 Seedance视频提示词`独立Package；每个Package包含该Clip的1个或多个`分镜X`，但整个Clip只生成一条连续Prompt，不按Shot拆分，并拥有完整结尾帧、尾帧用途判定与反向提示词
 - 多Clip项目默认每轮只交付当前一个Clip；“下一个 / 下一步 / 继续”只推进一个Checkpoint。只有用户在当前请求中明确要求全部、一次性、批量或连续输出多个Clip时，才允许同轮输出多个独立Package
 - 每个Clip必须为4—15秒；Clip内分镜保持原顺序、逐镜字段和显式状态链
-- Continuous Handoff通过上一段`[Gxx尾帧]`建立下一段首帧引用；Motivated Discontinuity明确不继承及重建原因
+- Continuous Handoff在实际尾帧图可用时通过上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`建立下一段首帧引用；无图时只用文字End State承接且不得虚构资产；Motivated Discontinuity明确不继承及重建原因
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
 - 先执行Voice Reference Override Gate：固定字段`音色特征：`始终保留；有适用Voice/Audio Reference时写明Reference锁定且不得文字重定义，并删除其他字段中的全部文字音色描述；无适用Reference但已有Confirmed Voice Profile时以其填充；两者都不存在时使用`No Voice Asset`声明且不得自动触发AUDIO模块；无对白时明确无对白
 
@@ -591,7 +591,7 @@ Module Type：跨镜头边界与转场选择Knowledge。
 - 记录Outgoing Anchor、Cut Point、Incoming Anchor、继承/重建状态、禁止提前动作与Direct Cut降级
 - 投影到上一G段前置【尾帧限制】、下一G段【首帧参考】、按空间/动作连续性条件决定的【参考资产】正式引用，以及“镜头结尾状态”“与下一镜衔接”和下一镜“起始状态”；跨场景时上一尾帧通常不进入下一段【参考资产】，只作人物与视觉连续性核对
 - 同期声音桥只使用对白、环境声、动作声、呼吸、Foley或剧情内声源
-- 同一Clip内使用逐镜状态链；跨Clip Continuous Handoff使用`[Gxx尾帧]`连接独立Prompt Package；Motivated Discontinuity保留明确不继承声明
+- 同一Clip内使用逐镜状态链；跨Clip Continuous Handoff在实际尾帧图可用时使用`REF-TAIL-XX｜CLIP-XX尾帧参考`连接独立Prompt Package，无图时使用文字End State承接；Motivated Discontinuity保留明确不继承声明
 
 禁止：
 

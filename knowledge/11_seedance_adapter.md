@@ -942,14 +942,14 @@ Continuous Handoff：
 
 保留所有仍然有效的身份、位置、方向、动作阶段、情绪、道具、环境、摄影机与持续声音状态。
 
-生成落地时，把上一段稳定结尾命名为`[Gxx尾帧]`；下一G段以该尾帧为第一顺位参考，并从其可见/可听状态开始，不重新初始化。
+生成落地时，只有实际提取并确认的上一段稳定结尾才命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`；下一G段以该实际尾帧为第一顺位参考，并从其可见/可听状态开始，不重新初始化。没有实际尾帧图时不得虚构资产，只按文字End State承接。
 
 
 Motivated Discontinuity：
 
 对已确认的场景切换、时间跳跃、硬切、蒙太奇、闪回或故意跳切，不生成虚假的连接动作；只明确切点、保留锚点以及下一镜经剧情授权的新起始状态。
 
-下一G段必须明确“不继承[Gxx尾帧]”及重建原因，防止模型误把断点当作图生视频连续首帧。
+下一G段必须明确“不继承REF-TAIL-XX｜CLIP-XX尾帧参考”及重建原因；若资产不存在则只写不继承上一Clip End State，不得虚构资产名，防止模型误把断点当作图生视频连续首帧。
 
 
 Unresolved Handoff：
@@ -1380,7 +1380,7 @@ Baseline → Stimulus → Attention Shift → Appraisal → Control / Leakage �
 
 Seedance Prompt应该优先保持：
 
-Continuous Handoff时的上一生成段`[Gxx尾帧]`，用于锁定当前段起始边界。
+Continuous Handoff时实际存在、可访问且已确认的上一生成段`REF-TAIL-XX｜CLIP-XX尾帧参考`，用于锁定当前段起始边界；无实际尾帧图时只用文字End State承接。
 
 Character Asset。
 

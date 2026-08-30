@@ -42,7 +42,7 @@
 
 ## STATE-08 Projection
 
-相邻正式SHOT先由Confirmed Clip Production Plan判定边界：同一Clip内使用逐镜End→Start状态链连续生成；跨Clip边界使用`[Gxx尾帧]`把上一段最终交付帧传给下一段，断点边界使用明确的不继承声明。不得跨Clip塞入Shot来回避跨段连续性。
+相邻正式SHOT先由Confirmed Clip Production Plan判定边界：同一Clip内使用逐镜End→Start状态链连续生成；跨Clip边界若有实际生成、可访问且已确认的最终交付帧，使用统一命名`REF-TAIL-XX｜CLIP-XX尾帧参考`传给下一段；若没有实际尾帧图，只以文字End State承接且不得虚构资产；断点边界使用明确的不继承声明。不得跨Clip塞入Shot来回避跨段连续性。
 
 ### 镜头结尾状态
 
@@ -56,4 +56,4 @@
 
 直接读取入镜锚点。Continuous Handoff 中不得重新初始化人物、道具或动作；Motivated Discontinuity 中只重建已确认的断点状态；Unresolved Handoff 中不得生成。
 
-Continuous Handoff的下一G段还必须在【参考资产】写入上一段`[Gxx尾帧]`，且“起始状态”与该帧一致。Motivated Discontinuity则写明不继承该尾帧、重建原因和仍保留的状态锚点。
+Continuous Handoff的下一G段在实际尾帧图可用时，必须在【参考资产】写入上一段`REF-TAIL-XX｜CLIP-XX尾帧参考`，在【首帧参考】逐字写`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`，且“起始状态”与该帧一致；无实际尾帧图时【参考资产】不列该项，只用文字完整承接End State。Motivated Discontinuity则写明不继承该尾帧、重建原因和仍保留的状态锚点。

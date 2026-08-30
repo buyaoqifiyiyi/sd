@@ -56,7 +56,7 @@ FAIL：把单独“继续 / 下一步 / 好的”当作优化授权或Proposal�
 
 ## R05A Detailed Shot Design To Clip Production
 
-输入包含连续对话、动作接力、场景断点与不同逐镜时长的Confirmed Detailed Shot Design。检查所有正式Shot按原顺序且仅进入一个CLIP-xxx；每个Clip为4—15秒；连续低复杂度Shot可合并，跨时空/资产断点和超过15秒候选被拆分或返回STATE-06；Clip内保留起始状态、连续动作、空间/道具/摄影机连续性与结尾状态，Clip末保存`[Gxx尾帧]`；STATE-08按CLIP→G一对一输出一条连续Prompt，即使Clip包含多个Shot也不拆Prompt；任何Storyboard视觉材料均不得进入参考资产。
+输入包含连续对话、动作接力、场景断点与不同逐镜时长的Confirmed Detailed Shot Design。检查所有正式Shot按原顺序且仅进入一个CLIP-xxx；每个Clip为4—15秒；连续低复杂度Shot可合并，跨时空/资产断点和超过15秒候选被拆分或返回STATE-06；Clip内保留起始状态、连续动作、空间/道具/摄影机连续性与结尾状态，Clip末定义新的尾帧限制，实际生成、提取并确认后登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`；STATE-08按CLIP→G一对一输出一条连续Prompt，即使Clip包含多个Shot也不拆Prompt；任何Storyboard视觉材料均不得进入参考资产。
 
 ## R05B Source Script Label Namespace
 
@@ -132,7 +132,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ## R11 Reference Budget / 参考资产预算控制
 
-所有案例先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再把Direct / Reference-Only确定需要的首尾帧计入Projected Final Count。最终`参考资产：`只能列真实存在且已确认的资产/帧，图片总数必须≤9；整合只允许在超限风险触发后作用于非角色信息。
+所有案例先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再把Direct / Reference-Only确定需要且实际存在、可访问、已确认的首尾帧计入Projected Final Count；无实际尾帧图时只作文字承接，不得创建占位。最终`参考资产：`只能列真实存在且已确认的资产/帧，图片总数必须≤9；整合只允许在超限风险触发后作用于非角色信息。
 
 ### R11-A Seven Candidates
 
@@ -144,7 +144,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ### R11-C Nine Candidates Plus Previous Tail
 
-当前Clip已有9张候选，Previous-Clip Continuity Decision为Direct或Reference-Only，必须再加入上一`[Gxx尾帧]`。PASS：Projected Final Count按10张计算，主动去重/整合同类非角色信息或裁剪低优先项，至少释放1位，保留必需尾帧并最终≤9。FAIL：仍声称9张通过、遗漏必需尾帧、超过9张，或合并核心角色图。
+当前Clip已有9张候选，Previous-Clip Continuity Decision为Direct或Reference-Only，并且上一实际尾帧图存在、可访问且已确认，必须再加入`REF-TAIL-XX｜CLIP-XX尾帧参考`。PASS：Projected Final Count按10张计算，主动去重/整合同类非角色信息或裁剪低优先项，至少释放1位，保留必需尾帧并最终≤9。FAIL：仍声称9张通过、遗漏必需尾帧、超过9张，或合并核心角色图。若实际尾帧图不存在，PASS必须不创建占位、不计图片位，并在首帧参考中用文字End State承接。
 
 ### R11-D Twelve Candidates
 
@@ -156,7 +156,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ### R11 Retention Priority
 
-整合后仍需裁剪时，从高到低保留：当前Clip出场核心角色独立图 > 当前主要环境 > 当前关键道具 > 当前关键动作/互动关系 > 上一Clip尾帧/当前首帧连续性参考 > 特殊一次性道具/次要角色。已经判定为Direct / Reference-Only的连续性帧属于硬需求，必须先释放其他位置，不得静默删除后仍声明连续继承。
+整合后仍需裁剪时，从高到低保留：当前Clip出场核心角色独立图 > 当前主要环境 > 当前关键道具 > 当前关键动作/互动关系 > 上一Clip尾帧/当前首帧连续性参考 > 特殊一次性道具/次要角色。已经判定为Direct / Reference-Only且实际存在、可访问、已确认的连续性帧属于硬需求，必须先释放其他位置，不得静默删除后仍声明连续继承。
 
 ---
 

@@ -12,7 +12,8 @@
 - Sound Arc：对白、环境声、动作声、呼吸与Foley；STATE-08默认禁止生成背景音乐、配乐、BGM、主题音乐与氛围音乐，只有用户显式要求由Seedance为明确指定的Clip生成背景音乐时例外
 - Exit State：稳定尾帧与下一 Clip 可用锚点
 - Tail-Frame Use Mode：直接作为下一Clip起始帧 / 仅作为下一Clip连续性参考 / 不继承（说明原因）
-- Reference Budget Audit：按`knowledge/reference_budget.md`记录原始候选、连续性预留、去重/整合/裁剪、最终真实清单与总数；Direct / Reference-Only所需尾帧必须进入Projected Final Count
+- Tail-Frame Availability：实际存在、可访问且已确认时统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`；不存在时只保留文字End State与待取得需求，不得列为实际资产
+- Reference Budget Audit：按`knowledge/reference_budget.md`记录原始候选、连续性预留、去重/整合/裁剪、最终真实清单与总数；Direct / Reference-Only所需尾帧只有实际存在、可访问且已确认时才进入Projected Final Count，无图时只记录文字承接或待取得需求
 
 ## Knowledge-To-Prompt Projection
 
@@ -47,7 +48,7 @@ Clip 表中的“知识投影摘要”不是知识名称清单，而是以下模
 - 保持来源分镜编号、顺序与逐镜字段完整
 - 使用`# CLIP-X｜标题 Seedance视频提示词`作为区块标题，在`时长：`写明4—15秒的平台生成时长；不得创建独立CLIP标题字段
 - 在【主风格】之前输出一次【首帧参考】与【尾帧限制】，只在Package末尾输出一次【反向提示词】
-- 最后一分镜的结尾状态生成并保存 `[Gxx尾帧]`
-- 下一 G Package依据自动判定结果：直接使用上一尾帧作为起始帧、把上一尾帧作为第一顺位连续性参考，或经确认断点明确不继承
+- 最后一分镜与`尾帧限制：`定义本Clip新的稳定结束状态；实际生成、提取并确认后登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
+- 下一 G Package依据自动判定结果和资产可用性：实际尾帧图可用时直接作为起始帧或第一顺位连续性参考，并在`首帧参考：`写固定承接句；无实际尾帧图时只以文字End State承接；经确认断点则明确不继承
 
 同一 Clip 内非末分镜的“与下一镜衔接”必须明确“同一 Clip 连续长镜头生成、不中断、不硬切”；Clip 末分镜必须说明与下一 Clip 的连接方式或最后一段收尾。
