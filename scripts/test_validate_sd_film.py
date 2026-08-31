@@ -709,6 +709,33 @@ REV-0001
             path.write_text(f"{global_text}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
 
+    def test_state08_reference_asset_eligibility_regression(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            reference_1_to_5 = (
+                "1. 林夏.png｜林夏-基础形象；用途：锁定林夏外观。\n"
+                "2. 许栀.png｜许栀-基础形象；用途：锁定许栀外观。\n"
+                "3. ENV-02｜窗台钢琴区域教室全景；用途：锁定环境结构。\n"
+                "4. REF-TAIL-02｜CLIP-02尾帧参考；用途：锁定人物坐姿、左右站位、肩膀距离、钢琴与窗户空间关系及雨天光线。\n"
+                "5. 乐谱参考资产；用途：固定纸张尺寸、材质、印刷内容与旧化程度。"
+            )
+            pseudo_asset = (
+                "6. 板凳参考说明｜用途：锁定两人共坐同一张板凳；"
+                "不是两把椅子，不是两张琴凳，不允许拆分座位。"
+            )
+            fields = make_shot_fields()
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+
+            invalid_global = make_state08_global_sections(
+                1, 1, "1", "10", reference=f"{reference_1_to_5}\n{pseudo_asset}"
+            )
+            path.write_text(f"{invalid_global}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
+
+            valid_global = make_state08_global_sections(1, 1, "1", "10", reference=reference_1_to_5)
+            path.write_text(f"{valid_global}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
     def test_state08_tail_required_yes_with_confirmed_asset_passes(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"

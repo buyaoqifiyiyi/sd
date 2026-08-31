@@ -13,19 +13,20 @@
 - Consumers：`workflows/10_clip_production_workflow.md`、`workflows/11_video_generation_workflow.md`与STATE-09 Review。
 - Conflict Route：剧情/世界层事实冲突返回其事实拥有者；资产状态冲突返回STATE-03；Shot / Blocking /转场设计冲突返回STATE-06；Clip边界、参考预算或Clip执行合同冲突留在STATE-07；仅Prompt转译措辞错误留在STATE-08。
 
-## Three Global High-Priority Rules
+## Four Global High-Priority Rules
 
-以下三条先于Reference Budget、Prompt润色与模型适配执行：
+以下四条先于Reference Budget、Prompt润色与模型适配执行：
 
 1. **视觉连续 ≠ 剧情连续，尾帧需求 ≠ 尾帧当前可用性。** 先做连续性主分类，再在既有判定中把尾帧使用方式明确为A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B均标记`Tail Frame Required = YES`，C标记`NO`；图片暂缺不能改变A/B/C。A/B缺图时仍须在【参考资产】直接列出统一`REF-TAIL`名称、用途与“待用户提供/待上传、未确认”，占Projected位但不计为已提交图片；不得伪造路径或声称已上传/已确认。Prompt可完整编译和交付，实际提交生成前补图。
 2. **参考资产必须先通过当前世界状态检查。** 资产只有在当前分镜所在时空层实际存在、实际出场或正在执行合法状态转换时，才有资格进入候选清单。
 3. **跨世界镜头必须先设计转场，再生成提示词。** 先锁定转场五要素，再写正式视频执行语句；不得用含糊的“金光一闪 / 突然切换”替代过程，除非用户明确要求这种省略。
+4. **视觉参考条目必须具有实际视觉输入资格。** 每个视觉候选都必须能回答“这是不是一张实际会被投喂/引用的视觉资产？”只有答案为“是”的真实视觉文件/受控ID，或已经确定需要用户实际补入、且明确标记`待用户补充/待上传、未确认`的具体视觉参考图，才可进入【参考资产】。站位、换边、距离、共坐关系、数量、空间、行为、禁止项与镜头规则等纯文字约束一律移入其既有语义字段，不得用“参考说明”伪装成资产。
 
 ## Execution Order
 
 每个Clip固定按以下顺序执行，不得把Reference Budget提前到世界状态和连续性分类之前：
 
-`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Prop State Check → Transition Check（适用时）→ Reference Asset Check / Budget → PASS或Return Route`
+`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget → PASS或Return Route`
 
 - STATE-07执行前置版：检查设计是否可生成，并把结果写入Clip Plan。任何失败先修Clip设计，禁止确认Clip Plan。
 - STATE-08执行最终版：按实际资产、实际首尾帧和最终逐镜文案复核。任何失败不得Template Mapping、不得输出Prompt；先回到对应拥有者做最小必要修正。
@@ -88,12 +89,17 @@
 
 World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 
-1. 当前Clip每个出场核心角色优先保留各自独立三视图/角色锁定图。
-2. 删除未出场角色、未使用环境、未使用道具、未使用动作图与当前World-State不适用的资产。
-3. 去重后，读取同一连续性判定中的A/B/C与`Tail Frame Required`。A/B无论尾帧当前是否已上传都预留1个Projected连续性图片位，并在【参考资产】直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、A类“同镜头连续承接用途”或B类“空间/站位/景别参考用途”及真实状态；未提供时标明“待用户提供/待上传、未确认”，不计入已提交图片数，不伪造路径。C不得加入或预留旧尾帧图片位，可由Canonical资产、Spatial Blocking和文字状态承接或重建。
-4. 按既有Reference Budget阈值计算Projected Final Count，最终必须`≤9`。
-5. 只有信息过多、接近或超过参考位上限时，才整合环境多视角、道具组、空间/动作/使用关系等非角色信息；不得默认整合核心角色。
-6. 不存在、未确认或不能完整覆盖零散信息的“总图”不得虚构进入清单。
+1. 先逐项执行Visual Input Eligibility Test：`这是不是一张实际会被投喂/引用的视觉资产？`。允许通过的视觉类型为：已确认角色图、环境图、道具图、正式FX图、参考板、合法首尾帧，以及其他当前Clip确实需要用户实际投喂的视觉参考图。真实资产必须有可回查文件/受控ID与用途；待补图必须写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得伪造路径或确认状态。
+2. 纯文字规则一律判定为`NOT ELIGIBLE`并从视觉候选中移除。站位/不可换边/人物距离/同坐一张板凳/道具数量/空间关系进入`空间关系`、Spatial Blocking Rules或适用的`起始状态`；持有、数量、同一张板凳等道具事实进入`道具状态`；首尾边界分别进入`首帧参考`、`尾帧限制`；禁止项进入`反向提示词`；动作与镜头规则进入对应分镜现有字段。迁移只改变归类，不改变约束本身。
+3. 如果对象本身存在正式视觉资产，按真实ID引用，例如`PROP-BENCH-01｜双人钢琴凳`；`板凳参考说明｜用途：锁定两人共坐同一张板凳`不得进入清单。若缺的是应成为Canonical的正式CHAR / ENV / PROP / FX资产，返回STATE-03完成双确认，不得用待补占位绕过Asset System。
+4. 当前Clip每个出场核心角色优先保留各自独立三视图/角色锁定图。
+5. 删除未出场角色、未使用环境、未使用道具、未使用动作图与当前World-State不适用的资产。
+6. 去重后，读取同一连续性判定中的A/B/C与`Tail Frame Required`。A/B无论尾帧当前是否已上传都预留1个Projected连续性图片位，并在【参考资产】直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、A类“同镜头连续承接用途”或B类“空间/站位/景别参考用途”及真实状态；未提供时标明“待用户提供/待上传、未确认”，不计入已提交图片数，不伪造路径。C不得加入或预留旧尾帧图片位，可由Canonical资产、Spatial Blocking和文字状态承接或重建。
+7. 按既有Reference Budget阈值计算Projected Final Count，最终必须`≤9`。
+8. 只有信息过多、接近或超过参考位上限时，才整合环境多视角、道具组、空间/动作/使用关系等非角色信息；不得默认整合核心角色。
+9. 不存在、未确认或不能完整覆盖零散信息的“总图”不得虚构进入清单。
+
+既有Voice/Audio Reference继续按声音资产合同作为独立非视觉输入检查；本视觉资格测试不删除该支路，但普通文字音色说明不得冒充Voice/Audio Reference。
 
 ## D. Transition Check
 
@@ -170,6 +176,7 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 | F. A同镜头连续承接但无实际尾帧图 | `Tail Frame Required = YES`；`参考资产`直接列`REF-TAIL`、同镜头连续承接用途与“待用户提供/待上传、未确认”；`首帧参考`使用Direct固定句并完整锁定；Prompt可交付，实际提交生成前补图 |
 | G. B新镜头参考型但无实际尾帧图 | `Tail Frame Required = YES`；`参考资产`直接列`REF-TAIL`、空间/站位/景别参考用途与“待用户提供/待上传、未确认”；`首帧参考`说明另起新镜头重新构图且不使用Direct固定句 |
 | H. C新镜头且无需尾帧 | `Tail Frame Required = NO`；不列`REF-TAIL`、不要求截图；依靠Canonical基础资产、Confirmed Spatial Blocking、文字空间规则与当前Scene / World-State / Start Boundary建立新首帧 |
+| I. `板凳参考说明｜用途：锁定两人共坐同一张板凳……`混入参考资产 | Visual Input Eligibility为`NOT ELIGIBLE`；从【参考资产】删除并迁移到`空间关系`或`道具状态`。原清单1—5号真实视觉资产保持不动；若确有双人钢琴凳参考图，则改用真实`PROP-BENCH-01｜双人钢琴凳`及其文件/受控ID |
 
 ## Validator Invariants
 
@@ -177,4 +184,4 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 - `templates/20_clip_plan.md`具有逐Clip Preflight记录与PASS / Return Route。
 - `templates/10_video_prompt.md`不新增Preflight字段，只在既有字段内容合同中承载世界状态、数量、空间、转场与道具语义。
 - Reference Budget在Continuity Classification与World-State过滤之后执行。
-- 八个Acceptance Scenarios与Three Global High-Priority Rules可被静态检索。
+- 九个Acceptance Scenarios与Four Global High-Priority Rules可被静态检索。

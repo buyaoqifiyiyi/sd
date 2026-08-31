@@ -135,7 +135,7 @@ Video Generation是：
 
 以下规则只约束STATE-08 Prompt编译与最终Template Mapping，不修改主Pipeline、Director Decision Layer、Knowledge Application Reflection、Camera Knowledge、Clip Production或Asset System。
 
-在执行任何Front-Lock、Reference Budget、Knowledge Reflection或Prompt措辞前，必须读取`knowledge/clip_preflight_check.md`并完成STATE-08最终版。先把当前Clip分类为`视觉连续`、`剧情连续`或`主动切场 / 切世界`，再按逐分镜World-State检查角色数量、空间构图、关键道具、适用转场五要素和参考资产资格。只有全部为PASS才可继续；FAIL时先修正Clip设计或按Return Route返回，不得用Prompt润色掩盖。
+在执行任何Front-Lock、Reference Budget、Knowledge Reflection或Prompt措辞前，必须读取`knowledge/clip_preflight_check.md`并完成STATE-08最终版。先把当前Clip分类为`视觉连续`、`剧情连续`或`主动切场 / 切世界`，再按逐分镜World-State检查角色数量、空间构图、关键道具、适用转场五要素和参考资产资格；其中每个视觉候选必须先通过“这是不是一张实际会被投喂/引用的视觉资产？”检查。只有全部为PASS才可继续；FAIL时先修正Clip设计或按Return Route返回，不得用Prompt润色掩盖。
 
 ## Front-Lock Rule
 
@@ -146,6 +146,8 @@ Voice/Audio Reference不得导致Template中的任何无条件字段被删除；
 参考资产、首帧与尾帧限制等前置锁定语义必须位于Template指定位置，不得降级为备注，也不得由后续文字描述覆盖。
 
 【参考资产】先读取`references/asset_lock_contract.md`，优先引用Asset Registry中Active Version与Canonical References。上一Clip尾帧只能锁定已确认的状态、构图、空间与动作边界，不能覆盖Confirmed Asset的角色身份、服装身份、环境结构、道具结构或Active Version。后续【主风格】【人物一致性】【环境一致性】和逐镜文字只能补充允许变化与执行过程，不得重设前置资产。
+
+视觉条目只允许实际会向模型投喂/引用的已确认视觉文件或受控ID，以及明确需要用户实际补入、写明具体图像对象、投喂用途和`待用户补充/待上传、未确认`状态的视觉图占位。纯文字站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项和镜头规则不得成为条目；按语义迁移到现有`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。若对象已有真实视觉资产则引用正式ID，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用“板凳参考说明”之类伪资产。既有Voice/Audio Reference继续按独立声音输入合同处理，不受本视觉资格补强改名或删除。
 
 同时必须读取`knowledge/reference_budget.md`并按实际图片文件/帧执行单Clip预算。默认保留原始独立资产，不默认整合：Projected Final Count≤7不整合；8张且无额外帧需求不整合；9张仅在没有尚未计入的连续性图片需求时允许；当前9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张必须去重、整合同类非角色信息、仍超限再按优先级裁剪，最终≤9。每个核心角色保留各自独立三视图/角色锁定图，动作/互动图不得替代外貌基准。
 
@@ -205,7 +207,8 @@ G02及以后必须依据Previous-Clip Continuity Decision明确选择“直接�
 Template Mapping后、交付前必须逐Package检查：
 
 - Markdown Clip标题、`时长：`、`画幅：`、`参考资产：`、`首帧参考：`、`尾帧限制：`是否完整，且后三个前置字段严格位于`主风格：`之前
-- 【参考资产】是否逐项引用实际Canonical Asset并写明用途/锁定约束；A/B待补充`REF-TAIL`是否作为唯一受控例外列出统一名称、用途与真实状态；且没有被后续临时文字覆盖
+- 【参考资产】中的每个视觉条目是否逐项通过“这是不是一张实际会被投喂/引用的视觉资产？”检查；真实条目是否引用实际Canonical Asset或其他合法视觉文件/受控ID并写明用途/锁定约束；受控待补视觉图是否写明具体图像对象、实际投喂用途与“待用户补充/待上传、未确认”；A/B待补`REF-TAIL`是否使用统一名称、用途与真实状态；且没有被后续临时文字覆盖
+- 站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为、禁止项与镜头规则等纯文字内容是否已从【参考资产】移出并进入正确既有字段；如果存在真实道具图，是否使用正式资产ID而非“参考说明”
 - 是否完成Reference Budget Check：当前Clip无关项已删除、重复项已去除、必需连续性帧已计入、最终图片数≤9；只在超限风险触发后整合同类非角色信息；没有虚构总图/空间关系图/动作关系图；每个核心角色仍有独立外貌基准
 - G02及以后是否明确A/B/C并据此标记`Tail Frame Required = YES / NO`；A/B无图时是否在【参考资产】直接列统一`REF-TAIL`、对应用途与“待用户提供/待上传、未确认”，且未声称上传/确认；C是否未列`REF-TAIL`、未要求截图
 - 【首帧参考】是否明确A Direct、B Reference-Only或C Not Required；A是否包含固定直接承接句并完整锁定；B是否说明另起新镜头重新构图、保持项和允许变化且未使用该句；C是否写明Canonical资产、Spatial Blocking与文字重建依据
@@ -326,7 +329,7 @@ Clip Production Plan用于：
 读取、描述或引用Storyboard图片、线稿、分镜板、漫画格、接触表、拼图或任何多画面材料。
 
 
-【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference与合法首尾帧，以及A/B必需但尚待用户补充的`REF-TAIL`受控声明。A/B均以统一`REF-TAIL`名称直接列入并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不得伪造路径或声称已上传/已确认，Prompt可交付但实际提交生成前补图。C不要求截图、不列`REF-TAIL`，可在【首帧参考】与首镜“起始状态”依靠Canonical资产、Spatial Blocking与文字状态承接或重建。不得使用Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
+【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference、合法首尾帧，以及其他已经明确需要实际投喂的视觉参考图；缺失视觉图只有在写明具体图像对象、实际投喂用途和“待用户补充/待上传、未确认”时才可作受控占位，且不得代替正式Canonical资产的STATE-03确认流程。A/B必需但尚待用户补充的`REF-TAIL`继续以统一名称直接列入并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不得伪造路径或声称已上传/已确认，Prompt可交付但实际提交生成前补图。C不要求截图、不列`REF-TAIL`，可在【首帧参考】与首镜“起始状态”依靠Canonical资产、Spatial Blocking与文字状态承接或重建。不得使用纯文字参考说明、Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
 
 
 ---
@@ -1130,7 +1133,7 @@ Clip Movement Plan Hard Gate：
 4. **Spatial Composition Lock**：追逐/战斗/对峙/多人镜头逐项核对前后景、左右、朝向、运动轴、摄影机轴线侧、正脸许可与同景深许可。追逐默认后追前逃，禁止双方并排正对镜头、海报式合影和群像站桩。
 5. **Prop State Check**：每个关键道具核对当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换完成状态与下一镜继承；现实/幻想形态不得跨世界混用或无过程转换。
 6. **Transition Check**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态变化，必须已有起点状态、转换媒介、运动方向/过程、终点状态和转场后首个稳定构图；缺一不得以“金光一闪 / 突然切换”补写。
-7. **Reference Asset Check / Budget**：前六项通过后才筛选实际Confirmed资产与计算图片位。只保留当前World-State实际存在/出场/使用资产，核心角色独立图优先，最终≤9，只有超限风险时整合非角色信息。
+7. **Reference Asset Eligibility / Check / Budget**：前六项通过后才筛选并计数。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否的站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头文字规则从【参考资产】删除并迁移到对应既有字段。答案为是的真实资产必须可回查文件/受控ID；待补视觉图必须写具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得绕过正式Canonical资产确认。之后只保留当前World-State实际存在/出场/使用项，核心角色独立图优先，最终≤9，只有超限风险时整合非角色信息。
 
 结果为FAIL时，不得继续Step 05或Template Mapping；按模块Return Route做最小修正并从第1项重跑。结果为PASS时，内部记录Evidence Present，并把通过语义映射到既有Template字段，不输出Preflight标题或检查表。
 
@@ -2745,9 +2748,9 @@ Template需要的数据。
 
 已通过的Clip Preflight语义副本：连续性三选一主分类；逐分镜World-State；角色精确数量与唯一性；追逐/战斗/多人空间构图；关键道具形态/尺寸/持有/悬浮/转换状态；适用转场五要素。该副本只用于把语义映射到现有字段，不成为新栏目。
 
-`参考资产：`清单：显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference与合法首尾帧，并逐项写明用途和锁定约束；已确认资产不得被临时文字描述覆盖。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
+`参考资产：`清单：显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference、合法首尾帧与其他确定需要实际投喂的视觉参考图，并逐项写明用途和锁定约束；已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
 
-在序列化该清单前，先按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；A/B无论尾帧是否已上传都预留1个Projected位并列出待补充声明，只有实际尾帧图存在、可访问、已确认时才计入已提交图片数；C不预留旧尾帧。再按`knowledge/reference_budget.md`复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增或待上传上一尾帧时按10计算并至少释放1位。Projected Final Count与已提交图片数均≤9；除A/B待补充`REF-TAIL`外，图片参考必须真实存在且已确认；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
+在序列化该清单前，先执行Visual Input Eligibility并记录文字伪资产迁移，再按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；A/B无论尾帧是否已上传都预留1个Projected位并列出待补充声明，只有实际尾帧图存在、可访问、已确认时才计入已提交图片数；C不预留旧尾帧。其他受控待补视觉图同样只计Projected位且必须说明具体图像与实际投喂用途。再按`knowledge/reference_budget.md`复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增或待上传上一尾帧时按10计算并至少释放1位。Projected Final Count与已提交图片数均≤9；真实图片参考必须存在且已确认；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
 
 `首帧参考：`写明A/B/C、`Tail Frame Required = YES / NO`与当前Clip可执行首帧。A引用对应`REF-TAIL`并逐字写固定直接承接句；B引用对应`REF-TAIL`并说明延续站位/朝向/距离/景别/空间/道具或构图逻辑，但当前Clip另起新镜头重新构图，禁止使用A固定句；A/B未提供尾帧时明确“待用户提供/待上传、未确认”，不得声称图片存在，Prompt可交付但实际提交生成前补图。C不列`REF-TAIL`，用Canonical基础资产、Spatial Blocking与文字End State承接或重建。无论哪种模式都逐项描述人物姿态、位置、朝向、视线、人物间距离、摄影机起始位置、景别、主体构图、环境、天气、道具、动作起始状态、光线与情绪状态。
 
@@ -3106,7 +3109,7 @@ STATE-08。
 
 使用正确资产。
 
-`参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、Voice/Audio Reference与合法首尾帧，并写明用途、状态和锁定约束；是否以已确认资产优先于临时文字描述。A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他缺失、占位或未参与生成约束的资产不得输出。
+`参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、Voice/Audio Reference、合法首尾帧与其他确定会实际投喂的视觉参考图，并写明用途、状态和锁定约束；是否以已确认资产优先于临时文字描述。每个视觉条目是否能肯定回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否是否已移出并归类到正确字段。A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他受控待补视觉图必须说明具体图像对象与实际投喂用途。未参与实际输入的说明、普通缺失占位或伪资产不得输出。
 
 是否通过`knowledge/reference_budget.md`：最终图片参考≤9；无非当前Clip角色/环境/道具/动作图；无重复占位；无未实际存在或未确认的总图、空间关系图、动作关系图；每个核心角色各自保留独立三视图/角色锁定图；≤7没有整合、8张无额外帧需求没有整合、9张已确认无额外连续性需求、>9已经执行非角色整合/优先级裁剪。失败时不得输出。
 
@@ -3118,6 +3121,7 @@ STATE-08。
 
 - Continuity Classification是否在视觉连续、剧情连续、主动切场/切世界中三选一，并明确A/B/C；A/B是否标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、用途与真实状态，缺图时是否写“待用户提供/待上传、未确认”且未冒充已提交图片；A/B的首帧句式是否正确区分；C是否标记`NO`、不列`REF-TAIL`并采用Canonical资产、Spatial Blocking与文字重建。
 - 每个分镜是否明确World-State；参考资产是否只含当前阶段实际存在/出场/使用项；完全位于耳中玉境等转换后世界的Clip是否排除现实阶段环境/道具。
+- 每个视觉条目是否通过Visual Input Eligibility；站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项或镜头规则是否没有伪装成资产，并已迁移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`；真实道具图是否使用正式ID。
 - 每个分镜是否锁定角色精确数量；唯一角色是否在正向字段明确唯一一只/名和前中后景无第二个同类，并在反向提示词禁止复制、分身、镜像重复、背景第二个与相似替身。
 - 追逐/战斗/对峙/多人镜头是否锁定前后景、左右、朝向、关系轴、运动方向、正脸许可与同景深许可；追逐是否默认后追前逃并禁止双方并排正对镜头、海报式合影和群像站桩。
 - 每个关键道具是否明确当前形态、尺寸、持有者/左右手、位置、是否允许悬浮、转换完成状态与下一镜继承；现实与武器化等不同世界状态是否没有混用。

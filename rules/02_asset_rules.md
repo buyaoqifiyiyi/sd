@@ -351,6 +351,22 @@ Video必须绑定：
 Shot。
 
 
+## Reference Asset Eligibility Strengthening
+
+STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Active Version、Canonical Reference、World-State与Reference Budget规则；本节只收紧“什么能被当作视觉参考条目”，不创建新的资产类型、Registry或Prompt字段。
+
+视觉条目只有满足以下任一条件才有资格进入Clip计划或最终`参考资产：`：
+
+- 已确认角色图、环境图、道具图、正式FX图、已确认参考板、合法首帧/尾帧或其他当前Clip确实会向目标模型投喂/引用的真实视觉文件或受控ID；
+- 已经确定必须由用户实际补入的视觉参考图，但当前文件尚未提供。此类条目必须明确写出具体图像对象、实际投喂用途和`待用户补充/待上传、未确认`状态，不得伪造路径、受控ID、上传或确认状态；A/B `REF-TAIL`继续按既有专用规则命名、计入Projected位并区分用途。
+
+纯文字约束没有视觉输入资格，不得通过添加“参考”“说明”“用途”或编号伪装成资产。禁止项包括但不限于：站位说明、不可换边、人物距离、同坐一张板凳、道具数量限制、空间关系说明、动作/行为约束、禁止项、镜头/机位规则、首尾帧文字合同或Spatial Blocking Text Rules。它们必须按语义进入现有`空间关系`、`起始状态`、`道具状态`、`首帧参考`、`尾帧限制`、`反向提示词`或Spatial Blocking Rules；不得为了强调而重复塞入`参考资产：`。
+
+如果约束对象本身已有真实视觉资产，应引用正式资产ID和图像，例如`PROP-BENCH-01｜双人钢琴凳`；`板凳参考说明｜用途：锁定两人共坐同一张板凳`不是资产。若缺的是必须新建并成为Canonical的正式CHAR / ENV / PROP / FX视觉资产，仍返回对应STATE-03 Workflow完成双确认，不得用“待补充”占位绕过Asset System。
+
+既有Voice/Audio Reference是独立的非视觉输入支路，继续服从声音资产与Template规则；不得把普通文字音色说明伪装为Voice/Audio Reference。本次补强不改变该支路。
+
+
 ---
 
 # 09 Two-Tier Asset System Rule
