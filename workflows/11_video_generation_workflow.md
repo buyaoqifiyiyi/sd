@@ -149,7 +149,7 @@ Voice/Audio Reference不得导致Template中的任何无条件字段被删除；
 
 视觉条目只允许实际会向模型投喂/引用的已确认视觉文件或受控ID，以及明确需要用户实际补入、写明具体图像对象、投喂用途和`待用户补充/待上传、未确认`状态的视觉图占位。纯文字站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项和镜头规则不得成为条目；按语义迁移到现有`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。若对象已有真实视觉资产则引用正式ID，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用“板凳参考说明”之类伪资产。既有Voice/Audio Reference继续按独立声音输入合同处理，不受本视觉资格补强改名或删除。
 
-通过资格检查后仍不得全选。必须读取STATE-07的`Clip End-State Record / Next-Clip Carryover`与`Continuity Risks`，按当前Clip生成目标执行Reference Selection / Routing：身份/外观风险选Active Character Canonical References；空间结构风险选Active Environment Canonical References并把Confirmed Spatial Blocking作为文字语义消费；道具造型风险选Active Prop Canonical References；A/B状态锚定选对应`REF-TAIL`并区分用途，C不选旧尾帧；光线、天气或场景状态漂移只有存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。每个入选条目必须对应一项具体风险/目标；Eligible、Registry存在、上一Clip使用过或仍有预算空位都不是充分理由。参考资产按需路由，不是越多越好。
+通过资格检查后仍不得全选。必须读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State与`Continuity Risks`，按当前Clip生成目标执行Reference Selection / Routing，并为每个入选Reference声明Primary Role / Purpose：身份/外观风险选Active Character Canonical References；空间结构风险选Active Environment Canonical References并把Confirmed Spatial Blocking作为文字语义消费；道具造型风险选Active Prop Canonical References；A/B状态锚定选对应`REF-TAIL`并区分用途，C不选旧尾帧；Motion / Camera / Audio Reference只控制其授权维度；光线、天气或场景状态漂移只有存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。Transient Reference不得覆盖正式身份、环境结构或道具造型。每个入选条目必须对应一项具体风险/目标；Eligible、Registry存在、上一Clip使用过或仍有预算空位都不是充分理由。参考资产按需路由，不是越多越好。
 
 同时必须读取`knowledge/reference_budget.md`并按实际图片文件/帧执行单Clip预算。默认保留原始独立资产，不默认整合：Projected Final Count≤7不整合；8张且无额外帧需求不整合；9张仅在没有尚未计入的连续性图片需求时允许；当前9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张必须去重、整合同类非角色信息、仍超限再按优先级裁剪，最终≤9。每个核心角色保留各自独立三视图/角色锁定图，动作/互动图不得替代外貌基准。
 
@@ -313,6 +313,10 @@ Clip Movement Plan，包括主导镜头语言、镜头间运镜变化、视觉�
 镜头结束状态。
 
 `Clip End-State Record / Next-Clip Carryover`八组语义：Character / Spatial / Prop / Camera / Environment / Performance / Continuity Risks / Next-Clip Carryover；该记录只用于连续性消费，不得变成STATE-08新增字段。
+
+Clip Scope Firewall：从STATE-07读取`already_happened / this_clip_only / reserved_for_later / do_not_show_yet`四类内部边界，并只把`this_clip_only`的主要可见Beat与改变后的Endpoint编译为当前事件。此前事件只作为起始事实，未来事件不得提前表演；四类标签不得成为最终字段。
+
+如上一Clip已经生成并由用户明确接受，读取Execution Ledger中与该Run绑定的Planned Start / End、Observed Start / End和Accepted Canon State。当前Clip起始状态优先消费Accepted Canon的合法瞬时状态，而不是强行回到原Planned End；未接受Take不得改变连续性。Accepted Take中与Active Character / Environment / Prop Canonical References冲突的脸、服装、结构或造型漂移不得被继承。
 
 镜头连接类型。
 
@@ -565,7 +569,7 @@ knowledge/prompt_compilation/state08_projection.md
 
 用于：
 
-确认所有Applicable Knowledge已被语义投影到现有Template字段，执行Five-Dimensional Prompt Control Matrix、抽象意图转译、物理数据分层、Prompt Attention / Control Allocation与Prompt Compression，且没有创建竞争Schema。
+确认所有Applicable Knowledge已被语义投影到现有Template字段，依次执行Prompt Attention / Control Allocation、Generation Budget Allocation、Five-Dimensional Prompt Control Matrix、抽象意图转译、物理数据分层与Prompt Compression，且没有创建竞争Schema。
 
 必须使用：
 
@@ -1085,6 +1089,8 @@ Director Decision Notes Hard Gate：
 
 镜头结束状态。
 
+若上一Clip已有Accepted Canon State，以上“人物在哪里 / 朝向 / 看向 / 摄影机 / 道具 / 开始状态”以Accepted Observed State为当前事实，并与正式资产Authority分别核对；只有没有Accepted Take时才直接采用原Planned End State。发现Observed与Planned不同但Take已接受时，不得无过程纠回计划值；把合法差异写入当前起始状态与Continuity Risk。
+
 
 Clip Production Plan优先帮助解决：
 
@@ -1141,7 +1147,7 @@ Clip Movement Plan Hard Gate：
 4. **Spatial Composition Lock**：追逐/战斗/对峙/多人镜头逐项核对前后景、左右、朝向、运动轴、摄影机轴线侧、正脸许可与同景深许可。追逐默认后追前逃，禁止双方并排正对镜头、海报式合影和群像站桩。
 5. **Prop State Check**：每个关键道具核对当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换完成状态与下一镜继承；现实/幻想形态不得跨世界混用或无过程转换。
 6. **Transition Check**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态变化，必须已有起点状态、转换媒介、运动方向/过程、终点状态和转场后首个稳定构图；缺一不得以“金光一闪 / 突然切换”补写。
-7. **Reference Asset Eligibility / Selection / Budget**：前六项通过后才筛选并计数。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否的站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头文字规则从【参考资产】删除并迁移到对应既有字段。答案为是的真实资产必须可回查文件/受控ID；待补视觉图必须写具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得绕过正式Canonical资产确认。再依据`Clip End-State Record / Next-Clip Carryover`、当前目标和Continuity Risks逐项路由：身份/外观→Character Canonical；空间结构→Environment Canonical + Spatial Blocking文字语义；道具造型→Prop Canonical；A/B状态锚定→对应用途`REF-TAIL`；C→不选旧尾帧；光线/场景状态→只选实际已确认合格的视觉基准或合法帧，否则写入文字字段。记录每个入选条目解决的风险和Eligible但未选项的理由；漏选、选错或无依据过量引用均FAIL。之后只保留当前World-State实际存在/出场/使用项，核心角色独立图优先，最终≤9，只有超限风险时整合非角色信息。
+7. **Reference Asset Eligibility / Selection / Budget**：前六项通过后才筛选并计数。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否的站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头文字规则从【参考资产】删除并迁移到对应既有字段。答案为是的真实资产必须可回查文件/受控ID；待补视觉图必须写具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得绕过正式Canonical资产确认。再依据`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State、当前目标和Continuity Risks逐项路由并声明Primary Role / Purpose：身份/外观→Character Canonical；空间结构→Environment Canonical + Spatial Blocking文字语义；道具造型→Prop Canonical；A/B状态锚定→对应用途`REF-TAIL`；C→不选旧尾帧；Motion / Camera / Audio只控制授权维度；光线/场景状态→只选实际已确认合格的视觉基准或合法帧，否则写入文字字段。Transient Reference不得覆盖正式身份、结构或造型。记录每个入选条目解决的风险和Eligible但未选项的理由；漏选、选错、越权或无依据过量引用均FAIL。之后只保留当前World-State实际存在/出场/使用项，核心角色独立图优先，最终≤9，只有超限风险时整合非角色信息。
 
 结果为FAIL时，不得继续Step 05或Template Mapping；按模块Return Route做最小修正并从第1项重跑。结果为PASS时，内部记录Evidence Present，并把通过语义映射到既有Template字段，不输出Preflight标题或检查表。
 
@@ -1277,7 +1283,7 @@ knowledge/prompt_compilation/state08_projection.md
 
 禁止为了让每个模块“看起来被使用”而增加不存在的内容；但任何已确认且适用的模块都不得在Template Mapping时丢失。
 
-完成Applicable Knowledge Set后，必须在同一内部Projection中执行`Prompt Attention / Control Allocation Gate`与`Five-Dimensional Prompt Control Matrix`。五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目，不成为五个最终大字段。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并按`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`清洗。重要抽象语义至少落到一个可见/可听项；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。
+完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并按`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`清洗。重要抽象语义至少落到一个可见/可听项；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。
 
 
 ## Knowledge Application Reflection Layer
@@ -2756,7 +2762,7 @@ Template需要的数据。
 
 已通过的Clip Preflight语义副本：连续性三选一主分类；逐分镜World-State；角色精确数量与唯一性；追逐/战斗/多人空间构图；关键道具形态/尺寸/持有/悬浮/转换状态；适用转场五要素。该副本只用于把语义映射到现有字段，不成为新栏目。
 
-`参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`与当前Continuity Risks，按身份/外观、空间结构、道具造型、A/B状态锚定、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference、合法首尾帧与其他确定需要实际投喂的视觉参考图，并逐项写明用途、所解决风险和锁定约束；不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
+`参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`、适用的Accepted Canon State与当前Continuity Risks，按身份/外观、空间结构、道具造型、A/B状态锚定、Motion、Camera、Audio、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference、合法首尾帧与其他确定需要实际投喂的视觉参考图。每个入选Reference必须写明唯一Primary Role / Purpose、所解决风险和锁定约束，并遵守Reference Authority Hierarchy：Transient / Motion / Camera / Audio Reference只控制授权维度，不得覆盖正式角色身份、环境结构或道具造型；尾帧脸部漂移时仍由Active Character Canonical Reference控制身份，只继承合法姿态/站位/动作阶段。不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
 
 在序列化该清单前，先执行Visual Input Eligibility并记录文字伪资产迁移，再按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；A/B无论尾帧是否已上传都预留1个Projected位并列出待补充声明，只有实际尾帧图存在、可访问、已确认时才计入已提交图片数；C不预留旧尾帧。其他受控待补视觉图同样只计Projected位且必须说明具体图像与实际投喂用途。再按`knowledge/reference_budget.md`复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增或待上传上一尾帧时按10计算并至少释放1位。Projected Final Count与已提交图片数均≤9；真实图片参考必须存在且已确认；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
 
@@ -3130,7 +3136,7 @@ STATE-08。
 
 `参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、Voice/Audio Reference、合法首尾帧与其他确定会实际投喂的视觉参考图，并写明用途、状态和锁定约束；是否以已确认资产优先于临时文字描述。每个视觉条目是否能肯定回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否是否已移出并归类到正确字段。A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他受控待补视觉图必须说明具体图像对象与实际投喂用途。未参与实际输入的说明、普通缺失占位或伪资产不得输出。
 
-是否已按`Clip End-State Record / Next-Clip Carryover`、当前目标与Continuity Risks完成Reference Selection / Routing；每个入选条目能否说明所解决风险；身份/外观、空间结构、道具造型、A/B尾帧与光线/场景状态是否选择正确来源；C是否未选旧尾帧；是否不存在必需资产漏选、用途选错、无风险依据的过量条目或把Spatial Blocking Map当视觉参考。
+是否已按`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State、当前目标与Continuity Risks完成Reference Selection / Routing；每个入选条目能否声明Primary Role / Purpose并说明所解决风险；身份/外观、空间结构、道具造型、A/B尾帧、Motion、Camera、Audio与光线/场景状态是否选择正确Authority；C是否未选旧尾帧；Transient Reference是否未覆盖正式身份/结构/造型；是否不存在必需资产漏选、用途选错、无风险依据的过量条目或把Spatial Blocking Map当视觉参考。
 
 是否通过`knowledge/reference_budget.md`：最终图片参考≤9；无非当前Clip角色/环境/道具/动作图；无重复占位；无未实际存在或未确认的总图、空间关系图、动作关系图；每个核心角色各自保留独立三视图/角色锁定图；≤7没有整合、8张无额外帧需求没有整合、9张已确认无额外连续性需求、>9已经执行非角色整合/优先级裁剪。失败时不得输出。
 
@@ -3167,7 +3173,7 @@ STATE-08。
 
 ## Cross-Clip Continuity Check
 
-是否每个分镜都明确与下一镜/Clip的Boundary Class。跨Clip是否读取上一Clip八组`Clip End-State Record / Next-Clip Carryover`并逐项形成当前首帧；是否明确选择A同镜头连续承接、B新镜头参考型或C新镜头且无需尾帧；A/B是否声明不同用途并使用正确首帧句式，C是否写明不使用尾帧、重建原因与保留锚点；是否不存在无说明的状态断裂、人物/道具重置、相机轴线跳变或连续性丢失。
+是否每个分镜都明确与下一镜/Clip的Boundary Class。跨Clip是否读取上一Clip八组`Clip End-State Record / Next-Clip Carryover`；存在用户接受Take时是否以Execution Ledger中的Accepted Observed State形成当前首帧、覆盖同维度Planned State，且未让未接受Take或身份漂移进入Canon；是否明确选择A同镜头连续承接、B新镜头参考型或C新镜头且无需尾帧；A/B是否声明不同用途并使用正确首帧句式，C是否写明不使用尾帧、重建原因与保留锚点；是否不存在无说明的状态断裂、人物/道具重置、相机轴线跳变或连续性丢失。
 
 
 ---
@@ -3394,8 +3400,10 @@ UNIT顺序、Entry / Exit Anchor、State Ledger与Retry Boundary没有被改写�
 - “创业 / 约会 / 学生 / 婚礼 / 医院 / 黑帮 / 赛博朋克 / 日系青春”等高共现大词是否经过Semantic Template Decomposition，没有无依据带入默认场景、服装、道具、天气或美术元素。
 - 数字是否按视觉控制价值使用；是否删除或降精度了0.137m/s、0.166m/s²、53mm等无额外可见收益的工程数据；是否没有把生成模型表述成严格物理仿真器。
 - Five-Dimensional Prompt Control Matrix是否只填补未锁定且当前Clip确需控制的维度，没有成为最终新栏目。
+- 是否已先完成Generation Budget Allocation：Primary Spend唯一清楚，Secondary最多一至两个且服务Primary，Economized明确降低非必要负荷；是否没有把身份、复杂动作、高密场景、复杂运镜、群体、口型、FX与光色变化同时拉满；三类标签没有进入最终Prompt。
 - 是否完整保留当前Clip真正变化的主要动作、顺序、中间变化、结束状态与首尾承接；这些高优先级信息是否比装饰性风格词和器材名更清楚。
 - 是否删除了其他镜头/Clip的动作、机位、状态与风格残留，只保留合法继承项；是否没有同时堆叠互相稀释的导演、美术、摄影与渲染风格。
+- 是否遵守Clip Scope Firewall：`already_happened`未重播，只执行`this_clip_only`的主要可见Beat并形成改变后的Endpoint，`reserved_for_later`与`do_not_show_yet`没有提前进入画面。
 
 失败只修当前Clip的转译、冲突或压缩；若根因来自上游事实矛盾，按Error Routing返回对应拥有者。
 

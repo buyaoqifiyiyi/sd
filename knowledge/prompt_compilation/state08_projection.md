@@ -43,6 +43,20 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 
 清洗不得机械删除文学/导演意图、合法连续性重复、Template必填字段或已经确认的生产语义。任何无法在当前Clip内部消解的事实冲突必须先走Return Route。
 
+进入控制矩阵前还必须消费STATE-07的Clip Scope Firewall：`already_happened`只作为起始事实，不重播；`this_clip_only`是唯一允许被执行的可见剧情/动作范围；`reserved_for_later`只保留为边界上下文，不写成当前事件；`do_not_show_yet`用正向目标状态和必要的少量反向高风险项防止提前出现。一个Clip原则上只实现一个主要可见Beat与改变后的Endpoint；同一Beat所需的连续动作不被机械拆成一个动作。
+
+## Generation Budget Allocation Gate
+
+本Gate是Five-Dimensional Prompt Control Matrix之前的逐Clip内部判断，不是数学额度、不创建最终字段，也不替代Director Decision、Clip Movement Plan或Knowledge Reflection。它把有限的生成控制能力收敛到当前Clip最重要的结果，防止Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化同时拉满。
+
+每个Clip在内部Projection Ledger记录：
+
+- `Primary Spend`：当前Clip必须最可靠实现的一个核心生成目标；优先来自已确认Narrative Objective、主要可见Beat与最高Continuity Risk。
+- `Secondary Spend`：最多一至两个支持Primary、但失败不会改变本Clip核心意义的目标。
+- `Economized`：主动降低复杂度、不追求或保持稳定的维度，并写明采用固定机位、单一路径、减少群体活动、缩减口型/FX/光色变化、降低场景活动密度或其他既有Safe Downgrade中的哪一种。
+
+分配时先保护剧情/资产/边界正确和Primary Spend，再允许Secondary；其余高负荷维度必须进入Economized或返回STATE-07/06拆分。Five-Dimensional Matrix随后只对Primary、Secondary及仍未锁定的必要风险做高控制，不允许五维全部因为“可能有用”而同时补满。三项决策只进入既有内部Ledger与最终字段的具体执行语义，禁止输出`Primary Spend / Secondary Spend / Economized`标签。
+
 ## Five-Dimensional Prompt Control Matrix
 
 这是STATE-08内部检查层，不是最终Prompt的五个新字段。逐Clip只检查并填补“参考资产或上游信息尚未锁死、但当前Clip需要控制”的维度；已锁定且无当前风险的内容标记`Locked / Minimal Confirmation`，不重复成长篇描述。
@@ -194,6 +208,8 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 高共现大词是否经过Semantic Template Decomposition；是否没有把“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等默认视觉包无依据带入当前Clip。
 - 是否存在无可见收益的工程级小数、精确轨迹或伪物理参数；有价值数字是否按视觉关系/摄影倾向使用而非承诺严格仿真。
 - 是否遗漏当前Clip真正变化的主要动作、时间顺序、中间变化、结束状态或首尾承接；高优先级动作/空间/镜头信息是否比装饰性风格词更清楚。
+- 是否已在五维检查前完成Generation Budget Allocation；Primary目标是否唯一清楚，Secondary是否真正支持它，Economized是否主动降低至少一个非必要高负荷维度；是否仍把身份、复杂动作、高密场景、复杂运镜、群体、口型、FX与光色变化同时拉满。
+- 是否只执行`this_clip_only`的主要可见Beat并形成改变后的Endpoint；是否重播`already_happened`、提前表演`reserved_for_later`或让`do_not_show_yet`元素提前出现。
 - 是否只保留从上一镜/上一Clip合法继承的状态，没有混入其他镜头的动作、机位、结束状态或风格残留；是否没有堆叠互相稀释的导演、美术、摄影与渲染风格。
 - 是否没有方头括号旧章节、独立CLIP标题字段、“与下一镜衔接”或其他额外字段。
 - `参考资产：`、`首帧参考：`、`尾帧限制：`是否无条件存在且非空。

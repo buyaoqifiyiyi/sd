@@ -19,8 +19,8 @@ Last Successful Checkpoint：
 
 ## Generation Attempts
 
-| Run ID | Prompt Revision | SHOT / UNIT | Attempt | Risk Level | Result | Failure Class | Stable Downgrade | Accepted Output | Review ID |
-|---|---|---|---:|---|---|---|---|---|---|
+| Run ID | Prompt Revision | CLIP / SHOT / UNIT | Attempt | Risk Level | Result | Failure Class | Planned Start State | Planned End State | Observed Start State | Observed End State | Highest-Impact Variable / Retry Scope | Stable Downgrade | Accepted Output | Accepted Canon State | Acceptance Evidence | Review ID |
+|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ---
 
@@ -28,4 +28,3 @@ Last Successful Checkpoint：
 
 | Item | Blocking Fact | Owner | Safe Resume Point | Required Action | Must Not Change |
 |---|---|---|---|---|---|
-

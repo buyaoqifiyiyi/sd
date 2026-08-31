@@ -94,6 +94,7 @@ Shot Design。
 已读取：
 
 - references/project_state_contract.md
+- references/artifact_revision_contract.md
 - templates/16_review_report.md
 - knowledge/quality/index.md
 - knowledge/quality/shot_qa.md
@@ -121,6 +122,8 @@ project_status.md
 
 
 asset_registry.md
+
+execution_ledger.md；存在实际生成或重试时，必须读取对应Generation Run Record、Planned / Observed State、Accepted Output与接受证据
 
 Confirmed Clip Production Plan，以及每个受审Clip的`Clip End-State Record / Next-Clip Carryover`与Reference Selection / Routing审计
 
@@ -575,7 +578,9 @@ Shot Design Workflow
 
 □ 每个Clip结束状态已用`Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover`归并；下一Clip首帧逐项消费实际需要的状态，没有人物/道具重置、已完成动作重播、环境/光态突然复位或相机轴线跳变
 
-□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：身份/外观、空间结构、道具造型、A/B尾帧、光线/场景状态使用正确来源；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
+□ 每个受审Take分别记录Planned Start / End与实际Observed Start / End；用户已接受Take时，Accepted Canon State来自该Take的Observed State并覆盖后续同维度Planned State。未接受Take未写入Canon；Accepted Take或`REF-TAIL`中的脸/服装/环境结构/道具造型漂移未覆盖正式Canonical资产，只继承授权的姿态、站位、动作阶段与其他瞬时状态
+
+□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：每个入选Reference声明Primary Role / Purpose；身份/外观、空间结构、道具造型、A/B尾帧、Motion、Camera、Audio与光线/场景状态使用正确Authority；Transient Reference没有覆盖正式身份/结构/造型；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
 
 □ Top-down Blocking Map仅作为Planning Reference，没有被登记为Canonical Asset、Storyboard或写入STATE-08【参考资产】
 
@@ -805,6 +810,22 @@ Color设计或综合色彩连续性错误：
 
 ---
 
+# Failure Diagnosis And Single-Variable Retake
+
+任何REVISE / REBUILD或生成重试决定，先把问题定位到具体Scene、SHOT、CLIP、Boundary、Run与现有Failure Class，再执行：
+
+`Failure Diagnosis → choose one highest-impact variable → change that variable first → retake → compare`
+
+- 从Identity、Spatial / Blocking、Prop、Motion / Performance、Camera / Focus、Lighting / Color、FX / Sound、Coverage、Prompt Scope / Template中选择一个对当前失败影响最大的变量；把它写入Review Report现有`Problems And Corrective Actions → Minimum Necessary Fix`与`Recheck Scope`，不新增Template字段。
+- 第一轮只修改该变量及其必需相邻边界，保持Accepted Unaffected Artifacts、正式资产版本、无关镜头、导演方向和其他Prompt维度不变。站位错误优先只修Blocking / Spatial与必要边界；身份漂移优先修Identity Reference路由；动作失败优先修Motion / Performance；镜头失败优先修Camera；不得一上来整段重写所有字段。
+- Retake后必须与前一Take按同一问题、同一Affected IDs和同一连续性边界比较，确认目标变量改善且没有引入新的Hard Gate失败，再决定PASS、继续REVISE、返回更上游或进入Editing。
+- 能安全后期修复且不破坏身份、空间、动作结果或连续性的局部问题，沿现有Editing Workflow处理；不为可后期解决的问题无必要Re-roll。无问题或已接受结果沿用PASS / Accepted Unaffected Artifacts；本Workflow不新增Keep、Fix in post、Re-roll等竞争结果标签。
+- 只有根因有明确多变量耦合证据、单变量修复无法形成合法输入，或用户明确要求整体重做时，才允许多变量修订或REBUILD；必须记录耦合变量、理由和Must Not Change，不能用“整体感觉不对”代替诊断。
+
+同一失败连续两次仍执行现有Stable Downgrade；连续三次返回事实/设计拥有者，不继续同参数盲重试。单变量协议不改变PASS / REVISE / REBUILD、Return Route或最小必要修改原则。
+
+---
+
 # Quality Result
 
 
@@ -861,6 +882,14 @@ Workflow负责判断Result、问题归属、最小修复与返回路由；Templa
 Review Report保存到：
 
 `<active-project-root>/reviews/REVW-XXX.md`
+
+## Accepted Take Canon Writeback
+
+Review核对实际生成结果后，把每个Take的Planned Start / End与Observed Start / End写回现有`execution_ledger.md` Generation Attempts记录。只有用户对具体Take有明确接受证据时，才同时写`Accepted Output = Yes`与`Accepted Canon State`，并绑定Run ID、Prompt Revision和Review ID；Review技术PASS但尚无用户接受证据时，可以记录PASS，不得擅自把Take写成Accepted Canon。
+
+Accepted Canon使用八组Shot-State Memory语义保存实际瞬时状态，并成为下一Clip连续性的权威输入；同维度上覆盖原Planned State。用户拒绝、未确认或待比较Take不得改变Canon。若接受的Take含脸部、服装、环境结构或道具造型漂移，仍由Active Character / Environment / Prop Canonical References控制正式身份与造型；只把已接受的姿态、站位、动作阶段、持有关系、摄影机和临时环境状态写入Canon，并把漂移登记为Continuity Risk。
+
+Project State继续只在现有`Active Artifacts`与`Continuity And Open Risks`中记录Execution Ledger / Accepted Run指针和恢复风险，不复制逐Clip完整状态、不新建Clip Registry或平行Project State Schema。
 
 
 

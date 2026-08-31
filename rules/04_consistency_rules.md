@@ -279,6 +279,18 @@ STATE-07与STATE-08逐Clip强制执行`knowledge/clip_preflight_check.md`。本G
 
 Detailed Shot Design与Clip Production只能记录已批准资产在具体Shot/Clip中的状态，不得改变资产身份；不得用Storyboard图片重新定义资产。
 
+Reference Selection / Routing除决定“是否使用”外，还必须为每个入选Reference声明唯一`Primary Role / Purpose`，并按以下Authority边界消费；不同Authority只控制自己的维度，不得凭画面相似度跨权覆盖：
+
+- **Identity Authority**：Active Character Canonical References；唯一负责角色身份、脸、年龄、体型、基础服装、物种与身体结构。
+- **Environment Authority**：Active Environment Canonical References；负责正式环境结构、固定布局、材质与长期空间识别。
+- **Prop Authority**：Active Prop Canonical References；负责正式道具身份、造型、材质与Canonical形态。
+- **Transient State Authority**：用户已接受Take的Accepted Canon State，以及与该Take绑定的上一Clip / `REF-TAIL`；只负责姿态、站位、朝向、人物距离、动作阶段、短时道具持有、临时光态/天气/环境状态与起始构图。
+- **Motion Authority**：实际入选的已确认动作或视频参考；只负责动作路径、节奏、受力、速度感或表演阶段，不负责身份、环境结构或道具造型。
+- **Camera Authority**：实际入选的已确认镜头/机位/运动参考；只负责机位、景别、构图、轴线侧、焦点与摄影机路径，不负责角色身份或资产设计。
+- **Audio Authority**：当前系统已支持且实际入选的Confirmed Voice/Audio Reference；只负责声音身份、节奏、声线或音频执行，不得改变视觉身份。没有适用声音资产时沿用现有No Voice Asset / 无对白分支，不自动触发AUDIO模块。
+
+同一Reference可以有一个Primary Role和必要的兼容Secondary用途，但Secondary不得越过上述Authority。发生冲突时，正式角色/环境/道具Authority分别高于Transient、Motion、Camera与风格参考；临时状态Reference中的脸部、服装、环境结构或道具造型漂移不得被下一Clip继承。尤其`REF-TAIL`脸部轻微漂移时，下一Clip仍以Active Character Canonical References保持身份，只从尾帧或Accepted Canon State消费已确认的姿态、站位、动作阶段与其他合法瞬时状态。
+
 
 
 ---
@@ -403,6 +415,18 @@ STATE-07必须把已经散布在Entry、内部Shot状态链、Exit、Spatial Blo
 - `Next-Clip Carryover`：下一Clip必须保持、允许有动机改变、明确不继承或仍待确认的事实，连同A/B/C、Tail Frame Requirement、参考用途和重建依据。
 
 下一Clip的`首帧参考`与首镜`起始状态`必须消费这份记录；A逐项直接继承，B区分保持项与允许改变项，C只继承剧情仍有效事实并用当前Scene / World-State、Canonical资产、Confirmed Spatial Blocking与文字规则重建。记录与上游事实冲突时按Rule 12返回，不得在STATE-07/08取平均或猜测。
+
+### Accepted Take Canon
+
+`Clip End-State Record / Next-Clip Carryover`首先是计划合同，不得把计划状态与实际生成结果混为同一层。每个实际生成Take按现有Execution Ledger / Generation Run Record区分：
+
+- `Planned Start State / Planned End State`：来自Confirmed Clip Production Plan与Prompt边界合同。
+- `Observed Start State / Observed End State`：对该Take实际画面核验得到的八组状态；只记录可观察事实，不把计划值抄成观察值。
+- `Accepted Canon State`：只有用户明确接受该Take，且Acceptance证据绑定Run ID、Prompt Revision与Review结果后，才从Observed State建立的后续连续性权威状态。
+
+下一Clip已存在Accepted Canon State时，必须用它覆盖同维度的Planned State并形成当前首帧；不得为了回到原计划而无过程改手、换位、重播动作或重置摄影机/环境状态。没有Accepted Take时继续使用最近Confirmed Planned State；被拒绝、未确认或仅生成未审的Take不得写入Canon。
+
+Accepted Canon State只提升被接受的**实际瞬时状态**，不提升错误资产身份。若Accepted Take或`REF-TAIL`与Active Character / Environment / Prop Authority冲突，正式Canonical资产继续控制身份、结构与造型；只继承该Take中已接受且不越权的姿态、站位、动作阶段、持有关系、临时光态等状态，并把冲突列入`Continuity Risks`。任何Canon更新都复用现有八组语义、Execution Ledger与Project State的现有`Continuity And Open Risks`/Artifact指针，不新增Clip Registry、资产类型、主STATE或STATE-08字段。
 
 ## Cross-Clip Tail-Frame Carryover
 
