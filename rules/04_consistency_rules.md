@@ -387,6 +387,23 @@ CHAR-001@v002
 
 进入STATE-08后，边界信息不得因“一个Clip包含多个分镜”而被隐式处理。同一Clip内每个分镜都必须保留起始、结尾和下一镜衔接；每个Confirmed Clip成为独立G生成段，在【主风格】之前输出【首帧参考】与定义自己新结束状态的【尾帧限制】，并输出独立反向提示词。跨Clip必须先根据当前Clip Start Requirement判定A/B/C：A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；C标记`NO`且不列`REF-TAIL`。资产是否已存在不得反向改变分类。
 
+## Cross-Clip End-State Record
+
+STATE-07必须把已经散布在Entry、内部Shot状态链、Exit、Spatial Blocking、道具连续性、摄影机路径、稳定尾帧与Handoff中的事实，合并为每个Clip一份简洁的内部`Clip End-State Record / Next-Clip Carryover`。这是Shot-State Memory所需语义在现有Shot Boundary Contract内的实现，不新增STATE、ID命名空间、资产类型或STATE-08最终字段，也不得复制Professional Detailed Shot Script的全部专业字段。
+
+记录固定使用八组语义：
+
+- `Character State`：各人物位置、左右/前后、朝向、坐/站/移动姿态、人物间距离、动作结果/阶段，以及谁持有什么。
+- `Spatial State`：环境锚点、关系轴/180度轴线、路径、视线或来源—路径—目标连线、不可穿越与不可换边事实。
+- `Prop State`：关键道具身份、形态、持有者/左右手、位置、方向、接触、损伤/开合/转换等当前状态。
+- `Camera State`：摄影机位置、高度、朝向、轴线侧、最终机位、景别、构图、焦点与稳定状态。
+- `Environment State`：当前Scene / World-State、固定结构、时间、天气、光线、综合色彩、材质/介质与持续声音状态。
+- `Performance State`：情绪、公开状态/泄漏、呼吸或体力、动作完成度与稳定表演结果。
+- `Continuity Risks`：下一边界最可能发生的状态断裂、人物/道具重置、左右/轴线翻转、身份/环境/道具/光态漂移及模型执行风险。
+- `Next-Clip Carryover`：下一Clip必须保持、允许有动机改变、明确不继承或仍待确认的事实，连同A/B/C、Tail Frame Requirement、参考用途和重建依据。
+
+下一Clip的`首帧参考`与首镜`起始状态`必须消费这份记录；A逐项直接继承，B区分保持项与允许改变项，C只继承剧情仍有效事实并用当前Scene / World-State、Canonical资产、Confirmed Spatial Blocking与文字规则重建。记录与上游事实冲突时按Rule 12返回，不得在STATE-07/08取平均或猜测。
+
 ## Cross-Clip Tail-Frame Carryover
 
 必须沿用现有Previous-Clip Continuity Decision、`参考资产：`、`首帧参考：`、`尾帧限制：`和逐镜起止状态，把上一尾帧使用方式明确区分为以下三类；这是对既有Direct / Reference-Only / Not Required的补强，不新增最终Prompt字段或平行Schema。

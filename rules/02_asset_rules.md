@@ -366,6 +366,18 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 既有Voice/Audio Reference是独立的非视觉输入支路，继续服从声音资产与Template规则；不得把普通文字音色说明伪装为Voice/Audio Reference。本次补强不改变该支路。
 
+### Reference Selection / Routing Within Eligible Assets
+
+视觉输入资格只是准入门槛，不表示所有合格资产都必须进入当前Clip。STATE-07 / STATE-08必须在World-State、当前Clip目标、`Continuity Risks`与下一Clip起始要求明确后，按实际风险选择最小充分参考集合；参考资产按需路由，不是越多越好，也不得把整个Asset Registry机械复制到`参考资产：`。
+
+- 身份、脸型、服装、物种或基础外观漂移风险 → 当前Active Character Version的适用Canonical References。
+- 场景结构、门窗/家具/地标、方位或空间尺度漂移风险 → 当前Active Environment Canonical References；站位、路径、轴线与摄影机侧继续由Confirmed Spatial Blocking与文字空间规则承担，Top-down Blocking Map本身没有视频视觉输入资格。
+- 道具造型、材质、尺寸或可识别状态漂移风险 → 当前Active Prop Canonical References；持有者、左右手、位置、方向、接触和变化过程仍写入`道具状态`及起止状态，不把文字合同伪装成图片。
+- A【同镜头连续承接】或B【新镜头参考型】确需上一状态锚定 → 按既有规则选择`REF-TAIL`并声明对应用途；C【新镜头且无需尾帧】不得引用或预留旧`REF-TAIL`。
+- 光线、天气、综合色彩或场景当前状态存在漂移风险 → 只有实际存在、可回查且已确认的场景视觉基准图、合法首帧/尾帧或其他合格状态参考才可作为视觉输入；如果只有Project Bible、场景视觉基准或环境状态文字，则投影到`主风格 / 环境一致性 / 首帧参考 / 起始状态 / 尾帧限制`，不得虚构“Scene Anchor”或关键帧资产。
+
+每个选中条目必须能回答“它解决当前Clip的哪一项具体风险或生成目标”；仅仅Eligible、上一Clip用过、位于Registry、可能有帮助或预算尚有空位都不是入选理由。合格但与当前风险无关的资产必须不选；遗漏必需项、用途选错、A/B/C路由错误或无风险依据的过量引用都视为Reference Selection失败，并按事实拥有者返回最小修正。
+
 
 ---
 

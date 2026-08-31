@@ -100,6 +100,8 @@ Shot Design。
 - knowledge/quality/continuity_pair_qa.md
 - knowledge/quality/execution_risk.md
 - knowledge/quality/prompt_scorecard.md（审核STATE-08 Prompt时）
+- knowledge/clip_preflight_check.md
+- knowledge/reference_budget.md
 - knowledge/spatial_blocking_layer.md
 - knowledge/director_decision_layer.md
 - knowledge/knowledge_application_reflection.md
@@ -119,6 +121,8 @@ project_status.md
 
 
 asset_registry.md
+
+Confirmed Clip Production Plan，以及每个受审Clip的`Clip End-State Record / Next-Clip Carryover`与Reference Selection / Routing审计
 
 
 SHOT设计
@@ -569,6 +573,10 @@ Shot Design Workflow
 
 □ 每个Continuous Handoff满足`Previous Clip End State → Next Clip First Frame Reference`：Direct逐项继承；Reference-Only只改变已授权机位 / 景别 / 构图；Motivated Discontinuity明确Not Inherited、断点与重建依据
 
+□ 每个Clip结束状态已用`Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover`归并；下一Clip首帧逐项消费实际需要的状态，没有人物/道具重置、已完成动作重播、环境/光态突然复位或相机轴线跳变
+
+□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：身份/外观、空间结构、道具造型、A/B尾帧、光线/场景状态使用正确来源；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
+
 □ Top-down Blocking Map仅作为Planning Reference，没有被登记为Canonical Asset、Storyboard或写入STATE-08【参考资产】
 
 任何反轴、左右漂移、人物换边、移动路径断裂、瞬移、道具位置 / 持有状态不连续、摄影机跨轴或尾帧—首帧不一致，均必须定位到具体Scene、SHOT、CLIP、Boundary和字段，不得只写“空间不连贯”。
@@ -577,6 +585,7 @@ Shot Design Workflow
 
 - Spatial Blocking Decision、地图 / 文字规则、SHOT站位 / 路径 / 轴线或边界设计缺失 / 错误：返回STATE-06，只修Affected Scene / SHOT及相邻边界。
 - STATE-06正确，但Clip起始 / 结尾、尾帧用途或`Previous Clip End State → Next Clip First Frame Reference`组织错误：返回STATE-07，只修Affected Clip与Cross-Clip Ledger。
+- STATE-06正确，但`Clip End-State Record / Next-Clip Carryover`缺失/断裂，或Reference Selection / Routing在Clip Plan中漏选、选错、过量：返回STATE-07，只修Affected Clip、相邻边界与既有Reference Budget Audit。
 - STATE-06 / 07正确，仅STATE-08转译、生成执行或参考帧使用偏差：返回STATE-08，只修Affected Clip Prompt或重试该Clip。
 - Environment / Prop / Character资产的固定空间事实本身错误：返回对应STATE-03资产拥有者；Scene剧情动作或结构事实不足：返回STATE-05。
 - 复杂场景缺少Confirmed Spatial Blocking Result属于Hard Gate失败；不得用审美分数覆盖，也不得只在Prompt里补一句“保持一致”。

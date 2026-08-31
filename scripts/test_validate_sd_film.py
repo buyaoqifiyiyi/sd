@@ -381,6 +381,93 @@ Next Workflow: Project Setup Workflow
         self.assertIn("B不得使用A类", template)
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
+    def test_cross_clip_end_state_and_reference_routing_are_installed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        files = {
+            relative: (skill_root / relative).read_text(encoding="utf-8")
+            for relative in (
+                "rules/02_asset_rules.md",
+                "rules/04_consistency_rules.md",
+                "knowledge/clip_preflight_check.md",
+                "workflows/10_clip_production_workflow.md",
+                "workflows/11_video_generation_workflow.md",
+                "workflows/13_review_workflow.md",
+                "templates/20_clip_plan.md",
+                "templates/10_video_prompt.md",
+                "references/regression_scenarios.md",
+            )
+        }
+        for relative in (
+            "rules/04_consistency_rules.md",
+            "knowledge/clip_preflight_check.md",
+            "workflows/10_clip_production_workflow.md",
+            "workflows/11_video_generation_workflow.md",
+            "workflows/13_review_workflow.md",
+            "templates/20_clip_plan.md",
+            "templates/10_video_prompt.md",
+            "references/regression_scenarios.md",
+        ):
+            self.assertIn("Clip End-State Record / Next-Clip Carryover", files[relative])
+        for marker in (
+            "Character State",
+            "Spatial State",
+            "Prop State",
+            "Camera State",
+            "Environment State",
+            "Performance State",
+            "Continuity Risks",
+            "Next-Clip Carryover",
+        ):
+            self.assertIn(marker, files["templates/20_clip_plan.md"])
+        for relative in (
+            "rules/02_asset_rules.md",
+            "knowledge/clip_preflight_check.md",
+            "workflows/10_clip_production_workflow.md",
+            "workflows/11_video_generation_workflow.md",
+            "workflows/13_review_workflow.md",
+            "templates/20_clip_plan.md",
+        ):
+            self.assertIn("Reference Selection / Routing", files[relative])
+        regression = files["references/regression_scenarios.md"]
+        self.assertIn("R13-A Same-Shot Direct Continuation", regression)
+        self.assertIn("R13-B New Shot With Tail Position Reference", regression)
+        self.assertIn("R13-C New Shot Without Tail Reference", regression)
+        case_a = regression.split("### R13-A Same-Shot Direct Continuation", 1)[1].split("### R13-B", 1)[0]
+        case_b = regression.split("### R13-B New Shot With Tail Position Reference", 1)[1].split("### R13-C", 1)[0]
+        case_c = regression.split("### R13-C New Shot Without Tail Reference", 1)[1].split("---", 1)[0]
+        for marker in (
+            "A Direct",
+            "Tail Frame Required = YES",
+            "Character Canonical",
+            "Environment Canonical",
+            "Prop Canonical",
+            "同镜头连续承接用途",
+            "不重置坐姿",
+        ):
+            self.assertIn(marker, case_a)
+        for marker in (
+            "B Reference-Only",
+            "Tail Frame Required = YES",
+            "空间/站位/景别参考用途",
+            "另起新镜头重新构图",
+            "不使用A的固定Direct句",
+        ):
+            self.assertIn(marker, case_b)
+        for marker in (
+            "C Not Required",
+            "Tail Frame Required = NO",
+            "不列、不预留`REF-TAIL`",
+            "Environment Canonical",
+            "Prop Canonical",
+            "Top-down Map不进入参考资产",
+        ):
+            self.assertIn(marker, case_c)
+        self.assertIn("Shot-State Memory", files["rules/04_consistency_rules.md"])
+        self.assertIn("Shot-State Memory", files["workflows/10_clip_production_workflow.md"])
+        self.assertIn("参考资产按需路由，不是越多越好", files["rules/02_asset_rules.md"])
+        self.assertNotIn("Scene Anchor`资产", files["rules/02_asset_rules.md"])
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
     def test_global_runtime_rules_are_installed(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         for relative in (

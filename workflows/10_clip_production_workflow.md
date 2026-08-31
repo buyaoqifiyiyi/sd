@@ -143,8 +143,9 @@ Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相�
 - 光影、色彩、FX 与声音连续性
 - 结尾状态、稳定尾帧限制及下一 Clip Handoff
 - 模型执行风险与安全降级
+- `Clip End-State Record / Next-Clip Carryover`：把上述已有Entry、内部Shot状态链、Exit、Spatial Blocking、道具连续性、摄影机路径、环境/表演状态和Handoff合并为STATE-07内部连续性记录，作为Shot-State Memory所需语义的既有合同内实现。固定使用`Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover`八组简洁语义；不新增STATE、ID、资产类型或STATE-08字段，不复制Professional Detailed Shot Script全部字段。下一Clip必须以此记录而不是凭记忆重建起始状态
 - Clip Preflight Check：连续性主分类、逐分镜World-State、角色精确数量、空间构图锁、关键道具状态、适用Transition五要素、Reference Asset Check与`PASS / Return Route`
-- Reference Budget Audit：只列通过Visual Input Eligibility、当前Clip实际需要且通过World-State的候选图片资产；真实资产须存在/已确认并可回查文件或受控ID。明确需要用户实际补入的视觉参考图占位须写具体图像对象、投喂用途与“待用户补充/待上传、未确认”，只计Projected位、不计已提交图片；它不得绕过应返回STATE-03的正式Canonical资产流程。A/B `REF-TAIL`继续以统一名称、用途类型和专用状态声明预留1个Projected连续性图片位；C不加入或预留旧尾帧。再计算Projected Final Count，并按`knowledge/reference_budget.md`记录文字伪资产迁移、是否触发整合、替代关系、裁剪与最终≤9张提交清单
+- Reference Selection / Routing + Reference Budget Audit：先从当前Clip目标、八组End-State Record、`Continuity Risks`与下一Clip起始要求选择最小充分视觉参考，再执行预算；不是把全部Eligible或Registry资产机械塞入。身份/外观风险路由到Active Character Canonical References；空间结构风险路由到Active Environment Canonical References并消费Confirmed Spatial Blocking文字语义；道具造型风险路由到Active Prop Canonical References；A/B状态锚定路由到对应`REF-TAIL`并声明用途，C不路由旧尾帧；光线/天气/场景状态漂移只有在实际存在已确认的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。每个入选条目记录所解决的具体风险/目标，合格但无关项记录不选理由。随后只列通过Visual Input Eligibility、当前Clip实际需要且通过World-State的候选图片资产；真实资产须存在/已确认并可回查文件或受控ID。明确需要用户实际补入的视觉参考图占位须写具体图像对象、投喂用途与“待用户补充/待上传、未确认”，只计Projected位、不计已提交图片；它不得绕过应返回STATE-03的正式Canonical资产流程。A/B `REF-TAIL`继续以统一名称、用途类型和专用状态声明预留1个Projected连续性图片位；C不加入或预留旧尾帧。再计算Projected Final Count，并按`knowledge/reference_budget.md`记录文字伪资产迁移、是否触发整合、替代关系、裁剪与最终≤9张提交清单
 
 参考资产默认保持原始独立结构。Projected Final Count≤7时不得整合；8张且无额外帧需求时原则上不整合；9张只有在确认没有未计入连续性需求时才允许；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张时才执行同类非角色信息的去重/整合/裁剪。当前Clip每个核心角色始终保留各自独立三视图/角色锁定图，多个核心角色不得合并成角色总表，动作图不得替代外貌基准。
 
@@ -188,7 +189,7 @@ Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相�
 
 四项必须一致：来源 Shot 时长、Clip Detail 合计、Clip Table 目标时长、STATE-08【时长】平台生成时长。
 
-同时记录 Entry、内部 Shot 状态链、Exit、尾帧用途和跨 Clip 声音/动作/视线/构图锚点。先沿用Preflight的`视觉连续 / 剧情连续 / 主动切场或切世界`主分类，再判定A【同镜头连续承接】、B【新镜头参考型】或C【新镜头且无需尾帧】，据此标记`Tail Frame Required = YES / NO`并映射既有Handoff；此判定必须先于尾帧可用性检查。A/B统一使用`REF-TAIL-XX｜CLIP-XX尾帧参考`且必须声明用途；缺图时保留待补充状态而不声称已确认。C不列`REF-TAIL`。叙事断点必须明确重建，不得伪装为连续继承。
+同时记录 Entry、内部 Shot 状态链、Exit、尾帧用途和跨 Clip 声音/动作/视线/构图锚点，并把它们归并为本Clip的八组`Clip End-State Record / Next-Clip Carryover`。先沿用Preflight的`视觉连续 / 剧情连续 / 主动切场或切世界`主分类，再判定A【同镜头连续承接】、B【新镜头参考型】或C【新镜头且无需尾帧】，据此标记`Tail Frame Required = YES / NO`并映射既有Handoff；此判定必须先于尾帧可用性检查。A/B统一使用`REF-TAIL-XX｜CLIP-XX尾帧参考`且必须声明用途；缺图时保留待补充状态而不声称已确认。C不列`REF-TAIL`。叙事断点必须明确重建，不得伪装为连续继承。
 
 对每一对相邻Clip强制建立：
 
@@ -226,6 +227,7 @@ Portable模式没有本地Artifact路径时，必须从Portable Checkpoint交叉
 - 每个 Clip 包含一个或多个相邻 Shot，时长为4—15秒
 - 所有合并均通过场景、时间、动作、摄影机、空间、道具、资产与复杂度检查
 - 每个 Clip 具有起始状态、连续动作、空间关系、道具连续性与稳定结尾状态
+- 每个 Clip 的已有Entry / Exit / Handoff事实已归并为八组`Clip End-State Record / Next-Clip Carryover`；下一Clip首帧能逐项消费Character、Spatial、Prop、Camera、Environment、Performance、Continuity Risks与Carryover，不存在无依据的人物/道具重置
 - 每个Clip已完成STATE-07 Clip Preflight前置版并为PASS：连续性已三选一；逐分镜World-State与实际资产一致；角色精确数量、空间构图、道具状态已锁定；适用转场五要素完整；预算只在前述检查后执行
 - 每个相邻Clip已在既有判定中明确A【同镜头连续承接】、B【新镜头参考型】或C【新镜头且无需尾帧】，未用资产可用性反向决定需求；A/B均在参考资产声明列出统一`REF-TAIL`名称、对应用途和真实状态，缺图时明确“待用户提供/待上传、未确认”且未伪造路径或确认；C未列`REF-TAIL`，并从Canonical基础资产、Confirmed Spatial Blocking、文字End State或当前Scene / World-State / Start Boundary建立首帧
 - 每个完全位于转换后世界的Clip已删除转换前世界资产；只有正在执行转换的Clip才按阶段引用转换前后资产，且没有把同一道具不同形态混成两件道具
@@ -238,6 +240,7 @@ Portable模式没有本地Artifact路径时，必须从Portable Checkpoint交叉
 - 每个 Clip 有明确风险、降级、尾帧用途和下一 Clip Handoff
 - 每个 Clip 已完成Clip Movement Plan，主导逻辑、逐镜变化、视觉高潮、最克制镜头、重复规避与Seedance复杂度控制均可验证
 - 每个 Clip 已完成Reference Budget Audit：≤7不整合；8张无额外帧需求不整合；9张无未计入连续性需求才允许；>9完成去重/非角色整合/优先级裁剪；最终真实图片清单≤9且无重复、无无关项、无虚构资产
+- 每个 Clip 已先完成Reference Selection / Routing：每个入选资产能对应当前具体风险/目标，身份、空间结构、道具造型、A/B尾帧与光线/场景状态使用正确来源；C未路由旧尾帧；Eligible但无关资产没有因Registry存在、上一Clip使用或预算空位被机械加入
 - 每个视觉候选均通过“这是不是一张实际会被投喂/引用的视觉资产？”检查；纯文字站位、换边、距离、共坐、数量、空间、行为、禁止项与镜头规则已从参考清单移出并进入正确既有字段；真实道具图使用正式资产ID，待补视觉图明确具体图像、实际投喂用途与未确认状态
 - 当前Clip每个核心角色仍有各自独立三视图/角色锁定图，未合并为角色总表，动作/互动图未替代外貌基准；独立资产未超限时没有被强制换成总图
 - 每个 Clip 已读取并保持对应Director Decision Notes；主导镜头语言、节奏、调度、视觉高潮/留白、功能性色光与声音设计均能追溯到导演意图

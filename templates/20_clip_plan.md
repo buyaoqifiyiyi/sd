@@ -55,8 +55,18 @@
 - 结尾帧限制：定义本Clip新的稳定结束状态；实际生成、提取并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考
 - 尾帧用途判定：A同镜头连续承接用途 / B空间、站位、景别参考用途 / C新镜头且无需尾帧（Canonical资产 + Spatial Blocking + 文字重建依据） / 最终收束
 - 下一Clip Handoff：
+- Clip End-State Record / Next-Clip Carryover（STATE-07内部连续性记录；归并已有状态，不新增STATE或STATE-08字段）：
+  - Character State（人物位置/朝向/坐站姿态/距离/动作阶段/谁持有什么）：
+  - Spatial State（左右前后/环境锚点/路径/关系轴与180度轴线/视线或来源—路径—目标连线）：
+  - Prop State（身份/形态/持有者与左右手/位置/方向/接触/当前状态）：
+  - Camera State（位置/高度/朝向/轴线侧/景别/构图/焦点/稳定终点）：
+  - Environment State（Scene / World-State/固定结构/时间/天气/光线/综合色彩/持续声音）：
+  - Performance State（情绪/公开状态与泄漏/呼吸或体力/动作结果）：
+  - Continuity Risks（状态断裂/人物或道具重置/左右或轴线翻转/身份、环境、道具、光态漂移/执行风险）：
+  - Next-Clip Carryover（必须保持/允许改变/不继承/待确认；A/B/C、Tail Frame Requirement、参考用途或重建依据）：
 - 模型执行风险与安全降级：
 - Reference Budget Audit：
+  - Reference Selection / Routing（当前Clip目标与风险 → 选择的角色/环境/道具Canonical资产、Spatial Blocking文字语义、A/B `REF-TAIL`或合格场景状态参考；逐项写用途；Eligible但未选项与理由；明确“参考资产按需路由，不是越多越好”）：
   - 原始候选图片资产（逐项写实际资产ID/名称、Active/Confirmed状态、真实文件/受控ID、当前Clip用途、图片位数）：
   - Visual Input Eligibility（逐项回答是否为实际会投喂/引用的视觉资产；列出移除的文字伪资产、0图片位及迁移字段；待补视觉图列具体图像、实际投喂用途与未确认状态）：
   - 删除的当前Clip无关项（未出场角色 / 未使用环境 / 未使用道具 / 未使用动作图 / 其他）及理由：
@@ -110,6 +120,7 @@
 - 所有多 Shot Clip 是否通过场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查：
 - 短于4秒的 Shot 是否只在兼容的4—15秒 Clip中执行；超过15秒的 Shot 是否已返回 STATE-06 拆分：
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：
+- 每个Clip是否把已有Entry / Exit / Handoff归并为八组`Clip End-State Record / Next-Clip Carryover`，且下一Clip首帧能逐项消费、没有人物/道具/相机/环境状态重置：
 - 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一并明确A/B/C；A/B是否标记`Tail Frame Required = YES`、在参考资产声明直接列统一`REF-TAIL`名称、对应用途与真实状态，缺图时写“待用户提供/待上传、未确认”且不冒充已提交图片；A/B首帧句式是否正确区分；C是否标记`NO`、不列`REF-TAIL`并以Canonical资产、Spatial Blocking、文字状态或当前Scene / World-State / Start Boundary重建：
 - 是否逐分镜明确World-State，并删除未出场、未使用或当前阶段不适用的角色/环境/道具/FX；完全位于耳中玉境等转换后世界的Clip是否没有现实阶段道具：
 - 是否逐分镜锁定角色精确数量；剧情唯一角色是否在正向设计中明确唯一一只/名、前中后景无第二个同类，并预置复制/分身/镜像/背景重复禁令：
@@ -126,6 +137,7 @@
 - 每个Clip是否执行Reference Budget Check；≤7未整合、8张且无额外帧需求未整合、9张无未计入连续性需求才直接使用、>9已去重/整合同类非角色信息/按优先级裁剪并最终≤9：
 - 是否只列实际存在且已确认资产，没有虚构总设定图/空间关系图/动作关系图；独立资产更清晰且未超限时是否继续使用独立图：
 - 是否逐项通过Visual Input Eligibility；纯文字站位/不可换边/人物距离/同坐一张板凳/道具数量/空间关系/行为/禁止项/镜头规则没有伪装成参考资产，并已迁移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`：
+- 是否先按当前Clip目标与Continuity Risks完成Reference Selection / Routing；身份/外观、空间结构、道具造型、A/B尾帧、光线/场景状态风险是否路由到正确来源；C是否未引用旧尾帧；是否没有漏选必需项、用途选错或无依据过量引用：
 - 当前Clip每个核心角色是否仍保留各自独立三视图/角色锁定图，且没有角色总表或用动作图覆盖外貌基准：
 - 是否已锁定 STATE-08 每个 Clip 一条 Prompt、不得按 Shot 拆分：
 - Pending / Return Route：

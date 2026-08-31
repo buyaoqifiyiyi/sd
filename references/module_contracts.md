@@ -538,7 +538,7 @@ Module Type：STATE-07主流程Workflow / Knowledge。
 - 每个正式分镜必须且仅能进入一个CLIP-xxx
 - 每个Clip确认时长必须为4—15秒；单Shot可短于4秒并进入兼容Clip，超过15秒的Shot返回STATE-06拆分
 - 只有相邻、时空/资产/边界/轴线/动作/运镜兼容且模型可稳定执行的分镜可以合并
-- 每个Clip拥有包含Shot清单、Entry、连续动作、摄影机/空间关系、道具连续性、内部逐镜状态链、稳定Exit、新尾帧限制与下一Clip Handoff；实际生成、提取并确认后统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
+- 每个Clip拥有包含Shot清单、Entry、连续动作、摄影机/空间关系、道具连续性、内部逐镜状态链、稳定Exit、新尾帧限制与下一Clip Handoff；并把这些已有事实归并为`Character / Spatial / Prop / Camera / Environment / Performance / Continuity Risks / Next-Clip Carryover`八组`Clip End-State Record`，不新增STATE或STATE-08字段；实际生成、提取并确认后统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
 - Knowledge Projection Ledger只记录可执行语义，最终Prompt仍由`templates/10_video_prompt.md`拥有
 
 禁止：
@@ -560,7 +560,7 @@ Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge G
 
 触发：每个STATE-07候选Clip形成执行合同时执行前置版；每个STATE-08 Confirmed Clip在正式Prompt编译与Template Mapping前执行最终版。普通资产制作、海报、Storyboard或纯音色任务不独立触发。
 
-Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、当前Clip Start Requirement与Clip边界由STATE-07拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Spatial Blocking与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
+Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、八组`Clip End-State Record / Next-Clip Carryover`、当前Clip Start Requirement与Clip边界由STATE-07拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Spatial Blocking与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
 
 Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过结果投影到`templates/10_video_prompt.md`既有字段；`knowledge/clip_preflight_check.md`只拥有分类、检查顺序、失败条件与返回路由。
 
@@ -568,7 +568,7 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每分镜先锁定World-State再筛选资产；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 

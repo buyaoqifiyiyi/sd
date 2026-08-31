@@ -92,12 +92,13 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 1. 先逐项执行Visual Input Eligibility Test：`这是不是一张实际会被投喂/引用的视觉资产？`。允许通过的视觉类型为：已确认角色图、环境图、道具图、正式FX图、参考板、合法首尾帧，以及其他当前Clip确实需要用户实际投喂的视觉参考图。真实资产必须有可回查文件/受控ID与用途；待补图必须写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得伪造路径或确认状态。
 2. 纯文字规则一律判定为`NOT ELIGIBLE`并从视觉候选中移除。站位/不可换边/人物距离/同坐一张板凳/道具数量/空间关系进入`空间关系`、Spatial Blocking Rules或适用的`起始状态`；持有、数量、同一张板凳等道具事实进入`道具状态`；首尾边界分别进入`首帧参考`、`尾帧限制`；禁止项进入`反向提示词`；动作与镜头规则进入对应分镜现有字段。迁移只改变归类，不改变约束本身。
 3. 如果对象本身存在正式视觉资产，按真实ID引用，例如`PROP-BENCH-01｜双人钢琴凳`；`板凳参考说明｜用途：锁定两人共坐同一张板凳`不得进入清单。若缺的是应成为Canonical的正式CHAR / ENV / PROP / FX资产，返回STATE-03完成双确认，不得用待补占位绕过Asset System。
-4. 当前Clip每个出场核心角色优先保留各自独立三视图/角色锁定图。
-5. 删除未出场角色、未使用环境、未使用道具、未使用动作图与当前World-State不适用的资产。
-6. 去重后，读取同一连续性判定中的A/B/C与`Tail Frame Required`。A/B无论尾帧当前是否已上传都预留1个Projected连续性图片位，并在【参考资产】直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、A类“同镜头连续承接用途”或B类“空间/站位/景别参考用途”及真实状态；未提供时标明“待用户提供/待上传、未确认”，不计入已提交图片数，不伪造路径。C不得加入或预留旧尾帧图片位，可由Canonical资产、Spatial Blocking和文字状态承接或重建。
-7. 按既有Reference Budget阈值计算Projected Final Count，最终必须`≤9`。
-8. 只有信息过多、接近或超过参考位上限时，才整合环境多视角、道具组、空间/动作/使用关系等非角色信息；不得默认整合核心角色。
-9. 不存在、未确认或不能完整覆盖零散信息的“总图”不得虚构进入清单。
+4. 读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、当前Clip目标与`Continuity Risks`，对已经Eligible的候选执行Reference Selection / Routing。身份/外观风险选择当前Active Character Canonical References；空间结构风险选择Active Environment Canonical References并继续消费Confirmed Spatial Blocking文字语义；道具造型风险选择Active Prop Canonical References；A/B状态锚定选择对应`REF-TAIL`，C不选择旧尾帧；光线/天气/场景状态漂移只有在存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。不得因“Eligible、Registry里存在、上一Clip用过或预算有空位”机械全选。
+5. 每个入选条目记录`解决的具体风险 / 生成目标 → 资产角色 → 用途`；对Eligible但未选条目记录不选理由。当前Clip每个出场核心角色都视为具有持续身份/外观风险，仍按既有硬门槛保留各自独立三视图/角色锁定图；Reference Routing不得削弱该规则。
+6. 删除未出场角色、未使用环境、未使用道具、未使用动作图、当前World-State不适用以及不能解决当前风险的资产。参考资产按需路由，不是越多越好。
+7. 去重后，读取同一连续性判定中的A/B/C与`Tail Frame Required`。A/B无论尾帧当前是否已上传都预留1个Projected连续性图片位，并在【参考资产】直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、A类“同镜头连续承接用途”或B类“空间/站位/景别参考用途”及真实状态；未提供时标明“待用户提供/待上传、未确认”，不计入已提交图片数，不伪造路径。C不得加入或预留旧尾帧图片位，可由Canonical资产、Spatial Blocking和文字状态承接或重建。
+8. 按既有Reference Budget阈值计算Projected Final Count，最终必须`≤9`。
+9. 只有信息过多、接近或超过参考位上限时，才整合环境多视角、道具组、空间/动作/使用关系等非角色信息；不得默认整合核心角色。
+10. 不存在、未确认或不能完整覆盖零散信息的“总图”不得虚构进入清单。入选资产缺少风险依据、必需资产漏选、用途选错或无理由过量引用时，Reference Asset Check为FAIL。
 
 既有Voice/Audio Reference继续按声音资产合同作为独立非视觉输入检查；本视觉资格测试不删除该支路，但普通文字音色说明不得冒充Voice/Audio Reference。
 

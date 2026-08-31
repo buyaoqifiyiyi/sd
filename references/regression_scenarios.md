@@ -190,31 +190,33 @@ FAIL：把Script Status降回Source Material；丢失Confirmed Assets、Active V
 
 ---
 
-## R13 Cross-Clip Tail-Frame Requirement Decision
+## R13 Cross-Clip End-State And Reference Routing
 
-### R13-A Strict Visual Carryover, Tail Not Yet Uploaded
+以下三例均先从上一Clip的Entry / 内部状态链 / Exit / Handoff归并八组`Clip End-State Record / Next-Clip Carryover`，再按当前Clip目标与Continuity Risks路由最小充分参考资产；不得把整个Registry、上一Clip全部资产或所有Eligible条目机械复制到下一Clip。
 
-当前Clip必须从上一Clip尾帧精确继续连续动作、人物姿态/站位/朝向/距离、构图、机位关系、环境、光线、天气、道具与情绪，但系统当前没有尾帧图片。
+### R13-A Same-Shot Direct Continuation
 
-PASS：先按当前Clip Start Requirement标记`Tail Frame Required = YES`，再检查资产；STATE-07 / STATE-08主动提示用户“请从上一Clip最终成片中手动截取最终有效尾帧，并作为当前Clip参考资产上传”；草案明确`REF-TAIL-XX｜CLIP-XX尾帧参考：待用户提供/待上传`，不把它列为已存在图片资产，不伪造路径或上传状态，不形成最终可执行版Prompt。
+上一Clip结束时：林夏坐在钢琴凳画左、身体朝右前方，右手压住乐谱；许栀坐画右、与林夏肩距约20厘米；两人位于同一关系轴北侧，摄影机C1在轴线南侧中景，雨天窗光从画右进入。下一Clip继续同一镜头、同一动作阶段。
 
-FAIL：因为系统当前没有图片而标记NO；直接以文字End State形成最终可执行版；假设`REF-TAIL`已存在；不主动请求用户截图。
+PASS：八组记录完整保留人物坐姿/朝向/距离、乐谱持有与位置、轴线和C1机位、雨天光态及未完成动作；判定A Direct与`Tail Frame Required = YES`。Reference Selection选择各自身份风险所需Character Canonical、钢琴区域结构风险所需Environment Canonical、乐谱造型风险所需Prop Canonical与`REF-TAIL-XX｜CLIP-XX尾帧参考（同镜头连续承接用途）`；Spatial Blocking仅作文字几何约束，不把Top-down Map当视觉资产。尾帧缺图时条目写“待用户提供/待上传、未确认”，Prompt仍可完整交付但实际提交生成前补图；`首帧参考：`使用固定Direct句并逐项继承，不重置坐姿、不重播压住乐谱动作。
 
-### R13-B Strict Visual Carryover, Tail Uploaded
+FAIL：缺少任一八组状态导致人物/道具/相机/光态重置；把B/C误判为A；省略REF-TAIL、用途错误、用文字End State冒充图片，或因预算有空位加入不相关角色/道具资产。
 
-续接R13-A，用户已上传并确认上一Clip最终有效尾帧。
+### R13-B New Shot With Tail Position Reference
 
-PASS：统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`并加入当前Clip`参考资产：`；`首帧参考：`逐字包含`以 REF-TAIL-XX｜CLIP-XX尾帧参考 为直接承接依据起镜。`，并锁定姿态、位置、朝向、人物间距离、构图、机位关系、环境、光线、天气、道具与情绪；尾帧仍只作连续性锚点，不覆盖角色/环境/道具Canonical资产；当前Clip`尾帧限制：`定义新的结束状态。
+上一Clip具有与R13-A相同End-State，但下一Clip另起OTS新镜头：允许摄影机从C1改为轴线同侧C2、景别改为近景；人物坐姿、左右、朝向、肩距、乐谱位置、雨天窗光方向与钢琴空间关系必须保持。
 
-FAIL：上传后未加入参考资产；固定承接句缺失；尾帧覆盖基础资产；沿用上一Clip尾帧名作为当前Clip新尾帧。
+PASS：八组记录把“必须保持”与“允许改变”分开；判定B Reference-Only与`Tail Frame Required = YES`。Reference Selection保留解决身份/环境结构/乐谱造型风险的对应Canonical资产，并选择`REF-TAIL-XX｜CLIP-XX尾帧参考（空间/站位/景别参考用途）`锁定站位、距离和空间；`首帧参考：`明确另起新镜头重新构图、允许C1→C2与中景→近景，不使用A的固定Direct句。其他已确认但与本Clip无关的资产不选。
 
-### R13-C No Strict Visual Carryover
+FAIL：把新OTS误写为同镜头续拍；使用A固定句；尾帧用途未写或写错；无授权跨轴、左右翻转、人物/道具重置；为了“更稳”把全部Registry资产塞入参考清单。
 
-当前Clip为换场、明显时间跳跃或构图无需连续。
+### R13-C New Shot Without Tail Reference
 
-PASS：标记`Tail Frame Required = NO`，不要求用户截图；只核对仍有效的身份、服装、道具后果和情绪，或从当前Scene / World-State / Start Boundary建立新首帧。
+下一Clip切到同一教室门外的单人门把手特写，人物不入画；新构图不依赖上一尾帧的两人站位，但仍需保持已确认教室门结构、雨天状态和门把手造型。
 
-FAIL：机械要求截图、把旧尾帧塞入参考资产，或把旧场景空间/构图/光线带入新场景。
+PASS：八组记录明确上一人物状态暂不进入画面、剧情仍有效但不作视觉首帧锚定；判定C Not Required与`Tail Frame Required = NO`。Reference Selection不列、不预留`REF-TAIL`，只选择门结构风险所需Environment Canonical与门把手造型风险所需Prop Canonical；雨天光态若只有文字场景视觉基准则写入`环境一致性 / 首帧参考 / 起始状态`，只有实际已确认合格的场景状态图存在时才作为视觉参考。Spatial Blocking继续提供文字方向约束，Top-down Map不进入参考资产。
+
+FAIL：机械要求截图或把旧尾帧、两名角色图、钢琴/乐谱等无关资产塞入；把旧人物构图和光线画面强行继承到新特写；遗漏门结构或门把手这一实际风险所需资产。
 
 ---
 
