@@ -468,6 +468,50 @@ Next Workflow: Project Setup Workflow
         self.assertNotIn("Scene Anchor`资产", files["rules/02_asset_rules.md"])
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
+    def test_prompt_attention_translation_and_physical_data_contract_is_installed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        files = {
+            relative: (skill_root / relative).read_text(encoding="utf-8")
+            for relative in (
+                "rules/03_prompt_rules.md",
+                "knowledge/knowledge_application_reflection.md",
+                "knowledge/prompt_compilation/state08_projection.md",
+                "knowledge/11_seedance_adapter.md",
+                "workflows/11_video_generation_workflow.md",
+                "workflows/13_review_workflow.md",
+                "templates/10_video_prompt.md",
+                "references/regression_scenarios.md",
+            )
+        }
+        projection = files["knowledge/prompt_compilation/state08_projection.md"]
+        for marker in (
+            "Prompt Attention / Control Allocation Gate",
+            "Five-Dimensional Prompt Control Matrix",
+            "Subject & Physical Motion",
+            "Environment & Emotional Lighting",
+            "Optics & Camera Choreography",
+            "Timeline & State Evolution",
+            "Aesthetic Medium & Rendering",
+            "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt",
+            "Blender / Unreal式严格物理仿真",
+        ):
+            self.assertIn(marker, projection)
+        template = files["templates/10_video_prompt.md"]
+        self.assertIn("Prompt Attention / Compression", template)
+        self.assertIn("Active Character Canonical References", template)
+        self.assertIn("Active Environment Canonical References", template)
+        regression = files["references/regression_scenarios.md"]
+        for marker in (
+            "R15-A Literary Camera Intent",
+            "R15-B Over-Engineered Camera Data",
+            "R15-C Canonical Assets Free Prompt Attention",
+            "镜头像终于鼓起勇气一样靠近她",
+            "0.137m/s",
+            "CHAR-001@v003",
+        ):
+            self.assertIn(marker, regression)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
     def test_global_runtime_rules_are_installed(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         for relative in (

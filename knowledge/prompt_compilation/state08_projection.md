@@ -23,6 +23,62 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 
 所有适用且已确认的上游知识必须在最终Prompt中留下可见、可执行、可连续检查的语义证据。知识模块名称、内部表格、模式ID、Ledger标题与分析栏目不得原样输出。
 
+## Prompt Attention / Control Allocation Gate
+
+本Gate只管理最终输入信息的优先级、冲突、重复与控制价值，不声称能够直接或精准设置模型内部的交叉注意力数值。提示词不是越长越好；固定Template必须完整，但每个字段只保留对当前Clip真实有控制价值的最小充分语义。
+
+逐Clip执行：
+
+1. **Locked / Minimal Confirmation**：Active Canonical References、合法首尾帧、Confirmed Spatial Blocking、Director Decision Notes、Detailed Shot Design或Clip Plan已经锁定的维度，不在正文长篇复述。只保留资产ID/版本/用途、当前状态、不得改变项与当前风险所需的最小一致性确认。
+2. **Unlocked / Must Specify**：上游尚未锁死、且会显著改变当前Clip结果的动作、方向、空间、摄影机、时间顺序、状态演变、声音与影像质感，必须明确写出。
+3. **Irrelevant / Delete**：与当前Clip无关、未出场、未使用、不能解决当前风险或只起装饰作用的信息删除。
+4. **Duplicate / Merge**：同义重复、跨字段机械复述与多次外貌/环境长描述合并为一条最高价值指令；必要的首帧、逐镜起止状态和连续性重复不视为机械重复。
+5. **Conflict / Resolve Or Return**：机位、运动、动作、站位、光线、资产或时间顺序互相冲突时，按上游事实与本Clip导演目标选择唯一合法表达；无法消解则走Return Route，不把互斥指令同时序列化。
+
+控制优先级为：`剧情与资产事实 / 边界连续性 → 主体身份与精确数量 → 主要动作与物理空间 → 摄影机路径与结束状态 → 必要光色/声音/质感 → 装饰性风格词与器材名`。高优先级信息必须比低优先级修饰更短、更明确、更靠近其目标字段核心位置。
+
+逐Clip使用`rules/03_prompt_rules.md`中的十类Prompt Pollution作为内部诊断标签，不把标签输出到最终Prompt。清洗顺序固定为：
+
+`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`
+
+清洗不得机械删除文学/导演意图、合法连续性重复、Template必填字段或已经确认的生产语义。任何无法在当前Clip内部消解的事实冲突必须先走Return Route。
+
+## Five-Dimensional Prompt Control Matrix
+
+这是STATE-08内部检查层，不是最终Prompt的五个新字段。逐Clip只检查并填补“参考资产或上游信息尚未锁死、但当前Clip需要控制”的维度；已锁定且无当前风险的内容标记`Locked / Minimal Confirmation`，不重复成长篇描述。
+
+| 内部维度 | 检查内容 | 需要进入现有字段的条件 |
+|---|---|---|
+| Subject & Physical Motion | 主体、姿态、动作链、方向、受力/速度感、人物物理关系 | 当前动作、方向、速度感、接触/受力或人物关系未锁定且会改变可见结果 |
+| Environment & Emotional Lighting | 场景、天气、时间、主光方向、色温、氛围变化 | 当前环境状态、光源/色温或有剧情触发的变化未被资产与上游合同完整锁定 |
+| Optics & Camera Choreography | 景别、焦段倾向、机位、运镜、轴线、构图变化 | 摄影机起点/路径/触发/终点、焦段倾向、轴线或构图结果仍需执行化 |
+| Timeline & State Evolution | 起始状态、动作顺序、中间变化、结束状态、首尾承接 | 当前Clip的变化过程、动作先后、稳定结果或与前后Clip的继承/重建需要明确 |
+| Aesthetic Medium & Rendering | 写实/动画/胶片等媒介、材质、颗粒、动态模糊、景深、整体质感 | 这些项目尚未由Visual Direction/资产锁定，且对当前Clip辨识或稳定性有实际收益 |
+
+矩阵结果只进入既有Projection Ledger与Template字段，不得逐条打印、输出内部英文维度名或强迫每个维度都增加内容。未触发维度不虚构填充。
+
+## Abstract-To-Executable And Physical Anchoring
+
+进入Template Mapping前，重要文学化、情绪化或导演化描述必须尽可能转译为至少一种可见或可听执行项：人物行为/微表情、环境变化、光线变化、摄影机行为、声音或时间状态。保留原描述的情绪功能，但不得让“宿命感、勇气、压迫、温柔、电影感”等孤立词替代执行信息。
+
+执行Positive Specification：把能正向定义的否定约束改写为目标状态，例如`不要下雨 → 晴天，空气清透，阳光照亮地面`，`不要夸张表情 → 表情克制，嘴角和眉眼只有轻微变化`。反向提示词只保留固定平台边界及当前Clip少量、正向状态仍难锁死的高风险错误；不得扩展成所有可能错误的清单。
+
+执行Semantic Template Decomposition：遇到“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等高共现词，先判断它是当前Clip必要身份/风格事实，还是只在调用模型默认视觉模板。若主要为模板触发，删除该大词并只写当前Clip真实存在的人物、动作、场景、道具、服装、光线与声音；若标签确有叙事价值，可保留其上游意图，但最终控制仍由具体可见/可听元素承担，不允许自动补入默认场景包。
+
+数字与物理描述按执行价值分层：
+
+- **High Value / 保留**：左右/前后、人物距离关系、90°/180°转身、约3秒/5秒、眼平/低机位、从A到B、固定距离跟随等直接可视关系。
+- **Medium-High Value / 作为视觉提示**：24/35/50/85mm焦段倾向、约5秒推进、约120°环绕、景别转换等摄影执行信息。它们描述视觉效果和行为倾向，不承诺严格物理精度。
+- **Low Value / 默认压缩或删除**：1.37m、2.43m、0.137m/s、0.166m/s²、53mm、精确工程轨迹等无额外可见收益的小数或工程参数；除非用户或特定模型明确要求并且该精度会改变可见结果。
+
+物理锚定优先把低价值数字转换成眼平/低机位、近/中/远距离、慢/中/快、约X秒、约X度、固定距离或起止景别。生成模型理解的是数字对应的视觉关系，不是Blender / Unreal式严格物理仿真。
+
+STATE-08内部转换链固定为：
+
+`Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt`
+
+该链嵌入现有STATE-08，不新增主STATE、Workflow或最终字段。
+
 ## Clip Preflight Projection Gate
 
 每个Clip在Reference Budget与Template Mapping前必须读取并执行`knowledge/clip_preflight_check.md`最终版。内部顺序固定为：`Continuity Classification（含Tail Frame Required判定）→ World-State → Character Count → Spatial Composition → Prop State → Transition Five Elements（适用时）→ Reference Asset Check / Budget`。
@@ -131,6 +187,14 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否严格按Confirmed Clip Production Plan分组，每个Clip、每个分镜和每个字段都完整、顺序不变。
 - 是否因批量或篇幅压缩、共享、合并、删减、改名字段，或使用“同上/沿用前文/略”。
 - 是否正确保留`音色特征：`并执行Reference Override、Voice Profile Fallback、No Voice Asset或无对白四分支内容规则。
+- 是否只保留当前Clip有控制价值的信息；已由正式角色/环境/道具资产锁定的外观与结构是否只作最小确认，没有在人物一致性、环境一致性或逐镜正文中长篇重复。
+- 是否存在同义重复、跨字段机械复述、优先级不明，或互相冲突的机位/运动/动作/站位指令；冲突是否已消解或返回上游。
+- 重要抽象形容词是否具有至少一个可见或可听执行对应，并保留原情绪功能而非机械删除。
+- 能以正向状态锁定的约束是否已经执行`Negative Constraint → Positive Target State`；反向提示词是否只保留固定平台边界和少量真实高风险项，而不是所有可能错误的清单。
+- 高共现大词是否经过Semantic Template Decomposition；是否没有把“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等默认视觉包无依据带入当前Clip。
+- 是否存在无可见收益的工程级小数、精确轨迹或伪物理参数；有价值数字是否按视觉关系/摄影倾向使用而非承诺严格仿真。
+- 是否遗漏当前Clip真正变化的主要动作、时间顺序、中间变化、结束状态或首尾承接；高优先级动作/空间/镜头信息是否比装饰性风格词更清楚。
+- 是否只保留从上一镜/上一Clip合法继承的状态，没有混入其他镜头的动作、机位、结束状态或风格残留；是否没有堆叠互相稀释的导演、美术、摄影与渲染风格。
 - 是否没有方头括号旧章节、独立CLIP标题字段、“与下一镜衔接”或其他额外字段。
 - `参考资产：`、`首帧参考：`、`尾帧限制：`是否无条件存在且非空。
 - `参考资产：`是否通过Reference Budget Check：Projected Final Count与已提交图片数≤9、无当前Clip无关项、无重复占位；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。

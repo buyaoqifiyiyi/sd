@@ -565,7 +565,7 @@ knowledge/prompt_compilation/state08_projection.md
 
 用于：
 
-确认所有Applicable Knowledge已被语义投影到现有Template字段，且没有创建竞争Schema。
+确认所有Applicable Knowledge已被语义投影到现有Template字段，执行Five-Dimensional Prompt Control Matrix、抽象意图转译、物理数据分层、Prompt Attention / Control Allocation与Prompt Compression，且没有创建竞争Schema。
 
 必须使用：
 
@@ -812,6 +812,10 @@ Check Continuity / Complexity / Seedance Stability
 ↓
 
 Translate Strategies Into Concrete Prompt Language
+
+↓
+
+Director / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression
 
 ↓
 
@@ -1272,6 +1276,8 @@ knowledge/prompt_compilation/state08_projection.md
 
 
 禁止为了让每个模块“看起来被使用”而增加不存在的内容；但任何已确认且适用的模块都不得在Template Mapping时丢失。
+
+完成Applicable Knowledge Set后，必须在同一内部Projection中执行`Prompt Attention / Control Allocation Gate`与`Five-Dimensional Prompt Control Matrix`。五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目，不成为五个最终大字段。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并按`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`清洗。重要抽象语义至少落到一个可见/可听项；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。
 
 
 ## Knowledge Application Reflection Layer
@@ -2824,6 +2830,17 @@ Ledger只用于防止语义丢失，禁止原样输出。
 
 同时必须确认Knowledge Reflection只实现Director Decision Notes，没有把知识库候选反向升级为新的剧情目标、人物关系、Blocking、视觉高潮、色光转折、表演爆发或声音事件。
 
+在Template Mapping前执行一次Prompt Compression Pass：
+
+- 删除与当前Clip无关、不能解决当前风险或只起装饰作用的信息；
+- 合并同义重复和跨字段机械复述，但保留Template要求的必要起止状态与连续性证据；
+- 已由Active角色/环境/道具资产锁定的外观与结构，只保留资产引用、当前状态、不得改变项和本Clip特有风险，不复制成长篇设定；
+- 发现互相冲突的机位/运镜/动作/站位/光线/时间指令时选择唯一合法表达，不能消解则返回事实拥有者；
+- 把孤立抽象词转成可见/可听执行项；把无视觉收益的工程级小数压缩为模型可执行的关系、速度感、约时长、约角度或景别变化；
+- 确认主要主体、动作、空间、摄影机路径、时间顺序和结束状态比装饰性风格词与器材名更清楚。
+
+Compression只减低价值重复，不得删Template字段、写“同上”、丢失Applicable Knowledge或改变已确认上游事实。
+
 
 每项Applicable Knowledge必须至少在一个主要目标字段中出现具体执行证据；不得只出现模块名、模式ID、“电影感”或其他抽象标签。
 
@@ -3363,6 +3380,24 @@ UNIT顺序、Entry / Exit Anchor、State Ledger与Retry Boundary没有被改写�
 - 每项采用策略均已写成具体可执行描述，没有只留下Side Tracking、Push In、导演名、模式ID或抽象风格词。
 - 所选策略不改变剧情、资产、SHOT/CLIP顺序、关系轴、边界与连续性，并通过Seedance动作密度、摄影机复杂度和稳定结尾检查。
 - Opportunity Check、选择表、拒绝理由与内部Reflection Record没有进入最终Prompt；用户明确要求查看时也只另行提供决策摘要。
+
+
+## Prompt Attention / Compression Check
+
+逐Clip确认：
+
+- 最终内容是否只保留对当前Clip有实际控制价值的信息；提示词长度没有被当作质量指标，也没有声称可以精准设置模型内部交叉注意力数值。
+- 正式角色/环境/道具参考已经锁定的外观与结构是否只作最小确认，没有在`人物一致性 / 环境一致性 / 逐镜正文`中长篇复述。
+- 是否存在同义重复、跨字段机械复述、互相冲突或优先级不明的机位/运动/动作/站位/光线指令。
+- 文学化、情绪化或导演化的重要描述是否至少有一个人物、环境、光线、摄影机、声音或时间状态的执行对应。
+- 能以正向目标状态锁定的要求是否已从否定式改写；反向提示词是否除固定禁BGM首句外，只保留少量正向定义仍难锁死的当前高风险项。
+- “创业 / 约会 / 学生 / 婚礼 / 医院 / 黑帮 / 赛博朋克 / 日系青春”等高共现大词是否经过Semantic Template Decomposition，没有无依据带入默认场景、服装、道具、天气或美术元素。
+- 数字是否按视觉控制价值使用；是否删除或降精度了0.137m/s、0.166m/s²、53mm等无额外可见收益的工程数据；是否没有把生成模型表述成严格物理仿真器。
+- Five-Dimensional Prompt Control Matrix是否只填补未锁定且当前Clip确需控制的维度，没有成为最终新栏目。
+- 是否完整保留当前Clip真正变化的主要动作、顺序、中间变化、结束状态与首尾承接；这些高优先级信息是否比装饰性风格词和器材名更清楚。
+- 是否删除了其他镜头/Clip的动作、机位、状态与风格残留，只保留合法继承项；是否没有同时堆叠互相稀释的导演、美术、摄影与渲染风格。
+
+失败只修当前Clip的转译、冲突或压缩；若根因来自上游事实矛盾，按Error Routing返回对应拥有者。
 
 
 ---
