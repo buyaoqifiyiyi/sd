@@ -287,7 +287,7 @@ Reference Selection / Routing除决定“是否使用”外，还必须为每个
 - **Transient State Authority**：用户已接受Take的Accepted Canon State，以及与该Take绑定的上一Clip / `REF-TAIL`；只负责姿态、站位、朝向、人物距离、动作阶段、短时道具持有、临时光态/天气/环境状态与起始构图。
 - **Motion Authority**：实际入选的已确认动作或视频参考；只负责动作路径、节奏、受力、速度感或表演阶段，不负责身份、环境结构或道具造型。
 - **Camera Authority**：实际入选的已确认镜头/机位/运动参考；只负责机位、景别、构图、轴线侧、焦点与摄影机路径，不负责角色身份或资产设计。
-- **Audio Authority**：当前系统已支持且实际入选的Confirmed Voice/Audio Reference；只负责声音身份、节奏、声线或音频执行，不得改变视觉身份。没有适用声音资产时沿用现有No Voice Asset / 无对白分支，不自动触发AUDIO模块。
+- **Audio Authority**：当前系统已支持且实际入选的Confirmed Voice/Audio Reference；只负责声音身份或授权的音频执行，不得改变视觉身份。它默认由输入音频自身携带状态，不投影进STATE-08视频Prompt；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按最小Delta引用。没有适用声音资产不构成缺失项，不写`No Voice Asset`，也不自动触发AUDIO模块。
 
 同一Reference可以有一个Primary Role和必要的兼容Secondary用途，但Secondary不得越过上述Authority。发生冲突时，正式角色/环境/道具Authority分别高于Transient、Motion、Camera与风格参考；临时状态Reference中的脸部、服装、环境结构或道具造型漂移不得被下一Clip继承。尤其`REF-TAIL`脸部轻微漂移时，下一Clip仍以Active Character Canonical References保持身份，只从尾帧或Accepted Canon State消费已确认的姿态、站位、动作阶段与其他合法瞬时状态。
 

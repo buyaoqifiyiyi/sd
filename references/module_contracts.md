@@ -176,15 +176,15 @@ Router与Output拥有者：`workflows/audio_router.md`独占显式触发判定�
 
 允许读取：用户当前输入、Active Project Root中的`project_bible.md`、`asset_registry.md`、相关已确认剧本/分析交付物与角色对白证据。允许写入：独立交付物，以及用户明确要求保存/更新时同一CHAR-ID与Version中的Voice Profile、Voice Sample Prompt及经确认的Voice Audio Reference元数据；不创建独立视觉Asset ID，不把音频自动登记为视觉Canonical Reference。
 
-下游消费者：STATE-06/07/08可消费已经存在且适用的Confirmed Voice Profile / Voice Reference，配音指导、跨集声音一致性与Review也可消费；任何下游消费者都不得因资产缺失而反向启动本模块。
+下游消费者：配音指导、跨集声音一致性与Review可消费已经存在且适用的Confirmed Voice Profile / Voice Reference；STATE-06/07可把它们保留为内部Source State。STATE-08默认不消费或序列化声音身份，只有用户明确要求把声音控制写进当前视频模型Prompt时才最小投影；任何下游消费者都不得因资产缺失而反向启动本模块。
 
-下游交接不变量：存在适用Confirmed Voice Audio Reference时，STATE-08只引用该Reference锁定声音身份并保留固定`音色特征：`声明不得文字重定义；没有Reference但已有Confirmed Voice Profile时允许文字回退；两者都不存在时写明“未建立独立音色资产，本Clip不创建或推导声音身份”，继续视频流程，不自动生成音色资产。
+下游交接不变量：`Source Carries State, Prompt Carries Delta`。Confirmed Voice Audio Reference或Voice Profile由声音资源/登记记录携带身份，STATE-08默认不写`音色特征：`、不写资产状态、不作文字回退。只有用户明确要求把声音控制写进当前视频模型Prompt时，才在当前Clip按最小必要Delta引用；两者都不存在时仍直接继续视频流程，不输出任何缺失声明，也不自动生成音色资产。
 
 禁止修改：角色身份、剧本台词事实、Active Version、视觉资产、主Pipeline、STATE-08 Seedance Schema以及未经用户或项目事实确认的口音、方言或病理声音特征。
 
 冲突路由：角色事实冲突返回事实拥有者；台词字数或逐镜表演容量冲突返回STATE-06；音频授权、来源或候选未确认时停在本模块Pending/Candidate，不登记为Confirmed；Router返回Original Workflow时立即返回原路由，不加载声音资产Workflow或创建Not Applicable记录。
 
-Validator可检查的不变量：所有声音身份Intent先进入唯一`workflows/audio_router.md`；只有Positive Route加载声音资产Workflow；具有显式触发证据；默认包含`Generate speech only.`、`Target duration`、两条录音声明、八条禁止音频类型声明，以及`Speaker → Voice characteristics → Speaking rhythm（需要时）→ Performance style → Avoid → Read naturally`顺序；唯一Template引用正确；Audio Reference元数据绑定同一CHAR Version并记录来源与授权；A/B/C路由样例分别为触发/不触发/不触发。
+Validator可检查的不变量：所有声音身份Intent先进入唯一`workflows/audio_router.md`；只有Positive Route加载声音资产Workflow；具有显式触发证据；输出明确标记为SD Film为Seed Audio组织的兼容模板而非官方唯一字段格式；描述speaker并分离稳定Voice Identity与当前Dialogue Performance；只输出适用字段；Reference Audio有授权依据；无无意义精密参数、否定词堆砌或视觉Prompt复制；A/B/C路由样例分别为触发/不触发/不触发。
 
 竹雀的孔老板、老板娘、吴御史、诸葛亮只作为项目Voice Bible示例，不是全局默认人设或音色模板。
 

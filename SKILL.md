@@ -7,9 +7,9 @@ description: AI影视虚拟制片生产系统，用于剧本改编与分析、�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.01-r1
+Skill Version: 2026.09.01-r2
 
-Build ID: sd-film-2026.09.01-r1
+Build ID: sd-film-2026.09.01-r2
 
 每次正式修改必须同步更新这两个字段：同日递增`rN`，跨日使用新的`YYYY.MM.DD-r1`。它们是版本唯一真源；`config.md`、Workflow和Project State不得维护竞争副本。
 
@@ -163,7 +163,7 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 7. **Clip-centric video generation**：STATE-08必须读取Confirmed Clip Production Plan，一个Clip对应一个独立完整Package；默认一次交付一个待处理Clip，批量只由用户当前明确要求覆盖。
 8. **No invented resources or facts**：路径说明不等于资源已读；Knowledge不适用时标记Not Applicable，不虚构填充；资源实际读取失败后才请求用户提供。
 9. **Minimal revision**：用户修改或Review退回时只改受影响范围，保留Accepted Unaffected Artifacts，并回到Review复核。
-10. **Explicit-only voice identity**：AUDIO / SEED-AUDIO声音身份资产只在用户明确请求时激活。
+10. **Explicit-only voice identity**：AUDIO / SEED-AUDIO声音身份资产只在用户明确请求时激活；默认假定外部已有可用角色音色资源，不创建、不补建、不登记Not Applicable，也不形成Asset Gate。即使已有Confirmed Voice Profile或Voice/Audio Reference，STATE-08默认也不把声音身份、音色字段或资产存在状态写入视频Prompt；只有用户明确要求把声音控制写进当前视频模型Prompt时才按最小Delta投影。
 11. **Permanent video-music isolation**：STATE-08视频Prompt永久禁止背景音乐、配乐、BGM、主题音乐与氛围音乐；用户提出配乐要求也只能分流至独立Music模块，不能开放视频Prompt例外。
 12. **Explicit-only professional score**：MUSIC / SEED-MUSIC只在用户当前明确指令后激活；默认纯音乐。激活后由系统专业规划哪里配乐、哪里留白，并以Cue / Clip追踪元数据与SeedMusic执行正文分离交付。
 

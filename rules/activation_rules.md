@@ -32,7 +32,7 @@
 
 只有用户明确请求“音色提示词、音色制作、角色声音、Seed Audio、配音音色、Voice Asset或声音身份资产”时，才读取唯一Router `workflows/audio_router.md`。只有Router返回`ROUTE: AUDIO / SEED-AUDIO Voice Asset`，才可调用`workflows/20_seed_audio_voice_asset_workflow.md`及其Knowledge与Template；返回`ROUTE: ORIGINAL WORKFLOW`时不得加载声音资产Workflow或其依赖。
 
-普通视频制作、人物分析、角色视觉资产、Storyboard、Clip、Seedance、对白、音效或“声音设计”不得自动触发声音身份资产制作。未激活时，STATE-08只继承已有Confirmed Voice Reference / Voice Profile；不存在时按其Workflow写明回退，不得自动返回STATE-03或创建声音身份。
+普通视频制作、人物分析、角色视觉资产、Storyboard、Clip、Seedance、对白、音效或“声音设计”不得自动触发声音身份资产制作。未激活时默认外部已有可用角色音色资源：不检查缺失、不创建、不补建、不提示必须制作、不登记Not Applicable，也不作为STATE-02/03或STATE-08的Gate。已有Confirmed Voice Profile / Voice Reference只保留为Source State；除非用户明确要求把声音控制写进当前视频模型Prompt，否则STATE-08不得序列化其内容、资产存在状态或任何音色字段。
 
 ## MUSIC / SEED-MUSIC Explicit-Only
 
