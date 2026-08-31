@@ -23,7 +23,7 @@
 ## Required Inputs
 
 - 实际可读且Status为Confirmed的Detailed Shot Design Artifact，以及其Artifact标识/路径与Revision
-- STATE-06 Confirmed `Professional Detailed Shot Script` 与原正式 SHOT 顺序；每个Shot已完整包含镜号、TC IN、TC OUT、时长(s)、景别、焦段、场景/美术、画面内容/构图、人物动作、摄影机/镜头、摄影参数、镜头调度、光线/色彩、画面特效/转场、台词/旁白/口播、音效/BGM、AI制作备注、素材/资产
+- STATE-06 Confirmed `Professional Detailed Shot Script` 与原正式 SHOT 顺序；每个Shot已完整包含镜号、TC IN、TC OUT、时长(s)、景别、焦段、场景/美术、画面内容/构图、人物动作、摄影机/镜头、摄影参数、镜头调度、光线/色彩、画面特效/转场、台词/旁白/口播、同期声音设计、AI制作备注、素材/资产
 - 每个Scene的Confirmed `Spatial Blocking Result`：Spatial Blocking Decision、Map Mode、Structured Blocking Map、Text Spatial Rules、Clip Boundary Spatial Ledger，以及适用时已核对的Top-down Blocking Map；STATE-07只读继承，不得重新设计
 - STATE-06为每个Scene / Shot Group生成的当前有效`Director Decision Notes`
 - 每个 Shot 的精确时间码与目标时长，以及`AI制作备注`中保存的Start Boundary、End-Frame Constraint、Next-Shot Handoff、执行风险与稳定降级
@@ -70,7 +70,7 @@
 - `人物动作`中的起始 → 刺激/注意 → 反应 → 决定/动作 → 稳定结束动作链
 - `镜头调度`中的摄影机运动、人物调度、两者配合/触发和镜头结束状态；不得把该字段缩减成单一运镜名
 - `光线/色彩`的真实来源、叙事功能、变化触发/稳定理由和结束光色态
-- `画面特效/转场、台词/旁白/口播、音效/BGM、AI制作备注、素材/资产`中的执行与连续性事实；后期BGM规划不自动进入STATE-08音效
+- `画面特效/转场、台词/旁白/口播、同期声音设计、AI制作备注、素材/资产`中的执行与连续性事实；任何后期配乐规划都不属于STATE-07输入，也不得进入STATE-08音效
 
 - Scene / Sequence / Coverage / UNIT 映射
 - 导演镜头目的与目标时长

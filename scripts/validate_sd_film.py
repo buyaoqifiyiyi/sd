@@ -195,6 +195,13 @@ MODULE_FILES = (
     "knowledge/sound_language/ambience_and_foley.md",
     "knowledge/sound_language/music_and_silence.md",
     "knowledge/sound_language/sound_continuity.md",
+    "knowledge/music_score/index.md",
+    "knowledge/music_score/spotting_and_silence.md",
+    "knowledge/music_score/music_bible_and_cues.md",
+    "knowledge/music_score/seedmusic_prompting.md",
+    "workflows/music_router.md",
+    "workflows/21_seed_music_score_workflow.md",
+    "templates/22_seed_music_score.md",
     "knowledge/transitions/index.md",
     "knowledge/transitions/foundations.md",
     "knowledge/transitions/decision_engine.md",
@@ -724,12 +731,10 @@ def validate_state08(
     path: Path,
     as_json: bool = False,
     clip_plan_path: Path | None = None,
-    background_music_clips: set[int] | None = None,
     allow_batch_output: bool = False,
 ) -> int:
     errors: list[str] = []
     warnings: list[str] = []
-    allowed_music_clips = background_music_clips or set()
     text = read_text(path.resolve())
     package_markers = list(re.finditer(r"^【CLIP标题】\s*$", text, re.MULTILINE))
     if not package_markers:
@@ -915,7 +920,7 @@ def validate_state08(
                 if not field_value:
                     errors.append(f"G{package_number:02d}/分镜{shot_number} field has no content: {field}")
                 if field == "音效：":
-                    if MUSIC_PATTERN.search(field_value) and clip_number_value not in allowed_music_clips:
+                    if MUSIC_PATTERN.search(field_value):
                         errors.append(f"G{package_number:02d}/分镜{shot_number} 音效 contains forbidden music instruction")
                     if SOUND_PLACEHOLDER_PATTERN.fullmatch(field_value):
                         errors.append(f"G{package_number:02d}/分镜{shot_number} 音效 may not be empty, silent, or generic placeholder content")
@@ -979,9 +984,7 @@ def validate_state08(
                 )
         negative_text = package[negative_start + len("【反向提示词】"):] if negative_start >= 0 else ""
         negative_lines = [line.strip() for line in negative_text.splitlines() if line.strip()]
-        if clip_number_value not in allowed_music_clips and (
-            not negative_lines or negative_lines[0] != DEFAULT_NO_BACKGROUND_MUSIC_LINE
-        ):
+        if not negative_lines or negative_lines[0] != DEFAULT_NO_BACKGROUND_MUSIC_LINE:
             errors.append(
                 f"G{package_number:02d} 【反向提示词】 first non-empty line must be exactly: "
                 f"{DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
@@ -1025,9 +1028,6 @@ def validate_state08(
                 elif reference_mode and not re.search(r"连续性参考|兼容|重建", start_text):
                     errors.append(f"G{package_number:02d} 起始状态 must reconstruct a compatible boundary from {previous_token}")
 
-    unknown_music_clips = allowed_music_clips.difference(clip_ids)
-    for clip_number in sorted(unknown_music_clips):
-        errors.append(f"Background-music exception references missing CLIP-{clip_number:03d}")
     if package_ids and package_ids != list(range(package_ids[0], package_ids[0] + len(package_ids))):
         errors.append(f"Prompt Package IDs in this delivery must be consecutive: found {[f'G{number:02d}' for number in package_ids]}")
     if clip_ids and clip_ids != list(range(clip_ids[0], clip_ids[0] + len(clip_ids))):
@@ -1092,13 +1092,11 @@ def validate_state08(
     path: Path,
     as_json: bool = False,
     clip_plan_path: Path | None = None,
-    background_music_clips: set[int] | None = None,
     allow_batch_output: bool = False,
 ) -> int:
     """Validate the fixed STATE-08 Clip contract owned by templates/10_video_prompt.md."""
     errors: list[str] = []
     warnings: list[str] = []
-    allowed_music_clips = background_music_clips or set()
     text = read_text(path.resolve())
 
     legacy_patterns = (
@@ -1279,7 +1277,7 @@ def validate_state08(
                     errors.append(f"CLIP-{clip_number:03d}/分镜{shot_number} field uses forbidden shorthand: {label}")
             sound = values.get("音效：", "")
             if sound:
-                if MUSIC_PATTERN.search(sound) and clip_number not in allowed_music_clips:
+                if MUSIC_PATTERN.search(sound):
                     errors.append(f"CLIP-{clip_number:03d}/分镜{shot_number} 音效 contains forbidden music instruction")
                 if not SOUND_BED_PATTERN.search(sound) or not SOUND_FOREGROUND_PATTERN.search(sound):
                     errors.append(f"CLIP-{clip_number:03d}/分镜{shot_number} 音效 must contain ambience and synchronized foreground sound")
@@ -1299,7 +1297,7 @@ def validate_state08(
         if negative_matches and negative_matches[0].group(1).strip():
             negative_text = "\n".join((negative_matches[0].group(1).strip(), negative_text)).strip()
         negative_lines = [line.strip() for line in negative_text.splitlines() if line.strip()]
-        if clip_number not in allowed_music_clips and (not negative_lines or negative_lines[0] != DEFAULT_NO_BACKGROUND_MUSIC_LINE):
+        if not negative_lines or negative_lines[0] != DEFAULT_NO_BACKGROUND_MUSIC_LINE:
             errors.append(f"CLIP-{clip_number:03d} 反向提示词： first non-empty line must be exactly the default no-background-music line")
 
         if clip_number in plan_specs:
@@ -2041,7 +2039,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "rules/02_asset_rules.md": ("FX-001", "FX Asset", "Visual Asset Production Gate", "Prompt Draft", "Image Generated", "Reference Asset Eligibility Strengthening", "板凳参考说明"),
         "workflows/03_asset_discovery_workflow.md": ("FX Asset Discovery", "15_fx_asset_workflow.md"),
         "workflows/07_visual_development_workflow.md": ("Performance Direction", "facial_action_language.md", "emotion_dynamics.md", "Sound Direction", "knowledge/lighting/index.md", "光源空间锚点", "focal_length_and_perspective.md", "全画幅等效倾向", "knowledge/color/index.md", "绿色—品红偏色", "肤色、眼白", "17_poster_design_workflow.md"),
-        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Script Adaptation And Optimization Gate Module Contract", "四种Script Status值合法", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Transition Knowledge Contract"),
+        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Script Adaptation And Optimization Gate Module Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Transition Knowledge Contract"),
         "knowledge/script_adaptation.md": ("Optimization Opportunity Report", "User Decision Gate", "Source Essence Extraction", "Adaptation Objective", "Preserve / Compress / Rewrite / Remove Decision", "Screen Translation", "Duration & Dramatic Restructuring", "Adaptation Fidelity Check", "LEVEL 1", "LEVEL 2", "LEVEL 3", "基本不要改剧情", "short_form_drama_adapter.md"),
         "knowledge/adaptation/short_form_drama_adapter.md": ("前3秒", "前30秒", "1个核心事件", "角色功能", "核心欲望", "性格标签", "标志动作", "语言特征", "视觉记忆点", "通常控制在7字左右", "1个主情绪", "爽 / 虐 / 甜 / 惊 / 燃 / 笑 / 悬", "Hook → Setup → Escalation → Payoff → Next Hook", "不是死时间码"),
         "workflows/02_script_analysis_workflow.md": ("Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate", "开场钩子", "核心冲突进入时机", "信息重复", "台词效率", "动作可视化", "人物记忆点", "节奏", "高潮力度", "情绪价值", "结尾Hook", "时长适配", "场景/人物复杂度", "A 无明显优化必要", "B 有轻度优化空间", "C 有明显结构问题", "拒绝优化或改编", "Production Script Proposal输出后必须再次停止", "A — Production Script", "B — Rough Script / First Draft", "C — Source Material", "Adaptation Target Detection", "Script Adaptation", "Adaptation Draft", "short_form_drama_adapter.md", "No Revision / Final Script"),
@@ -2054,14 +2052,21 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "templates/06_prop_asset_prompt.md": ("Main Reference Image Prompt", "Required State Variant Prompts", "Required Detail Prompts", "Awaiting User Confirmation", "Asset Confirmed"),
         "workflows/08_scene_breakdown_workflow.md": ("Sequence Eligibility", "16_sequence_planning_workflow.md", "Source Script Label", "不得创建或预留"),
         "workflows/16_sequence_planning_workflow.md": ("Trigger Gate", "Coverage Matrix", "State Ledger", "不得创建SHOT ID", "UNIT是", "不得创建CLIP ID"),
-        "workflows/09_shot_design_workflow.md": ("Professional Detailed Shot Script", "TC IN", "TC OUT", "时长(s)", "画面内容 / 构图", "镜头调度", "摄影机运动 + 人物调度", "光线 / 色彩", "台词 / 旁白 / 口播", "音效 / BGM", "AI制作备注", "素材 / 资产", "Performance Goal", "facial_action_language.md", "公开状态与内部泄漏", "Sound Purpose", "FX Behavior", "Coverage Mapping", "Coverage Completion", "Composition Intent", "Camera Language Integrity", "Camera Language Decision Gate", "selection_matrix.md", "实际读取的主运镜原子知识文件", "Focal Length Design", "focal_length_and_perspective.md", "knowledge/color/index.md", "CLR-01至CLR-09", "肤色漂移", "director_patterns/index.md", "knowledge/lighting/index.md", "起始光态", "高风险模式的基础镜头降级方案", "movement_combinations/index.md", "Low-Complexity Compound Path", "knowledge/transitions/", "Outgoing Anchor", "Direct Cut降级", "Source Script Label", "Artifact Revision"),
+        "workflows/09_shot_design_workflow.md": ("Professional Detailed Shot Script", "TC IN", "TC OUT", "时长(s)", "画面内容 / 构图", "镜头调度", "摄影机运动 + 人物调度", "光线 / 色彩", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "Performance Goal", "facial_action_language.md", "公开状态与内部泄漏", "Sound Purpose", "FX Behavior", "Coverage Mapping", "Coverage Completion", "Composition Intent", "Camera Language Integrity", "Camera Language Decision Gate", "selection_matrix.md", "实际读取的主运镜原子知识文件", "Focal Length Design", "focal_length_and_perspective.md", "knowledge/color/index.md", "CLR-01至CLR-09", "肤色漂移", "director_patterns/index.md", "knowledge/lighting/index.md", "起始光态", "高风险模式的基础镜头降级方案", "movement_combinations/index.md", "Low-Complexity Compound Path", "knowledge/transitions/", "Outgoing Anchor", "Direct Cut降级", "Source Script Label", "Artifact Revision"),
         "workflows/10_clip_production_workflow.md": ("STATE-07 Clip Production", "Professional Detailed Shot Script", "TC OUT - TC IN = 时长(s)", "画面内容/构图", "镜头调度", "光线/色彩", "Shot", "Clip", "Prompt", "Build Clip Candidates", "Author Clip Execution Contract", "Clip Movement Plan", "主导镜头语言", "超过4个Shot", "连续出现3次", "Duration And Continuity Ledger", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "templates/20_clip_plan.md", "每个 Clip", "Source Script Label", "--project-status", "--shot-design"),
         "workflows/10_storyboard_workflow.md": ("Optional / Auxiliary", "不绑定任何固定 STATE", "用户明确要求", "templates/09_storyboard_prompt.md", "不得进入 STATE-08"),
         "workflows/11_video_generation_workflow.md": ("knowledge/performance/", "Attention Shift", "Control / Leakage", "瞳孔地震", "knowledge/sound_language/", "knowledge/fx/", "knowledge/lighting/", "knowledge/color/", "Color Execution", "综合色彩闪变", "focal_length_and_perspective.md", "全画幅等效倾向", "movement_combinations/", "Low-Complexity Compound Path", "Camera Language Decision Hard Gate", "Clip Movement Plan Hard Gate", "selection_matrix.md", "禁止把“缓慢推进”", "Sequence Plan", "Sequence And Unit Continuity", "Sequence Coverage Check", "state08_projection.md", "Semantic Projection Check", "Projection Ledger", "结束光态", "knowledge/transitions/", "禁止生成背景音乐", "Outgoing Anchor", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "板凳参考说明", "Single-Clip Checkpoint", "First-Frame Check", "End-Frame Interface Check", "Cross-Clip Continuity Check"),
         "workflows/13_review_workflow.md": ("FX Review", "Performance Review", "表情符合角色基线", "公开状态、短暂泄漏", "Sound Review", "Sequence Coverage Review", "Camera Language QA", "连续慢推", "超过4个Shot", "连续3次", "焦段倾向、摄影机距离", "背景尺度抽动", "主色、辅助色、强调色", "白平衡抽动"),
         "templates/01_project_bible_template.md": ("Performance Direction", "角色中性面部", "压抑 / 伪装 / 混合情绪", "FX Direction", "Sound Direction", "FX Continuity", "光源空间锚点与方向", "跨镜光影连续性", "全画幅等效倾向", "焦段不自动等于景别", "绿色—品红偏色", "Color模式语义"),
         "templates/03_asset_discovery_prompt.md": ("正式FX Asset / Inline Effect / 后期合成待定", "15_fx_asset_workflow.md"),
-        "templates/08_shot_design_prompt.md": ("Professional Detailed Shot Script Template", "镜号", "TC IN", "TC OUT", "时长(s)", "景别", "焦段", "场景 / 美术", "画面内容 / 构图", "人物动作", "摄影机 / 镜头", "摄影参数", "镜头调度", "光线 / 色彩", "画面特效 / 转场", "台词 / 旁白 / 口播", "音效 / BGM", "AI制作备注", "素材 / 资产", "摄影机运动", "人物调度", "镜头结束状态", "前景、中景、背景", "Start Boundary", "End-Frame Constraint", "Next-Shot Handoff", "Director Decision Layer必须读取已经完成的专业分镜表", "templates/10_video_prompt.md", "Artifact Revision", "Source Script Labels"),
+        "templates/08_shot_design_prompt.md": ("Professional Detailed Shot Script Template", "镜号", "TC IN", "TC OUT", "时长(s)", "景别", "焦段", "场景 / 美术", "画面内容 / 构图", "人物动作", "摄影机 / 镜头", "摄影参数", "镜头调度", "光线 / 色彩", "画面特效 / 转场", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "摄影机运动", "人物调度", "镜头结束状态", "前景、中景、背景", "Start Boundary", "End-Frame Constraint", "Next-Shot Handoff", "Director Decision Layer必须读取已经完成的专业分镜表", "templates/10_video_prompt.md", "Artifact Revision", "Source Script Labels"),
+        "workflows/music_router.md": ("ROUTE: MUSIC / SEED-MUSIC Score", "ROUTE: ORIGINAL WORKFLOW", "INSTRUMENTAL", "SILENCE / PRODUCTION SOUND ONLY", "CLIP-006"),
+        "workflows/21_seed_music_score_workflow.md": ("Optional/Auxiliary", "Explicit Trigger Evidence", "Professional Spotting Pass", "Music Bible", "MUS-CUE-001", "Related Clip(s)", "style + structure", "INSTRUMENTAL", "不得生成SeedMusic Prompt", "固定背景音乐禁令"),
+        "knowledge/music_score/index.md": ("Music / Score", "Explicit", "spotting_and_silence.md", "music_bible_and_cues.md", "seedmusic_prompting.md", "STATE-08永久禁止"),
+        "knowledge/music_score/spotting_and_silence.md": ("MUSIC CUE", "SILENCE / PRODUCTION SOUND ONLY", "DIEGETIC MUSIC ONLY", "MUSIC OUT", "CARRY-OVER", "Dialogue Protection"),
+        "knowledge/music_score/music_bible_and_cues.md": ("Music Bible", "Motif", "Emotional And Rhythmic Strategy", "Transition Cue", "Silence Before And After"),
+        "knowledge/music_score/seedmusic_prompting.md": ("Instrumental Music Generation", "style", "structure", "[Verse]: 0s", "no vocals", "Related Clip(s)", "Continuation", "Style Transfer"),
+        "templates/22_seed_music_score.md": ("# MUSIC / SEED-MUSIC Score Package", "Explicit Trigger Evidence", "Generation Mode", "## Spotting Map", "SILENCE / PRODUCTION SOUND ONLY", "## Cue Sheet", "MUS-CUE-001", "Related Clip(s)", "style:", "structure:", "[Verse]: 0s", "Clip归属"),
         "references/professional_detailed_shot_script_example.md": ("Professional Detailed Shot Script", "Total Shots：4", "00:00:00.000", "00:00:23.000", "SHOT-001", "SHOT-002", "SHOT-003", "SHOT-004", "摄影机运动", "人物调度", "结束状态", "前景：", "中景：", "背景：", "叙事功能", "Start Boundary", "End-Frame", "Next", "素材 / 资产", "不包含Director Decision Notes或Knowledge Reflection"),
         "templates/20_clip_plan.md": ("# Clip Plan", "Source Detailed Shot Design Artifact / Portable Checkpoint", "Source Detailed Shot Design Status", "Source Detailed Shot Design Revision", "Unit Rule", "Namespace Rule", "包含 Shot", "起始状态", "连续动作", "Clip Movement Plan", "主导镜头语言", "视觉高潮镜头", "最克制镜头", "重复规避", "Seedance复杂度控制", "空间关系", "道具连续性", "结尾状态", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "NOT ELIGIBLE", "每个Clip只生成一条连续Prompt"),
         "templates/09_storyboard_prompt.md": ("Optional / Auxiliary", "不绑定固定 STATE", "不是 STATE-08", "Production Isolation Note"),
@@ -2414,10 +2419,106 @@ def init_project(args: argparse.Namespace) -> int:
     return 0
 
 
+def validate_music_package(path: Path, as_json: bool = False) -> int:
+    """Validate the explicit MUSIC / SEED-MUSIC package and native prompt blocks."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    text = read_text(path.resolve())
+
+    required_sections = (
+        "# MUSIC / SEED-MUSIC Score Package",
+        "## Module Routing Record",
+        "## Scope And Music Strategy",
+        "## Spotting Map",
+        "## Music Bible / Motif Map",
+        "## Cue Sheet",
+        "## SeedMusic Prompt Blocks",
+        "## Review",
+    )
+    for section in required_sections:
+        if section not in text:
+            errors.append(f"Missing Music Package section: {section}")
+
+    if not re.search(r"^\s*-\s*Route:\s*`?MUSIC / SEED-MUSIC Score`?\s*$", text, re.MULTILINE):
+        errors.append("Music Package must record Route: MUSIC / SEED-MUSIC Score")
+    trigger = re.search(r"^\s*-\s*Explicit Trigger Evidence:\s*(.+)$", text, re.MULTILINE)
+    if not trigger or not trigger.group(1).strip():
+        errors.append("Music Package must record non-empty Explicit Trigger Evidence")
+    deliverable_match = re.search(r"^\s*-\s*Requested Deliverable:\s*(.+)$", text, re.MULTILINE)
+    requested_deliverable = deliverable_match.group(1).strip() if deliverable_match else ""
+
+    mode_match = re.search(r"^\s*-\s*Generation Mode:\s*`?([^`\n]+)`?\s*$", text, re.MULTILINE)
+    mode = mode_match.group(1).strip() if mode_match else ""
+    allowed_modes = {"INSTRUMENTAL", "VOICE TEXTURE", "LYRICS / SONG"}
+    if mode not in allowed_modes:
+        errors.append("Generation Mode must be INSTRUMENTAL, VOICE TEXTURE, or LYRICS / SONG")
+    if mode != "INSTRUMENTAL":
+        vocal_evidence = re.search(r"^\s*-\s*Explicit Vocal / Lyrics Evidence:\s*(.+)$", text, re.MULTILINE)
+        if not vocal_evidence or not vocal_evidence.group(1).strip():
+            errors.append("Non-instrumental mode requires Explicit Vocal / Lyrics Evidence")
+
+    if "MUSIC CUE" not in text:
+        warnings.append("Spotting Map contains no MUSIC CUE; no SeedMusic prompt may be necessary")
+    if "SILENCE / PRODUCTION SOUND ONLY" not in text:
+        errors.append("Spotting Map must contain at least one SILENCE / PRODUCTION SOUND ONLY decision within the scope or at an adjacent cue boundary")
+
+    headings = list(re.finditer(r"^###\s+(MUS-CUE-(\d{3}))｜([^｜\n]+)｜(.+?)SeedMusic(?:纯音乐)?提示词\s*$", text, re.MULTILINE))
+    cue_ids = [match.group(1) for match in headings]
+    if len(cue_ids) != len(set(cue_ids)):
+        errors.append("SeedMusic prompt Cue IDs must be unique")
+
+    for index, heading in enumerate(headings):
+        cue_id = heading.group(1)
+        trace = heading.group(3).strip()
+        segment_end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
+        segment = text[heading.end():segment_end]
+        if "CLIP" in trace.upper() and not re.fullmatch(r"CLIP-\d{3}(?:—CLIP-\d{3})?", trace, re.IGNORECASE):
+            errors.append(f"{cue_id} Clip trace must use CLIP-XXX or CLIP-XXX—CLIP-XXX")
+        if "CLIP" in trace.upper() and not re.search(r"^\s*-\s*Related Clip\(s\):\s*.*CLIP-\d{3}", segment, re.MULTILINE | re.IGNORECASE):
+            errors.append(f"{cue_id} must repeat its Clip trace in Related Clip(s)")
+
+        blocks = re.findall(r"```text\s*\n(.*?)\n```", segment, re.DOTALL | re.IGNORECASE)
+        if len(blocks) != 1:
+            errors.append(f"{cue_id} must contain exactly one text execution block")
+            continue
+        block = blocks[0].strip()
+        if re.search(r"CLIP-\d{3}|Related Clip|Narrative Use|Target Duration", block, re.IGNORECASE):
+            errors.append(f"{cue_id} execution block contains delivery metadata")
+        if len(re.findall(r"^style:\s*$", block, re.MULTILINE | re.IGNORECASE)) != 1:
+            errors.append(f"{cue_id} execution block must contain exactly one style: label")
+        if len(re.findall(r"^structure:\s*$", block, re.MULTILINE | re.IGNORECASE)) != 1:
+            errors.append(f"{cue_id} execution block must contain exactly one structure: label")
+            continue
+        style_part, structure_part = re.split(r"^structure:\s*$", block, maxsplit=1, flags=re.MULTILINE | re.IGNORECASE)
+        if mode == "INSTRUMENTAL":
+            required_exclusions = ("instrumental only", "no vocals", "no lyrics", "no choir", "no humming", "no vocalise")
+            for exclusion in required_exclusions:
+                if exclusion not in style_part.lower():
+                    errors.append(f"{cue_id} INSTRUMENTAL style missing exclusion: {exclusion}")
+        structure_lines = [line.strip() for line in structure_part.splitlines() if line.strip()]
+        times: list[float] = []
+        for line in structure_lines:
+            match = re.fullmatch(r"\[(Verse|Chorus|Bridge|Outro)\]:\s*(\d+(?:\.\d+)?)s", line, re.IGNORECASE)
+            if not match:
+                errors.append(f"{cue_id} invalid SeedMusic structure line: {line}")
+                continue
+            times.append(float(match.group(2)))
+        if not times:
+            errors.append(f"{cue_id} structure must contain at least one timed section")
+        elif times[0] != 0:
+            errors.append(f"{cue_id} first structure timestamp must be 0s")
+        elif any(current <= previous for previous, current in zip(times, times[1:])):
+            errors.append(f"{cue_id} structure timestamps must be strictly increasing")
+
+    if re.search(r"Prompt|提示词", requested_deliverable, re.IGNORECASE) and "MUSIC CUE" in text and not headings:
+        errors.append("Music Package has MUSIC CUE decisions but no SeedMusic prompt block")
+    return report(errors, warnings, as_json)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for name in ("project", "registry", "sequence", "shotplan", "clip", "poster", "state08", "review", "asset", "artifact", "execution", "portable", "routing", "skill"):
+    for name in ("project", "registry", "sequence", "shotplan", "clip", "poster", "state08", "review", "asset", "artifact", "execution", "portable", "routing", "skill", "music"):
         sub = subparsers.add_parser(name)
         sub.add_argument("path")
         sub.add_argument("--json", action="store_true", dest="as_json")
@@ -2427,13 +2528,6 @@ def build_parser() -> argparse.ArgumentParser:
                 "--batch-output",
                 action="store_true",
                 help="Allow multiple Clip Prompt Packages only when the user explicitly requested batch output in the current request",
-            )
-            sub.add_argument(
-                "--background-music-clip",
-                action="append",
-                default=[],
-                metavar="CLIP-XXX",
-                help="Allow user-requested Seedance background music for this explicit Clip; repeat for multiple Clips",
             )
         if name == "clip":
             sub.add_argument(
@@ -2462,14 +2556,9 @@ def main() -> int:
     if args.command == "registry":
         return validate_registry(path, args.as_json)
     if args.command == "state08":
-        background_music_clips: set[int] = set()
-        for value in args.background_music_clip:
-            match = re.fullmatch(r"(?:CLIP-)?(\d{3})", value, re.IGNORECASE)
-            if not match:
-                print(f"FAIL\nERROR: --background-music-clip must use CLIP-XXX: {value}")
-                return 1
-            background_music_clips.add(int(match.group(1)))
-        return validate_state08(path, args.as_json, Path(args.clip_plan), background_music_clips, args.batch_output)
+        return validate_state08(path, args.as_json, Path(args.clip_plan), args.batch_output)
+    if args.command == "music":
+        return validate_music_package(path, args.as_json)
     if args.command == "sequence":
         return validate_sequence(path, args.as_json)
     if args.command == "shotplan":

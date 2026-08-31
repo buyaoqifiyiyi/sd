@@ -347,14 +347,14 @@ STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video
 - 模型适配
 - 动作描述
 - 可执行表演节拍
-- 对白、环境声、动作声、呼吸、Foley、剧情内声源与同期静默；音乐与配乐只属于STATE-09 Editing/Post，不进入STATE-08音效
+- 对白、环境声、动作声、呼吸、Foley、剧情内声源与同期静默；背景音乐、配乐、BGM、主题音乐与氛围音乐永久不进入STATE-08音效或其他视频Prompt字段
 - FX生命周期、物理交互与跨镜后果
 - Sequence顺序、Coverage与UNIT边界继承
 - Clip内逐镜状态链、4—15秒生成边界与跨Clip尾帧连接
 
 ---
 
-## STATE-09 Review And Editing/Post
+## STATE-09 Review
 
 Required：
 
@@ -365,12 +365,35 @@ Required：
 
 Conditional：
 
-- knowledge/sound_language/music_and_silence.md（仅后期音乐规划）
 - knowledge/transitions/
 - knowledge/sequence/
 - knowledge/fx/
 
 用途：逐镜QA、相邻镜连续性、Prompt评分、Coverage、重试隔离和返回路由。
+
+STATE-09不得因缺少配乐计划而自动加载Music模块。只有用户显式提交或请求复核独立Music Package时，才按`workflows/music_router.md`与`workflows/21_seed_music_score_workflow.md`单独路由。
+
+---
+
+## MUSIC / SEED-MUSIC Score（Explicit-Only Auxiliary）
+
+入口：
+
+- `workflows/music_router.md`
+- Positive Route后：`workflows/21_seed_music_score_workflow.md`
+
+Required Knowledge：
+
+- `knowledge/music_score/index.md`
+- `knowledge/music_score/spotting_and_silence.md`
+- `knowledge/music_score/music_bible_and_cues.md`
+- `knowledge/music_score/seedmusic_prompting.md`
+
+唯一Template：`templates/22_seed_music_score.md`。
+
+用途：用户发出明确配乐指令后，由系统专业完成全请求范围的Music Spotting、音乐与留白决策、主题动机、Cue Sheet及SeedMusic提示词。默认纯音乐；歌词、演唱、合唱、哼唱、吟唱或Vocalise只在当前显式要求时允许。Clip存在时以`Related Clip(s)`和Cue标题追踪，但Clip标签不进入SeedMusic `style + structure`执行块。
+
+禁止：自动触发；默认全段铺音乐；把配乐写入Seedance视频Prompt；让用户逐Clip代替系统作Spotting；以`knowledge/sound_language/`代替本独立模块。
 
 
 

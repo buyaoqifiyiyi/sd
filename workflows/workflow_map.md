@@ -29,7 +29,7 @@ STATE-00 Project Setup
 → STATE-09 Review
 ```
 
-Editing不作为独立STATE插入主Pipeline。Storyboard只在用户显式请求时作为Optional/Auxiliary Workflow执行，不创建STATE，也不改变固定路由。
+Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC只在各自合法触发条件下作为Optional/Auxiliary Workflow执行，不创建STATE，也不改变固定路由。
 
 ## Main Workflow Routing
 
@@ -130,6 +130,7 @@ Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Scr
 |---|---|---|---|
 | 用户显式请求Storyboard | `workflows/10_storyboard_workflow.md` | `templates/09_storyboard_prompt.md` | Optional/Auxiliary；不替代STATE-06/07，不进入STATE-08 Canonical Reference |
 | 用户显式请求声音身份资产 | `workflows/audio_router.md` | AUDIO Route → `workflows/20_seed_audio_voice_asset_workflow.md` → `templates/21_seed_audio_voice_asset.md` | 必须先过唯一Router；普通视频、Clip、Seedance、对白或声音设计不自动触发 |
+| 用户显式请求后期配乐规划或SeedMusic提示词 | `workflows/music_router.md` | MUSIC Route → `workflows/21_seed_music_score_workflow.md` → `templates/22_seed_music_score.md` | 必须先过唯一Router；默认纯音乐；专业规划音乐与留白；不得把配乐写入视频Prompt |
 | 中断恢复、Review退回或生成重试 | `workflows/18_project_resume_workflow.md` | `references/project_state_contract.md` | 从已验证Checkpoint恢复，不创建STATE |
 | Sequence级Coverage规划 | `workflows/16_sequence_planning_workflow.md` | `templates/14_sequence_plan.md` | 条件执行；不创建SHOT或CLIP ID |
 | 电影海报 / Key Art | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付 |
@@ -147,6 +148,16 @@ Storyboard只在用户明确请求时调用`workflows/10_storyboard_workflow.md`
 - Router返回`ROUTE: AUDIO / SEED-AUDIO Voice Asset`时，才进入`workflows/20_seed_audio_voice_asset_workflow.md`。
 - Router返回`ROUTE: ORIGINAL WORKFLOW`时，声音资产模块优先级为零，继续原Workflow路由。
 - 同一请求同时明确要求视频与音色资产时，分别路由、分别使用Template，不混合Schema。
+
+### MUSIC / SEED-MUSIC Explicit Trigger Gate
+
+当前请求明确要求配乐规划、Music Spotting、Cue Sheet、主题动机、场景 / 转场音乐或SeedMusic提示词时，先读取`workflows/music_router.md`：
+
+- Router返回`ROUTE: MUSIC / SEED-MUSIC Score`时，才进入`workflows/21_seed_music_score_workflow.md`。
+- Router返回`ROUTE: ORIGINAL WORKFLOW`时，Music模块优先级为零，不加载其Knowledge或Template。
+- 默认输出纯音乐；歌词、演唱、合唱、哼唱、吟唱或Vocalise只有当前显式请求才允许。
+- 激活后由系统在完整请求范围内专业决定音乐进入、退出、Carry-over与留白，不把“全片配乐”解释为全片持续铺音乐。
+- 同一请求同时要求视频与配乐时分别路由；STATE-08视频Prompt的背景音乐禁令永不开放例外。Music Prompt可以在执行块外标记Related Clip(s)。
 
 ## Legacy Compatibility
 

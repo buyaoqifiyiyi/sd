@@ -924,14 +924,10 @@ knowledge/sound_language/
 - 声音的现实主义或风格化程度
 - 对白与环境声的优先关系
 - 主要空间底噪与材质声倾向
-- 配乐使用条件
-- 静默的叙事功能
+- 同期声音留白的叙事功能
 - 跨镜声音连接倾向
 
-
-没有明确配乐需求时：
-
-不得为了“电影感”自动增加音乐。
+后期Music / Score不属于Visual Development默认声音原则。只有用户当前显式请求时才经`workflows/music_router.md`进入独立模块；本Workflow不得预先规划配乐或因“电影感”增加音乐。
 
 
 ---
@@ -1609,7 +1605,7 @@ STATE-08 Clip-based Video Prompt / Video Generation Schema。
 ## Sound
 
 
-记录声音现实主义、对白优先级、空间底噪、配乐条件、静默与声音连接原则。
+记录生产声音现实主义、对白优先级、空间底噪、同期声音留白与声音连接原则；不记录后期配乐策略。
 
 
 不得提前写逐镜最终声音Prompt。

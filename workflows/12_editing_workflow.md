@@ -117,14 +117,14 @@
 
 knowledge/transitions/
 
-knowledge/sound_language/music_and_silence.md（仅在用户或项目明确需要音乐时）
+用户已显式调用MUSIC / SEED-MUSIC模块并提供Confirmed Music Package时，按该Artifact只读应用；否则不得自动加载音乐Knowledge或规划配乐
 
 执行：
 
 - 根据STATE-08已经生成的Outgoing Anchor、Cut Point与Incoming Anchor完成Direct Cut、Match Cut、J-cut、L-cut、Dissolve、Fade、Smash Cut或已确认的遮挡/光效转场
 - 每个边界只保留一种主要视觉转场；无充分依据时使用Direct Cut
 - 只有已确认素材足够时才使用遮挡、FX或奇幻转场，不用后期效果掩盖连续性错误
-- 背景音乐、配乐、歌曲、节拍和音乐进入退出只在此阶段添加，不回写STATE-08“音效”字段
+- 只有已存在且Confirmed的独立Music Package才可在此阶段按Cue Sheet添加；若用户此时新请求配乐，先经`workflows/music_router.md`进入独立模块。Editing不得自行设计或自动补齐音乐，且任何音乐都不回写STATE-08字段
 - 对白、环境声、Foley和剧情内声源与画面同步；J-cut/L-cut优先使用剧情内声音
 
 如果生成素材缺少可剪辑把手：

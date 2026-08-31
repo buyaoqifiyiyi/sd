@@ -792,7 +792,7 @@ REV-0001
                 encoding="utf-8",
             )
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
-            self.assertEqual(run_quiet(validator.validate_state08, path, True, None, None, True), 0)
+            self.assertEqual(run_quiet(validator.validate_state08, path, True, None, True), 0)
 
     def test_state08_single_later_clip_is_a_valid_checkpoint(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1251,7 +1251,7 @@ None
             path.write_text(f"{global_text}\n【分镜1】\n{fields_1}\n【分镜2】\n{fields_2}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
 
-    def test_explicit_background_music_exception_is_clip_scoped(self) -> None:
+    def test_background_music_is_always_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
             global_text = make_state08_global_sections(1, 1, "1", "10")
@@ -1259,8 +1259,113 @@ None
             ending = "反向提示词：禁止换脸。"
             path.write_text(f"{global_text}\n分镜1\n{make_shot_fields(sound=sound)}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
-            self.assertEqual(run_quiet(validator.validate_state08, path, True, None, {1}), 0)
-            self.assertEqual(run_quiet(validator.validate_state08, path, True, None, {2}), 1)
+
+    def test_valid_instrumental_seedmusic_package(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "music.md"
+            path.write_text(
+                """# MUSIC / SEED-MUSIC Score Package
+## Module Routing Record
+- Route: `MUSIC / SEED-MUSIC Score`
+- Explicit Trigger Evidence: 用户要求为CLIP-006规划配乐
+- Requested Scope: CLIP-006
+- Requested Deliverable: SeedMusic Prompt
+- Generation Mode: `INSTRUMENTAL`
+## Scope And Music Strategy
+有效
+## Spotting Map
+| Range | Decision |
+|---|---|
+| CLIP-005尾部 | SILENCE / PRODUCTION SOUND ONLY |
+| CLIP-006 | MUSIC CUE |
+## Music Bible / Motif Map
+有效
+## Cue Sheet
+| Cue ID | Related Clip(s) |
+|---|---|
+| MUS-CUE-001 | CLIP-006 |
+## SeedMusic Prompt Blocks
+### MUS-CUE-001｜CLIP-006｜克制揭示 SeedMusic纯音乐提示词
+- Related Clip(s): `CLIP-006`
+- Generation Mode: `INSTRUMENTAL`
+```text
+style:
+instrumental only; no vocals, no singing, no lyrics, no spoken word, no rap, no choir, no humming, no vocalise; music only, no dialogue, ambience, Foley or sound effects; restrained chamber strings, low pulse, unresolved harmony
+
+structure:
+[Verse]: 0s
+[Bridge]: 8s
+[Outro]: 14s
+```
+## Review
+- [x] 已检查
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_music_package, path, True), 0)
+
+    def test_seedmusic_structure_must_start_at_zero_and_increase(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "music.md"
+            path.write_text(
+                """# MUSIC / SEED-MUSIC Score Package
+## Module Routing Record
+- Route: `MUSIC / SEED-MUSIC Score`
+- Explicit Trigger Evidence: 输出配乐提示词
+- Requested Deliverable: SeedMusic Prompt
+- Generation Mode: `INSTRUMENTAL`
+## Scope And Music Strategy
+有效
+## Spotting Map
+MUSIC CUE；SILENCE / PRODUCTION SOUND ONLY
+## Music Bible / Motif Map
+有效
+## Cue Sheet
+MUS-CUE-001
+## SeedMusic Prompt Blocks
+### MUS-CUE-001｜CLIP-006｜错误时间 SeedMusic纯音乐提示词
+- Related Clip(s): CLIP-006
+```text
+style:
+instrumental only; no vocals, no lyrics, no choir, no humming, no vocalise
+
+structure:
+[Verse]: 3s
+[Bridge]: 2s
+```
+## Review
+有效
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_music_package, path, True), 1)
+
+    def test_music_plan_only_does_not_require_prompt_blocks(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "music-plan.md"
+            path.write_text(
+                """# MUSIC / SEED-MUSIC Score Package
+## Module Routing Record
+- Route: `MUSIC / SEED-MUSIC Score`
+- Explicit Trigger Evidence: 只规划哪里配乐与哪里留白
+- Requested Deliverable: Spotting Plan
+- Generation Mode: `INSTRUMENTAL`
+## Scope And Music Strategy
+有效
+## Spotting Map
+MUSIC CUE；SILENCE / PRODUCTION SOUND ONLY
+## Music Bible / Motif Map
+有效
+## Cue Sheet
+MUS-CUE-001
+## SeedMusic Prompt Blocks
+本轮不生成提示词。
+## Review
+有效
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_music_package, path, True), 0)
 
     def test_state08_generic_sound_placeholder_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

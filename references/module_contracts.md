@@ -190,6 +190,42 @@ Validator可检查的不变量：所有声音身份Intent先进入唯一`workflo
 
 ---
 
+## MUSIC / SEED-MUSIC Score Module Contract
+
+Module Name：`MUSIC / SEED-MUSIC Score`。
+
+Module Type：用户显式调用的Optional/Auxiliary Workflow + 独立Knowledge目录 + 独立Template，不创建新主STATE，不是STATE-08、STATE-09或Editing的默认步骤。
+
+触发：只有用户当前请求明确要求创建、规划、设计、生成、修改或输出配乐规划、Music Spotting、Cue Sheet、主题动机、场景 / 转场音乐、SeedMusic / Seed-Music提示词、纯音乐提示词、歌词歌曲或已有音乐Cue的续写 / 风格迁移时触发。必须记录可核对的`Explicit Trigger Evidence`，并先经过`workflows/music_router.md`。
+
+不触发：普通视频、Shot、Clip、Storyboard、Seedance视频Prompt、Review、Editing、项目推进命令；项目资料、题材、情绪或导演参考中出现音乐词汇；缺少配乐计划；用户仅声明视频不生成BGM；对白、音效、Foley、剧情内声源、音色或配音请求。Router返回Original Workflow时不得加载本模块依赖或创建Music Artifact。
+
+所属位置：不绑定主STATE的独立辅助位置。项目存在时绑定当前Project ID和已确认Scene / Sequence / Shot / Clip Artifact；项目不存在时可根据用户当前提供且足够的时间线直接交付。完成后返回调用前Checkpoint，不自动推进主Pipeline。
+
+Required Inputs及唯一来源：用户当前音乐目标、禁用项与明确模式；用户或Production-Locked Script拥有的剧情事实；Confirmed Scene / Sequence / Detailed Shot Design / Clip Production Plan拥有的顺序、边界和时长；用户提供且已授权的Audio Reference或乐谱。模块不得修改这些上游事实。时间线未锁定时只可输出`PROVISIONAL` Spotting，不得伪造精确秒点。
+
+Router与Output拥有者：`workflows/music_router.md`独占显式触发与`ROUTE: MUSIC / SEED-MUSIC Score` / `ROUTE: ORIGINAL WORKFLOW`路由；`workflows/21_seed_music_score_workflow.md`拥有Spotting、Music Bible、Cue架构、SeedMusic编译、完成门槛与返回路由；`knowledge/music_score/`拥有专业判断方法；`templates/22_seed_music_score.md`独占Music Package最终字段、顺序和排版。`templates/10_video_prompt.md`、`templates/08_shot_design_prompt.md`、`knowledge/sound_language/`与Editing Template不得替代本模块Schema。
+
+允许读取：用户当前输入、Selected State Source、Active Project Root中相关已确认剧本、Scene、Sequence、Detailed Shot Design、Clip Plan、生成结果、Review证据及经授权音乐参考。允许写入：独立Music Package、Spotting Map、Music Bible、Cue Sheet与SeedMusic Prompt Artifact；如项目运行时支持，可在Artifact Registry登记，但不得写入Skill根目录项目兼容入口，不得修改视频Prompt Artifact。
+
+下游消费者：用户的独立后期配乐制作、音乐生成与剪辑混音流程；STATE-09可在用户明确提交Music Artifact参与复核时读取它，但不得因缺失而自动启动本模块。STATE-08永远不是本模块输出消费者。
+
+默认模式：Positive Route默认`INSTRUMENTAL`，即纯音乐。Lyrics、演唱、说唱、合唱、哼唱、吟唱、Vocalise、Spoken Word或其他人声纹理只有用户当前另行明确要求时才允许。普通剧情对白不得转成歌词授权。
+
+专业Spotting不变量：激活后系统必须审阅完整请求范围，专业决定音乐进入、退出、Carry-over与`SILENCE / PRODUCTION SOUND ONLY`，不得要求用户逐Clip指定，也不得把“全片配乐”解释为持续全片铺音乐。每个交付至少在请求范围内或相邻Cue边界明确一处留白；留白条目保留同期声音承载说明，但不生成SeedMusic Prompt。
+
+SeedMusic不变量：默认纯音乐执行块只包含`style`与`structure`；省略Lyrics输入；`structure`使用官方示例的`[Verse] / [Chorus] / [Bridge] / [Outro]`绝对秒点，首个秒点为`0s`、后续严格递增。Cue标题与`Related Clip(s)`位于执行块外，只作为追踪元数据；不得把CLIP-ID或生产说明写入`style` / `structure`。
+
+视频隔离不变量：STATE-08任何Clip均永久执行固定背景音乐禁令。即使用户要求配乐，也只能拆分为独立Music Package；不得对明确Clip、批量Clip或任何模型开放视频Prompt音乐例外。
+
+禁止修改：剧情、台词、Clip顺序和时长、镜头设计、同期声音设计、视觉资产、主Pipeline、STATE-08 Seedance Schema与用户未授权的人声 / 歌词模式。不得模仿特定在世艺术家或复刻受版权保护歌曲，应转译为高层音乐特征。
+
+冲突路由：剧情或时间线冲突返回事实拥有者；时长未确认标记`PROVISIONAL`；用户要求把配乐写进视频Prompt时强制拆分路由；Audio Reference缺失或未授权时停用Reference模式；本模块与AUDIO / SEED-AUDIO Voice Asset分别路由、分别使用Template。
+
+Validator可检查的不变量：Positive Route和显式触发证据存在；默认Generation Mode为INSTRUMENTAL；Spotting Map覆盖请求范围且至少允许Music与Designed Silence两类专业判断；Cue ID唯一；已知Clip使用`Related Clip(s)`；默认Prompt含纯音乐与人声排除；执行块存在且只有`style + structure`；结构从`0s`开始并严格递增；留白行没有Prompt；STATE-08固定禁令存在且无任何背景音乐例外参数。
+
+---
+
 ## STATE-03 Visual Asset Production Contract
 
 Module Type：STATE-03 Character / Environment / Prop主资产Workflow与正式FX辅助Workflow的共享生产合同，不创建新主STATE。

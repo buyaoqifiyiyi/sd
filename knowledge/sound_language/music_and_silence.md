@@ -1,46 +1,19 @@
-# Music And Silence
+# Music And Silence Compatibility Boundary
 
-## Music Function
+本文件保留旧路径兼容，但不再拥有后期Music / Score规划方法。
 
-只有当配乐具有明确功能时使用：
+## Production-Sound Silence
 
-- 建立时代或文化语境
-- 推动节奏
-- 连接蒙太奇
-- 强化已发生的情绪转折
-- 形成主题回忆或反差
+STATE-04—09中的“静默”只指生产声音设计：保留或收缩空间底噪、呼吸、对白尾音、Foley、动作声或剧情内声源。它不是Music Cue，也不得把“无配乐”写进STATE-08正向音效字段。
 
-禁止仅因“电影感”自动增加音乐。
+## Music Routing
 
----
+只有用户当前明确请求配乐规划、Music Spotting、Cue Sheet、主题动机、场景 / 转场音乐或SeedMusic提示词时，才读取`workflows/music_router.md`。Positive Route后由以下资源独占音乐方法与交付：
 
-## Music Cue
+- `workflows/21_seed_music_score_workflow.md`
+- `knowledge/music_score/`
+- `templates/22_seed_music_score.md`
 
-需要配乐时确认：
+普通视频、Shot、Clip、Seedance、Review、Editing或“继续”请求不得因读取本兼容文件而触发Music模块。
 
-- Narrative Purpose
-- Source: Score / Diegetic
-- Entry Trigger
-- Intensity Shape
-- Dominant Texture / Instrument Family
-- Relationship To Dialogue
-- Relationship To Action
-- Exit Or Carry-over
-
-不得默认指定受版权保护的现成歌曲或模仿特定在世艺术家的声音。
-
----
-
-## Silence
-
-静默不是所有声音归零。
-
-可设计为：
-
-- 去除音乐，保留空间底噪
-- 压低环境声，突出呼吸或单一动作声
-- 在关键刺激后出现短暂声场收缩
-- 转场前停止主要声源，形成听觉断点
-
-静默必须有开始原因和恢复方式。
-
+STATE-08永久禁止背景音乐、配乐、BGM、主题音乐与氛围音乐，不存在用户指定Clip例外。

@@ -33,3 +33,13 @@
 只有用户明确请求“音色提示词、音色制作、角色声音、Seed Audio、配音音色、Voice Asset或声音身份资产”时，才读取唯一Router `workflows/audio_router.md`。只有Router返回`ROUTE: AUDIO / SEED-AUDIO Voice Asset`，才可调用`workflows/20_seed_audio_voice_asset_workflow.md`及其Knowledge与Template；返回`ROUTE: ORIGINAL WORKFLOW`时不得加载声音资产Workflow或其依赖。
 
 普通视频制作、人物分析、角色视觉资产、Storyboard、Clip、Seedance、对白、音效或“声音设计”不得自动触发声音身份资产制作。未激活时，STATE-08只继承已有Confirmed Voice Reference / Voice Profile；不存在时按其Workflow写明回退，不得自动返回STATE-03或创建声音身份。
+
+## MUSIC / SEED-MUSIC Explicit-Only
+
+只有用户当前请求明确要求配乐规划、Music Spotting、Cue Sheet、主题动机、场景 / 转场音乐、SeedMusic / Seed-Music提示词或同义音乐交付物时，才读取唯一Router `workflows/music_router.md`。只有Router返回`ROUTE: MUSIC / SEED-MUSIC Score`，才可调用`workflows/21_seed_music_score_workflow.md`、`knowledge/music_score/`与`templates/22_seed_music_score.md`；返回`ROUTE: ORIGINAL WORKFLOW`时不得加载这些资源。
+
+普通视频制作、Detailed Shot Design、Clip Production、Seedance视频Prompt、Storyboard、Review、Editing、“继续”“下一步”“下一个Clip”或项目资料中出现音乐词汇，都不得自动触发Music模块。用户只声明“视频不要配乐”属于STATE-08边界，不触发完整模块。
+
+Music模块Positive Route默认`INSTRUMENTAL`。歌词、演唱、说唱、合唱、哼唱、吟唱、Vocalise或其他人声纹理只有用户当前另行明确要求时允许。模块激活后，由系统专业审阅整个请求范围并决定哪里使用音乐、哪里只保留同期声音或留白；不得要求用户逐Clip手工指定，也不得默认全段铺音乐。
+
+同一请求同时要求视频Prompt与配乐时必须拆分路由、拆分Template：视频Prompt永久执行背景音乐禁令，Music Package可用标题和`Related Clip(s)`表明服务的Clip，但Clip标签不得混入SeedMusic `style + structure`执行正文。

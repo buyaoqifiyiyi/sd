@@ -16,6 +16,9 @@
 - STATE-08 Image Reference Limit: 9 per Clip after Preflight and World-State filtering
 - Storyboard Activation: explicit only
 - AUDIO / SEED-AUDIO Voice Asset Activation: explicit only
+- MUSIC / SEED-MUSIC Score Activation: explicit only
+- MUSIC Default Generation Mode: instrumental only
+- STATE-08 Music Policy: permanent ban; no Clip exceptions
 - Legacy Workflow Routing: compatibility only
 
 这些默认值不得覆盖用户当前明确指令、Confirmed Project Facts、Completion Gate或当前Template。用户明确要求批量输出时，只覆盖当前轮STATE-08交付数量，不覆盖逐Clip完整性与确认规则。
@@ -54,6 +57,7 @@
 - 主STATE、辅助Workflow与对应Template路由：`SKILL.md`的Routing表和`workflows/workflow_map.md`。
 - 当前阶段资源与Template：当前Workflow的Required Resources / Output Owner声明。
 - AUDIO / SEED-AUDIO路由：`workflows/audio_router.md`。
+- MUSIC / SEED-MUSIC路由：`workflows/music_router.md`。
 - Legacy兼容：`workflows/10_shot_execution_plan_workflow.md`与`workflows/19_clip_planning_workflow.md`；新项目不得把它们写为主Pipeline的Next Workflow。
 
 每个Template文件独占其用户可见Schema，其他文件不得复制完整字段骨架。STATE-08最终Schema唯一由`templates/10_video_prompt.md`拥有；`templates/11_image_to_video_prompt.md`只提供参考帧Source Data与边界约束。
@@ -75,4 +79,6 @@
 - 优先清楚的视觉描述、专业制作逻辑、空间关系、连续性、资产一致性与AI生成可执行性。
 - Prompt是下游生产动作，不是流程起点。
 - STATE-08 Prompt正文不写分镜时间码、逐秒区间、帧数区间或帧率限制；平台参数置于Prompt之外。
+- STATE-08反向提示词首个非空内容行永久使用固定背景音乐禁令；任何配乐请求都由独立MUSIC / SEED-MUSIC模块处理。
+- MUSIC模块默认输出纯音乐SeedMusic提示词；歌词或任何人声纹理只有用户当前明确要求时才允许。
 - 最终字段与格式始终服从当前Template，本配置不拥有任何最终Schema。

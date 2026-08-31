@@ -1,15 +1,15 @@
 ---
 name: sd-film
-description: AI影视虚拟制片生产系统，用于剧本改编与分析、角色与环境资产、视觉开发、电影海报与Key Art、详细镜头设计、Clip Production、AI视频生成以及Seedance视频提示词制作；另包含仅在用户显式请求“音色提示词、音色制作、角色声音、Seed Audio、配音音色或声音资产”时调用的AUDIO / SEED-AUDIO Voice Asset模块。普通视频制作、角色分析、Storyboard、Clip或Seedance请求不得自动触发音色资产制作。
+description: AI影视虚拟制片生产系统，用于剧本改编与分析、角色与环境资产、视觉开发、电影海报与Key Art、详细镜头设计、Clip Production、AI视频生成以及Seedance视频提示词制作；另包含仅在用户显式请求时调用的AUDIO / SEED-AUDIO Voice Asset与MUSIC / SEED-MUSIC Score独立模块。视频Prompt永久禁止非剧情内配乐；普通视频、Storyboard、Clip、Seedance、Review或“继续”请求不得自动触发声音资产或配乐制作。
 ---
 
 # SD Film
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.08.31-r2
+Skill Version: 2026.08.31-r3
 
-Build ID: sd-film-2026.08.31-r2
+Build ID: sd-film-2026.08.31-r3
 
 每次正式修改必须同步更新这两个字段：同日递增`rN`，跨日使用新的`YYYY.MM.DD-r1`。它们是版本唯一真源；`config.md`、Workflow和Project State不得维护竞争副本。
 
@@ -36,7 +36,7 @@ STATE-00 Project Setup
 → STATE-09 Review
 ```
 
-Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Optional/Auxiliary Workflow执行。
+Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的STATE，只能按各自显式触发边界作为Optional/Auxiliary Workflow执行。
 
 ## STATE Overview
 
@@ -77,7 +77,7 @@ Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Opt
 
 激活只识别生产目标，不证明当前STATE。必须先按当前State Source与Completion Gate路由，不能因用户说“Seedance”“视频Prompt”就跳到STATE-08。
 
-完整激活、Storyboard隔离与AUDIO显式触发规则：`rules/activation_rules.md`。
+完整激活、Storyboard隔离、AUDIO与MUSIC显式触发规则：`rules/activation_rules.md`。
 
 ## Runtime Reload Entry
 
@@ -111,6 +111,7 @@ Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Opt
 |---|---|---|---|
 | 用户显式请求Storyboard | `workflows/10_storyboard_workflow.md` | `templates/09_storyboard_prompt.md` | Optional/Auxiliary；不创建STATE，不替代STATE-07，不作为STATE-08 Canonical Reference |
 | 用户显式请求声音身份资产 | `workflows/audio_router.md` | AUDIO Route → `workflows/20_seed_audio_voice_asset_workflow.md` → `templates/21_seed_audio_voice_asset.md` | 先经过唯一Router；仅Positive Route进入声音资产Workflow；普通Clip/Seedance不自动触发 |
+| 用户显式请求配乐规划或SeedMusic提示词 | `workflows/music_router.md` | MUSIC Route → `workflows/21_seed_music_score_workflow.md` → `templates/22_seed_music_score.md` | 先经过唯一Router；默认纯音乐；系统专业决定音乐与留白；视频Prompt永久禁配乐且与Music Package分离 |
 | 项目中断、继续、Review退回或重试 | `workflows/18_project_resume_workflow.md` | `references/project_state_contract.md` | 从已验证Checkpoint恢复，不新增STATE |
 | Sequence级覆盖规划 | `workflows/16_sequence_planning_workflow.md` | `templates/14_sequence_plan.md` | 条件执行；不改变主STATE编号 |
 | 电影海报 / Key Art | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付 |
@@ -129,7 +130,7 @@ Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Opt
 - `rules/state_source.md`：State Source优先级、选择与运行时差异。
 - `rules/chat_compatibility.md`：普通Chat完整执行与Portable行为。
 - `rules/progression_rules.md`：纯推进命令、Anti-Duplication与授权边界。
-- `rules/activation_rules.md`：自动/显式激活、Storyboard与AUDIO隔离。
+- `rules/activation_rules.md`：自动/显式激活、Storyboard、AUDIO与MUSIC隔离。
 - `rules/completion_gate.md`：全局完成、转换、确认与持久化原则。
 - `rules/compatibility_mapping.md`：旧State、旧Storyboard路由与Portable Schema迁移。
 - `rules/resource_loading.md`：渐进式资源加载与职责边界。
@@ -163,5 +164,7 @@ Storyboard不是主Pipeline中的STATE。用户显式请求时，它只作为Opt
 8. **No invented resources or facts**：路径说明不等于资源已读；Knowledge不适用时标记Not Applicable，不虚构填充；资源实际读取失败后才请求用户提供。
 9. **Minimal revision**：用户修改或Review退回时只改受影响范围，保留Accepted Unaffected Artifacts，并回到Review复核。
 10. **Explicit-only voice identity**：AUDIO / SEED-AUDIO声音身份资产只在用户明确请求时激活。
+11. **Permanent video-music isolation**：STATE-08视频Prompt永久禁止背景音乐、配乐、BGM、主题音乐与氛围音乐；用户提出配乐要求也只能分流至独立Music模块，不能开放视频Prompt例外。
+12. **Explicit-only professional score**：MUSIC / SEED-MUSIC只在用户当前明确指令后激活；默认纯音乐。激活后由系统专业规划哪里配乐、哪里留白，并以Cue / Clip追踪元数据与SeedMusic执行正文分离交付。
 
 执行时遵循：Rules定义约束，Workflow完成生产转换，Knowledge提供专业判断，Template定义最终Schema，References保存跨模块合同。

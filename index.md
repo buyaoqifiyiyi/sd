@@ -181,6 +181,8 @@ FX生命周期与后果连续性。
 
 当用户明确请求时，可在STATE-04追加电影海报与Key Art辅助流程，包括影片宣传判断、视觉母题、构图、字体层级、分层制作和交付质检。
 
+后期Music / Score不属于STATE-04默认声音原则。只有用户显式请求配乐规划或SeedMusic提示词时，才进入独立MUSIC / SEED-MUSIC模块；该模块专业规划音乐与留白，默认纯音乐，并与视频Prompt永久隔离。
+
 
 
 ---
@@ -239,6 +241,14 @@ Shot Design。
 
 生成AI视频制作Prompt。
 
+所有Seedance视频Prompt永久禁止背景音乐、配乐、BGM、主题音乐与氛围音乐。配乐只在用户显式调用独立MUSIC / SEED-MUSIC模块后另行交付。
+
+---
+
+## Auxiliary Music / SeedMusic Score
+
+仅在用户明确请求配乐规划、Music Spotting、Cue Sheet、主题动机或SeedMusic提示词后触发。系统审阅完整范围，专业决定哪里使用音乐、哪里保留同期声与留白；默认输出纯音乐。Clip存在时可在Cue标题和`Related Clip(s)`中表明服务的Clip，但SeedMusic执行正文只使用`style + structure`。
+
 
 
 ---
@@ -277,6 +287,7 @@ SD Film
 │   ├── poster_design/
 │   ├── quality/
 │   ├── sequence/
+│   ├── music_score/
 │   └── sound_language/
 │
 ├── templates/

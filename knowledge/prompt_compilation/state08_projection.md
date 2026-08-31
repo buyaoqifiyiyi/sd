@@ -74,7 +74,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 | Character Continuity / Performance | 人物一致性；主风格 | 外观与状态锁定、表演尺度、跨镜湿润/伤痕/体力/情绪连续性 |
 | Environment / Spatial / Lighting / Color | 环境一致性 | 地点、天气、固定结构、光源方向、色彩来源与锚点、材质响应、运动方向、轴线和背景逻辑 |
 | Sound / Dialogue / Voice Identity | 音色特征 | 始终非空；Reference Override、Voice Profile Fallback、No Voice Asset或无对白四分支之一 |
-| Cross-shot Risk | 反向提示词 | 默认禁BGM首句及本Clip真实高风险项；只有用户显式指定的Clip可使用音乐例外 |
+| Cross-shot Risk | 反向提示词 | 永久固定禁BGM首句及本Clip真实高风险项；不存在音乐例外 |
 
 ## Per-Shot Projection Matrix
 
@@ -98,7 +98,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 
 Color、Lighting、Focal Length、Composition、Camera Movement和Director Pattern必须拆成固定字段中的具体执行语义，不得只保留“电影感”“冷色调”“85mm”“压迫构图”“缓慢推进”等标签。
 
-最终Prompt不得输出CLR编号、CMG编号、FLN编号或其他内部模式ID。未触发用户显式音乐例外时，`反向提示词：`首句固定为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”。
+最终Prompt不得输出CLR编号、CMG编号、FLN编号或其他内部模式ID。`反向提示词：`首句永久固定为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”。
 
 连续性投影固定为：
 
@@ -137,7 +137,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否通过Clip Preflight：连续性三选一且尾帧引用正确；逐分镜World-State与资产一致；角色精确数量、追逐/多人空间构图、关键道具状态和适用转场五要素均有现有字段证据；失败设计没有被反向提示词兜底。
 - 是否明确A/B/C并据此标记`Tail Frame Required = YES / NO`；A/B无图时是否在`参考资产`直接列统一`REF-TAIL`、对应用途与“待用户提供/待上传、未确认”，且未冒充已提交图片；A是否使用固定直接承接句，B是否明确另起新镜头且未使用该句，C是否完全未列`REF-TAIL`；本Clip新尾帧限制是否完整。
 - 每个分镜是否完整重复十个固定字段；下一镜语义是否已进入“镜头结尾状态”。
-- 未触发背景音乐例外时，`反向提示词：`首句是否为固定禁BGM句；例外是否仅作用于用户明确指定的Clip。
+- `反向提示词：`首句是否无例外使用固定禁BGM句。
 
 ## Priority On Conflict
 

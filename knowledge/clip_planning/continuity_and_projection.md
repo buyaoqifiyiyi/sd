@@ -9,7 +9,7 @@
 - Camera / Composition Path：景别、机位、焦段、对焦、构图和运镜如何连续演进
 - Performance / Action Arc：刺激、注意、反应、动作与稳定结果
 - Lighting / Color Arc：真实光源、方向、强度/光比、色温/偏色、饱和度与资产固有色
-- Sound Arc：对白、环境声、动作声、呼吸与Foley；STATE-08默认禁止生成背景音乐、配乐、BGM、主题音乐与氛围音乐，只有用户显式要求由Seedance为明确指定的Clip生成背景音乐时例外
+- Sound Arc：对白、环境声、动作声、呼吸与Foley；STATE-08永久禁止生成背景音乐、配乐、BGM、主题音乐与氛围音乐，不存在用户指定Clip例外
 - Exit State：稳定尾帧与下一 Clip 可用锚点
 - Tail-Frame Use Mode：A【同镜头连续承接 / Direct】/ B【新镜头参考型 / Reference-Only】/ C【新镜头且无需尾帧 / Not Required】
 - Tail-Frame Requirement：A/B标记`Tail Frame Required = YES`，C标记`NO`；不得由资产是否已存在反向决定
@@ -30,7 +30,7 @@ Clip 表中的“知识投影摘要”不是知识名称清单，而是以下模
 | Lighting | 主风格、环境一致性、起始状态、空间关系、画面变化与结尾状态 |
 | Color | 主风格、环境一致性以及各分镜起始/变化/结束色态 |
 | Transition | 同一 Clip 内“与下一镜衔接”及跨 Clip 尾帧、参考资产和起始状态 |
-| Sound | `音色特征：`始终保留：有适用Voice/Audio Reference时写明Reference锁定声音身份且不得文字重定义，并只保留轻量台词表演指令；无适用Reference但已有Confirmed Voice Profile时由其投影；两者都不存在时声明未建立独立音色资产且本Clip不创建或推导声音身份，不得自动触发AUDIO模块；无对白时明确无对白。台词、音效和声音桥继续执行；默认不得出现背景音乐，只有用户显式要求由Seedance为明确指定的Clip生成背景音乐时例外 |
+| Sound | `音色特征：`始终保留：有适用Voice/Audio Reference时写明Reference锁定声音身份且不得文字重定义，并只保留轻量台词表演指令；无适用Reference但已有Confirmed Voice Profile时由其投影；两者都不存在时声明未建立独立音色资产且本Clip不创建或推导声音身份，不得自动触发AUDIO模块；无对白时明确无对白。台词、音效和声音桥继续执行；所有Clip永久禁止背景音乐，任何配乐请求只进入独立MUSIC / SEED-MUSIC模块 |
 | FX | 画面描述、空间关系、道具/FX状态、声音与残留后果 |
 
 最终 Prompt 不得输出内部知识编号、Projection Ledger或另建知识字段；必须把适用知识写进 `templates/10_video_prompt.md` 已有字段。

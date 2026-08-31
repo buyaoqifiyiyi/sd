@@ -52,7 +52,7 @@
 
 - 声音绑定真实声源、动作或空间。
 - FX来源、阶段、交互、残留和声音尾部完整。
-- STATE-08不含配乐/BGM；音乐只进入Editing/Post。
+- STATE-08不含配乐/BGM；音乐只有用户显式调用独立MUSIC / SEED-MUSIC模块后才另行交付。
 
 ---
 
@@ -61,4 +61,3 @@
 每镜只允许：PASS / REVISE / REBUILD。
 
 必须记录Affected ID、问题、Fact Owner、最小修复、Return Route和Recheck Scope。
-
