@@ -30,7 +30,7 @@ Clip 表中的“知识投影摘要”不是知识名称清单，而是以下模
 | Lighting | 主风格、环境一致性、起始状态、空间关系、画面变化与结尾状态 |
 | Color | 主风格、环境一致性以及各分镜起始/变化/结束色态 |
 | Transition | 同一 Clip 内“与下一镜衔接”及跨 Clip 尾帧、参考资产和起始状态 |
-| Sound | `音色特征：`始终保留：有适用Voice/Audio Reference时写明Reference锁定声音身份且不得文字重定义，并只保留轻量台词表演指令；无适用Reference但已有Confirmed Voice Profile时由其投影；两者都不存在时声明未建立独立音色资产且本Clip不创建或推导声音身份，不得自动触发AUDIO模块；无对白时明确无对白。台词、音效和声音桥继续执行；所有Clip永久禁止背景音乐，任何配乐请求只进入独立MUSIC / SEED-MUSIC模块 |
+| Sound | Voice Identity默认由Source携带，STATE-08不检查、不投影、不写`音色特征：`或资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时才输出最小Delta。台词中的Dialogue Performance、音效和声音桥继续执行；所有Clip永久禁止背景音乐，任何配乐请求只进入独立MUSIC / SEED-MUSIC模块 |
 | FX | 画面描述、空间关系、道具/FX状态、声音与残留后果 |
 
 最终 Prompt 不得输出内部知识编号、Projection Ledger或另建知识字段；必须把适用知识写进 `templates/10_video_prompt.md` 已有字段。

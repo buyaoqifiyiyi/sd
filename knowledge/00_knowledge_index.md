@@ -159,7 +159,7 @@ knowledge/fx/
 - 环境设计
 - 道具设计
 - 正式FX Asset设计
-- 把已确认角色事实转换为可执行的声学Voice Profile与纯人声音色样本Prompt；不把竹雀示例当作全局默认
+- 在用户显式启动AUDIO模块时，把已确认角色事实转换为可执行Voice Profile与按需Seed Audio兼容Prompt，并分离稳定Voice Identity、当前Dialogue Performance、Ambience、Sound Effects与BGM / Score
 
 
 

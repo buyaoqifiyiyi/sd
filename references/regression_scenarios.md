@@ -84,13 +84,13 @@ PASS允许完成；REVISE/REBUILD保持STATE-09 IN_PROGRESS，记录Affected IDs
 
 Prompt Draft输出至少包含：
 
-- 角色定义与角色音色描述：中低音域、清晰克制、自然语速、短停顿后再强调关键词。
+- 角色定义只包含视觉身份与剧情事实；“有对白”不得触发角色音色描述、Voice Profile、Seed Audio Prompt或Voice Reference字段。
 - 三视图Prompt：`角色设定表，28岁东亚女性气象工程师林遥，椭圆脸、平直眉、深棕眼、短黑发齐耳并露出双耳，身高约168厘米、匀称偏瘦体型；穿灰蓝色连帽防水工作服、深灰工装裤、黑色防滑短靴，不佩戴首饰。纯浅灰无缝背景，同一画布从左到右为正面全身自然站姿、严格右侧全身、背面全身，三个视图等比例等高度，服装接缝、口袋、拉链、帽型、鞋型与颜色完全一致；柔和中性棚拍光，真实电影角色概念设计，清晰材质与结构，4:3横幅，高分辨率。禁止改变脸型、年龄感、身体比例、发型长度、服装结构与配色；禁止透视夸张、动态姿势、额外人物、文字、水印、拼错肢体。`
 - 面部特写Prompt：`林遥面部角色参考，28岁东亚女性，椭圆脸、平直眉、深棕眼、鼻梁自然、薄而清晰的唇形、真实轻微皮肤纹理、短黑发齐耳并露出双耳；正面头肩特写，平静中性表情，视线略高于镜头，浅灰无缝背景，柔和中性棚拍主光加弱填充，肤色准确，真实电影角色概念设计，1:1，高分辨率。严格继承三视图的脸型、年龄感、发际线、发长与发色；禁止美颜塑料皮、夸张妆容、笑容、首饰、额外人物、文字、水印、五官漂移。`
 - 状态变体：`Not Required—剧本未确认额外视觉状态。`
 - `Visual Production Status: Prompt Draft`与`Awaiting User Confirmation: Image Prompts`；不得生成图片。
 
-模拟用户确认`Prompt Revision: P-v001`后，状态变为`Prompt Confirmed`。生成后仅登记`Candidate References: char-001-turnaround-c01.png; char-001-face-c01.png`，状态为`Image Generated`，不得出现Canonical References或Active。模拟用户确认两张图片后，最终记录必须为`Visual Production Status: Asset Confirmed`、`Status: Active`、`Active Version: v001`，并把两张已批准Candidate References升级为Canonical References。
+模拟用户确认`Prompt Revision: P-v001`后，状态变为`Prompt Confirmed`。生成后仅登记`Candidate References: char-001-turnaround-c01.png; char-001-face-c01.png`，状态为`Image Generated`，不得出现Canonical References或Active。模拟用户确认两张图片后，最终记录必须为`Visual Production Status: Asset Confirmed`、`Status: Active`、`Active Version: v001`，并把两张已批准Candidate References升级为Canonical References；整个案例不创建声音资产，也不因缺少声音资产阻塞。
 
 ### R09-E Environment
 
@@ -316,6 +316,34 @@ FAIL：整段Prompt全部重写；同时更换角色资产、动作、运镜、�
 
 ---
 
+## R17 Voice Identity Opt-In And Prompt Isolation
+
+### R17-A No Voice Request
+
+输入：角色有对白，用户只要求继续主Pipeline或输出当前Seedance Clip Prompt，没有提出音色制作或当前视频声音控制要求。
+
+PASS：不进入AUDIO模块；默认外部已有可用角色音色资源；STATE-02/03/08均不阻塞；视频Prompt完全省略`音色特征：`、Voice Profile、Voice/Audio Reference及“已有/缺失/无需音色”等状态文字。台词只保留准确文本与必要Dialogue Performance。
+
+FAIL：要求补建Voice Profile；创建Not Applicable；返回STATE-03；输出`No Voice Asset`或无对白占位；把音色描述写进视频Prompt。
+
+### R17-B Explicit Voice Design
+
+输入：`为女主设计音色。`
+
+PASS：Router返回`AUDIO / SEED-AUDIO Voice Asset`，从当前项目阶段独立进入音色模块；输出独立Voice Profile和明确标记为“SD Film为Seed Audio 1.0组织的兼容模板”的Prompt。Prompt描述speaker，分离稳定Voice Identity与当前Dialogue Performance，并只按需输出Voice Description、Emotional Tone、Delivery / Prosody、Dialogue、Timing、Ambience、Key Sound Effects、Scene Progression和获授权Reference Audio；不强行并入视频Prompt。
+
+FAIL：继续普通Character Asset；把声音交付塞进STATE-08；冒充官方唯一字段模板；固定要求15秒、八条`No...`声明或无关视觉描述。
+
+### R17-C Confirmed Voice Exists But User Requests Only CLIP-03 Prompt
+
+输入：Active CHAR Version已有Confirmed Voice Profile或Voice Audio Reference；用户只说`输出CLIP-03 Seedance提示词。`
+
+PASS：Confirmed声音资产只作为Source State存在，不投影到CLIP-03视频Prompt；`音色特征：`和Voice/Audio Reference均省略。主流程按STATE-08其他Gate继续。
+
+FAIL：自动复制Voice Profile；写“由参考音色锁定”；仅因已有声音资产就把Reference列入`参考资产：`；把先前AUDIO授权外推到当前请求。
+
+---
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -330,3 +358,4 @@ FAIL：整段Prompt全部重写；同时更换角色资产、动作、运镜、�
 - R14验证纯文字“板凳参考说明”从参考资产删除并迁移到既有空间/道具/反向字段，1—5号视觉资产保持不动，真实双人钢琴凳图只以正式资产ID引用。
 - R15-A至R15-C验证文学意图可执行转译、工程级数据按视觉价值压缩，以及Canonical角色/环境资产释放Prompt注意力给当前动作、空间、镜头与状态承接；最终Template结构保持不变。
 - R16-A至R16-E验证Canonical来源携带已锁定状态、Generation Budget先于五维、Accepted Observed State覆盖Planned瞬时状态、`REF-TAIL`不越权覆盖身份，以及站位失败优先单变量复拍；全部复用现有Pipeline、Execution Ledger与Template结构。
+- R17-A至R17-C验证角色声音身份严格opt-in、常规STATE-08 Prompt完全省略声音身份文字、显式声音设计进入独立Seed Audio兼容模板，以及已有Confirmed Voice Source不会在只请求Clip Prompt时被自动序列化。

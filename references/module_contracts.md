@@ -172,7 +172,7 @@ Module Type：显式调用的Optional/Auxiliary Workflow + Knowledge + 独立Tem
 
 Required Inputs及唯一来源：角色年龄、性别、身份、性格、对白功能、情绪基调与可观察说话行为来自用户当前明确输入、已确认Script Analysis、Project Bible或Active CHAR Version；不得从外貌、导演标签、题材或竹雀示例反推。必要事实不足时保持Pending或请求最小必要输入。
 
-Router与Output拥有者：`workflows/audio_router.md`独占显式触发判定与`AUDIO / ORIGINAL WORKFLOW`路由；`workflows/20_seed_audio_voice_asset_workflow.md`只在Positive Route后拥有执行、完成与返回调用前Checkpoint；`templates/21_seed_audio_voice_asset.md`独占Voice Profile、Seed Audio Voice Sample Prompt与Voice Audio Reference Handoff的最终字段、顺序和排版；`knowledge/sound_language/voice_generation.md`只拥有声学推导、试听覆盖、喜剧节奏与Audio Reference选择方法。`templates/04_character_asset_prompt.md`与`templates/10_video_prompt.md`不得替代本模块Schema。
+Router与Output拥有者：`workflows/audio_router.md`独占显式触发判定与`AUDIO / ORIGINAL WORKFLOW`路由；`workflows/20_seed_audio_voice_asset_workflow.md`只在Positive Route后拥有执行、完成与返回调用前Checkpoint；`templates/21_seed_audio_voice_asset.md`独占Voice Profile、Seed Audio兼容Prompt与Reference Audio Handoff的最终字段、顺序和排版；`knowledge/sound_language/voice_generation.md`只拥有官方能力边界、声音身份推导、Dialogue Performance分离、按需字段选择与Reference Audio方法。`templates/04_character_asset_prompt.md`与`templates/10_video_prompt.md`不得替代本模块Schema。
 
 允许读取：用户当前输入、Active Project Root中的`project_bible.md`、`asset_registry.md`、相关已确认剧本/分析交付物与角色对白证据。允许写入：独立交付物，以及用户明确要求保存/更新时同一CHAR-ID与Version中的Voice Profile、Voice Sample Prompt及经确认的Voice Audio Reference元数据；不创建独立视觉Asset ID，不把音频自动登记为视觉Canonical Reference。
 
@@ -186,7 +186,7 @@ Router与Output拥有者：`workflows/audio_router.md`独占显式触发判定�
 
 Validator可检查的不变量：所有声音身份Intent先进入唯一`workflows/audio_router.md`；只有Positive Route加载声音资产Workflow；具有显式触发证据；输出明确标记为SD Film为Seed Audio组织的兼容模板而非官方唯一字段格式；描述speaker并分离稳定Voice Identity与当前Dialogue Performance；只输出适用字段；Reference Audio有授权依据；无无意义精密参数、否定词堆砌或视觉Prompt复制；A/B/C路由样例分别为触发/不触发/不触发。
 
-竹雀的孔老板、老板娘、吴御史、诸葛亮只作为项目Voice Bible示例，不是全局默认人设或音色模板。
+项目专属Voice Bible不得成为全局默认人设、音色模板或试听文本。
 
 ---
 
@@ -601,7 +601,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 每个Clip必须为4—15秒；Clip内分镜保持原顺序、逐镜字段和显式状态链
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
-- 先执行Voice Reference Override Gate：固定字段`音色特征：`始终保留；有适用Voice/Audio Reference时写明Reference锁定且不得文字重定义，并删除其他字段中的全部文字音色描述；无适用Reference但已有Confirmed Voice Profile时以其填充；两者都不存在时使用`No Voice Asset`声明且不得自动触发AUDIO模块；无对白时明确无对白
+- 先执行Voice Identity Omission Gate：默认不检查或投影Voice Profile / Voice Audio Reference，不输出`音色特征：`或声音资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按`Source Carries State, Prompt Carries Delta`输出当前Clip最小必要控制
 
 禁止：
 

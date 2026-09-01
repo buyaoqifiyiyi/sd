@@ -1,12 +1,17 @@
 # AUDIO / SEED-AUDIO Voice Asset Template
 
-## Ownership
+## Ownership And Status
 
-本文件是AUDIO / SEED-AUDIO Voice Asset模块的唯一输出规范，独占Voice Profile、Seed Audio Voice Sample Prompt与Voice Audio Reference Handoff的最终字段、顺序和排版。
+本文件是显式调用的`AUDIO / SEED-AUDIO Voice Asset`模块唯一输出规范，拥有Voice Profile、独立Seed Audio兼容Prompt与可选Reference Handoff的字段、顺序和排版。不得由Character Asset、普通视频制作、STATE-08或“继续/下一个Clip”自动调用。
 
-只有用户显式请求音色提示词、音色制作、角色声音、Seed Audio、配音音色、声音资产、Voice Profile或同义角色声音身份制作时，才允许调用本Template。不得由Character Asset、普通视频制作、角色分析、STATE-08或“继续/下一个Clip”自动调用。
+本结构是**SD Film为Seed Audio 1.0组织的兼容模板**，不是ByteDance官方唯一字段模板。ByteDance官方公开资料说明Seed Audio 1.0可由Prompt描述speaker、emotional tone、line delivery、surrounding environment、key sound effects与scene progression，可进行对白timing控制，并可通过文本描述、授权参考音频或两者结合塑造声音；官方没有规定本文件中的字段标题或固定排列。
 
-## Required Output
+官方依据：
+
+- https://seed.bytedance.com/en/blog/from-speech-to-audio-creation-introducing-the-seed-audio-1-0-audio-creation-model
+- https://seed.bytedance.com/en/seedaudio1_0
+
+## Output Contract
 
 ### Module Routing Record
 
@@ -15,85 +20,91 @@
 - Character / Speaker：
 - Project / CHAR-ID / Version（如有）：
 - Requested Deliverable：
-- Output Language：
 
-### Voice Profile
+### Character Voice Identity / Voice Profile
 
-- 角色名：
-- 性别/年龄感（仅剧情设定层面）：
-- 基础音色：
-- 音域倾向：
-- 声音质感：
-- 语速：
-- 咬字/发音特征：
-- 情绪表达方式：
-- 说话力度：
-- 停顿与呼吸特征：
-- 特殊状态下的声音变化：
-- 禁止项：
-- 最终可直接引用的音色描述：
+只写长期稳定的声音身份，不混入某一句的临时表演：
+
+- Character / Speaker Identity：
+- Voice Description：
+- Language / Pronunciation Basis（适用时）：
+- Identity Basis：
 - Voice Asset Status：`Confirmed` / `Pending`
-- Voice Profile Basis：
 
-### Seed Audio Voice Sample Prompt
+`Voice Description`优先使用可听、可比较的特征，例如音高倾向、音色明暗、共鸣、声音重量、咬字和稳定响应范围；不得仅用“高级、古风、喜剧、温柔”等抽象标签。未知事实不补写。
 
-必须输出一个可独立复制的纯文本代码块，并严格保持以下内容、字段名称与顺序：
+### Dialogue Performance（按需）
+
+只描述当前一句或当前场景怎么说，与上面的稳定Voice Identity分离。按需包含：
+
+- Emotional Tone：
+- Delivery / Prosody：
+- Dialogue / Spoken Content：
+- Timing：
+
+Timing只在配音、卡点或用户明确要求时输出。Seed Audio 1.0官方说明当前对白timing可按100 ms间隔控制；不得把这一能力泛化成默认逐字时间码，也不得为其他声音元素虚构同等精度。
+
+### Seed Audio-Compatible Prompt
+
+输出一个可独立复制的纯文本代码块。以下是SD Film建议组织顺序，不是官方固定字段；只输出实际有控制价值的部分，未使用字段直接省略，不写`N/A`、`None`或状态占位：
 
 ```text
-Generate speech only.
-Target duration: approximately 15 seconds.
+Character / Speaker Identity:
+[who is speaking; stable identity only]
 
-Clean dry studio voice recording.
-Single speaker only.
-No background music.
-No instrumental music.
-No soundtrack.
-No ambience.
-No environmental sound.
-No sound effects.
-No singing.
-No chanting.
+Voice Description:
+[stable, audible voice characteristics]
 
-Speaker:
-[age and gender presentation grounded in confirmed character facts]
+Emotional Tone:
+[omit unless the current delivery needs emotional direction]
 
-Voice characteristics:
-[pitch, timbre brightness/darkness, resonance, vocal weight, articulation and emotional responsiveness]
+Delivery / Prosody:
+[omit unless pace, pauses, rhythm, emphasis, breath or intonation needs control]
 
-Speaking rhythm:
-[pace, phrase length, pauses, rhythm and pitch movement; omit this section only when no separate rhythm control is needed]
+Dialogue / Spoken Content:
+[omit when the task does not require fixed spoken text]
 
-Performance style:
-[language, delivery, emotional range and character behavior expressed as executable performance direction]
+Timing:
+[omit unless dialogue entry/exit timing is required]
 
-Avoid:
-[voice qualities and performances that would break the confirmed character]
+Acoustic Environment / Ambience:
+[omit for isolated voice work or when the user did not request scene audio]
 
-Read naturally:
-“[sample text covering calm, normal conversation and/or slightly stronger emotion across at least 2–3 states]”
+Key Sound Effects:
+[omit unless a requested scene-level audio event must be coordinated]
+
+Scene Progression:
+[omit unless the audio scene changes over time]
+
+Reference Audio:
+[omit unless an authorized reference is actually supplied and intended for use]
 ```
 
-`Target duration`不得省略；用户未指定时固定使用`approximately 15 seconds`。除`Speaking rhythm`在确实不需要独立节奏控制时可省略外，其余标题、声明和顺序不得删除、改名、合并或改写。不得只输出一段普通自然语言音色描述代替本结构。
+对于纯角色音色试听，可用正向语言说明“isolated clean speech, one speaker”，但这只是任务需要时的制作选择，不是官方固定开头。不得默认堆叠`No background music / No ambience / No sound effects...`等否定词；仅保留无法通过正向目标充分约束的少量真实高风险项。
 
-### Voice Audio Reference Handoff
+Acoustic Environment、Key Sound Effects与Scene Progression属于可选的场景声音控制，不得混入稳定Voice Identity。BGM / Score始终由独立MUSIC / SEED-MUSIC模块处理，不进入角色音色资产Prompt。
 
-- Voice Audio Reference Status：`Not Generated` / `Candidate` / `Confirmed` / `Not Required`
-- Reference路径或受控外部ID（如有）：
-- 时长（Confirmed时必须15—30秒）：
-- 干净单人声检查：
-- 语言：
+### Reference Audio Handoff（仅实际使用或登记时）
+
+- Reference Audio Status：`Candidate` / `Confirmed`
+- Reference路径或受控外部ID：
+- Speaker / CHAR Version绑定：
+- 语言与内容说明：
 - 来源与生成/录制方式：
 - 授权依据：
-- 绑定CHAR Version：
 - 批准信息：
-- STATE-08 Voice Text Policy：`Reference Override / Keep Fixed Voice Field` / `Voice Profile Fallback` / `No Voice Asset`
 
-未实际生成或选择候选时写`Not Generated`，不得虚构Reference。只有已确认候选才能写`Confirmed`。
+没有实际Reference时整节省略，不写`Not Generated`，不得虚构路径、ID或授权。Reference时长只服从目标平台的真实要求或用户当前明确要求；本Template不设无官方依据的固定秒数。
 
-## Hard Validation
+## Hard QA
 
-- 必须有用户本轮显式触发证据。
-- 必须包含`Generate speech only.`、`Target duration`、`Clean dry studio voice recording.`、`Single speaker only.`与八条`No ...`声明。
-- 必须保持`Speaker → Voice characteristics → Speaking rhythm（需要时）→ Performance style → Avoid → Read naturally`顺序。
-- Voice characteristics必须使用可执行声学特征，不得只写“古风、喜剧、高级感”等抽象标签。
-- 不得生成背景音乐、环境声、Foley、音效、歌曲、多人声场或STATE-08视频Prompt。
+- 是否存在用户本轮显式音色制作请求与可核对的Trigger Evidence。
+- 是否明确描述speaker。
+- 是否把长期Character Voice Identity与当前Dialogue Performance分开。
+- 是否只输出适用字段，没有重复、冲突或状态占位。
+- 是否避免否定词堆砌，并使用正向目标描述主要声音结果。
+- 是否没有使用模型未宣称支持的无意义精密参数；100 ms只用于确有需要的对白timing。
+- 是否没有把视觉Prompt、角色外貌、镜头运动或美术描述大量复制进音频Prompt。
+- Reference Audio是否真实存在、用途明确且有授权依据。
+- Sound Effects、Ambience与BGM / Score是否保持概念边界。
+- 是否明确本结构是SD Film兼容模板，而非官方唯一模板。

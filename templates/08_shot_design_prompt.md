@@ -19,7 +19,7 @@
 - 环境资产：
 - 道具资产：
 - FX资产或Inline Effect：
-- Voice / Audio Reference（如适用）：
+- Voice / Audio Reference（仅用户已显式建立且当前镜头确需记录时）：
 - 合法首帧 / 尾帧（如适用）：
 - 剧情动作与对白：
 - Visual Direction：
@@ -177,7 +177,7 @@
 
 ### 素材 / 资产
 
-逐项列出本镜实际使用的Canonical `CHAR / ENV / PROP / FX / Voice or Audio Reference / 合法首尾帧`、Active Version、用途与锁定限制。Storyboard、分镜板、线稿、拼图、多画面材料、Detailed Shot Design或Clip Plan截图不得作为视频视觉参考资产。
+逐项列出本镜实际使用的Canonical `CHAR / ENV / PROP / FX / 合法首尾帧`、Active Version、用途与锁定限制。Voice / Audio Reference只在用户已显式建立且当前镜头确需记录时作为非视觉Source列出，不作为视觉Canonical Reference，也不导致STATE-08自动投影。Storyboard、分镜板、线稿、拼图、多画面材料、Detailed Shot Design或Clip Plan截图不得作为视频视觉参考资产。
 
 ---
 

@@ -80,7 +80,8 @@ BASE_GLOBAL_SECTIONS = (
     "人物一致性：",
     "环境一致性：",
 )
-GLOBAL_SECTIONS = BASE_GLOBAL_SECTIONS + (VOICE_SECTION,)
+GLOBAL_SECTIONS = BASE_GLOBAL_SECTIONS
+OPTIONAL_GLOBAL_SECTIONS = (VOICE_SECTION,)
 ENDING_SECTIONS = ("反向提示词：",)
 SHOT_FIELDS = ("景别：", "镜头/机位：", "起始状态：", "画面描述：", "人物动作与情绪：", "空间关系：", "道具状态：", "台词：", "音效：", "镜头结尾状态：")
 DIRECTOR_SECTIONS = ("Knowledge Role", "Core Identity", "Narrative Tone", "Emotional Grammar", "Composition", "Camera Movement", "Lens Tendencies", "Lighting", "Color Palette", "Production Design", "Character Blocking", "Performance Direction", "Editing Rhythm", "Sound Design", "Weather / Atmosphere", "Best Use Cases", "Avoid / Misuse", "Style Translation Rules", "Seedance Execution Language", "Combination Rules", "Final Principle")
@@ -802,7 +803,7 @@ def validate_state08(
         has_voice_reference = bool(VOICE_REFERENCE_PATTERN.search(reference_text))
 
         cursor = -1
-        required_global_sections = BASE_GLOBAL_SECTIONS + (() if has_voice_reference else (VOICE_SECTION,))
+        required_global_sections = BASE_GLOBAL_SECTIONS
         for section in required_global_sections + ENDING_SECTIONS:
             matches = list(re.finditer(rf"^{re.escape(section)}\s*$", package, re.MULTILINE))
             if not matches:
@@ -826,11 +827,22 @@ def validate_state08(
         if first_shot_position >= 0 and negative_position >= 0 and first_shot_position > negative_position:
             errors.append(f"G{package_number:02d} 【反向提示词】 must appear after all 【分镜X】 sections")
 
-        voice_section_matches = list(re.finditer(rf"^{re.escape(VOICE_SECTION)}\s*$", package, re.MULTILINE))
+        voice_section_matches = list(re.finditer(r"^【音色特征】\s*$", package, re.MULTILINE))
+        if len(voice_section_matches) > 1:
+            errors.append(f"G{package_number:02d} duplicate conditional voice-control section")
+        if has_voice_reference and not voice_section_matches:
+            errors.append(f"G{package_number:02d} Voice/Audio Reference requires an explicit conditional voice-control section")
         if has_voice_reference and voice_section_matches:
-            errors.append(f"G{package_number:02d} must omit {VOICE_SECTION} when a Voice/Audio Reference is provided")
-        if has_voice_reference:
             package_without_reference = package[:reference_start] + package[reference_end:]
+            voice_start = package_without_reference.find("【音色特征】")
+            if voice_start >= 0:
+                voice_end_candidates = [
+                    position
+                    for marker_text in ("【分镜", "【反向提示词】")
+                    if (position := package_without_reference.find(marker_text, voice_start + 1)) >= 0
+                ]
+                voice_end = min(voice_end_candidates, default=len(package_without_reference))
+                package_without_reference = package_without_reference[:voice_start] + package_without_reference[voice_end:]
             descriptor_match = VOICE_DESCRIPTOR_PATTERN.search(package_without_reference)
             if descriptor_match:
                 errors.append(
@@ -1171,9 +1183,13 @@ def validate_state08(
 
         local_title_end = marker.end() - marker.start()
         global_segment = package[local_title_end:first_shot_pos]
+        voice_field_matches = list(re.finditer(rf"^{re.escape(VOICE_SECTION)}", global_segment, re.MULTILINE))
+        if len(voice_field_matches) > 1:
+            errors.append(f"CLIP-{clip_number:03d} duplicate conditional field: {VOICE_SECTION}")
+        active_global_sections = BASE_GLOBAL_SECTIONS + ((VOICE_SECTION,) if voice_field_matches else ())
         global_matches: list[tuple[str, re.Match[str]]] = []
         cursor = -1
-        for label in GLOBAL_SECTIONS:
+        for label in active_global_sections:
             matches = list(re.finditer(rf"^{re.escape(label)}", global_segment, re.MULTILINE))
             if len(matches) != 1:
                 errors.append(f"CLIP-{clip_number:03d} must contain exactly one global field: {label}")
@@ -1224,11 +1240,22 @@ def validate_state08(
         if tail_required_no and re.search(r"REF-TAIL-\w+｜CLIP-\w+尾帧参考", reference_text):
             errors.append(f"CLIP-{clip_number:03d} Tail Frame Required = NO must not formally reference the previous REF-TAIL asset")
         has_voice_reference = bool(VOICE_REFERENCE_PATTERN.search(reference_text))
-        if has_voice_reference:
-            if not re.search(r"Reference.*锁定|锁定.*Reference|由.*参考资产.*锁定|声音身份.*锁定", voice_text, re.IGNORECASE):
-                errors.append(f"CLIP-{clip_number:03d} 音色特征： must state that the Voice/Audio Reference locks voice identity")
-            if not re.search(r"不得|不以文字|不再.*文字|禁止.*重定义", voice_text):
-                errors.append(f"CLIP-{clip_number:03d} 音色特征： must forbid textual voice redefinition when using a Reference")
+        if has_voice_reference and not voice_text:
+            errors.append(f"CLIP-{clip_number:03d} Voice/Audio Reference requires explicit conditional 音色特征： control")
+        if has_voice_reference and voice_text:
+            package_without_reference = package.replace(reference_text, "", 1)
+            package_without_reference = re.sub(
+                rf"^{re.escape(VOICE_SECTION)}.*?(?=^分镜\d+\s*$)",
+                "",
+                package_without_reference,
+                flags=re.MULTILINE | re.DOTALL,
+            )
+            descriptor_match = VOICE_DESCRIPTOR_PATTERN.search(package_without_reference)
+            if descriptor_match:
+                errors.append(
+                    f"CLIP-{clip_number:03d} repeats voice-identity description outside the conditional voice-control field: "
+                    f"{descriptor_match.group(0)}"
+                )
         if not reference_text or not first_frame_text or not tail_text:
             errors.append(f"CLIP-{clip_number:03d} 参考资产、首帧参考、尾帧限制 are unconditional and non-empty")
         if reference_text and (not REFERENCE_ITEM_PATTERN.search(reference_text) or not REFERENCE_CONSTRAINT_PATTERN.search(reference_text)):
@@ -2091,9 +2118,9 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/camera_language/lens_language/focal_length_continuity.md": ("Continuity Ledger", "Identity And Edge Safety", "Motion Interaction", "STATE-08 Projection"),
         "knowledge/camera_language/director_patterns/index.md": ("Authority Boundary", "Stability Gate", "STATE-08", "advanced_composition.md", "action_composition.md", "character_composition.md", "atmosphere_composition.md"),
         "knowledge/knowledge_application_reflection.md": ("Director / Literary Intent Translation", "保留情绪功能", "至少落到一种可见或可听执行项", "五维未锁定项检查"),
-        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "不得文字重定义", "Prompt Attention / Control Allocation Gate", "Five-Dimensional Prompt Control Matrix", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
+        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Prompt Attention / Control Allocation Gate", "Five-Dimensional Prompt Control Matrix", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
         "knowledge/11_seedance_adapter.md": ("state08_projection.md", "主体画面位置", "构图主原子与支持层", "knowledge/color/index.md", "不得输出CLR编号", "focal_length_and_perspective.md", "焦段不自动提高画面质感", "knowledge/lighting/index.md", "LGT模式ID", "knowledge/performance/index.md", "Attention Shift", "PEX/AU编号", "knowledge/camera_language/movement_combinations/", "knowledge/transitions/", "背景音乐", "Delivery Mode Gate", "Four-Part Boundary Gate", "Physical Data Value Rule", "0.137m/s", "Blender / Unreal式物理仿真"),
-        "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "七项强制完整性规则", "所有 Clip 必须使用完全相同的字段结构", "不得因为批量输出", "自动分批输出", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "禁止生成背景音乐", "Prompt Attention / Compression", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器"),
+        "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "禁止生成背景音乐", "Prompt Attention / Compression", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器"),
         "knowledge/clip_preflight_check.md": ("Four Global High-Priority Rules", "Visual Input Eligibility Test", "Reference Selection / Routing", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "NOT ELIGIBLE", "板凳参考说明", "九个Acceptance Scenarios"),
         "knowledge/reference_budget.md": ("Visual Input Eligibility", "0个图片位", "板凳参考说明", "Projected Final Count"),
         "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention"),

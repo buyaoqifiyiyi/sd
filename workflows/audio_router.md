@@ -37,6 +37,8 @@
 
 Negative Route不得加载`knowledge/sound_language/voice_generation.md`或`templates/21_seed_audio_voice_asset.md`，不得生成或登记Voice Profile、Seed Audio Prompt、Voice Audio Reference或Not Applicable记录。
 
+Negative Route默认外部已有可用角色音色资源；不检查、不补建、不提示必须制作，不阻塞任何主STATE。已有Voice Profile / Voice Reference也只保留为Source State，不因普通视频请求写进STATE-08 Prompt。
+
 ## Priority And Mixed Requests
 
 显式音色请求只对声音资产子任务具有最高优先级。同一请求还显式要求视频/Clip交付时，分别路由：声音资产子任务进入AUDIO Workflow，视频子任务进入原Workflow；两种Template不得混合。
@@ -48,6 +50,7 @@ Negative Route不得加载`knowledge/sound_language/voice_generation.md`或`temp
 - 语义模糊但更像对白、同期声或音效处理：返回原Workflow，不推定音色制作授权。
 - 用户明确说不要制作音色、只继续视频或只要Clip Prompt：返回原Workflow。
 - 用户显式请求音色资产但必要角色事实不足：仍进入AUDIO Workflow，由该Workflow请求最小必要输入；不得改走普通自然语言Prompt。
+- Positive Route可从任意项目阶段独立调用；完成后返回调用前Checkpoint，不创建或改变主STATE。
 
 ## Canonical Self-Check Cases
 
@@ -56,4 +59,3 @@ Negative Route不得加载`knowledge/sound_language/voice_generation.md`或`temp
 | 给我钟馗的音色提示词 | AUDIO / SEED-AUDIO Voice Asset |
 | 输出Clip B视频提示词 | ORIGINAL WORKFLOW |
 | 继续制作视频 | ORIGINAL WORKFLOW |
-

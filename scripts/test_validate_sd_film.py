@@ -36,7 +36,7 @@ def make_state08_global_sections(
     reference: str | None = None,
     first_frame: str | None = None,
     tail_use: str = "最终收束",
-    include_voice: bool = True,
+    include_voice: bool = False,
 ) -> str:
     previous_token = f"[G{package_number - 1:02d}尾帧]"
     if reference is None:
@@ -70,10 +70,8 @@ def make_state08_global_sections(
         "人物一致性：CHAR-001身份、脸型、发型、服装和身体比例保持一致",
         "环境一致性：已确认环境结构、轴线、背景与光线方向保持一致",
     ]
-    if "Voice Reference" in reference or "Audio Reference" in reference:
-        sections.append("音色特征：由参考资产中的Voice/Audio Reference锁定声音身份；不以文字重新定义音高、声线、音域、共鸣、语速或音色质感。")
-    else:
-        sections.append("音色特征：无对白；本字段保留，听觉叙事由环境声、动作声与呼吸声承担。")
+    if include_voice:
+        sections.append("音色特征：当前视频模型使用已授权的CHAR-001 Voice Reference；speaker映射为CHAR-001。")
     return "\n".join(sections)
 
 
@@ -1081,7 +1079,7 @@ REV-0001
             path.write_text(f"{global_text}\n【分镜1】\n{fields}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
 
-    def test_state08_voice_reference_keeps_fixed_voice_field(self) -> None:
+    def test_state08_explicit_voice_reference_accepts_conditional_voice_field(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
             global_text = make_state08_global_sections(
@@ -1096,52 +1094,74 @@ REV-0001
             path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
 
-    def test_state08_voice_reference_rejects_voice_characteristics_section(self) -> None:
+    def test_state08_voice_reference_without_explicit_control_field_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
-            global_text = "\n".join(
-                "【生成段】\nG01；来源CLIP-001；包含分镜1；平台生成时长：10秒；Clip独立生成"
-                if section == "【生成段】"
-                else (
-                    "【参考资产】\nAudio Reference：CHAR-001-VOICE-REF；只锁定声音身份，不作为视觉参考。"
-                    if section == "【参考资产】"
-                    else ("【音色特征】\n中低音、语速偏慢。" if section == validator.VOICE_SECTION else valid_global_section(section))
-                )
-                for section in validator.GLOBAL_SECTIONS
+            global_text = make_state08_global_sections(
+                1,
+                1,
+                "1",
+                "10",
+                reference="Audio Reference：CHAR-001-VOICE-REF；用途：当前视频声音控制；授权状态：Confirmed。",
+                include_voice=False,
             )
-            ending = f"【结尾帧要求】\n保存为[G01尾帧]：稳定结束\n下一段用途：最终收束\n【反向提示词】\n{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
-            path.write_text(f"{global_text}\n【分镜1】\n{make_shot_fields()}\n{ending}", encoding="utf-8")
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
 
     def test_state08_voice_reference_rejects_voice_descriptor_in_dialogue(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
-            global_text = "\n".join(
-                "【生成段】\nG01；来源CLIP-001；包含分镜1；平台生成时长：10秒；Clip独立生成"
-                if section == "【生成段】"
-                else (
-                    "【参考资产】\nVoice Reference：CHAR-001-VOICE-REF；只锁定声音身份，不作为视觉参考。"
-                    if section == "【参考资产】"
-                    else valid_global_section(section)
-                )
-                for section in validator.BASE_GLOBAL_SECTIONS
+            global_text = make_state08_global_sections(
+                1,
+                1,
+                "1",
+                "10",
+                reference="Voice Reference：CHAR-001-VOICE-REF；用途：当前视频声音控制；授权状态：Confirmed。",
+                include_voice=True,
             )
-            fields = make_shot_fields().replace("台词：有效内容", "台词：角色以偏慢语速轻声说：‘你好。’")
-            ending = f"【结尾帧要求】\n保存为[G01尾帧]：稳定结束\n下一段用途：最终收束\n【反向提示词】\n{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
-            path.write_text(f"{global_text}\n【分镜1】\n{fields}\n{ending}", encoding="utf-8")
+            fields = make_shot_fields().replace("台词：无。", "台词：角色以偏慢语速轻声说：‘你好。’")
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
 
-    def test_state08_without_voice_reference_requires_voice_characteristics(self) -> None:
+    def test_state08_without_voice_request_omits_voice_field_and_passes(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
-            global_text = "\n".join(
-                "【生成段】\nG01；来源CLIP-001；包含分镜1；平台生成时长：10秒；Clip独立生成"
-                if section == "【生成段】" else valid_global_section(section)
-                for section in validator.BASE_GLOBAL_SECTIONS
-            )
-            ending = f"【结尾帧要求】\n保存为[G01尾帧]：稳定结束\n下一段用途：最终收束\n【反向提示词】\n{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
-            path.write_text(f"{global_text}\n【分镜1】\n{make_shot_fields()}\n{ending}", encoding="utf-8")
-            self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
+            global_text = make_state08_global_sections(1, 1, "1", "10", include_voice=False)
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
+    def test_state08_confirmed_voice_source_is_not_serialized_without_current_request(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            global_text = make_state08_global_sections(1, 3, "1", "10", include_voice=False)
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            prompt = f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}"
+            for forbidden in ("音色特征：", "Voice Profile", "Voice Reference", "Audio Reference", "No Voice Asset"):
+                self.assertNotIn(forbidden, prompt)
+            path.write_text(prompt, encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
+    def test_seed_audio_template_is_compatible_not_claimed_official_fixed_schema(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        template = (skill_root / "templates" / "21_seed_audio_voice_asset.md").read_text(encoding="utf-8")
+        for required in (
+            "SD Film为Seed Audio 1.0组织的兼容模板",
+            "Character / Speaker Identity",
+            "Voice Description",
+            "Emotional Tone",
+            "Delivery / Prosody",
+            "Dialogue / Spoken Content",
+            "Timing",
+            "Acoustic Environment / Ambience",
+            "Key Sound Effects",
+            "Reference Audio",
+        ):
+            self.assertIn(required, template)
+        self.assertNotIn("Target duration: approximately 15 seconds", template)
+        self.assertNotIn("Generate speech only.", template)
 
     def test_state08_timeline_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

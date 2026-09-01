@@ -600,4 +600,4 @@ Character Asset回答：
 
 后续所有镜头必须引用该角色资产。
 
-如果同一Active CHAR Version已经存在由用户显式请求并确认的Voice Profile或Voice Audio Reference，STATE-06/07/08可以读取；如果不存在，下游不得反向触发AUDIO模块或返回本Workflow补齐。STATE-08按自身Template声明未建立独立音色资产并继续，不得无依据重设基础音色。
+如果同一Active CHAR Version已经存在由用户显式请求并确认的Voice Profile或Voice Audio Reference，保持为声音系统Source State；如果不存在，下游不得反向触发AUDIO模块或返回本Workflow补齐。STATE-08默认不读取、不序列化也不声明声音资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时才按其Template最小投影。

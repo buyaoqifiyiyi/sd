@@ -62,16 +62,16 @@
 
 1. 记录`Explicit Trigger Evidence`，引用用户本轮明确的音色制作意图。
 2. 读取`knowledge/sound_language/voice_generation.md`全文。
-3. 从已确认输入建立Voice Profile；未知事实标记Pending，不虚构。
-4. 使用`templates/21_seed_audio_voice_asset.md`逐字段、按固定顺序生成Seed Audio Voice Sample Prompt。
+3. 从已确认输入建立长期稳定的Character Voice Identity / Voice Profile；未知事实标记Pending，不虚构，并与当前Dialogue Performance分开。
+4. 使用`templates/21_seed_audio_voice_asset.md`生成独立Seed Audio兼容Prompt，只输出当前交付需要的字段。speaker与Voice Description是声音身份任务核心；情绪、delivery/prosody、台词、timing、ambience、key sound effects、scene progression与Reference Audio均按需输出。
 5. 若用户只要求Prompt，到模板输出完成即停止；不得自动生成音频。
 6. 只有用户同时明确要求实际音频、工具可用且来源/授权条件满足时，才生成候选音频。
-7. 用户确认候选后，才可登记同一CHAR Version的15—30秒干净单人声Audio Reference；未确认时保持`Candidate`或`Not Generated`。
+7. 用户确认候选后，才可按目标平台真实要求和授权条件登记同一CHAR Version的Audio Reference；未确认时保持`Candidate`，没有实际Reference时不创建占位记录。
 8. 项目存在且用户要求保存/更新资产时，按`references/asset_lock_contract.md`把结果绑定到同一CHAR-ID与Version；不得创建独立视觉Canonical Reference。
 
 ## Output Ownership
 
-`templates/21_seed_audio_voice_asset.md`是本模块Voice Profile、Seed Audio Voice Sample Prompt、Audio Reference Handoff字段、顺序和排版的唯一来源。
+`templates/21_seed_audio_voice_asset.md`是本模块Voice Profile、Seed Audio兼容Prompt、Audio Reference Handoff字段、顺序和排版的唯一来源。该Template是SD Film为Seed Audio 1.0组织的兼容结构，不是ByteDance官方唯一字段模板。
 
 禁止退化为普通自然语言音色段落，禁止改用`templates/04_character_asset_prompt.md`，禁止把`templates/10_video_prompt.md`的`音色特征：`当作音色资产模板。
 
@@ -79,13 +79,15 @@
 
 - 完成独立音色交付后，返回调用前的主Pipeline Checkpoint；不自动推进或回退主STATE。
 - 若请求未显式命中本模块，直接返回原路由，不创建Not Applicable资产记录，也不阻塞主Pipeline。
-- STATE-08缺少Voice Asset时不得调用本Workflow；按其自身Template写明未建立独立音色资产且本Clip不推导声音身份。
+- STATE-08缺少Voice Asset时不得调用本Workflow，也不得在视频Prompt中写缺失声明；默认外部已有可用角色音色资源并继续。
 - 角色事实冲突返回其事实拥有者；音频候选/授权未确认时停在本模块的Pending/候选状态，不把它伪装为Confirmed。
 
 ## Completion Gate
 
 - 有可核对的`Explicit Trigger Evidence`。
 - 已读取唯一Knowledge与唯一Template。
-- Seed Audio Prompt包含固定声明和固定字段顺序。
-- 未混入视频Prompt、背景音乐、环境声、音效、歌曲或多人声场。
+- Seed Audio Prompt明确描述speaker，并分离稳定Voice Identity与当前Dialogue Performance。
+- 只输出适用字段；未使用字段直接省略，没有固定时长、固定否定声明、无意义精密参数或视觉Prompt复制。
+- Ambience、Key Sound Effects与Scene Progression仅在用户请求场景级音频时出现；BGM / Score仍由独立MUSIC模块处理。
+- 明确说明输出结构是SD Film兼容模板，不冒充官方唯一模板。
 - 若登记Audio Reference，来源、授权、CHAR-ID、Version、时长和批准信息完整。

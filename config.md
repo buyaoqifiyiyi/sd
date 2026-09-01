@@ -16,6 +16,7 @@
 - STATE-08 Image Reference Limit: 9 per Clip after Preflight and World-State filtering
 - Storyboard Activation: explicit only
 - AUDIO / SEED-AUDIO Voice Asset Activation: explicit only
+- STATE-08 Voice Identity Text: omitted by default; conditional minimal Delta only on explicit current-video-Prompt request
 - MUSIC / SEED-MUSIC Score Activation: explicit only
 - MUSIC Default Generation Mode: instrumental only
 - STATE-08 Music Policy: permanent ban; no Clip exceptions

@@ -7,7 +7,7 @@
 - Speaker / Character Asset ID
 - Exact Line（已确认台词）
 - Language / Accent（仅在剧情需要时）
-- Voice Identity / Tone
+- Voice Identity（只作Source State；默认不写入视频Prompt）
 - Volume And Energy
 - Pace And Pauses
 - Emotional Subtext
@@ -21,9 +21,10 @@
 ## Rules
 
 - 不改写已确认台词，除非用户要求或口型容量必须回到上游调整
-- 同一角色跨镜保持音色、口音、能量和空间位置连续
-- 同一角色跨集优先复用Active CHAR Version中已确认且有授权记录的15—30秒干净单人声Audio Reference；没有已确认Audio Reference时才以Confirmed Voice Profile为第一顺位声音身份依据
-- 当前Clip使用用户明确提供的Voice Reference或适用Confirmed Voice Audio Reference时，声音身份只由Reference锁定；STATE-08保留固定字段`音色特征：`并写明Reference锁定且不得文字重定义，不得在台词、音效或其他字段写Voice characteristics、音高、声线、音域、共鸣、语速或音色质感。台词只保留准确文本及“轻声说、无奈地说、短暂停顿后说”等必要轻量表演指令
+- 同一角色跨镜的Voice Identity由外部音频资源或已确认Source State保持；能量、距离与空间位置属于当前Dialogue Performance / Sound State
+- 已确认且有授权记录的Audio Reference或Confirmed Voice Profile可供声音制作系统维持跨集身份，但默认不投影到STATE-08视频Prompt，也不设置本地固定秒数要求
+- 用户未明确要求当前视频Prompt包含声音控制时，完全省略Voice Reference、Voice Profile与`音色特征：`。用户明确要求时只按最小Delta引用，不得在台词、音效或其他字段重复Voice characteristics、音高、声线、音域、共鸣或音色质感
+- 台词可保留准确文本及“轻声说、无奈地说、短暂停顿后说”等必要Dialogue Performance；它们只控制当前一句，不得重定义稳定Voice Identity
 - 当前情绪、人物距离、体力、呼吸与空间只形成表演状态变化，不得覆盖基础Voice Identity或把未确认候选音频当作正式Reference
 - 台词长度必须容纳自然停顿，不得靠异常语速塞入镜头
 - 嘴部被遮挡或角色背对摄影机时，不把精确口型设为主要执行目标

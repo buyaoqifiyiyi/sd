@@ -139,15 +139,15 @@ Video Generation是：
 
 ## Front-Lock Rule
 
-每个Clip Prompt Package在任何风格、人物一致性、环境一致性、音色或分镜描述之前，必须先完成`templates/10_video_prompt.md`定义的全部前置锁定信息，并严格使用该Template的字段、顺序、编号与排版。本Workflow不复制最终骨架。
+每个Clip Prompt Package在任何风格、人物一致性、环境一致性或分镜描述之前，必须先完成`templates/10_video_prompt.md`定义的全部无条件前置锁定信息，并严格使用该Template的字段、条件、顺序、编号与排版。本Workflow不复制最终骨架。
 
-Voice/Audio Reference不得导致Template中的任何无条件字段被删除；Reference Override时在Template指定位置写明声音身份由Reference锁定且不得文字重定义。每个分镜完整重复Template当前定义的全部分镜字段，不得另增竞争字段；相关边界语义映射到Template指定的结尾状态位置。
+Voice/Audio Reference默认不进入视频Prompt。只有用户明确要求把声音控制写进当前视频模型Prompt时，才按Template条件启用`音色特征：`并写最小Delta；这不影响任何无条件字段。每个分镜完整重复Template当前定义的全部分镜字段，不得另增竞争字段；相关边界语义映射到Template指定的结尾状态位置。
 
 参考资产、首帧与尾帧限制等前置锁定语义必须位于Template指定位置，不得降级为备注，也不得由后续文字描述覆盖。
 
 【参考资产】先读取`references/asset_lock_contract.md`，优先引用Asset Registry中Active Version与Canonical References。上一Clip尾帧只能锁定已确认的状态、构图、空间与动作边界，不能覆盖Confirmed Asset的角色身份、服装身份、环境结构、道具结构或Active Version。后续【主风格】【人物一致性】【环境一致性】和逐镜文字只能补充允许变化与执行过程，不得重设前置资产。
 
-视觉条目只允许实际会向模型投喂/引用的已确认视觉文件或受控ID，以及明确需要用户实际补入、写明具体图像对象、投喂用途和`待用户补充/待上传、未确认`状态的视觉图占位。纯文字站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项和镜头规则不得成为条目；按语义迁移到现有`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。若对象已有真实视觉资产则引用正式ID，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用“板凳参考说明”之类伪资产。既有Voice/Audio Reference继续按独立声音输入合同处理，不受本视觉资格补强改名或删除。
+视觉条目只允许实际会向模型投喂/引用的已确认视觉文件或受控ID，以及明确需要用户实际补入、写明具体图像对象、投喂用途和`待用户补充/待上传、未确认`状态的视觉图占位。纯文字站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项和镜头规则不得成为条目；按语义迁移到现有`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。若对象已有真实视觉资产则引用正式ID，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用“板凳参考说明”之类伪资产。既有Voice/Audio Reference继续服从独立声音输入合同，并在常规视频Prompt中默认省略。
 
 通过资格检查后仍不得全选。必须读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State与`Continuity Risks`，按当前Clip生成目标执行Reference Selection / Routing，并为每个入选Reference声明Primary Role / Purpose：身份/外观风险选Active Character Canonical References；空间结构风险选Active Environment Canonical References并把Confirmed Spatial Blocking作为文字语义消费；道具造型风险选Active Prop Canonical References；A/B状态锚定选对应`REF-TAIL`并区分用途，C不选旧尾帧；Motion / Camera / Audio Reference只控制其授权维度；光线、天气或场景状态漂移只有存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。Transient Reference不得覆盖正式身份、环境结构或道具造型。每个入选条目必须对应一项具体风险/目标；Eligible、Registry存在、上一Clip使用过或仍有预算空位都不是充分理由。参考资产按需路由，不是越多越好。
 
@@ -337,7 +337,7 @@ Clip Production Plan用于：
 读取、描述或引用Storyboard图片、线稿、分镜板、漫画格、接触表、拼图或任何多画面材料。
 
 
-【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference、合法首尾帧，以及其他已经明确需要实际投喂的视觉参考图；缺失视觉图只有在写明具体图像对象、实际投喂用途和“待用户补充/待上传、未确认”时才可作受控占位，且不得代替正式Canonical资产的STATE-03确认流程。A/B必需但尚待用户补充的`REF-TAIL`继续以统一名称直接列入并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不得伪造路径或声称已上传/已确认，Prompt可交付但实际提交生成前补图。C不要求截图、不列`REF-TAIL`，可在【首帧参考】与首镜“起始状态”依靠Canonical资产、Spatial Blocking与文字状态承接或重建。不得使用纯文字参考说明、Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
+【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、合法首尾帧，以及其他已经明确需要实际投喂的视觉参考图；Voice/Audio Reference只有在用户明确要求当前视频模型使用它进行声音控制时才可作为非视觉Source最小列入。缺失视觉图只有在写明具体图像对象、实际投喂用途和“待用户补充/待上传、未确认”时才可作受控占位，且不得代替正式Canonical资产的STATE-03确认流程。A/B必需但尚待用户补充的`REF-TAIL`继续以统一名称直接列入并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不得伪造路径或声称已上传/已确认，Prompt可交付但实际提交生成前补图。C不要求截图、不列`REF-TAIL`，可在【首帧参考】与首镜“起始状态”依靠Canonical资产、Spatial Blocking与文字状态承接或重建。不得使用纯文字参考说明、Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
 
 
 ---
@@ -368,18 +368,14 @@ Character Asset ID。
 
 当前状态。
 
-Voice Asset Status。
-
-Confirmed Voice Profile及其最终可直接引用的音色描述（适用时）。
-
-Voice Audio Reference Status、Reference ID/受控路径、绑定CHAR Version、授权状态，以及目标模型是否实际使用Audio/Voice Reference。
+Voice Asset Status、Confirmed Voice Profile与Voice Audio Reference只在用户明确要求把声音控制写进当前视频模型Prompt时读取；否则不进入本Workflow的投影输入。
 
 
 已有角色资产：
 
 优先级高于临时文字描述。
 
-主要角色或重要配角有对白、旁白、画外音、通话或呼喊时，先执行Voice Reference Override Gate。用户已明确提供当前角色音色参考资产，或目标模型实际使用Active CHAR Version中的Confirmed Voice Audio Reference / Audio Reference / Voice Reference时，Reference是声音身份的唯一锁定来源：STATE-08仍必须保留`音色特征：`，其内容写明声音身份由Reference锁定且不得文字重定义；不得把Confirmed Voice Profile中的音高、声线、音域、共鸣、语速、音色质感写入台词、音效或其他字段。没有适用Reference但已经存在Confirmed Voice Profile时，才把它作为`音色特征：`的文字回退来源；两者都不存在时使用`No Voice Asset`分支，声明未建立独立音色资产且本Clip不创建或推导声音身份，不得自动调用AUDIO模块或返回STATE-03。全段无对白时也保留字段并明确无对白。
+角色有对白、旁白、画外音、通话或呼喊不触发声音身份检查。STATE-08默认假定外部已有可用音色资源，不读取或投影Voice Profile / Voice Audio Reference，不输出`音色特征：`或资产状态。只有用户当前明确要求把声音控制写进本次视频模型Prompt时，才读取适用Source并按`Source Carries State, Prompt Carries Delta`最小投影；Dialogue Performance只说明当前一句怎么说，不得重定义稳定Voice Identity。
 
 
 ---
@@ -955,7 +951,7 @@ project_bible.md
 
 Character Asset。
 
-Voice Profile（角色有对白或潜在对白需求时）。
+Dialogue Performance事实（角色有对白时）；Voice Profile只在用户明确要求当前视频Prompt包含声音控制时读取。
 
 Environment Asset。
 
@@ -2189,12 +2185,10 @@ knowledge/sound_language/
 
 角色有对白、旁白、画外音、通话或呼喊时：
 
-- 先从asset_registry.md的Active CHAR Version读取`Voice Asset Status`、Confirmed Voice Profile、`Voice Audio Reference Status`与Reference元数据，并检查用户是否已明确提供当前Voice Reference。
-- 如果用户已明确提供当前Voice Reference，或目标模型实际使用同一Active CHAR Version的Confirmed Voice Audio Reference / Audio Reference / Voice Reference：在`参考资产：`标明角色与Reference ID/受控路径及“只锁定声音身份，不作为视觉参考”；保留`音色特征：`并写明由该Reference锁定声音身份、不得文字重定义；不得把Voice Profile或任何Voice characteristics、音高、声线、音域、共鸣、语速、音色质感写入视频Prompt其他字段。
-- Reference Override分支中的“台词”只写准确台词和必要轻量表演指令，例如“轻声说”“无奈地说”“短暂停顿后说”；“音效”可以记录对白/口型同步、声源位置、距离、遮挡与同期空间，但不得借这些字段重新定义音色。
-- 只有没有适用Voice/Audio Reference、但已经存在Confirmed Voice Profile时，才由`音色特征：`忠实引用其“最终可直接引用的音色描述”，并让“台词”与“音效”遵守其基础音色、音域倾向、语速、咬字/发音、力度、停顿与呼吸特征。
-- 不得用通用的“低沉磁性、温柔清亮、播音腔”等套话覆盖已确认Profile，不得无依据添加口音、方言、地域发音、疾病嗓音或声带损伤。
-- 主要角色/重要配角有对白但Voice Profile不存在或仍为Pending时，进入`No Voice Asset`分支：保留固定`音色特征：`并写明未建立独立音色资产、本Clip不创建或推导声音身份；继续当前STATE-08，不得返回STATE-03、不得调用AUDIO模块、不得临时把推测写成已确认音色资产。
+- 默认不读取`Voice Asset Status`、Voice Profile或Voice Audio Reference元数据；缺失不构成问题，视频Prompt完全省略声音身份与资产状态文字。
+- “台词”只写准确台词和必要Dialogue Performance，例如当前情绪、力度、停顿、节奏或韵律；“音效”可以记录对白/口型同步、声源位置、距离、遮挡与同期空间。二者都不得借机定义稳定音高、声线、音域、共鸣或音色质感。
+- 只有用户当前明确要求把声音控制写进本次视频模型Prompt时，才读取适用且已授权的Voice/Audio Reference或Confirmed Voice Profile，并在Template条件字段中输出当前Clip最小必要Delta；Reference优先由Source自身携带身份，不完整复述Profile。
+- 没有适用声音Source时仍继续STATE-08，不写缺失声明，不返回STATE-03，不调用AUDIO模块，也不临时推测。
 - 本步骤不生成音频、不调用TTS、不创建配音文件。
 
 
@@ -2762,7 +2756,7 @@ Template需要的数据。
 
 已通过的Clip Preflight语义副本：连续性三选一主分类；逐分镜World-State；角色精确数量与唯一性；追逐/战斗/多人空间构图；关键道具形态/尺寸/持有/悬浮/转换状态；适用转场五要素。该副本只用于把语义映射到现有字段，不成为新栏目。
 
-`参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`、适用的Accepted Canon State与当前Continuity Risks，按身份/外观、空间结构、道具造型、A/B状态锚定、Motion、Camera、Audio、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Voice/Audio Reference、合法首尾帧与其他确定需要实际投喂的视觉参考图。每个入选Reference必须写明唯一Primary Role / Purpose、所解决风险和锁定约束，并遵守Reference Authority Hierarchy：Transient / Motion / Camera / Audio Reference只控制授权维度，不得覆盖正式角色身份、环境结构或道具造型；尾帧脸部漂移时仍由Active Character Canonical Reference控制身份，只继承合法姿态/站位/动作阶段。不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
+`参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`、适用的Accepted Canon State与当前Continuity Risks，按身份/外观、空间结构、道具造型、A/B状态锚定、Motion、Camera、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、合法首尾帧与其他确定需要实际投喂的视觉参考图。Voice/Audio Reference默认不列；只有用户明确要求当前视频模型使用它进行声音控制时，才作为非视觉Source最小列出。每个入选Reference必须写明唯一Primary Role / Purpose、所解决风险和锁定约束，并遵守Reference Authority Hierarchy：Transient / Motion / Camera / Audio Reference只控制授权维度，不得覆盖正式角色身份、环境结构或道具造型；尾帧脸部漂移时仍由Active Character Canonical Reference控制身份，只继承合法姿态/站位/动作阶段。不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
 
 在序列化该清单前，先执行Visual Input Eligibility并记录文字伪资产迁移，再按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；A/B无论尾帧是否已上传都预留1个Projected位并列出待补充声明，只有实际尾帧图存在、可访问、已确认时才计入已提交图片数；C不预留旧尾帧。其他受控待补视觉图同样只计Projected位且必须说明具体图像与实际投喂用途。再按`knowledge/reference_budget.md`复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增或待上传上一尾帧时按10计算并至少释放1位。Projected Final Count与已提交图片数均≤9；真实图片参考必须存在且已确认；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
 
@@ -2790,7 +2784,7 @@ Template需要的数据。
 
 每个镜头的声音。
 
-每个有对白角色的Voice Reference Override判定。使用适用Reference时准备Reference ID/受控路径、准确台词、轻量表演指令和同期声空间，并为固定`音色特征：`准备“由Reference锁定声音身份、不得文字重定义”的非空内容；无适用Reference但已有Confirmed Voice Profile时准备其最终可直接引用的音色描述及当前镜头允许的状态变化；两者都不存在时准备`No Voice Asset`声明，不推导、不补齐。全段无对白时也准备固定字段内容。
+每个有对白角色只准备准确台词、当前Dialogue Performance与同期声空间。默认不检查声音身份Source，也不准备`音色特征：`。只有用户明确要求把声音控制写进当前视频模型Prompt时，才准备适用Reference映射或Confirmed Voice Profile的最小Delta；没有适用Source时直接省略，不推导、不补齐、不写状态声明。
 
 每个镜头的剪辑。
 
@@ -2919,7 +2913,7 @@ Template还必须执行Clip Duration / No-Timeline过滤：
 
 写入前必须交叉核对Confirmed Clip Production Plan：标题中的CLIP-xxx与计划一对一、Shot列表一致、平台生成时长一致且位于4—15秒。
 
-Template还必须执行Package完整性过滤：每个Clip按Template当前顺序完成全部全局字段、Clip表列出的全部正式分镜、每镜全部字段与段末限制。不得出现旧章节、独立竞争标题字段、条件字段删除或额外分镜字段。
+Template还必须执行Package完整性过滤：每个Clip按Template当前顺序完成全部无条件全局字段、Clip表列出的全部正式分镜、每镜全部字段与段末限制。`音色特征：`只按当前显式声音控制授权条件出现；不得出现旧章节、独立竞争标题字段、无授权条件字段或额外分镜字段。
 
 
 Workflow不得覆盖：
@@ -3134,7 +3128,7 @@ STATE-08。
 
 使用正确资产。
 
-`参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、Voice/Audio Reference、合法首尾帧与其他确定会实际投喂的视觉参考图，并写明用途、状态和锁定约束；是否以已确认资产优先于临时文字描述。每个视觉条目是否能肯定回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否是否已移出并归类到正确字段。A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他受控待补视觉图必须说明具体图像对象与实际投喂用途。未参与实际输入的说明、普通缺失占位或伪资产不得输出。
+`参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、合法首尾帧与其他确定会实际投喂的视觉参考图，并写明用途、状态和锁定约束；Voice/Audio Reference是否只在用户明确要求当前视频模型使用时作为非视觉Source最小列出。每个视觉条目是否能肯定回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否是否已移出并归类到正确字段。A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他受控待补视觉图必须说明具体图像对象与实际投喂用途。未参与实际输入的说明、普通缺失占位或伪资产不得输出。
 
 是否已按`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State、当前目标与Continuity Risks完成Reference Selection / Routing；每个入选条目能否声明Primary Role / Purpose并说明所解决风险；身份/外观、空间结构、道具造型、A/B尾帧、Motion、Camera、Audio与光线/场景状态是否选择正确Authority；C是否未选旧尾帧；Transient Reference是否未覆盖正式身份/结构/造型；是否不存在必需资产漏选、用途选错、无风险依据的过量条目或把Spatial Blocking Map当视觉参考。
 
@@ -3283,9 +3277,9 @@ STATE-08。
 
 声音逻辑合理。
 
-有对白的主要角色/重要配角是否先完成Voice Reference Override判定：有适用Voice/Audio Reference时，是否已在`参考资产：`引用、保留非空`音色特征：`并写明声音身份由Reference锁定且不得文字重定义，同时删除其他字段中的Voice characteristics、音高、声线、音域、共鸣、语速、音色质感等全部文字音色重定义；无适用Reference但已有Confirmed Voice Profile时，是否把它转译到`音色特征：`及对白表现语义中；两者都不存在时，是否使用`No Voice Asset`声明且没有自动调用AUDIO模块；全段无对白时是否仍保留字段。
+用户未明确要求把声音控制写进当前视频模型Prompt时，是否完全省略`音色特征：`、Voice Profile、Voice/Audio Reference与资产状态文字；用户明确授权时，是否只输出适用Source与当前Clip最小必要Delta，没有完整Profile复制或跨字段重复。
 
-Reference Override分支是否只在台词层保留“轻声说、无奈地说、短暂停顿后说”等必要轻量表演指令，且没有借当前情绪、距离、体力或特殊状态重设声音身份；Profile Fallback分支是否只作剧情授权的临时变化，没有擅自添加口音/方言/疾病嗓音，也没有触发音频或TTS生产。
+台词层的“轻声说、无奈地说、短暂停顿后说”等Dialogue Performance是否只控制当前一句，没有借当前情绪、距离、体力或特殊状态重设稳定Voice Identity；是否没有擅自添加口音/方言/疾病嗓音，也没有触发音频或TTS生产。
 
 每镜“音效”只含对白、环境声、动作声、呼吸、Foley与剧情内真实声源，不含背景音乐、配乐、BGM、主题音乐、氛围音乐、歌曲、节拍或“无配乐”等音乐说明；该规则不存在用户指定Clip例外。
 
@@ -3314,7 +3308,7 @@ Reference Override分支是否只在台词层保留“轻声说、无奈地说�
 
 每个Clip区块的平台生成时长与Confirmed Clip Production Plan目标时长完全相等，并已通过state08 --clip-plan交叉校验。
 
-每个Clip区块均在`主风格：`之前完整输出`首帧参考：`与`尾帧限制：`，无条件输出`音色特征：`，并在末尾输出`反向提示词：`；`尾帧限制：`定义当前Clip新的结束状态，实际生成、提取并确认后才登记为对应`REF-TAIL-XX｜CLIP-XX尾帧参考`。
+每个Clip区块均在`主风格：`之前完整输出`首帧参考：`与`尾帧限制：`，并在末尾输出`反向提示词：`；`音色特征：`仅在用户明确要求把声音控制写进当前视频模型Prompt时条件输出；`尾帧限制：`定义当前Clip新的结束状态，实际生成、提取并确认后才登记为对应`REF-TAIL-XX｜CLIP-XX尾帧参考`。
 
 后一Clip先判定A/B/C，再核验实际尾帧图。A/B在`参考资产：`列统一`REF-TAIL`名称、各自用途与真实状态；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A在`首帧参考：`和首镜“起始状态”使用固定直接承接句并完整继承；B明确另起新镜头重新构图且不使用该句。C不要求截图、不列`REF-TAIL`，可在`首帧参考：`和首镜“起始状态”中依靠Canonical资产、Spatial Blocking与文字状态重建。
 
@@ -3544,7 +3538,7 @@ Template Mapping问题。
 
 Character Asset Workflow。
 
-角色有对白但Confirmed Voice Profile缺失或Pending时，不返回Character Asset Workflow，也不调用AUDIO模块；使用`No Voice Asset`分支继续STATE-08。只有已经存在的声音资产与Active CHAR Version发生身份冲突时，才停止使用冲突资产并返回其事实/版本拥有者处理；不得留在STATE-08自由推导基础音色。
+角色有对白但Confirmed Voice Profile缺失或Pending时，不返回Character Asset Workflow，也不调用AUDIO模块；默认省略所有声音身份文字并继续STATE-08。只有用户明确要求当前视频Prompt使用某声音资产且该资产与Active CHAR Version冲突时，才停止使用冲突资产并返回其事实/版本拥有者处理；不得留在STATE-08自由推导基础音色。
 
 
 如果属于：

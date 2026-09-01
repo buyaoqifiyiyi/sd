@@ -112,7 +112,7 @@ Voice Audio Reference
 
 `Voice Asset Status`只使用`Confirmed`或`Pending`；字段不存在表示用户尚未显式创建声音资产，不等于错误，也不得触发补齐。Voice Profile与Voice Sample Prompt只有在用户明确请求音色制作时才可写入，不创建独立视觉Asset ID。普通Character Asset、角色有对白、视频制作、Clip或STATE-08均不得自动创建、更新或标记`Not Required`。
 
-`Voice Audio Reference Status`只使用`Not Generated`、`Candidate`、`Confirmed`或`Not Required`。它不替代`Voice Asset Status`。角色候选音色确定后，建议从已授权候选中截取15—30秒干净、单说话者、无背景音乐、无环境声、无音效的人声作为后续Audio Reference；登记时必须记录受控路径或外部ID、时长、语言、同一CHAR Version、来源、生成/录制方式、授权依据与批准信息。未确认候选不得标记`Confirmed`，不得自动成为视觉Canonical Reference，也不得触发独立资产ID。
+`Voice Audio Reference Status`只使用`Not Generated`、`Candidate`、`Confirmed`或`Not Required`。它不替代`Voice Asset Status`。角色候选音色确定后，只有实际存在、speaker明确、来源和授权可核对、绑定同一CHAR Version且满足目标平台真实要求的音频才可登记为Audio Reference；登记时记录受控路径或外部ID、语言、内容、来源、生成/录制方式、授权依据与批准信息。未确认候选不得标记`Confirmed`，不得自动成为视觉Canonical Reference，也不得触发独立资产ID。本合同不设无官方依据的固定秒数。
 
 只有用户显式调用AUDIO模块并确认结果后，Active CHAR Version才具有`Confirmed` Voice Profile。角色有对白不要求必须创建Voice Profile；默认假定外部已有可用音色资源，声音资产字段缺失不阻塞STATE-03至STATE-09，也不得使任何下游流程自动进入AUDIO模块或返回Character Asset补齐。基础音色身份的变化遵守本合同的Version与Change Protocol；单场情绪、距离、体力或剧情授权的特殊状态变化属于Dialogue Performance，不自动创建新角色版本。
 
@@ -209,7 +209,7 @@ Mutable State Dimensions只允许剧情授权的状态变化，例如湿润、�
 - Supersedes不得指向自身或形成循环。
 - 下游引用的版本必须存在且未被无说明地替换。
 - Voice Profile只在用户显式调用AUDIO模块后要求完整；角色有对白而没有Voice Profile是合法状态，不阻塞下游，也不得自动返回Character Asset或AUDIO模块。
-- Confirmed Voice Audio Reference必须绑定存在的CHAR Version，并具有15—30秒干净单人声、来源、授权与批准记录；Candidate不得作为下游锁定Reference。
+- Confirmed Voice Audio Reference必须绑定存在的CHAR Version，并具有可核对的speaker、来源、授权与批准记录，且满足目标平台真实输入要求；Candidate不得作为下游锁定Reference。
 - STATE-08默认省略`音色特征：`及所有声音身份状态文字；已有Confirmed Voice Audio Reference或Confirmed Voice Profile也不改变此默认。只有用户明确要求把声音控制写进当前视频模型Prompt时才允许最小投影，并禁止跨字段重复或临时推导。
 - 每个Active CHAR Version必须把Canonical Character Appearance And Form Lock所列的适用身份特征登记为Immutable Traits，或通过Canonical References明确锁定；不得把物种形态或非人身体结构遗漏为可自由推断项。
 - 动作、姿势、表情、机位、景别、构图或镜头运动变更不得触发未授权的CHAR外观重设计。

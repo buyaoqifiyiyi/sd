@@ -148,6 +148,7 @@ Storyboard只在用户明确请求时调用`workflows/10_storyboard_workflow.md`
 - Router返回`ROUTE: AUDIO / SEED-AUDIO Voice Asset`时，才进入`workflows/20_seed_audio_voice_asset_workflow.md`。
 - Router返回`ROUTE: ORIGINAL WORKFLOW`时，声音资产模块优先级为零，继续原Workflow路由。
 - 同一请求同时明确要求视频与音色资产时，分别路由、分别使用Template，不混合Schema。
+- AUDIO模块可从任意项目阶段独立调用，完成后返回原Checkpoint；未触发时默认外部已有可用角色音色资源，不检查缺失、不形成Asset Gate，也不向STATE-08视频Prompt写声音身份状态。
 
 ### MUSIC / SEED-MUSIC Explicit Trigger Gate
 
