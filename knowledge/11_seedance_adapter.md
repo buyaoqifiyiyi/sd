@@ -52,7 +52,7 @@ templates/10_video_prompt.md
 
 定义。
 
-Adapter向Template交接前必须执行固定结构预检：每个Clip都准备完整且相同的九个前置全局字段、一个或多个逐镜完整十字段组和末尾反向提示词；`参考资产：`、`首帧参考：`、`尾帧限制：`、`音色特征：`无条件存在。Adapter不得创建、删除、改名、合并或重排最终字段，不得提供“与下一镜衔接”字段，边界语义必须投影到“镜头结尾状态”。批量适配不得压缩或共享字段；内容过长时按完整Clip分批。任何旧Adapter约定与Template冲突时，以Template为最高优先级。
+Adapter向Template交接前必须执行固定结构预检：每个Clip都准备完整且相同的八个无条件前置全局字段、一个或多个逐镜完整十字段组和末尾反向提示词；`参考资产：`、`首帧参考：`、`尾帧限制：`无条件存在。`音色特征：`只在用户明确要求把声音控制写进当前视频模型Prompt时作为第九个条件字段出现。Adapter不得创建、删除、改名、合并或重排无条件字段，不得提供“与下一镜衔接”字段，边界语义必须投影到“镜头结尾状态”。批量适配不得压缩或共享字段；内容过长时按完整Clip分批。任何旧Adapter约定与Template冲突时，以Template为最高优先级。
 
 
 ---
@@ -758,17 +758,17 @@ Sound用于帮助Seedance视频方案建立：
 
 无对白。
 
-## Voice Reference Override Gate
+## Voice Identity Omission / Explicit Video-Control Gate
 
-每个Clip的声音适配必须先判断：用户是否已明确提供当前角色音色参考资产，或Active CHAR Version是否存在目标模型实际使用的Confirmed Voice Audio Reference / Audio Reference / Voice Reference。
+默认不检查或投影角色声音身份。用户没有明确要求把声音控制写进当前视频模型Prompt时，即使Active CHAR Version已有Confirmed Voice Profile或Voice/Audio Reference，也不在`参考资产：`列出、不输出`音色特征：`、不写任何已存在/缺失状态。默认外部已有可用角色音色资源，缺少登记不阻塞STATE-08。
 
-有对白时Gate结果分为三种；全段无对白另作明确声明。所有分支都必须保留固定字段`音色特征：`：
+只有用户当前明确要求本次视频Prompt包含声音/音色控制，或明确要求当前视频模型使用某Voice/Audio Reference时，才启用条件字段`音色特征：`：
 
-1. `Reference Override`：将Reference作为声音身份的唯一锁定来源，并在`参考资产：`中标明角色、Reference ID/受控路径及声音专用用途；`音色特征：`写明“由参考资产中的对应Voice/Audio Reference锁定声音身份；不以文字重新定义音高、声线、音域、共鸣、语速或音色质感”。不得在台词、音效或其他字段出现Voice characteristics、pitch、timbre、resonance、vocal weight、音高、声线、音域、共鸣、语速、音色质感等重新定义声音身份的文字。台词只允许保留准确文本及“轻声说、无奈地说、短暂停顿后说”等必要轻量表演指令；音效可以记录口型同步、声源位置、距离、遮挡与同期空间。
-2. `Voice Profile Fallback`：只有没有适用Voice/Audio Reference、但已经存在Confirmed Voice Profile时，才使用`音色特征：`提供必要的文字声音描述。
-3. `No Voice Asset`：有对白但不存在适用Reference与Confirmed Voice Profile时，声明未建立独立音色资产且本Clip不创建或推导声音身份；不得自动调用AUDIO模块或返回STATE-03。全段无对白时也保留该字段并明确无对白。
+1. `Reference Delta`：仅列实际使用且获授权的Reference标识、speaker映射与当前Clip必要控制；Reference自身携带Voice Identity，不在文字中完整重述。
+2. `Text Delta`：只有用户明确要求文字音色控制时，才从Confirmed Voice Profile提取当前模型所需的最小特征；不得复制完整Profile或跨字段重复。
+3. `Dialogue Performance`：准确台词旁可保留当前情绪、力度、停顿、节奏或韵律要求；它只说明这一句怎么说，不得重新定义稳定pitch、timbre、resonance、vocal weight、音高、声线、音域、共鸣或音色质感。
 
-Candidate、未授权或与当前Active CHAR Version不一致的音频不得自动触发Reference Override，除非用户明确把当前已提供资产指定为本次Voice Reference。Reference Override不改变台词、环境声、动作声、Foley、自然声、声音尾部及默认无背景音乐规则。
+没有适用Reference/Profile时也不写`No Voice Asset`，不自动调用AUDIO模块或返回STATE-03。Candidate、未授权或与当前Active CHAR Version不一致的音频不得使用。该Gate不改变台词、环境声、动作声、Foley、自然声、声音尾部及默认无背景音乐规则。
 
 
 默认禁止：
@@ -1393,7 +1393,7 @@ Canonical FX Asset（如适用）。
 
 合法首/尾帧。
 
-当前角色的Voice/Audio Reference属于声音身份专用Reference：可写入【参考资产】以触发Voice Reference Override，但不得作为视觉Canonical Reference使用。只要该Reference适用，文字Voice Profile就不再投影到STATE-08 Prompt；没有适用Reference时才回退Confirmed Voice Profile。
+当前角色的Voice/Audio Reference属于声音身份专用Source，不得作为视觉Canonical Reference使用。默认不写入【参考资产】；只有用户明确要求当前视频模型使用该Reference进行声音控制时，才按最小必要信息列出。Confirmed Voice Profile同样默认不投影，不作为无Reference时的自动文字回退。
 
 
 禁止把Storyboard图片、分镜板、线稿、漫画格、接触表、拼图、多画面参考或Detailed Shot Design / Clip Plan截图提供给Seedance。此类材料不是Canonical Asset，容易把线条、边框、标注或多画面结构带入生成结果。
