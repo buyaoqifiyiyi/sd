@@ -1279,7 +1279,7 @@ knowledge/prompt_compilation/state08_projection.md
 
 禁止为了让每个模块“看起来被使用”而增加不存在的内容；但任何已确认且适用的模块都不得在Template Mapping时丢失。
 
-完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并按`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`清洗。重要抽象语义至少落到一个可见/可听项；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。
+完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并按`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`清洗。重要抽象语义至少落到一个可见/可听项；导演名、流派名、题材名、情绪标签与审美大词按Style Label Decomposition从当前Clip选择3—5个（或更少）高价值style carriers，carriers足够时省略导演名；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。
 
 
 ## Knowledge Application Reflection Layer
@@ -1292,7 +1292,7 @@ knowledge/prompt_compilation/state08_projection.md
 4. 检查所选候选是否会造成炫技、重复、复杂度过高、资产/风格漂移、轴线/边界破坏、连续性冲突或Seedance执行不稳；不通过即Reject或降级。
 5. 把所选策略转译成摄影机起点/路径/触发/终点、构图空间来源与前中后景关系、综合色彩来源与层级、光源与受光、可见表演节拍、具体声源与尾部、节奏/切点/继承或稳定降级等可执行描述，再映射到Template现有字段。
 
-STATE-07的Knowledge Opportunity Notes只能作为线索，不能替代本步骤的重新判断；Director Decision Notes则是不可被候选Knowledge反向改写的方向约束。最终Prompt禁止只写“使用Side Tracking”“使用某导演风格”“压迫构图”“电影感光线”等知识名称或抽象标签；必须写出模型能观察、执行和验证的具体行为。
+STATE-07的Knowledge Opportunity Notes只能作为线索，不能替代本步骤的重新判断；Director Decision Notes则是不可被候选Knowledge反向改写的方向约束。最终Prompt禁止只写“使用Side Tracking”“使用某导演风格”“压迫构图”“电影感光线”等知识名称或抽象标签；导演名若只作检索应留在内部，最终只从相关知识中选择当前Clip必要的3—5个（或更少）style carriers，并写成模型能观察、执行和验证的具体行为。
 
 禁止只根据剧情平铺直叙生成Prompt。禁止在没有当前Clip叙事理由与上游决策依据时，默认退化为“缓慢推进 + 轻微横移 + 低饱和冷暖对比”的单一安全写法。必须逐Clip判断色调、运镜、构图、表演、声音与剪辑节奏中哪些维度能真正服务当前段落；最合适的导演决策也可以是克制、静止、简单、少动，但必须把这种克制写成可执行的空间、表演、声音与稳定结尾约束。
 
@@ -3389,14 +3389,14 @@ UNIT顺序、Entry / Exit Anchor、State Ledger与Retry Boundary没有被改写�
 - 最终内容是否只保留对当前Clip有实际控制价值的信息；提示词长度没有被当作质量指标，也没有声称可以精准设置模型内部交叉注意力数值。
 - 正式角色/环境/道具参考已经锁定的外观与结构是否只作最小确认，没有在`人物一致性 / 环境一致性 / 逐镜正文`中长篇复述。
 - 是否存在同义重复、跨字段机械复述、互相冲突或优先级不明的机位/运动/动作/站位/光线指令。
-- 文学化、情绪化或导演化的重要描述是否至少有一个人物、环境、光线、摄影机、声音或时间状态的执行对应。
+- 文学化、情绪化或导演化的重要描述是否至少有一个人物、环境、光线、摄影机、声音或时间状态的执行对应；导演名、流派名、题材名、情绪标签与审美大词是否进一步拆成当前Clip必要的3—5个（或更少）高价值style carriers。
 - 能以正向目标状态锁定的要求是否已从否定式改写；反向提示词是否除固定禁BGM首句外，只保留少量正向定义仍难锁死的当前高风险项。
-- “创业 / 约会 / 学生 / 婚礼 / 医院 / 黑帮 / 赛博朋克 / 日系青春”等高共现大词是否经过Semantic Template Decomposition，没有无依据带入默认场景、服装、道具、天气或美术元素。
+- “创业 / 约会 / 学生 / 婚礼 / 医院 / 黑帮 / 赛博朋克 / 日系青春”等高共现大词是否经过Semantic Template Decomposition，没有无依据带入默认场景、服装、道具、天气、美术、光源或人物动作；导演名若只作知识检索是否留在内部，具体carriers已足够时名称是否已删除。
 - 数字是否按视觉控制价值使用；是否删除或降精度了0.137m/s、0.166m/s²、53mm等无额外可见收益的工程数据；是否没有把生成模型表述成严格物理仿真器。
 - Five-Dimensional Prompt Control Matrix是否只填补未锁定且当前Clip确需控制的维度，没有成为最终新栏目。
 - 是否已先完成Generation Budget Allocation：Primary Spend唯一清楚，Secondary最多一至两个且服务Primary，Economized明确降低非必要负荷；是否没有把身份、复杂动作、高密场景、复杂运镜、群体、口型、FX与光色变化同时拉满；三类标签没有进入最终Prompt。
 - 是否完整保留当前Clip真正变化的主要动作、顺序、中间变化、结束状态与首尾承接；这些高优先级信息是否比装饰性风格词和器材名更清楚。
-- 是否删除了其他镜头/Clip的动作、机位、状态与风格残留，只保留合法继承项；是否没有同时堆叠互相稀释的导演、美术、摄影与渲染风格。
+- 是否删除了其他镜头/Clip的动作、机位、状态与风格残留，只保留合法继承项；是否没有同时堆叠互相稀释的导演、美术、摄影与渲染风格；风格信息是否已压缩到不抢占主体、动作、空间、时间顺序、摄影机路径与状态承接的最小集合。
 - 是否遵守Clip Scope Firewall：`already_happened`未重播，只执行`this_clip_only`的主要可见Beat并形成改变后的Endpoint，`reserved_for_later`与`do_not_show_yet`没有提前进入画面。
 
 失败只修当前Clip的转译、冲突或压缩；若根因来自上游事实矛盾，按Error Routing返回对应拥有者。

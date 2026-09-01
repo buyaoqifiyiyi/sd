@@ -361,6 +361,53 @@ Next Workflow: Project Setup Workflow
         self.assertNotIn("### Canonical Portable State Schema", skill)
         self.assertNotIn("TC IN\n2.", skill)
 
+    def test_skill_update_self_check_is_routed_and_validated(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        contract = (skill_root / "references" / "module_contracts.md").read_text(encoding="utf-8")
+        guide = (skill_root / "USER_GUIDE.md").read_text(encoding="utf-8")
+        self.assertIn("Skill Update Self-Check / Change Safety Checklist", skill)
+        for dimension in (
+            "Duplicate Rule Check",
+            "Conflict Check",
+            "Terminology Drift Check",
+            "Rule Ownership Check",
+            "Prompt Pollution Check",
+            "Routing Integrity Check",
+            "Template Consistency Check",
+            "Reference Integrity Check",
+            "State / Continuity Compatibility Check",
+            "User Guide Sync Check",
+            "Regression Check",
+            "Change Classification Check",
+        ):
+            self.assertIn(dimension, contract)
+        for repair_policy in (
+            "Detection scope is Skill-wide",
+            "Every finding requires disposition",
+            "SAFE_LOCAL",
+            "CONTROLLED_CROSS_MODULE",
+            "HIGH_RISK / DECISION_REQUIRED",
+            "不能再使用“与本次修改无关”作为延期理由",
+        ):
+            self.assertIn(repair_policy, contract)
+        self.assertIn("Skill Update Self-Check / Change Safety Checklist", guide)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
+    def test_skill_validator_rejects_version_build_mismatch(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            skill_path = copied / "SKILL.md"
+            skill_text = skill_path.read_text(encoding="utf-8")
+            build_line = next(line for line in skill_text.splitlines() if line.startswith("Build ID:"))
+            skill_path.write_text(
+                skill_text.replace(build_line, "Build ID: sd-film-version-mismatch"),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
+
     def test_cross_clip_tail_frame_abc_contract_is_installed(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         template = (skill_root / "templates" / "10_video_prompt.md").read_text(encoding="utf-8")
@@ -490,6 +537,9 @@ Next Workflow: Project Setup Workflow
             "Optics & Camera Choreography",
             "Timeline & State Evolution",
             "Aesthetic Medium & Rendering",
+            "Style Label Decomposition Rule",
+            "Executable Style Carrier Rule",
+            "默认选择3—5个",
             "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt",
             "Blender / Unreal式严格物理仿真",
         ):
@@ -503,11 +553,49 @@ Next Workflow: Project Setup Workflow
             "R15-A Literary Camera Intent",
             "R15-B Over-Engineered Camera Data",
             "R15-C Canonical Assets Free Prompt Attention",
+            "R15-D Director Label Decomposition",
+            "R15-E Abstract Premium Label",
+            "R15-F Action-Heavy Clip Style Compression",
             "镜头像终于鼓起勇气一样靠近她",
             "0.137m/s",
             "CHAR-001@v003",
+            "岩井俊二式青春电影氛围",
+            "画面要有高级感",
         ):
             self.assertIn(marker, regression)
+        case_d = regression.split("### R15-D Director Label Decomposition", 1)[1].split(
+            "### R15-E Abstract Premium Label", 1
+        )[0]
+        for marker in (
+            "内部Director Style Knowledge检索标签",
+            "3—5个（或更少）高价值carriers",
+            "最终Prompt不只剩导演名",
+            "省略“岩井俊二式”",
+            "不得自动加入校园、校服、樱花、海边、夏日奔跑",
+        ):
+            self.assertIn(marker, case_d)
+        case_e = regression.split("### R15-E Abstract Premium Label", 1)[1].split(
+            "### R15-F Action-Heavy Clip Style Compression", 1
+        )[0]
+        for marker in (
+            "Composition / Texture / Lighting / Color",
+            "3—5个（或更少）具体carriers",
+            "单一有来源的侧光",
+            "有限色彩和受控高光",
+            "不要求机械同时采用全部示例",
+        ):
+            self.assertIn(marker, case_e)
+        case_f = regression.split("### R15-F Action-Heavy Clip Style Compression", 1)[1].split(
+            "## R16 Delta / Budget / Scope / Canon / Authority / Retake", 1
+        )[0]
+        for marker in (
+            "主体、动作、空间、时间顺序、摄影机路径、道具状态与Handoff优先",
+            "1—3个高价值carriers",
+            "其余导演名、审美词与装饰性材质描述在Prompt Compression中删除",
+            "固定Template字段仍完整",
+            "以压缩为由删除Template字段",
+        ):
+            self.assertIn(marker, case_f)
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
     def test_global_runtime_rules_are_installed(self) -> None:

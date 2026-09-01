@@ -245,6 +245,8 @@ STATE-08 将已确认的 Shot Design 和 Visual Direction 转换为 Seedance 可
 
 导演名可在内部检索记录中保留，但【主风格】和各分镜字段应优先写上述可执行特征。
 
+对每个当前Clip，先从导演知识中提取候选，再按`knowledge/prompt_compilation/state08_projection.md`只选择3—5个（或更少）最有价值且彼此兼容的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers。不得机械复制导演文件全部维度；具体carriers足够时省略导演名，保留名称时也必须与carriers并存。
+
 STATE-08 最终 Schema 唯一来源：
 
 ```text

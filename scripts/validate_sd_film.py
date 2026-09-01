@@ -734,378 +734,6 @@ def validate_state08(
     clip_plan_path: Path | None = None,
     allow_batch_output: bool = False,
 ) -> int:
-    errors: list[str] = []
-    warnings: list[str] = []
-    text = read_text(path.resolve())
-    package_markers = list(re.finditer(r"^【CLIP标题】\s*$", text, re.MULTILINE))
-    if not package_markers:
-        errors.append("No independent 【CLIP标题】Gxx Clip Prompt Packages found")
-    if len(package_markers) > 1 and not allow_batch_output:
-        errors.append(
-            "Default STATE-08 delivery is one Clip Prompt Package per checkpoint; multiple Packages require explicit batch authorization"
-        )
-    package_ids: list[int] = []
-    clip_ids: list[int] = []
-    shot_numbers: list[int] = []
-    package_specs: list[tuple[int, int | None, float | None, list[int]]] = []
-    for package_index, marker in enumerate(package_markers):
-        package_end = package_markers[package_index + 1].start() if package_index + 1 < len(package_markers) else len(text)
-        package = text[marker.start():package_end]
-        id_match = re.search(r"^【CLIP标题】\s*\r?\n\s*G(\d{2})\b", package, re.MULTILINE)
-        if not id_match:
-            errors.append(f"Prompt Package {package_index + 1} must start with a Gxx value immediately after 【CLIP标题】")
-            package_number = package_index + 1
-        else:
-            package_number = int(id_match.group(1))
-            package_ids.append(package_number)
-
-        title_end = package.find("【时长】")
-        title_text = package[:title_end] if title_end >= 0 else package
-        duration_start = package.find("【时长】")
-        duration_end = package.find("【画幅】", duration_start + 1)
-        duration_text = package[duration_start:duration_end] if duration_start >= 0 and duration_end > duration_start else ""
-        clip_number_value: int | None = None
-        clip_matches = re.findall(r"来源\s*(?:Clip|CLIP)[-：:]?\s*(\d{3})", title_text, re.IGNORECASE)
-        if len(clip_matches) != 1:
-            errors.append(f"G{package_number:02d} 【CLIP标题】 must contain exactly one 来源CLIP-xxx")
-        else:
-            clip_number = int(clip_matches[0])
-            clip_number_value = clip_number
-            clip_ids.append(clip_number)
-            if clip_number != package_number:
-                errors.append(f"G{package_number:02d} must map to CLIP-{package_number:03d}, found CLIP-{clip_number:03d}")
-        duration_value: float | None = None
-        duration_matches = re.findall(r"平台生成时长\s*[：:]\s*(\d+(?:\.\d+)?)\s*秒", duration_text)
-        if len(duration_matches) != 1:
-            errors.append(f"G{package_number:02d} 【时长】 must contain exactly one 平台生成时长：N秒")
-        else:
-            duration = float(duration_matches[0])
-            duration_value = duration
-            if duration < 4 or duration > 15:
-                errors.append(f"G{package_number:02d} platform duration must be 4-15 seconds: found {duration:g}")
-        if "标题" not in title_text:
-            errors.append(f"G{package_number:02d} 【CLIP标题】 must include a human-readable 标题")
-        if "包含分镜" not in title_text:
-            errors.append(f"G{package_number:02d} 【CLIP标题】 must list 包含分镜")
-        listed_shot_match = re.search(r"包含分镜\s*([0-9分镜、,，\s]+)", title_text)
-        listed_shots = [int(value) for value in re.findall(r"\d+", listed_shot_match.group(1))] if listed_shot_match else []
-
-        reference_start = package.find("【参考资产】")
-        reference_end = package.find("【首帧参考】", reference_start + 1)
-        reference_text = package[reference_start:reference_end] if reference_start >= 0 and reference_end > reference_start else ""
-        reference_body = reference_text[len("【参考资产】"):].strip() if reference_text.startswith("【参考资产】") else ""
-        first_frame_start = package.find("【首帧参考】")
-        first_frame_end = package.find("【尾帧限制】", first_frame_start + 1)
-        first_frame_text = package[first_frame_start:first_frame_end] if first_frame_start >= 0 and first_frame_end > first_frame_start else ""
-        tail_start = package.find("【尾帧限制】")
-        tail_end = package.find("【主风格】", tail_start + 1)
-        tail_text = package[tail_start + len("【尾帧限制】"):tail_end] if tail_start >= 0 and tail_end > tail_start else ""
-        has_voice_reference = bool(VOICE_REFERENCE_PATTERN.search(reference_text))
-
-        cursor = -1
-        required_global_sections = BASE_GLOBAL_SECTIONS
-        for section in required_global_sections + ENDING_SECTIONS:
-            matches = list(re.finditer(rf"^{re.escape(section)}\s*$", package, re.MULTILINE))
-            if not matches:
-                errors.append(f"G{package_number:02d} missing section: {section}")
-                continue
-            if len(matches) > 1:
-                errors.append(f"G{package_number:02d} duplicate section: {section}")
-            position = matches[0].start()
-            if position < cursor:
-                errors.append(f"G{package_number:02d} section out of order: {section}")
-            else:
-                cursor = position
-
-        first_shot_position = package.find("【分镜")
-        negative_position = package.find("【反向提示词】")
-        style_position = package.find("【主风格】")
-        for front_section in ("【参考资产】", "【首帧参考】", "【尾帧限制】"):
-            front_position = package.find(front_section)
-            if front_position >= 0 and style_position >= 0 and front_position > style_position:
-                errors.append(f"G{package_number:02d} {front_section} must appear before 【主风格】")
-        if first_shot_position >= 0 and negative_position >= 0 and first_shot_position > negative_position:
-            errors.append(f"G{package_number:02d} 【反向提示词】 must appear after all 【分镜X】 sections")
-
-        voice_section_matches = list(re.finditer(r"^【音色特征】\s*$", package, re.MULTILINE))
-        if len(voice_section_matches) > 1:
-            errors.append(f"G{package_number:02d} duplicate conditional voice-control section")
-        if has_voice_reference and not voice_section_matches:
-            errors.append(f"G{package_number:02d} Voice/Audio Reference requires an explicit conditional voice-control section")
-        if has_voice_reference and voice_section_matches:
-            package_without_reference = package[:reference_start] + package[reference_end:]
-            voice_start = package_without_reference.find("【音色特征】")
-            if voice_start >= 0:
-                voice_end_candidates = [
-                    position
-                    for marker_text in ("【分镜", "【反向提示词】")
-                    if (position := package_without_reference.find(marker_text, voice_start + 1)) >= 0
-                ]
-                voice_end = min(voice_end_candidates, default=len(package_without_reference))
-                package_without_reference = package_without_reference[:voice_start] + package_without_reference[voice_end:]
-            descriptor_match = VOICE_DESCRIPTOR_PATTERN.search(package_without_reference)
-            if descriptor_match:
-                errors.append(
-                    f"G{package_number:02d} contains forbidden textual voice redefinition while using a Voice/Audio Reference: "
-                    f"{descriptor_match.group(0)}"
-                )
-        if re.search(
-            r"Storyboard|故事板|分镜板|线稿|漫画格|接触表|联系表|拼图|多画面|多宫格|Shot\s*Execution\s*Plan\s*(?:截图|渲染)|分镜执行表\s*(?:截图|渲染)",
-            reference_text,
-            re.IGNORECASE,
-        ):
-            errors.append(
-                f"G{package_number:02d} 【参考资产】 contains forbidden Storyboard, multi-panel, line-art, or Shot Execution Plan visual material"
-            )
-        if not reference_body or SOUND_PLACEHOLDER_PATTERN.fullmatch(reference_body) or reference_body in {"有效内容", "同上"}:
-            errors.append(f"G{package_number:02d} 【参考资产】 must explicitly list the references used by this Clip")
-        else:
-            if not REFERENCE_ITEM_PATTERN.search(reference_body):
-                errors.append(
-                    f"G{package_number:02d} 【参考资产】 must name at least one Canonical asset, legal frame, or Voice/Audio Reference"
-                )
-            if not REFERENCE_CONSTRAINT_PATTERN.search(reference_body):
-                errors.append(
-                    f"G{package_number:02d} 【参考资产】 must state each reference's purpose or locking constraint"
-                )
-
-        if not first_frame_text:
-            errors.append(f"G{package_number:02d} missing or empty section: 【首帧参考】")
-        else:
-            first_frame_requirements = {
-                "人物位置/朝向/视线": r"人物|角色|秦始皇|侍从|位置|朝向|视线",
-                "摄影机起始位置": r"摄影机|镜头起始|机位|轴线侧",
-                "景别": r"景别|大全景|全景|中景|近景|特写",
-                "主体构图": r"构图|主体|前景|中景|后景",
-                "环境": r"环境|场景|竹林|门店|水岸|车厢",
-                "道具": r"道具|马车|车帘|持有|状态",
-                "动作起始状态": r"动作|起始状态|动作阶段|端坐|行进|静止",
-                "光线状态": r"光线|光色|晨光|暖光|综合色温|照明",
-            }
-            for label, pattern in first_frame_requirements.items():
-                if not re.search(pattern, first_frame_text):
-                    errors.append(f"G{package_number:02d} 【首帧参考】 missing required {label}")
-            if package_number == 1 and not re.search(r"首段|无上一Clip尾帧|Scene初始状态|开场", first_frame_text, re.IGNORECASE):
-                errors.append(f"G{package_number:02d} 【首帧参考】 must declare that the first Clip has no previous tail frame")
-
-        shots = list(re.finditer(r"^【分镜(\d+)】\s*$", package, re.MULTILINE))
-        if not shots:
-            errors.append(f"G{package_number:02d} must contain at least one 【分镜X】")
-            continue
-        actual_package_shots = [int(shot.group(1)) for shot in shots]
-        if listed_shots != actual_package_shots:
-            errors.append(
-                f"G{package_number:02d} 包含分镜 must exactly match its 【分镜X】 sections: "
-                f"listed={listed_shots}, actual={actual_package_shots}"
-            )
-        package_specs.append((package_number, clip_number_value, duration_value, actual_package_shots))
-        first_shot_fields: dict[str, str] = {}
-        for shot_index, shot_match in enumerate(shots):
-            shot_number = int(shot_match.group(1))
-            shot_numbers.append(shot_number)
-            if shot_index + 1 < len(shots):
-                shot_end = shots[shot_index + 1].start()
-            else:
-                ending_start = package.find("【反向提示词】", shot_match.end())
-                shot_end = ending_start if ending_start >= 0 else len(package)
-            shot_segment = package[shot_match.end():shot_end]
-            field_cursor = -1
-            present_fields: list[tuple[str, re.Match[str]]] = []
-            for field in SHOT_FIELDS:
-                field_matches = list(re.finditer(rf"^{re.escape(field)}", shot_segment, re.MULTILINE))
-                if not field_matches:
-                    errors.append(f"G{package_number:02d}/分镜{shot_number} missing field: {field}")
-                    continue
-                if len(field_matches) > 1:
-                    errors.append(f"G{package_number:02d}/分镜{shot_number} duplicate field: {field}")
-                field_match = field_matches[0]
-                present_fields.append((field, field_match))
-                if field_match.start() < field_cursor:
-                    errors.append(f"G{package_number:02d}/分镜{shot_number} field out of order: {field}")
-                else:
-                    field_cursor = field_match.start()
-            field_values: dict[str, str] = {}
-            for field_index, (field, field_match) in enumerate(present_fields):
-                value_end = present_fields[field_index + 1][1].start() if field_index + 1 < len(present_fields) else len(shot_segment)
-                field_value = shot_segment[field_match.end():value_end].strip()
-                field_values[field] = field_value
-                if not field_value:
-                    errors.append(f"G{package_number:02d}/分镜{shot_number} field has no content: {field}")
-                if field == "音效：":
-                    if MUSIC_PATTERN.search(field_value):
-                        errors.append(f"G{package_number:02d}/分镜{shot_number} 音效 contains forbidden music instruction")
-                    if SOUND_PLACEHOLDER_PATTERN.fullmatch(field_value):
-                        errors.append(f"G{package_number:02d}/分镜{shot_number} 音效 may not be empty, silent, or generic placeholder content")
-                    if not SOUND_BED_PATTERN.search(field_value):
-                        errors.append(f"G{package_number:02d}/分镜{shot_number} 音效 must name a concrete 环境底声/空间底噪 or justified 有意静默")
-                    if not SOUND_FOREGROUND_PATTERN.search(field_value):
-                        errors.append(f"G{package_number:02d}/分镜{shot_number} 音效 must name at least one synchronized foreground layer such as 动作声、Foley、呼吸、对白 or 剧情内声源")
-            if shot_index == 0:
-                first_shot_fields = field_values
-            start_state = field_values.get("起始状态：", "")
-            if start_state and not START_FRAME_SOURCE_PATTERN.search(start_state):
-                errors.append(
-                    f"G{package_number:02d}/分镜{shot_number} 起始状态 must explicitly state the first-frame source or requirement"
-                )
-            end_state = field_values.get("镜头结尾状态：", "")
-            if end_state:
-                if not END_FRAME_STABLE_PATTERN.search(end_state) or not END_FRAME_INTERFACE_PATTERN.search(end_state):
-                    errors.append(
-                        f"G{package_number:02d}/分镜{shot_number} 镜头结尾状态 must be stable, readable, and usable as a handoff interface"
-                    )
-                if HIGH_RISK_END_PATTERN.search(end_state) and not CONFIRMED_END_EXCEPTION_PATTERN.search(end_state):
-                    errors.append(
-                        f"G{package_number:02d}/分镜{shot_number} 镜头结尾状态 contains an unapproved high-risk ending"
-                    )
-            handoff = field_values.get("与下一镜衔接：", "")
-            if handoff and not BOUNDARY_CLASS_PATTERN.search(handoff):
-                errors.append(
-                    f"G{package_number:02d}/分镜{shot_number} 与下一镜衔接 must declare Continuous Handoff, Motivated Discontinuity, or Unresolved Handoff"
-                )
-            if shot_index < len(shots) - 1:
-                if not re.search(r"同一\s*Clip|同一生成段|段内连续生成", handoff, re.IGNORECASE):
-                    errors.append(f"G{package_number:02d}/分镜{shot_number} intra-Clip handoff must state 同一Clip连续生成")
-
-        negative_start = package.find("【反向提示词】")
-        tail_token = f"[G{package_number:02d}尾帧]"
-        if tail_token not in tail_text or "保存为" not in tail_text:
-            errors.append(f"G{package_number:02d} 【尾帧限制】 must save the frame as {tail_token}")
-        if not END_FRAME_STABLE_PATTERN.search(tail_text):
-            errors.append(f"G{package_number:02d} 【尾帧限制】 must declare a stable end frame")
-        tail_requirements = {
-            "人物最终位置/动作/视线/情绪": r"人物|角色|秦始皇|侍从|位置|动作|视线|情绪",
-            "摄影机最终状态": r"摄影机|机位|景别|构图|焦点",
-            "道具最终状态": r"道具|马车|车帘|持有者|左右手|状态",
-            "环境最终状态": r"环境|场景|竹林|门店|车厢|光线|光色|天气",
-        }
-        for label, pattern in tail_requirements.items():
-            if not re.search(pattern, tail_text):
-                errors.append(f"G{package_number:02d} 【尾帧限制】 missing required {label}")
-        if HIGH_RISK_END_PATTERN.search(tail_text) and not CONFIRMED_END_EXCEPTION_PATTERN.search(tail_text):
-            errors.append(f"G{package_number:02d} 【尾帧限制】 contains an unapproved high-risk ending")
-        if not re.search(r"最后\s*1\s*秒[^\n]*(?:不得|禁止)[^\n]*(?:复杂动作|剧情事件|新动作)", tail_text):
-            errors.append(f"G{package_number:02d} 【尾帧限制】 must forbid starting new complex action in the final 1 second")
-        tail_use_match = re.search(r"^\s*下一段(?:预计)?用途[：:]\s*(.+)$", tail_text, re.MULTILINE)
-        if not tail_use_match:
-            errors.append(f"G{package_number:02d} 【尾帧限制】 must declare 下一段预计用途")
-        else:
-            tail_use = tail_use_match.group(1).strip()
-            if not re.search(r"直接作为.+起始帧|仅作为.+连续性参考|不作.+正式参考资产|最终收束", tail_use):
-                errors.append(
-                    f"G{package_number:02d} 下一段预计用途 must choose direct start-frame, reference-only, no-formal-tail-reference, or final closure"
-                )
-        negative_text = package[negative_start + len("【反向提示词】"):] if negative_start >= 0 else ""
-        negative_lines = [line.strip() for line in negative_text.splitlines() if line.strip()]
-        if not negative_lines or negative_lines[0] != DEFAULT_NO_BACKGROUND_MUSIC_LINE:
-            errors.append(
-                f"G{package_number:02d} 【反向提示词】 first non-empty line must be exactly: "
-                f"{DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
-            )
-
-        if package_number > 1:
-            previous_token = f"[G{package_number - 1:02d}尾帧]"
-            start_text = first_shot_fields.get("起始状态：", "")
-            no_formal_reference = bool(
-                previous_token in first_frame_text
-                and re.search(r"不作.*正式参考资产|不作为.*正式参考资产|仅作.*连续性核对", first_frame_text)
-            )
-            direct_mode = bool(
-                previous_token in first_frame_text
-                and re.search(r"Direct Start-Frame Handoff|直接继承|直接作为.*首帧|直接作为.*起始帧", first_frame_text, re.IGNORECASE)
-            )
-            reference_mode = bool(
-                previous_token in first_frame_text
-                and re.search(r"Reference-Only Handoff|仅作.*连续性参考|仅作为.*连续性参考", first_frame_text, re.IGNORECASE)
-            )
-            if sum((no_formal_reference, direct_mode, reference_mode)) != 1:
-                errors.append(
-                    f"G{package_number:02d} 【首帧参考】 must choose exactly one of direct inheritance, reference-only, or no formal tail reference"
-                )
-            if no_formal_reference:
-                if previous_token in reference_text:
-                    errors.append(
-                        f"G{package_number:02d} cross-scene/no-formal-reference mode must not list {previous_token} in 【参考资产】"
-                    )
-                if not re.search(r"重建原因|断点|跨场景|新场景", first_frame_text):
-                    errors.append(f"G{package_number:02d} no-formal-reference mode must state the scene-break/rebuild reason")
-                if not re.search(r"Scene初始状态|Confirmed Asset|已确认.*场景|新场景", first_frame_text, re.IGNORECASE):
-                    errors.append(f"G{package_number:02d} cross-scene 【首帧参考】 must name the confirmed new-scene source")
-            else:
-                if previous_token not in reference_text:
-                    errors.append(f"G{package_number:02d} Direct/Reference-Only mode must formally cite {previous_token} in 【参考资产】")
-                if previous_token not in start_text:
-                    errors.append(f"G{package_number:02d} 起始状态 must cite {previous_token}")
-                elif direct_mode and not re.search(r"直接|从该帧|延续该帧", start_text):
-                    errors.append(f"G{package_number:02d} 起始状态 must directly continue {previous_token}")
-                elif reference_mode and not re.search(r"连续性参考|兼容|重建", start_text):
-                    errors.append(f"G{package_number:02d} 起始状态 must reconstruct a compatible boundary from {previous_token}")
-
-    if package_ids and package_ids != list(range(package_ids[0], package_ids[0] + len(package_ids))):
-        errors.append(f"Prompt Package IDs in this delivery must be consecutive: found {[f'G{number:02d}' for number in package_ids]}")
-    if clip_ids and clip_ids != list(range(clip_ids[0], clip_ids[0] + len(clip_ids))):
-        errors.append(f"Clip IDs in this delivery must be consecutive: found {[f'CLIP-{number:03d}' for number in clip_ids]}")
-    if shot_numbers and shot_numbers != list(range(shot_numbers[0], shot_numbers[0] + len(shot_numbers))):
-        errors.append(f"Shot numbers must be consecutive with no omissions, duplicates, or reordering in this delivery: found {shot_numbers}")
-    if package_ids and shot_numbers and len(package_ids) > len(shot_numbers):
-        errors.append(
-            f"Total Prompt Packages must not exceed Total Formal Shots: packages={len(package_ids)}, shots={len(shot_numbers)}"
-        )
-    if clip_plan_path is not None:
-        resolved_clip_plan = clip_plan_path.resolve()
-        if not resolved_clip_plan.is_file():
-            errors.append(f"Confirmed Clip Production Plan not found for STATE-08 cross-check: {resolved_clip_plan}")
-        else:
-            clip_text = read_text(resolved_clip_plan)
-            table_start = clip_text.find("## Clip Table")
-            table_end = clip_text.find("## Clip Detail Cards", table_start + 1)
-            table_text = clip_text[table_start:table_end] if table_start >= 0 and table_end > table_start else ""
-            plan_rows = re.findall(
-                r"^\|\s*CLIP-(\d{3})\s*\|\s*([^|]+)\|\s*(\d+(?:\.\d+)?)\s*秒\s*\|",
-                table_text,
-                re.MULTILINE,
-            )
-            plan_specs = {
-                int(clip_number): (float(duration), [int(value) for value in re.findall(r"SHOT-(\d{3})", source_text, re.IGNORECASE)])
-                for clip_number, source_text, duration in plan_rows
-            }
-            for package_number, clip_number, duration, shots in package_specs:
-                if clip_number is None or clip_number not in plan_specs:
-                    errors.append(f"G{package_number:02d} has no matching Confirmed Clip Production Plan row")
-                    continue
-                planned_duration, planned_shots = plan_specs[clip_number]
-                if duration is None or abs(duration - planned_duration) > 1e-6:
-                    errors.append(
-                        f"G{package_number:02d} platform duration must equal CLIP-{clip_number:03d} target duration: prompt={duration}, clip_plan={planned_duration:g}"
-                    )
-                if shots != planned_shots:
-                    errors.append(
-                        f"G{package_number:02d} shots must equal CLIP-{clip_number:03d}: prompt={shots}, clip_plan={planned_shots}"
-                    )
-    timeline_patterns = {
-        "timecode": r"(?<!\d)\d{1,2}:\d{2}(?::\d{2})?(?!\d)",
-        "second range": r"(?<!\d)\d+(?:\.\d+)?\s*[-–—~至到]\s*\d+(?:\.\d+)?\s*秒",
-        "numbered second": r"第\s*\d+\s*秒",
-        "frame or fps parameter": r"(?<!\d)\d+(?:\.\d+)?\s*(?:fps|帧)(?![\w])",
-        "timeline label": r"总时长|总片时长|单镜头时长|单分镜时长|逐镜时长|时间码|时间戳",
-    }
-    for label, pattern in timeline_patterns.items():
-        if re.search(pattern, text, re.IGNORECASE):
-            errors.append(f"Forbidden timeline expression detected: {label}")
-    if re.search(r"(?<![A-Za-z0-9])(?:Shot\s*\d+|S\d{2})(?![A-Za-z0-9])", text, re.IGNORECASE):
-        errors.append("Mixed or legacy shot numbering detected; use Gxx packages plus 【分镜X】 only")
-    if re.search(r"^(?:Applicable Knowledge Set|Projection Ledger|Scene:|Character:|Action:|Composition:|Camera:|Lighting:|Sound:|Editing:)\s*$", text, re.MULTILINE):
-        errors.append("Internal knowledge or projection structure leaked into final STATE-08 output")
-    if re.search(r"(?<![A-Za-z0-9])(?:PEX|LGT|FLN|CLR|TRN|CMG)-\d{2}(?![A-Za-z0-9])|(?<![A-Za-z0-9])AU(?:1|2|4|5|6|7|9|10|12|14|15|17|20|23|24|25|26|27|28|43|45)(?![A-Za-z0-9])", text):
-        errors.append("Internal lighting, performance, focal-length, color, transition, or movement-combination pattern identifier leaked into final STATE-08 output")
-    return report(errors, warnings, as_json)
-
-
-def validate_state08(
-    path: Path,
-    as_json: bool = False,
-    clip_plan_path: Path | None = None,
-    allow_batch_output: bool = False,
-) -> int:
     """Validate the fixed STATE-08 Clip contract owned by templates/10_video_prompt.md."""
     errors: list[str] = []
     warnings: list[str] = []
@@ -1966,6 +1594,15 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
     for name in ("rules", "workflows", "knowledge", "templates", "references", "scripts"):
         if not (root / name).is_dir():
             errors.append(f"Missing skill directory: {name}")
+    scripts_root = root / "scripts"
+    if scripts_root.is_dir():
+        for python_path in sorted(scripts_root.glob("*.py")):
+            function_names = re.findall(r"^def\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(", read_text(python_path), re.MULTILINE)
+            duplicate_functions = sorted({name for name in function_names if function_names.count(name) > 1})
+            for function_name in duplicate_functions:
+                warnings.append(
+                    f"Duplicate top-level function definition in {python_path.relative_to(root).as_posix()}: {function_name}"
+                )
     for relative in MODULE_FILES:
         if not (root / relative).is_file():
             errors.append(f"Missing production module file: {relative}")
@@ -1999,6 +1636,14 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
             body = text[frontmatter_match.end():]
             if re.search(r"^[ ]{0,3}\[TODO:[^\n]*\][ \t]*$", body, re.MULTILINE):
                 errors.append("SKILL.md contains an unfinished TODO placeholder")
+        version_match = re.search(r"^Skill Version:\s*([^\s]+)\s*$", text, re.MULTILINE)
+        build_match = re.search(r"^Build ID:\s*([^\s]+)\s*$", text, re.MULTILINE)
+        if not version_match or not re.fullmatch(r"\d{4}\.\d{2}\.\d{2}-r[1-9]\d*", version_match.group(1)):
+            errors.append("SKILL.md Skill Version must use YYYY.MM.DD-rN with N >= 1")
+        if not build_match:
+            errors.append("SKILL.md is missing Build ID")
+        elif version_match and build_match.group(1) != f"sd-film-{version_match.group(1)}":
+            errors.append("SKILL.md Build ID must equal sd-film-<Skill Version>")
     config_path = root / "config.md"
     if config_path.is_file() and len(read_text(config_path).encode("utf-8")) > 6000:
         errors.append("config.md exceeds the modular configuration hard limit of 6 KB")
@@ -2064,10 +1709,10 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
                 errors.append(f"Legacy or overriding route phrase in {relative}: {label}")
     integration_checks = {
         "rules/02_asset_rules.md": ("FX-001", "FX Asset", "Visual Asset Production Gate", "Prompt Draft", "Image Generated", "Reference Asset Eligibility Strengthening", "Reference Selection / Routing", "参考资产按需路由，不是越多越好", "板凳参考说明"),
-        "rules/03_prompt_rules.md": ("Prompt Attention / Control Allocation", "不声称能够直接或精准设置模型内部的交叉注意力数值", "提示词不是越长越好", "Blender / Unreal式严格物理仿真器", "高价值视觉关系", "低价值工程精度"),
+        "rules/03_prompt_rules.md": ("Prompt Attention / Control Allocation", "不声称能够直接或精准设置模型内部的交叉注意力数值", "提示词不是越长越好", "Style Label Decomposition", "标签不能单独承担执行控制", "Blender / Unreal式严格物理仿真器", "高价值视觉关系", "低价值工程精度"),
         "workflows/03_asset_discovery_workflow.md": ("FX Asset Discovery", "15_fx_asset_workflow.md"),
         "workflows/07_visual_development_workflow.md": ("Performance Direction", "facial_action_language.md", "emotion_dynamics.md", "Sound Direction", "knowledge/lighting/index.md", "光源空间锚点", "focal_length_and_perspective.md", "全画幅等效倾向", "knowledge/color/index.md", "绿色—品红偏色", "肤色、眼白", "17_poster_design_workflow.md"),
-        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Script Adaptation And Optimization Gate Module Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Transition Knowledge Contract"),
+        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Script Adaptation And Optimization Gate Module Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
         "knowledge/script_adaptation.md": ("Optimization Opportunity Report", "User Decision Gate", "Source Essence Extraction", "Adaptation Objective", "Preserve / Compress / Rewrite / Remove Decision", "Screen Translation", "Duration & Dramatic Restructuring", "Adaptation Fidelity Check", "LEVEL 1", "LEVEL 2", "LEVEL 3", "基本不要改剧情", "short_form_drama_adapter.md"),
         "knowledge/adaptation/short_form_drama_adapter.md": ("前3秒", "前30秒", "1个核心事件", "角色功能", "核心欲望", "性格标签", "标志动作", "语言特征", "视觉记忆点", "通常控制在7字左右", "1个主情绪", "爽 / 虐 / 甜 / 惊 / 燃 / 笑 / 悬", "Hook → Setup → Escalation → Payoff → Next Hook", "不是死时间码"),
         "workflows/02_script_analysis_workflow.md": ("Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate", "开场钩子", "核心冲突进入时机", "信息重复", "台词效率", "动作可视化", "人物记忆点", "节奏", "高潮力度", "情绪价值", "结尾Hook", "时长适配", "场景/人物复杂度", "A 无明显优化必要", "B 有轻度优化空间", "C 有明显结构问题", "拒绝优化或改编", "Production Script Proposal输出后必须再次停止", "A — Production Script", "B — Rough Script / First Draft", "C — Source Material", "Adaptation Target Detection", "Script Adaptation", "Adaptation Draft", "short_form_drama_adapter.md", "No Revision / Final Script"),
@@ -2083,7 +1728,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "workflows/09_shot_design_workflow.md": ("Professional Detailed Shot Script", "TC IN", "TC OUT", "时长(s)", "画面内容 / 构图", "镜头调度", "摄影机运动 + 人物调度", "光线 / 色彩", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "Performance Goal", "facial_action_language.md", "公开状态与内部泄漏", "Sound Purpose", "FX Behavior", "Coverage Mapping", "Coverage Completion", "Composition Intent", "Camera Language Integrity", "Camera Language Decision Gate", "selection_matrix.md", "实际读取的主运镜原子知识文件", "Focal Length Design", "focal_length_and_perspective.md", "knowledge/color/index.md", "CLR-01至CLR-09", "肤色漂移", "director_patterns/index.md", "knowledge/lighting/index.md", "起始光态", "高风险模式的基础镜头降级方案", "movement_combinations/index.md", "Low-Complexity Compound Path", "knowledge/transitions/", "Outgoing Anchor", "Direct Cut降级", "Source Script Label", "Artifact Revision"),
         "workflows/10_clip_production_workflow.md": ("STATE-07 Clip Production", "Professional Detailed Shot Script", "TC OUT - TC IN = 时长(s)", "画面内容/构图", "镜头调度", "光线/色彩", "Shot", "Clip", "Prompt", "Build Clip Candidates", "Author Clip Execution Contract", "Clip Movement Plan", "主导镜头语言", "超过4个Shot", "连续出现3次", "Duration And Continuity Ledger", "Shot-State Memory", "Clip End-State Record / Next-Clip Carryover", "Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "templates/20_clip_plan.md", "每个 Clip", "Source Script Label", "--project-status", "--shot-design"),
         "workflows/10_storyboard_workflow.md": ("Optional / Auxiliary", "不绑定任何固定 STATE", "用户明确要求", "templates/09_storyboard_prompt.md", "不得进入 STATE-08"),
-        "workflows/11_video_generation_workflow.md": ("knowledge/performance/", "Attention Shift", "Control / Leakage", "瞳孔地震", "knowledge/sound_language/", "knowledge/fx/", "knowledge/lighting/", "knowledge/color/", "Color Execution", "综合色彩闪变", "focal_length_and_perspective.md", "全画幅等效倾向", "movement_combinations/", "Low-Complexity Compound Path", "Camera Language Decision Hard Gate", "Clip Movement Plan Hard Gate", "selection_matrix.md", "禁止把“缓慢推进”", "Sequence Plan", "Sequence And Unit Continuity", "Sequence Coverage Check", "state08_projection.md", "Semantic Projection Check", "Projection Ledger", "结束光态", "knowledge/transitions/", "禁止生成背景音乐", "Outgoing Anchor", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "板凳参考说明", "Single-Clip Checkpoint", "First-Frame Check", "End-Frame Interface Check", "Cross-Clip Continuity Check", "Five-Dimensional Prompt Control Matrix", "Prompt Compression Pass", "Prompt Attention / Compression Check"),
+        "workflows/11_video_generation_workflow.md": ("knowledge/performance/", "Attention Shift", "Control / Leakage", "瞳孔地震", "knowledge/sound_language/", "knowledge/fx/", "knowledge/lighting/", "knowledge/color/", "Color Execution", "综合色彩闪变", "focal_length_and_perspective.md", "全画幅等效倾向", "movement_combinations/", "Low-Complexity Compound Path", "Camera Language Decision Hard Gate", "Clip Movement Plan Hard Gate", "selection_matrix.md", "禁止把“缓慢推进”", "Sequence Plan", "Sequence And Unit Continuity", "Sequence Coverage Check", "state08_projection.md", "Semantic Projection Check", "Projection Ledger", "结束光态", "knowledge/transitions/", "禁止生成背景音乐", "Outgoing Anchor", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "板凳参考说明", "Single-Clip Checkpoint", "First-Frame Check", "End-Frame Interface Check", "Cross-Clip Continuity Check", "Five-Dimensional Prompt Control Matrix", "3—5个（或更少）style carriers", "Prompt Compression Pass", "Prompt Attention / Compression Check"),
         "workflows/13_review_workflow.md": ("FX Review", "Performance Review", "表情符合角色基线", "公开状态、短暂泄漏", "Sound Review", "Sequence Coverage Review", "Camera Language QA", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "人物/道具重置", "相机轴线跳变", "连续慢推", "超过4个Shot", "连续3次", "焦段倾向、摄影机距离", "背景尺度抽动", "主色、辅助色、强调色", "白平衡抽动", "Prompt Attention / Control Allocation", "Blender / Unreal式严格物理仿真器"),
         "templates/01_project_bible_template.md": ("Performance Direction", "角色中性面部", "压抑 / 伪装 / 混合情绪", "FX Direction", "Sound Direction", "FX Continuity", "光源空间锚点与方向", "跨镜光影连续性", "全画幅等效倾向", "焦段不自动等于景别", "绿色—品红偏色", "Color模式语义"),
         "templates/03_asset_discovery_prompt.md": ("正式FX Asset / Inline Effect / 后期合成待定", "15_fx_asset_workflow.md"),
@@ -2117,13 +1762,13 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/camera_language/lens_language/focal_length_patterns.md": ("FLN-01", "FLN-07", "Selection Rule", "Prompt Quality Gate"),
         "knowledge/camera_language/lens_language/focal_length_continuity.md": ("Continuity Ledger", "Identity And Edge Safety", "Motion Interaction", "STATE-08 Projection"),
         "knowledge/camera_language/director_patterns/index.md": ("Authority Boundary", "Stability Gate", "STATE-08", "advanced_composition.md", "action_composition.md", "character_composition.md", "atmosphere_composition.md"),
-        "knowledge/knowledge_application_reflection.md": ("Director / Literary Intent Translation", "保留情绪功能", "至少落到一种可见或可听执行项", "五维未锁定项检查"),
-        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Prompt Attention / Control Allocation Gate", "Five-Dimensional Prompt Control Matrix", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
+        "knowledge/knowledge_application_reflection.md": ("Director / Literary Intent Translation", "保留情绪功能", "至少落到一种可见或可听执行项", "3—5个（或更少）高价值style carriers", "五维未锁定项检查"),
+        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Prompt Attention / Control Allocation Gate", "Five-Dimensional Prompt Control Matrix", "Style Label Decomposition Rule", "Executable Style Carrier Rule", "默认选择3—5个", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
         "knowledge/11_seedance_adapter.md": ("state08_projection.md", "主体画面位置", "构图主原子与支持层", "knowledge/color/index.md", "不得输出CLR编号", "focal_length_and_perspective.md", "焦段不自动提高画面质感", "knowledge/lighting/index.md", "LGT模式ID", "knowledge/performance/index.md", "Attention Shift", "PEX/AU编号", "knowledge/camera_language/movement_combinations/", "knowledge/transitions/", "背景音乐", "Delivery Mode Gate", "Four-Part Boundary Gate", "Physical Data Value Rule", "0.137m/s", "Blender / Unreal式物理仿真"),
-        "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "禁止生成背景音乐", "Prompt Attention / Compression", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器"),
+        "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "禁止生成背景音乐", "Prompt Attention / Compression", "3—5个（或更少）", "Semantic Trigger Pollution", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器"),
         "knowledge/clip_preflight_check.md": ("Four Global High-Priority Rules", "Visual Input Eligibility Test", "Reference Selection / Routing", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "NOT ELIGIBLE", "板凳参考说明", "九个Acceptance Scenarios"),
         "knowledge/reference_budget.md": ("Visual Input Eligibility", "0个图片位", "板凳参考说明", "Projected Final Count"),
-        "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention"),
+        "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention", "R15-D Director Label Decomposition", "R15-E Abstract Premium Label", "R15-F Action-Heavy Clip Style Compression"),
         "knowledge/camera_language/movement_combinations/index.md": ("Foundations", "Decision Engine", "Combination Patterns", "Continuity And Projection", "Image Source Coverage", "Activation Gate"),
         "knowledge/camera_language/movement_combinations/foundations.md": ("Four Execution Classes", "One-Shot Compatibility Test", "Compatibility Matrix", "Split Triggers", "Stability Budget"),
         "knowledge/camera_language/movement_combinations/decision_engine.md": ("Gate 0", "Class A", "Coverage Sequence", "Transition / FX Sequence", "Stable Downgrade", "CMG-xx"),
@@ -2146,7 +1791,8 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/color/foundations.md": ("Core Corrections", "Atomic Color Model", "Responsibility Boundary", "Skin And Neutral Rule", "Prompt Compiler", "Prompt Quality Gate"),
         "knowledge/color/tone_patterns.md": ("CLR-01", "CLR-09", "Selection Rule"),
         "knowledge/color/color_continuity.md": ("Continuity Ledger", "Lighting Interaction", "STATE-08 Projection", "Stable Downgrade"),
-        "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md"),
+        "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md", "Skill Update Self-Check / Change Safety Checklist"),
+        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "维护约定"),
         "rules/runtime_reload.md": ("Reload Sequence", "Skill Definition", "Project Context", "Compatibility Mapping Result"),
         "rules/state_source.md": ("Selection Priority", "当前可验证的Project Context", "Project ID不一致", "Storyboard只能"),
         "rules/chat_compatibility.md": ("普通Chat不是缩减模式", "Portable Execution", "Behavior Parity"),

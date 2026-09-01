@@ -2,7 +2,7 @@
 
 ## Purpose
 
-本文件定义新增模块与现有生产系统之间的接口合同。
+本文件定义新增或修改模块与现有生产系统之间的接口合同，并拥有Skill更新后的维护QA。
 
 目标是允许SD Film持续扩展，同时避免：
 
@@ -63,6 +63,7 @@
 - Compatibility Mapping：`rules/compatibility_mapping.md`
 - Resource Loading：`rules/resource_loading.md`
 - Canonical Portable State Schema：`references/project_state_contract.md`
+- Skill Update Self-Check：本文件的`Skill Update Self-Check / Change Safety Checklist`
 
 其他模块只能引用这些所有者，不得在`SKILL.md`、`config.md`、References、Knowledge、Templates、兼容入口或各Workflow中维护竞争副本。`SKILL.md`可保留激活/重载入口和路由索引，但不得复制完整运行协议。
 
@@ -675,15 +676,97 @@ Module Type：STATE-06至STATE-08 Camera Knowledge Router。
 
 ---
 
-## Change Safety Checklist
+## Skill Update Self-Check / Change Safety Checklist
 
-模块接入完成前检查：
+本节是所有Skill维护QA的唯一权威来源。它属于Skill维护层，不是影视制作Pipeline的STATE，不写入项目状态，不进入用户视频Prompt，也不得被复制成另一套并行检查规范。
 
-- 主Pipeline仍只包含STATE-00至STATE-09
-- 原有Template仍拥有原有阶段Schema
-- 新ID命名空间没有冲突
-- 新Workflow有明确触发与Not Applicable路径
-- 新输出保存在Active Project Root
-- 所有显式内部文件引用均存在
-- 正常样例通过Validator
-- 缺字段、重复ID或越权ID样例被拒绝
+### Trigger And Change Classification
+
+每次对Skill做用户可见或行为层更新后都必须执行，包括修改`SKILL.md`、Rules、Workflows、Knowledge、Templates、References、Validator、模块增删、Prompt结构、路由、Gate、STATE规则、资产规则、连续性规则、Review规则或`USER_GUIDE.md`。纯拼写修正可使用轻量检查，但仍必须完成Duplicate Rule、Conflict与Reference Integrity检查。
+
+开始修改前先搜索当前权威来源和同类机制，完成后把本次变更标记为以下一种：
+
+- `no_change`：现有机制已完整覆盖，未修改文件。
+- `optimize_existing`：权威原规则存在但覆盖不完整，在原位置补足。
+- `merge_existing`：同类规则零散分布，合并到一个权威来源，其他位置只保留引用或路由。
+- `add_new`：确认没有合适权威位置后才新增最小模块或文件。
+- `deprecate/remove`：移除已废弃、冲突或被权威来源替代的内容，并清理全部引用。
+
+### Mandatory Maintenance Chain
+
+```text
+Read current rules
+→ Locate related rules
+→ Classify existing coverage
+→ Apply minimal change
+→ Run Skill Update Self-Check
+→ Classify and resolve every finding by risk
+→ Run targeted regression for the requested change and every repaired finding
+→ Sync USER_GUIDE when user-facing behavior changed
+→ Final change report
+```
+
+### Check Dimensions
+
+1. **Duplicate Rule Check**：搜索语义相同但措辞不同的并行规则，以及本应由单一来源拥有却复制到`SKILL.md`、Rule、Workflow、Knowledge、Template、Reference或Validator的规范。保留一个权威来源，其他位置只保留必要路由、引用或不变量，不复制完整协议或Schema。
+2. **Conflict Check**：核对Pipeline、STATE编号、Gate、优先级、默认行为与辅助模块边界。重点排除显式调用与默认必经并存、Storyboard Auxiliary与固定STATE并存、Shot/Clip/Prompt单位关系冲突，以及同一Template字段被不同文件定义。
+3. **Terminology Drift Check**：复用当前正式术语与ID，包括Shot、Clip、Prompt、Voice Profile、Accepted Take、Accepted Canon State、Shot-State Memory、Reference Selection / Routing与REF-TAIL。新名称只有在代表新概念且不会形成同义命名时才允许。
+4. **Rule Ownership Check**：按本文件Authority Matrix检查归属。`SKILL.md`只保留身份、版本、入口、主路由、全局硬规则和索引；详细算法、门槛、知识、Schema与合同分别留在Workflow、Rules、Knowledge、Templates和References。不得为提高可见性而在入口复制细粒度规则或Template字段。
+5. **Prompt Pollution Check**：确认新增内部控制不会直接膨胀最终Prompt。检查重复、冲突、抽象语义模板、否定词堆叠、资产重述、无效精密参数、跨镜头残留、风格堆叠与优先级淹没；内部QA、分数、Issue ID、路由说明和维护术语不得进入最终Prompt。
+6. **Routing Integrity Check**：确认新模块有正确入口、触发和返回路由；显式调用模块未变为默认必经；Optional/Auxiliary Workflow未写入主Pipeline；Legacy Compatibility未成为新项目主路由；普通“继续”未被误判为Reload、AUDIO或MUSIC授权。
+7. **Template Consistency Check**：核对Workflow声明的Output Owner、字段语义与当前Template；废弃字段不得残留。Template继续唯一拥有用户可见字段、顺序、必填性和排版。音色未显式投影时，常规STATE-08输出不得默认保留声音身份或“音色特征”字段。
+8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py skill <skill-root>`执行可确定的结构与引用检查。
+9. **State / Continuity Compatibility Check**：确认STATE-00至STATE-09、Shot-State Memory、Accepted Take、Accepted Canon State、Reference Selection / Routing、REF-TAIL A Direct / B Reference-Only / C Not Required、Spatial Blocking、资产锁、Revision与Checkpoint不被破坏；维护QA不得创建新主STATE或项目事实。
+10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
+11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
+12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。
+
+### Skill-Wide Detection And Risk-Based Repair
+
+- **Detection scope is Skill-wide**：每次完整自检都检查整个Skill在十二个维度上的可见问题，不以本次Diff、修改文件或直接消费者为发现边界。已经发现的问题不得仅因“与本次修改无关”而跳过、隐藏或从报告中删除。
+- **Every finding requires disposition**：每个真实发现项必须在本轮标记为`FIXED`或`WARN`，并记录所有者、影响和处理依据；误报必须说明为什么不构成问题，不能用总体`PASS`掩盖单项发现。
+- **SAFE_LOCAL**：权威来源明确、影响局部、行为保持不变且可通过确定性检查或直接回归验证的问题，本轮必须修复，即使它是历史遗留或与原始请求无关。例如悬空引用、重复定义、失效索引、确定的术语漂移、版本不一致和无消费者的竞争副本。
+- **CONTROLLED_CROSS_MODULE**：涉及多个文件或消费者，但所有者、影响边界和回归路径明确的问题，原则上也在本轮修复；同步更新所有直接消费者并扩展定向回归。文件数量或是否属于原始Diff本身不是延期理由。
+- **HIGH_RISK / DECISION_REQUIRED**：可能改变用户已确认的重要行为、主Pipeline、STATE、资产锁、项目事实、最终Schema、外部兼容，或需要无法在本轮可靠验证的大规模迁移时，不得静默修改。标记`WARN`，写明证据、影响、权威所有者、建议修复方案与所需用户决定；若会使本次更新不安全，则在完成前升级为明确阻塞或请求决定。
+- 风险分级是为了决定如何处理，不是缩小检查范围。禁止把“不要全面重构”解释成只修本次相关问题；同时也不得把自优化变成无边界重写。优先逐项、可回滚、可验证地清零问题，只有达到`HIGH_RISK / DECISION_REQUIRED`门槛才允许延期。
+- 不允许为了“统一”删除用户已确认的重要行为、改变Production-Locked事实、清空Confirmed Assets / Accepted Artifacts，或扩大当前授权范围。
+- 语义检查由维护者实际阅读和比较完成；Validator只负责确定性结构、不变量和引用检查。Validator通过不等于全部语义维度自动PASS。
+
+### Targeted Regression Selection
+
+回归选择以所有实际修复项及其直接消费者为边界，而不只看原始请求的Diff：先验证每个修改文件，再验证它引用或被引用的直接模块，最后验证对应关键不变量。若修复横跨多个所有者，分别验证各自Template / Workflow合同；若只改内部说明且无行为变化，不机械运行无关的全生产回归，但不得漏掉自检附带修复的直接回归。
+
+模块接入或路由变更至少继续检查：
+
+- 主Pipeline仍只包含STATE-00至STATE-09。
+- 原有Template仍拥有原有阶段Schema。
+- 新ID命名空间没有冲突。
+- 新Workflow有明确触发、不触发与Not Applicable / Return Route。
+- 新输出只写入合法的Active Project Root或对应可移植状态位置。
+- 所有显式内部文件引用均存在。
+- 正常样例通过Validator；缺字段、重复ID、越权ID或错误路由样例被拒绝。
+
+### Required Self-Check Summary
+
+每次正式修改后的最终报告必须简短列出：
+
+```text
+Skill Update Self-Check
+
+Change Classification: no_change / optimize_existing / merge_existing / add_new / deprecate/remove
+Findings Disposition: FIXED <count> / WARN <count> / FALSE_POSITIVE <count>
+Duplicate Rules: PASS / FIXED / WARN
+Conflict Rules: PASS / FIXED / WARN
+Terminology: PASS / FIXED / WARN
+Rule Ownership: PASS / FIXED / WARN
+Prompt Pollution: PASS / FIXED / WARN
+Routing: PASS / FIXED / WARN
+Template Sync: PASS / FIXED / WARN
+Reference Integrity: PASS / FIXED / WARN
+State / Continuity: PASS / FIXED / WARN
+Regression: PASS / FAIL / WARN
+USER_GUIDE Sync: YES / NOT REQUIRED
+Warnings: NONE / <concise unresolved warnings>
+```
+
+报告同时说明原机制位置、覆盖缺口、实际改动文件、运行过的验证，以及全部发现项的风险等级和处置。只有实际执行过的检查才能标记`PASS`；发现并修复后标记`FIXED`；只有达到`HIGH_RISK / DECISION_REQUIRED`门槛且本轮不能安全解决时才标记`WARN`，并附证据、影响、建议方案和下一步，不能再使用“与本次修改无关”作为延期理由。

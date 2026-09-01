@@ -268,6 +268,30 @@ PASS：`人物一致性`与`环境一致性`只保留资产ID/版本、当前状
 
 FAIL：在全局与每个分镜重复长篇角色外貌和环境结构；因资产已锁定而遗漏动作路径、摄影机行为或结束状态；删除Canonical资产引用；把Five-Dimensional Prompt Control Matrix打印成五个最终大字段。
 
+### R15-D Director Label Decomposition
+
+输入：`岩井俊二式青春电影氛围。`
+
+PASS：导演名只作为内部Director Style Knowledge检索标签；结合当前Clip事实，从Lighting / Color / Camera / Performance等候选中选择3—5个（或更少）高价值carriers，例如柔和自然光、低饱和偏暖、克制的固定观察或平缓跟随、人物以停顿/呼吸/细微眼神变化表达情绪。最终Prompt不只剩导演名；具体carriers已完整表达意图时省略“岩井俊二式”。不得把示例机械复制到每个Clip，也不得自动加入校园、校服、樱花、海边、夏日奔跑或其他未确认青春场景包。
+
+FAIL：只写“岩井俊二式青春电影氛围”；把导演名当作精准复现参数；机械复制整段风格说明；无依据增加校园/樱花/海边/奔跑；风格描述淹没主体、动作、空间、摄影机或状态承接。
+
+### R15-E Abstract Premium Label
+
+输入：`画面要有高级感。`
+
+PASS：先根据当前Clip目标确定“高级感”需要解决的可见问题，再从Composition / Texture / Lighting / Color中选择3—5个（或更少）具体carriers，例如明确负空间与主体偏置、材质细节自然可读、单一有来源的侧光、有限色彩和受控高光；选择必须与已确认资产、场景光源和动作一致，不要求机械同时采用全部示例。
+
+FAIL：只保留“高级感 / 电影感 / 广告感”；堆叠8K、ARRI、award winning等器材/质量词；无依据新增豪华空间、商业产品摆拍、强轮廓光或黑金配色；为了填满维度而制造冲突。
+
+### R15-F Action-Heavy Clip Style Compression
+
+输入：一个动作复杂Clip已经需要锁定双人身份、追逃前后关系、单一摄影机路径、道具换手顺序、环境障碍、动作Endpoint与下一Clip Handoff，同时上游还给出多个导演/流派/情绪标签。
+
+PASS：主体、动作、空间、时间顺序、摄影机路径、道具状态与Handoff优先；风格只保留能直接帮助读懂当前Beat的1—3个高价值carriers，例如稳定的冷灰综合色彩、克制手持和足够景深，其余导演名、审美词与装饰性材质描述在Prompt Compression中删除。固定Template字段仍完整，Generation Budget与Five-Dimensional Matrix不变成最终栏目。
+
+FAIL：为保留风格而删减动作步骤、空间方向、道具状态或Endpoint；同时堆叠多个导演、赛博朋克、黑帮感、广告感、胶片感与器材名；要求风格必须占满3—5项；以压缩为由删除Template字段。
+
 ---
 
 ## R16 Delta / Budget / Scope / Canon / Authority / Retake
@@ -356,6 +380,6 @@ FAIL：自动复制Voice Profile；写“由参考音色锁定”；仅因已有
 - R12-A至R12-C验证旧对话缓存不能覆盖当前安装Skill、旧STATE按当前Artifact / Completion Gate映射，并且Production-Locked Script、Confirmed Assets、Checkpoint、Accepted Artifacts与用户约束在Reload后不丢失。
 - R13-A至R13-C验证尾帧需求先于资产可用性判定、严格承接主动请求截图与草案/最终版边界，以及非严格承接不强制截图。
 - R14验证纯文字“板凳参考说明”从参考资产删除并迁移到既有空间/道具/反向字段，1—5号视觉资产保持不动，真实双人钢琴凳图只以正式资产ID引用。
-- R15-A至R15-C验证文学意图可执行转译、工程级数据按视觉价值压缩，以及Canonical角色/环境资产释放Prompt注意力给当前动作、空间、镜头与状态承接；最终Template结构保持不变。
+- R15-A至R15-F验证文学意图可执行转译、工程级数据按视觉价值压缩、Canonical资产释放Prompt注意力、导演/抽象审美标签拆解，以及动作复杂Clip中风格信息让位于主体、动作、空间、镜头与状态承接；最终Template结构保持不变。
 - R16-A至R16-E验证Canonical来源携带已锁定状态、Generation Budget先于五维、Accepted Observed State覆盖Planned瞬时状态、`REF-TAIL`不越权覆盖身份，以及站位失败优先单变量复拍；全部复用现有Pipeline、Execution Ledger与Template结构。
 - R17-A至R17-C验证角色声音身份严格opt-in、常规STATE-08 Prompt完全省略声音身份文字、显式声音设计进入独立Seed Audio兼容模板，以及已有Confirmed Voice Source不会在只请求Clip Prompt时被自动序列化。

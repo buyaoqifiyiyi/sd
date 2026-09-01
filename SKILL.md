@@ -7,11 +7,13 @@ description: AI影视虚拟制片生产系统，用于剧本改编与分析、�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.01-r2
+Skill Version: 2026.09.01-r6
 
-Build ID: sd-film-2026.09.01-r2
+Build ID: sd-film-2026.09.01-r6
 
-每次正式修改必须同步更新这两个字段：同日递增`rN`，跨日使用新的`YYYY.MM.DD-r1`。它们是版本唯一真源；`config.md`、Workflow和Project State不得维护竞争副本。
+User-facing usage manual: `USER_GUIDE.md`.
+
+每次正式修改必须同步更新这两个字段：同日递增`rN`，跨日使用新的`YYYY.MM.DD-r1`。它们是版本唯一真源；`config.md`、Workflow和Project State不得维护竞争副本。任何用户可见或行为层更新完成后，必须执行`references/module_contracts.md`中的`Skill Update Self-Check / Change Safety Checklist`；纯拼写修正至少执行其轻量检查。自检范围覆盖整个Skill，发现项按风险而不是按是否属于本次Diff决定修复或升级处理。
 
 ## System Role
 
@@ -148,7 +150,7 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 - `references/project_state_contract.md`：项目状态字段、Canonical Portable State Schema、转换与同步合同。
 - `references/project_workspace.md`：项目Root、Manifest、Registry与路径解析。
 - `references/asset_lock_contract.md`：资产版本、Canonical锁与Change Protocol。
-- `references/module_contracts.md`：模块职责与稳定接口。
+- `references/module_contracts.md`：模块职责、稳定接口与Skill更新后的唯一维护QA。
 - `knowledge/00_knowledge_index.md`：专业知识分类与发现；不拥有Workflow资源门槛。
 - `index.md`：仓库级资源索引；最终格式仍直接由各Template文件拥有。
 

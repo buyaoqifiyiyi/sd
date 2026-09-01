@@ -96,7 +96,7 @@ Prompt Pollution不是“字数过长”的同义词。长Prompt只要信息有�
 
 1. **Repetition Pollution**：重复描述同一人物、环境、动作或风格；合并到一条最高价值指令。
 2. **Conflict Pollution**：机位、运镜、动作、空间或状态互相冲突；按上游事实和当前Clip目标消解，无法消解则返回事实拥有者。
-3. **Abstract Pollution**：重要抽象情绪或导演词没有可见/可听执行对应；执行Abstract-to-Executable Translation。
+3. **Abstract Pollution**：重要的导演名、流派名、题材名、情绪标签或审美大词没有可见/可听执行对应；执行Abstract-to-Executable Translation与Style Label Decomposition。
 4. **Negative Pollution**：大段否定式提示激活不需要的概念或仍难稳定执行；能正向锁定的先改为Positive Target State。
 5. **Semantic Trigger Pollution**：用高共现大词调用模型默认视觉模板，带入当前Clip不存在的场景、服装、道具、天气或美术元素；执行Semantic Template Decomposition。
 6. **Asset Redescription Pollution**：正式角色、环境或道具参考已锁定后，正文仍长篇重述或与资产不一致；回到资产引用、当前状态与本Clip特有风险的最小确认。
@@ -105,7 +105,7 @@ Prompt Pollution不是“字数过长”的同义词。长Prompt只要信息有�
 9. **Style Stack Pollution**：同时堆叠过多导演、美术、摄影、渲染与质量标签而互相稀释；只保留彼此兼容且服务当前Clip的最小风格集合，并转译成具体行为。
 10. **Priority Pollution**：关键主体、动作、空间、镜头与状态承接被装饰性描述淹没；重新按本Rule的控制优先级组织。
 
-Semantic Template Decomposition不完全禁止“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等上游叙事/风格标签。进入最终Prompt前必须判断该词是在表达当前Clip必要身份，还是只在调用默认视觉包；若主要为后者，拆成当前Clip实际存在的人物、动作、场景、道具、服装、光线与声音。必要标签可以保留为上游意图，但最终执行控制必须由具体可见/可听元素承担。
+Semantic Template Decomposition不完全禁止“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等上游叙事/风格标签。进入最终Prompt前必须判断该词是在表达当前Clip必要身份，还是只在调用默认视觉包；若主要为后者，拆成当前Clip实际存在的人物、动作、场景、道具、服装、光线与声音。必要标签可以保留为上游意图，但最终执行控制必须由具体可见/可听元素承担。导演名、流派名、题材名、情绪标签与“电影感 / 高级感 / 治愈感 / 青春感”等审美大词的具体拆解算法统一由`knowledge/prompt_compilation/state08_projection.md`拥有，本Rule不复制载体清单。
 
 
 ---
@@ -973,40 +973,11 @@ Camera Language必须服务于：
 摄影参考。
 
 
-不得：
+导演名、影片名、流派名、题材名、情绪标签与审美大词首先视为上游风格意图或Knowledge Retrieval Label，不是模型必然精准复现的控制参数。不得只把“某导演式”“电影感”“高级感”“治愈感”“青春感”“黑帮感”“广告感”或类似标签加入最终Prompt。
 
-仅把导演姓名加入Prompt。
+进入STATE-08前，重要风格标签必须按`knowledge/prompt_compilation/state08_projection.md`的Style Label Decomposition Rule转译为当前Clip少量高价值、可观察且可执行的style carriers。导演名若只用于知识检索或Reflection选择，优先留在内部Director Style Knowledge / Knowledge Application Reflection记录；如果具体carriers已完整表达意图，最终Prompt允许省略导演名。若最终Prompt确需保留导演名或流派名，必须同时存在具体carriers，标签不能单独承担执行控制。
 
-
-必须转换为：
-
-构图特征。
-
-镜头运动。
-
-焦段倾向。
-
-灯光逻辑。
-
-色彩关系。
-
-剪辑节奏。
-
-人物表演。
-
-情绪表达。
-
-
-最终Prompt主要使用：
-
-可执行视觉语言。
-
-
-导演或作品名称：
-
-只作为辅助参考。
-
-不能替代实际摄影描述。
+风格信息始终低于主体、动作、空间、时间顺序、摄影机行为与状态承接；复杂动作Clip必须优先压缩风格描述，不得让风格标签或载体堆叠淹没执行信息。
 
 
 ---
