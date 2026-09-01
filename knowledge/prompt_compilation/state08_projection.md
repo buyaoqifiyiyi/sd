@@ -4,7 +4,7 @@
 
 - Module Type：STATE-08 Knowledge Adapter。
 - Trigger：所有 Video Prompt / Seedance Prompt 撰写任务。
-- Inputs：已确认项目事实、Active CHAR Version中已经存在的Confirmed Voice Profile与Voice/Audio Reference状态（如有）、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、适用Knowledge、`knowledge/clip_planning/continuity_and_projection.md`与`knowledge/11_seedance_adapter.md`。
+- Inputs：已确认项目事实、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、适用Knowledge、`knowledge/clip_planning/continuity_and_projection.md`与`knowledge/11_seedance_adapter.md`；只有用户明确要求把声音控制写进当前视频模型Prompt时，才读取适用的Confirmed Voice Profile或Voice/Audio Reference作为条件输入。
 - Output Owner：`templates/10_video_prompt.md`；本文件不拥有、增加、删除或改名最终字段。
 - Consumer：`workflows/11_video_generation_workflow.md`。
 - Forbidden：新增剧情、重选资产、改变镜头目的、创建新主STATE、创建另一套最终Schema。
@@ -123,12 +123,12 @@ STATE-08内部转换链固定为：
 
 Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/空间底噪或有理由的有意静默、至少一个同步前景声层和声音尾部。禁止用“无”“静音”“有效内容”或背景音乐禁令替代正向制作声音。
 
-声音身份先经过Voice Reference Override Gate，但`音色特征：`始终保留：
+声音身份执行默认省略Gate：
 
-- 有适用Voice/Audio Reference时，在`参考资产：`标明声音专用Reference，`音色特征：`写明声音身份由该Reference锁定且不得文字重定义；其他字段不得出现Voice characteristics、音高、声线、音域、共鸣、语速或音色质感。
-- 无适用Reference但已有Confirmed Voice Profile且有对白时，以该Profile填充`音色特征：`。
-- 有对白但没有任何已确认声音资产时，`音色特征：`写`No Voice Asset`声明：未建立独立音色资产，本Clip不创建或推导声音身份；不得自动触发AUDIO模块。
-- 全段无对白时，`音色特征：`明确无对白以及听觉叙事由环境声、动作声与呼吸声承担。
+- 用户没有明确要求把声音控制写进当前视频模型Prompt时，不检查声音资产，不投影Voice Profile / Voice/Audio Reference，不输出`音色特征：`或任何声音资产状态文字。默认外部已有可用角色音色资源，主流程继续。
+- 即使已存在Confirmed Voice Profile或Voice/Audio Reference，也由Source携带身份，Prompt不重复描述。
+- 只有用户当前明确授权把声音控制写进当前视频模型Prompt时，才在Template允许的条件位置输出`音色特征：`，并按`Source Carries State, Prompt Carries Delta`只写当前Clip必要的Reference映射或最小文字控制。
+- Dialogue Performance仍投影到`人物动作与情绪 / 台词 / 音效`中的适用位置，只说明当前一句/当前场景怎么说，不得重定义稳定Voice Identity。
 
 `时长：`的4—15秒平台生成时长只复制Confirmed Clip Production Plan的目标时长，不得重新估算；最终Prompt不写逐镜时长、时间码、按秒动作区间、帧率或帧数。
 
@@ -138,12 +138,12 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 |---|---|---|
 | Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、4—15秒平台生成时长；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
 | Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
-| Character / Environment / Prop / FX / Voice Assets | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；逐项写资产ID/名称、真实引用或待补充状态、用途与禁止修改特征；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并；Voice/Audio Reference只锁定声音 |
+| Character / Environment / Prop / FX Assets | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；逐项写资产ID/名称、真实引用或待补充状态、用途与禁止修改特征；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
 | Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
 | Clip End State / Next Clip | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
 | Character Continuity / Performance | 人物一致性；主风格 | 外观与状态锁定、表演尺度、跨镜湿润/伤痕/体力/情绪连续性 |
 | Environment / Spatial / Lighting / Color | 环境一致性 | 地点、天气、固定结构、光源方向、色彩来源与锚点、材质响应、运动方向、轴线和背景逻辑 |
-| Sound / Dialogue / Voice Identity | 音色特征 | 始终非空；Reference Override、Voice Profile Fallback、No Voice Asset或无对白四分支之一 |
+| Sound / Dialogue | 台词；音效 | Dialogue Performance、口型/同步、声源位置与同期空间；Voice Identity默认不投影。`音色特征`只在用户明确要求当前视频Prompt包含声音控制时条件输出最小Delta |
 | Cross-shot Risk | 反向提示词 | 永久固定禁BGM首句及本Clip真实高风险项；不存在音乐例外 |
 
 ## Per-Shot Projection Matrix
@@ -155,7 +155,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 | Composition / Director Patterns | 镜头/机位；画面描述；空间关系；镜头结尾状态 | 主体位置、前中后景、负空间、内框/遮挡/反射/引导线来源、焦点主次、变化过程与最终几何 |
 | Lighting / Color | 起始状态；画面描述；空间关系；道具状态；镜头结尾状态；主风格；环境一致性；反向提示词 | 光源、方向、光质、曝光、介质、颜色来源与层级、材质响应、起止光色状态及连续性；不新增光线或Color字段 |
 | Character Action / Performance | 起始状态；画面描述；人物动作与情绪；台词；音效；镜头结尾状态；人物一致性 | 刺激、注意/视线、主要面部与身体动作、呼吸、公开状态与泄漏、行动选择、强度、Settled State与连续性 |
-| Dialogue Performance | 人物动作与情绪；台词；音效；音色特征 | 准确台词、轻量表演、口型与空间声；声音身份只服从已经存在的Reference或Confirmed Voice Profile；两者都不存在时不得临时推导 |
+| Dialogue Performance | 人物动作与情绪；台词；音效 | 准确台词、当前情绪/力度/停顿/节奏/韵律、口型与空间声；不得把当前表演写成稳定Voice Identity，也不得因缺少Voice Profile而临时推导 |
 | Character Count | 人物一致性；画面描述；空间关系；反向提示词 | 每镜实际角色精确数量；唯一角色的正向唯一性和前中后景无第二个同类；复制、分身、镜像重复、背景第二个与相似替身禁令 |
 | Spatial / Blocking | 起始状态；空间关系；画面描述；镜头结尾状态；反向提示词 | A/B左右、前后景、朝向、视线、距离、路线、遮挡顺序、关系轴线、正脸/侧背许可、同景深许可及最终位置；追逐默认后追前逃并禁止并排合影 |
 | Prop | 起始状态；画面描述；道具状态；镜头结尾状态 | 当前World-State、形态、尺寸、持有者、左右手、位置、方向、悬浮许可、转换完成状态、物理变化过程和最终状态 |
@@ -200,7 +200,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否泄漏内部知识标题、模式ID、Ledger或SEQ/BEAT/COV/UNIT栏目。
 - 是否严格按Confirmed Clip Production Plan分组，每个Clip、每个分镜和每个字段都完整、顺序不变。
 - 是否因批量或篇幅压缩、共享、合并、删减、改名字段，或使用“同上/沿用前文/略”。
-- 是否正确保留`音色特征：`并执行Reference Override、Voice Profile Fallback、No Voice Asset或无对白四分支内容规则。
+- 用户未明确要求把声音控制写进当前视频模型Prompt时，是否完全省略`音色特征：`、Voice Profile、Voice/Audio Reference和声音资产状态文字；用户明确授权时，是否只输出当前Clip必要的最小声音控制Delta。
 - 是否只保留当前Clip有控制价值的信息；已由正式角色/环境/道具资产锁定的外观与结构是否只作最小确认，没有在人物一致性、环境一致性或逐镜正文中长篇重复。
 - 是否存在同义重复、跨字段机械复述、优先级不明，或互相冲突的机位/运动/动作/站位指令；冲突是否已消解或返回上游。
 - 重要抽象形容词是否具有至少一个可见或可听执行对应，并保留原情绪功能而非机械删除。
