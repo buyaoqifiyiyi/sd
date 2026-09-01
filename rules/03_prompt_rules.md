@@ -1074,7 +1074,7 @@ award winning。
 
 STATE-08最终Prompt只允许在固定字段`时长：`中写一次来自Confirmed Clip Production Plan的“平台生成时长：N秒”，且N必须为4—15秒。禁止写分镜时间码、单分镜时长、按秒动作区间、帧率或帧数；帧率和帧数仍只能作为Prompt外部平台参数。
 
-STATE-08格式必须逐Clip严格服从`templates/10_video_prompt.md`固定契约：每个Clip结构完全相同，Template当前定义的全部字段按顺序完整保留；不得因批量或篇幅压缩、合并、共享、删减或改名字段。内容过长时只在完整Clip之间自动分批。前置资产/首尾帧/声音身份等无条件语义与每个分镜的全部字段必须按Template完整输出，不得增加竞争字段。任何旧格式冲突以Template为最高优先级，输出前必须逐Clip执行字段完整性检查。
+STATE-08格式必须逐Clip严格服从`templates/10_video_prompt.md`固定契约：每个Clip结构完全相同，Template当前定义的无条件字段按顺序完整保留；条件字段只在Template的显式条件成立时出现，不得为了结构齐全输出空字段或状态占位。不得因批量或篇幅压缩、合并、共享、删减或改名无条件字段。内容过长时只在完整Clip之间自动分批。每个分镜的全部无条件字段必须按Template完整输出，不得增加竞争字段。任何旧格式冲突以Template为最高优先级，输出前必须逐Clip执行字段完整性检查。
 
 
 ---
@@ -1098,19 +1098,17 @@ STATE-08 Seedance提示词中的声音只可以包括：
 
 剧情内真实播放源或现场声。
 
-## Voice Reference Override Gate
+## Voice Identity Prompt Omission And Explicit Override
 
-每个Clip在编译声音文字前，必须先检查当前有对白角色是否已经由用户明确提供音色参考资产，或Active CHAR Version是否存在可用于当前目标模型的Confirmed Voice Audio Reference / Audio Reference / Voice Reference。
+STATE-08默认执行`Source Carries State, Prompt Carries Delta`：角色声音身份由外部音频资源、Confirmed Voice Profile或制作系统状态携带，常规视频Prompt不重复描述。用户没有明确要求把声音控制写进当前视频模型Prompt时：
 
-如果存在适用音色参考资产：
+- 不检查Voice Profile / Voice Reference是否存在，不把缺失视为错误；默认外部已有可用角色音色资源。
+- 即使存在Confirmed Voice Profile或Voice/Audio Reference，也不把它们列入`参考资产：`，不复制或改写Voice Profile，不输出`音色特征：`字段。
+- 不写“默认音色”“已有音色”“参考音色锁定”“未建立音色资产”“No Voice Asset”“无对白”等声音身份状态文案。
+- “台词”可保留准确文本与当前句/当前场景的必要Dialogue Performance，例如轻声、克制、短暂停顿、说到某词时加重；不得借此重定义pitch、timbre、resonance、vocal weight、音高、声线、音域、共鸣或音色质感。
+- “音效”只处理对白同步、声源位置/距离/遮挡、环境声、动作声、Foley、呼吸与声音尾部；不得承载Voice Identity。
 
-- 声音身份只由该Reference锁定；STATE-08不得再用文字重新定义角色音色。
-- 最终Prompt仍必须保留固定字段`音色特征：`，写明声音身份由Reference锁定且不得以文字重新定义；不得输出空字段、占位或“见参考资产”。
-- “台词”“音效”及其他字段不得出现Voice characteristics、音高、声线、音域、共鸣、语速、音色质感等描述，也不得把Confirmed Voice Profile换一种措辞重新写入。
-- “台词”只允许保留准确台词和必要的轻量表演指令，例如“轻声说”“无奈地说”“短暂停顿后说”；不得借表演指令重新规定声音身份。
-- “音效”仍可记录对白/口型同步、声源位置、距离、遮挡与同期声空间，并继续满足环境底声、同步前景声和声音尾部硬门槛。
-
-只有当前角色没有适用音色参考资产、但已经存在Confirmed Voice Profile时，才在`音色特征：`中投影必要的文字声音描述。两者都不存在且有对白时，必须写明未建立独立音色资产、本Clip不创建或推导声音身份，不得自动调用AUDIO模块或返回STATE-03。全段无对白时也必须保留字段并明确无对白。Candidate、未授权或与当前CHAR Version不一致的音频不得触发本Gate，除非用户明确把当前已提供资产指定为本次Voice Reference。
+只有用户当前请求明确要求“把声音/音色控制写进本次视频Prompt”、明确要求当前视频使用某Voice/Audio Reference，或给出无歧义同义授权时，才启用`音色特征：`条件字段，并只写当前模型执行所需的最小Delta：优先引用实际适用且获授权的Reference；用户明确要求文字控制时才提取必要Voice Profile特征。不得跨字段重复，不得自动调用AUDIO模块，不得把该授权外推到后续Clip。Candidate、未授权或与当前CHAR Version不一致的音频不得使用。
 
 每个“音效”字段必须同时具备：
 
@@ -1397,7 +1395,7 @@ Seedance适配知识：
 
 声音是否与当前镜头匹配。
 
-有适用音色参考资产时，是否保留非空`音色特征：`并声明由Reference锁定且不得文字重定义，同时删除其他字段中的全部文字音色重定义，只在台词层保留必要轻量表演指令；无适用音色参考资产但已有Confirmed Voice Profile时，是否以其作为文字回退；两者都不存在时是否使用`No Voice Asset`声明且没有自动触发AUDIO模块；全段无对白时是否仍保留字段。
+用户未明确要求把声音控制写进当前视频模型Prompt时，是否完全省略`音色特征：`、Voice/Audio Reference、Voice Profile及声音资产状态文案；用户明确授权时，是否只投影当前Clip所需的最小声音控制Delta且没有跨字段重复。Dialogue Performance是否只说明当前一句怎么说，没有重定义稳定Voice Identity，也没有自动触发AUDIO模块。
 
 每个Clip的“音效”是否只包含对白、环境声、动作声、呼吸、Foley和剧情内真实声源，且没有任何背景音乐、配乐、BGM、主题音乐、氛围音乐、歌曲、节拍或“无配乐”等说明。
 
