@@ -603,6 +603,9 @@ Module Type：STATE-08语义投影Knowledge。
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
 - 先执行Voice Identity Omission Gate：默认不检查或投影Voice Profile / Voice Audio Reference，不输出`音色特征：`或声音资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按`Source Carries State, Prompt Carries Delta`输出当前Clip最小必要控制
+- 风格标签行为只由`knowledge/prompt_compilation/state08_projection.md`的Style Label Expansion Rule拥有：重要标签可保留，首次出现必须在同一风格段获得项目特定、可执行解释；正式Style Source锁定后的连续Clip只补当前delta；具象化本身不是默认删除标签的理由
+- Repetition Pollution只由`knowledge/prompt_compilation/state08_projection.md`的Field Ownership Assignment / State Once Gate处理：每条约束先指定唯一权威字段，其他位置只保留状态变化、边界接口或局部高风险所需的最短Delta；Template字段完整不得被解释为全文重复授权
+- Negative Compression只保留固定禁BGM首句与当前Clip少量难以正向锁死的高风险类别；历史事故、其他Clip状态、未来泄漏、未出场资产、正文重复与同义枚举必须删除或合并
 
 禁止：
 
@@ -626,7 +629,7 @@ Module Type：跨镜头边界与转场选择Knowledge。
 
 - 先判定Continuous Handoff、Motivated Discontinuity或Unresolved Handoff，再选择一种主要转场技术
 - 记录Outgoing Anchor、Cut Point、Incoming Anchor、继承/重建状态、禁止提前动作与Direct Cut降级
-- 投影到上一G段前置【尾帧限制】、下一G段【首帧参考】、按空间/动作连续性条件决定的【参考资产】正式引用，以及“镜头结尾状态”“与下一镜衔接”和下一镜“起始状态”；跨场景时上一尾帧通常不进入下一段【参考资产】，只作人物与视觉连续性核对
+- 投影到上一G段前置【尾帧限制】、下一G段【首帧参考】、按空间/动作连续性条件决定的【参考资产】正式引用，以及上一镜“镜头结尾状态”和下一镜“起始状态”；跨场景时上一尾帧通常不进入下一段【参考资产】，只作人物与视觉连续性核对
 - 同期声音桥只使用对白、环境声、动作声、呼吸、Foley或剧情内声源
 - 同一Clip内使用逐镜状态链；跨Clip明确A/B/C。A/B在下一Package【参考资产】列统一`REF-TAIL`、对应用途与真实状态，缺图时标“待用户提供/待上传、未确认”，Prompt可交付但生成前补图；A使用Direct固定句，B明确另起新镜头且不使用该句；C不列`REF-TAIL`并使用Canonical资产、Spatial Blocking与文字End State承接或重建
 

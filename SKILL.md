@@ -7,9 +7,9 @@ description: AI影视虚拟制片生产系统，用于剧本改编与分析、�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.01-r6
+Skill Version: 2026.09.01-r9
 
-Build ID: sd-film-2026.09.01-r6
+Build ID: sd-film-2026.09.01-r9
 
 User-facing usage manual: `USER_GUIDE.md`.
 

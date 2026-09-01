@@ -94,9 +94,9 @@ Prompt Pollution不是“字数过长”的同义词。长Prompt只要信息有�
 
 以下十类只作为现有Prompt Attention / Control Allocation、连续性、资产、参数、风格与反向限制规则的统一诊断名称，不创建平行Workflow、最终字段或第二套Schema：
 
-1. **Repetition Pollution**：重复描述同一人物、环境、动作或风格；合并到一条最高价值指令。
+1. **Repetition Pollution**：重复描述同一人物、环境、动作或风格；先执行`knowledge/prompt_compilation/state08_projection.md`的Field Ownership Assignment / State Once Gate，为每条约束指定一个权威字段，再把其他位置压成真实状态变化、边界接口或局部高风险所需的最短Delta。Template字段完整不等于同一状态全文重复。
 2. **Conflict Pollution**：机位、运镜、动作、空间或状态互相冲突；按上游事实和当前Clip目标消解，无法消解则返回事实拥有者。
-3. **Abstract Pollution**：重要的导演名、流派名、题材名、情绪标签或审美大词没有可见/可听执行对应；执行Abstract-to-Executable Translation与Style Label Decomposition。
+3. **Abstract Pollution**：重要的导演名、流派名、题材风格名、情绪标签或审美大词孤立存在，或解释仍停留在另一组抽象词；执行Abstract-to-Executable Translation与Style Label Expansion。
 4. **Negative Pollution**：大段否定式提示激活不需要的概念或仍难稳定执行；能正向锁定的先改为Positive Target State。
 5. **Semantic Trigger Pollution**：用高共现大词调用模型默认视觉模板，带入当前Clip不存在的场景、服装、道具、天气或美术元素；执行Semantic Template Decomposition。
 6. **Asset Redescription Pollution**：正式角色、环境或道具参考已锁定后，正文仍长篇重述或与资产不一致；回到资产引用、当前状态与本Clip特有风险的最小确认。
@@ -105,7 +105,7 @@ Prompt Pollution不是“字数过长”的同义词。长Prompt只要信息有�
 9. **Style Stack Pollution**：同时堆叠过多导演、美术、摄影、渲染与质量标签而互相稀释；只保留彼此兼容且服务当前Clip的最小风格集合，并转译成具体行为。
 10. **Priority Pollution**：关键主体、动作、空间、镜头与状态承接被装饰性描述淹没；重新按本Rule的控制优先级组织。
 
-Semantic Template Decomposition不完全禁止“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等上游叙事/风格标签。进入最终Prompt前必须判断该词是在表达当前Clip必要身份，还是只在调用默认视觉包；若主要为后者，拆成当前Clip实际存在的人物、动作、场景、道具、服装、光线与声音。必要标签可以保留为上游意图，但最终执行控制必须由具体可见/可听元素承担。导演名、流派名、题材名、情绪标签与“电影感 / 高级感 / 治愈感 / 青春感”等审美大词的具体拆解算法统一由`knowledge/prompt_compilation/state08_projection.md`拥有，本Rule不复制载体清单。
+Semantic Template Decomposition不完全禁止“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等上游叙事/风格标签。进入最终Prompt前必须判断该词是在表达当前Clip必要身份，还是只在调用默认视觉包；若主要为后者，拆成当前Clip实际存在的人物、动作、场景、道具、服装、光线与声音。必要标签可以保留为上游意图，但最终执行控制必须由具体可见/可听元素承担。导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日”等审美大词的Style Label Expansion算法统一由`knowledge/prompt_compilation/state08_projection.md`拥有，本Rule不复制载体清单。
 
 
 ---
@@ -975,7 +975,9 @@ Camera Language必须服务于：
 
 导演名、影片名、流派名、题材名、情绪标签与审美大词首先视为上游风格意图或Knowledge Retrieval Label，不是模型必然精准复现的控制参数。不得只把“某导演式”“电影感”“高级感”“治愈感”“青春感”“黑帮感”“广告感”或类似标签加入最终Prompt。
 
-进入STATE-08前，重要风格标签必须按`knowledge/prompt_compilation/state08_projection.md`的Style Label Decomposition Rule转译为当前Clip少量高价值、可观察且可执行的style carriers。导演名若只用于知识检索或Reflection选择，优先留在内部Director Style Knowledge / Knowledge Application Reflection记录；如果具体carriers已完整表达意图，最终Prompt允许省略导演名。若最终Prompt确需保留导演名或流派名，必须同时存在具体carriers，标签不能单独承担执行控制。
+进入STATE-08前，重要风格标签必须按`knowledge/prompt_compilation/state08_projection.md`唯一拥有的Style Label Expansion Rule处理：标签可以保留；当它在最终Prompt中首次出现时，必须在紧跟文字或同一`主风格`段给出Project-specific Style Meaning与当前Clip少量高价值、可观察且可执行的style carriers。具象化后不得默认删除标签；标签完全冗余、与当前Clip无关、互相冲突或形成Semantic Trigger Pollution时允许省略，而不是强制省略。
+
+项目风格已由正式Visual Direction、Project Bible或Canonical视觉资产锁定时，后续连续Clip按`Source Carries State, Prompt Carries Delta`只补当前Clip差异和风险；未锁定、独立交付或含义发生变化时重新展开受影响部分。同一标签在同一Prompt中不得重复解释。
 
 风格信息始终低于主体、动作、空间、时间顺序、摄影机行为与状态承接；复杂动作Clip必须优先压缩风格描述，不得让风格标签或载体堆叠淹没执行信息。
 
@@ -1270,12 +1272,16 @@ Seedance适配知识：
 # Negative Prompt Boundary Rule
 
 
-逐镜的结尾稳定要求、禁止提前动作和合法衔接必须优先写成对应镜头的正向可执行约束。
+最终Seedance视频Prompt中，`反向提示词：`必须逐Clip且只出现一次，并由`templates/10_video_prompt.md`固定为当前Clip最后一个字段、最后一个段落；其后不得再出现分镜、说明、备注或其他正文。
 
-执行`Negative Constraint → Positive Target State`：优先描述画面应该是什么，而不是反复提及不应出现的概念。例如“不要下雨”优先改为“晴天，空气清透，阳光照亮地面”；“不要夸张表情”优先改为“表情克制，嘴角和眉眼只有轻微变化”。如果正向状态已经充分锁定，不再把同一要求重复塞进反向提示词。
+`主风格 / 人物一致性 / 环境一致性 / 参考区 / 各分镜字段`等位于其前的正文必须以正向、可执行、可观察的目标状态为主。通用的“禁止…… / 不要…… / 避免……”限制、生成错误规避项和跨字段适用的负向清单不得零散塞入正文，必须统一归并到末尾唯一的`反向提示词：`。
+
+执行`Negative Constraint → Positive Target State`：优先描述画面应该是什么，而不是反复提及不应出现的概念。例如“不要下雨”优先改为“晴天，空气清透，阳光照亮地面”；“不要夸张表情”优先改为“表情克制，嘴角和眉眼只有轻微变化”。“禁止夸张微笑、甜宠式表演、广告摆拍、MV慢动作与炫技运镜”应优先转成“表演克制含蓄，镜头调度简洁自然，优先服务人物关系与情绪留白”等正向执行要求；仍属当前Clip高风险且正向状态难以完全锁定的残余错误，才压缩后进入末尾反向提示词。如果正向状态已经充分锁定，不再把同一要求重复塞进反向提示词。
+
+唯一局部例外：某项约束若必须紧贴某个具体分镜动作、空间关系或物理连续性才能消除指代歧义或防止执行错误，允许在该分镜对应字段保留一条最小必要的约束性说明。仍优先写成正向持续状态，例如`左手持续握住伞柄，整个动作链保持左手持有`；只有正向句仍无法明确边界时才保留最短局部否定。该例外不得扩展成通用负向清单，也不得把同一通用限制复制到多个分镜；跨镜通用部分仍归入末尾唯一反向提示词。逐镜的结尾稳定、禁止提前动作和合法衔接属于此类局部边界，但必须保持最小、贴近受控动作并服务连续性，不能被机械移走导致执行不清。
 
 
-反向提示词只汇总当前生成段真正高风险的错误。
+反向提示词只汇总当前生成段真正高风险、难以通过正文正向状态完全锁定的错误。删除低价值、抽象化、与正文重复、同义重复或与当前Clip无关的项；历史事故物、其他Clip状态和未来情节默认删除，同类项按当前Clip失败类别合并压缩，且不得在篇幅或语义权重上压过主体、动作、空间、摄影机、时间顺序和状态承接。具体Negative Compression算法只由`knowledge/prompt_compilation/state08_projection.md`拥有，本Rule不复制类别表或阈值。
 
 “禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”是STATE-08永久平台边界，不受“只选项目高风险项”规则影响，必须作为【反向提示词】首个非空内容行保留，不存在任何省略或Clip例外。
 
@@ -1284,8 +1290,12 @@ Seedance适配知识：
 
 - 把每镜边界合同替换成一长串负面词
 - 在每个镜头重复相同负面限制
+- 在`主风格`、一致性字段或逐镜正文散布通用负向清单
+- 在同一Clip创建多个`反向提示词：`段，或在其后追加任何正文
 - 用反向提示词掩盖人物、空间、道具或剧情状态矛盾
 - 机械复制与当前项目无关的通用限制
+- 把已经正向锁定的要求在反向提示词中同义复述
+- 为压缩反向提示词而移走必须贴近具体动作、空间或物理连续性的最小局部约束
 
 
 反向提示词的最终位置和字段名称仍由当前阶段Template定义。

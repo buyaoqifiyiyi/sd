@@ -1279,7 +1279,7 @@ knowledge/prompt_compilation/state08_projection.md
 
 禁止为了让每个模块“看起来被使用”而增加不存在的内容；但任何已确认且适用的模块都不得在Template Mapping时丢失。
 
-完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并按`原始创作意图 → 识别抽象词与语义模板 → 具象化 → 否定转肯定 → 检查已锁定参考资产 → 删除重复 → 消除冲突 → 删除/压缩无效精密参数 → 删除跨镜头残留 → 检查主体/动作/空间/镜头/时间状态 → Prompt Compression → Final Clip Prompt`清洗。重要抽象语义至少落到一个可见/可听项；导演名、流派名、题材名、情绪标签与审美大词按Style Label Decomposition从当前Clip选择3—5个（或更少）高价值style carriers，carriers足够时省略导演名；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。
+完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并严格调用`knowledge/prompt_compilation/state08_projection.md`唯一拥有的Compiler链：`Source / Asset State Resolution → Field Ownership Assignment → Positive Specification → Local Constraint Retention → Duplicate Merge → Voice Field Gate → Negative Consolidation → Negative Compression → Prompt Compression → Final QA`。先为每条约束指定权威字段，再去重和压缩；不得先在多个字段全文重复，再交给反向段兜底。重要抽象语义至少落到一个可见/可听项；导演名、流派名、题材风格名、情绪标签与审美大词按唯一Style Label Expansion Rule执行`Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`，首次出现同段解释，标签可保留且不因具象化默认删除；展开后的carriers使用正向执行语言。后续已锁定Style Source只补当前delta；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。正文中的通用`禁止 / 不要 / 避免`清单必须归入末尾唯一反向段；只有必须贴近特定动作、空间或物理连续性才能保持指代清楚的最小局部约束可以留在对应分镜字段。
 
 
 ## Knowledge Application Reflection Layer
@@ -1292,7 +1292,7 @@ knowledge/prompt_compilation/state08_projection.md
 4. 检查所选候选是否会造成炫技、重复、复杂度过高、资产/风格漂移、轴线/边界破坏、连续性冲突或Seedance执行不稳；不通过即Reject或降级。
 5. 把所选策略转译成摄影机起点/路径/触发/终点、构图空间来源与前中后景关系、综合色彩来源与层级、光源与受光、可见表演节拍、具体声源与尾部、节奏/切点/继承或稳定降级等可执行描述，再映射到Template现有字段。
 
-STATE-07的Knowledge Opportunity Notes只能作为线索，不能替代本步骤的重新判断；Director Decision Notes则是不可被候选Knowledge反向改写的方向约束。最终Prompt禁止只写“使用Side Tracking”“使用某导演风格”“压迫构图”“电影感光线”等知识名称或抽象标签；导演名若只作检索应留在内部，最终只从相关知识中选择当前Clip必要的3—5个（或更少）style carriers，并写成模型能观察、执行和验证的具体行为。
+STATE-07的Knowledge Opportunity Notes只能作为线索，不能替代本步骤的重新判断；Director Decision Notes则是不可被候选Knowledge反向改写的方向约束。最终Prompt禁止只写“使用Side Tracking”“使用某导演风格”“压迫构图”“电影感光线”等知识名称或抽象标签；导演名可以保留，但重要名称首次出现时必须在同一风格段说明本项目含义，并从相关知识中选择当前Clip必要的3—5个（或更少）style carriers，写成模型能观察、执行和验证的具体行为。
 
 禁止只根据剧情平铺直叙生成Prompt。禁止在没有当前Clip叙事理由与上游决策依据时，默认退化为“缓慢推进 + 轻微横移 + 低饱和冷暖对比”的单一安全写法。必须逐Clip判断色调、运镜、构图、表演、声音与剪辑节奏中哪些维度能真正服务当前段落；最合适的导演决策也可以是克制、静止、简单、少动，但必须把这种克制写成可执行的空间、表演、声音与稳定结尾约束。
 
@@ -2182,6 +2182,8 @@ knowledge/sound_language/
 
 剧情内真实播放源或现场声。
 
+雨声、风声、纸张、脚步、衣料、道具、乐器声和其他环境/动作声始终属于Sound Design，进入各分镜`音效`与声音尾部；不得因它们具有“声音特征”而启用或填充`音色特征：`。
+
 
 角色有对白、旁白、画外音、通话或呼喊时：
 
@@ -2754,6 +2756,8 @@ Template需要的数据。
 
 当前镜头所需的全局视觉信息副本。
 
+在准备任何字段文案前，先按`knowledge/prompt_compilation/state08_projection.md`为每条约束建立一次性内部Ownership Map：记录规范化状态、唯一权威字段、允许出现的边界Delta与删除的重复位置。该Map不成为最终栏目。`人物一致性`只接收长期身份，`环境一致性`只接收场景结构与环境基线；Clip临时左右/坐姿/距离/共用物体/动作次数/道具接触进入首帧或对应逐镜字段。首帧→首镜、相邻镜结尾→起始、末镜→尾帧只保留可复算所需的最短边界重合。
+
 已通过的Clip Preflight语义副本：连续性三选一主分类；逐分镜World-State；角色精确数量与唯一性；追逐/战斗/多人空间构图；关键道具形态/尺寸/持有/悬浮/转换状态；适用转场五要素。该副本只用于把语义映射到现有字段，不成为新栏目。
 
 `参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`、适用的Accepted Canon State与当前Continuity Risks，按身份/外观、空间结构、道具造型、A/B状态锚定、Motion、Camera、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、合法首尾帧与其他确定需要实际投喂的视觉参考图。Voice/Audio Reference默认不列；只有用户明确要求当前视频模型使用它进行声音控制时，才作为非视觉Source最小列出。每个入选Reference必须写明唯一Primary Role / Purpose、所解决风险和锁定约束，并遵守Reference Authority Hierarchy：Transient / Motion / Camera / Audio Reference只控制授权维度，不得覆盖正式角色身份、环境结构或道具造型；尾帧脸部漂移时仍由Active Character Canonical Reference控制身份，只继承合法姿态/站位/动作阶段。不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
@@ -2784,7 +2788,7 @@ Template需要的数据。
 
 每个镜头的声音。
 
-每个有对白角色只准备准确台词、当前Dialogue Performance与同期声空间。默认不检查声音身份Source，也不准备`音色特征：`。只有用户明确要求把声音控制写进当前视频模型Prompt时，才准备适用Reference映射或Confirmed Voice Profile的最小Delta；没有适用Source时直接省略，不推导、不补齐、不写状态声明。
+每个有对白角色只准备准确台词、当前Dialogue Performance与同期声空间。雨声、风声、纸张、脚步、道具、乐器声和其他Sound Design只准备到各分镜`音效：`。默认不检查声音身份Source，也不准备`音色特征：`。只有用户明确要求把声音控制写进当前视频模型Prompt时，才准备适用Reference映射或Confirmed Voice Profile的最小Delta；没有适用Source时直接省略，不推导、不补齐、不写状态声明。
 
 每个镜头的剪辑。
 
@@ -2802,7 +2806,7 @@ Template需要的数据。
 
 当前段的新尾帧结束状态，以及实际生成、提取并确认后的资产名`REF-TAIL-XX｜CLIP-XX尾帧参考`；按下一Clip的A/B/C标记`Tail Frame Required = YES / NO`，再记录用途为同镜头连续承接、空间/站位/景别参考、待用户提供/待上传且未确认、不使用尾帧并以Canonical资产/Spatial Blocking/文字规则重建，或最终收束。
 
-当前段独立`反向提示词：`；首个非空内容行永久固定逐字为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”，不得省略、改写或后移。
+当前段唯一且位于最终末尾的`反向提示词：`；首个非空内容行永久固定逐字为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”，不得省略、改写或后移；其后不得准备或传递任何正文。
 
 连续性约束。
 
@@ -2837,6 +2841,8 @@ Ledger只用于防止语义丢失，禁止原样输出。
 - 已由Active角色/环境/道具资产锁定的外观与结构，只保留资产引用、当前状态、不得改变项和本Clip特有风险，不复制成长篇设定；
 - 发现互相冲突的机位/运镜/动作/站位/光线/时间指令时选择唯一合法表达，不能消解则返回事实拥有者；
 - 把孤立抽象词转成可见/可听执行项；把无视觉收益的工程级小数压缩为模型可执行的关系、速度感、约时长、约角度或景别变化；
+- 扫描正文中的通用`禁止 / 不要 / 避免`约束：能正向化的改写为目标状态，其余跨字段通用高风险项统一移入末尾唯一`反向提示词：`；只保留必须贴近具体动作、空间关系或物理连续性的最小局部约束，且不得扩展成负向清单；
+- 压缩反向提示词中的正文重复、低价值、抽象化和同义项，确认其不比主体、动作、空间、摄影机、时间顺序和状态承接更抢权重；
 - 确认主要主体、动作、空间、摄影机路径、时间顺序和结束状态比装饰性风格词与器材名更清楚。
 
 Compression只减低价值重复，不得删Template字段、写“同上”、丢失Applicable Knowledge或改变已确认上游事实。
@@ -3388,15 +3394,21 @@ UNIT顺序、Entry / Exit Anchor、State Ledger与Retry Boundary没有被改写�
 
 - 最终内容是否只保留对当前Clip有实际控制价值的信息；提示词长度没有被当作质量指标，也没有声称可以精准设置模型内部交叉注意力数值。
 - 正式角色/环境/道具参考已经锁定的外观与结构是否只作最小确认，没有在`人物一致性 / 环境一致性 / 逐镜正文`中长篇复述。
+- 是否已为每条约束指定唯一权威字段；同一临时状态在两个以上字段的出现是否确由状态变化、边界接口或局部高风险产生，并已压成最短Delta；人物一致性与环境一致性是否没有重新承接Clip临时blocking。
 - 是否存在同义重复、跨字段机械复述、互相冲突或优先级不明的机位/运动/动作/站位/光线指令。
-- 文学化、情绪化或导演化的重要描述是否至少有一个人物、环境、光线、摄影机、声音或时间状态的执行对应；导演名、流派名、题材名、情绪标签与审美大词是否进一步拆成当前Clip必要的3—5个（或更少）高价值style carriers。
+- 文学化、情绪化或导演化的重要描述是否至少有一个人物、环境、光线、摄影机、声音或时间状态的执行对应；导演名、流派名、题材风格名、情绪标签与审美大词是否按`Style Label → Project-specific Style Meaning → Executable Style Carriers`展开，首次出现同段解释，并只选择当前Clip必要的3—5个（或更少）高价值carriers。
 - 能以正向目标状态锁定的要求是否已从否定式改写；反向提示词是否除固定禁BGM首句外，只保留少量正向定义仍难锁死的当前高风险项。
-- “创业 / 约会 / 学生 / 婚礼 / 医院 / 黑帮 / 赛博朋克 / 日系青春”等高共现大词是否经过Semantic Template Decomposition，没有无依据带入默认场景、服装、道具、天气、美术、光源或人物动作；导演名若只作知识检索是否留在内部，具体carriers已足够时名称是否已删除。
+- 每个Clip是否只有一个`反向提示词：`且位于最终末尾，其后没有说明、备注、分镜或其他字段。
+- `主风格 / 人物一致性 / 环境一致性 / 参考区 / 各分镜正文`是否仍散落通用`禁止 / 不要 / 避免`清单；是否仍有可正向化却保留为否定句的内容。
+- 反向提示词是否与正文重复、同义堆叠、过长或抢占主体/动作/空间/摄影机/时间状态与Handoff权重。
+- 反向提示词是否已删除历史事故物、其他Clip状态、未来剧情泄漏和未出场资产，并把同义项合并为当前Clip少量高风险类别。
+- 必须紧贴某个具体动作、空间关系或物理连续性的最小局部约束是否保留在正确分镜字段、指代清楚且没有扩展成通用清单。
+- “创业 / 约会 / 学生 / 婚礼 / 医院 / 黑帮 / 赛博朋克 / 日系青春”等高共现大词是否经过Semantic Template Decomposition，没有无依据带入默认场景、服装、道具、天气、美术、光源或人物动作；标签是否只在完全冗余、无关、冲突或形成Semantic Trigger Pollution时省略，而不是具象化后默认删除。
 - 数字是否按视觉控制价值使用；是否删除或降精度了0.137m/s、0.166m/s²、53mm等无额外可见收益的工程数据；是否没有把生成模型表述成严格物理仿真器。
 - Five-Dimensional Prompt Control Matrix是否只填补未锁定且当前Clip确需控制的维度，没有成为最终新栏目。
 - 是否已先完成Generation Budget Allocation：Primary Spend唯一清楚，Secondary最多一至两个且服务Primary，Economized明确降低非必要负荷；是否没有把身份、复杂动作、高密场景、复杂运镜、群体、口型、FX与光色变化同时拉满；三类标签没有进入最终Prompt。
 - 是否完整保留当前Clip真正变化的主要动作、顺序、中间变化、结束状态与首尾承接；这些高优先级信息是否比装饰性风格词和器材名更清楚。
-- 是否删除了其他镜头/Clip的动作、机位、状态与风格残留，只保留合法继承项；是否没有同时堆叠互相稀释的导演、美术、摄影与渲染风格；风格信息是否已压缩到不抢占主体、动作、空间、时间顺序、摄影机路径与状态承接的最小集合。
+- 是否删除了其他镜头/Clip的动作、机位、状态与风格残留，只保留合法继承项；是否没有同时堆叠互相稀释的导演、美术、摄影与渲染风格；同一标签是否只解释一次，后续已锁定项目风格是否只补当前delta；动作复杂Clip的风格信息是否已压缩到1—3项或更少且不抢占主体、动作、空间、时间顺序、摄影机路径与状态承接。
 - 是否遵守Clip Scope Firewall：`already_happened`未重播，只执行`this_clip_only`的主要可见Beat并形成改变后的Endpoint，`reserved_for_later`与`do_not_show_yet`没有提前进入画面。
 
 失败只修当前Clip的转译、冲突或压缩；若根因来自上游事实矛盾，按Error Routing返回对应拥有者。
@@ -3452,6 +3464,8 @@ templates/10_video_prompt.md
 validate_sd_film.py state08 <video-prompt.md> --clip-plan <confirmed-clip-plan.md>
 
 默认命令只允许当前一个Clip Prompt Package。只有用户在当前请求中明确授权“全部输出 / 一次性输出 / 批量输出 / 连续输出多个Clip”时，才追加`--batch-output`；用户只说“下一个 / 下一步 / 继续”时禁止追加该开关。
+
+默认命令同时拒绝任何`音色特征：`、Voice Profile或Voice/Audio Reference序列化。只有用户当前请求明确授权把声音控制写进本次视频模型Prompt时，才追加`--allow-voice-control`；环境声、动作声、Foley、乐器声、角色有对白、既有Voice资产或历史授权均不得触发该开关。
 
 未提供Confirmed Clip Production Plan、任一G段时长与Clip表不一致、任一Clip超出4—15秒或任一“音效”缺少正向可听内容时，不得交付。
 

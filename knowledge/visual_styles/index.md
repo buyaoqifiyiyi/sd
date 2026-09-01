@@ -24,13 +24,13 @@
 
 STATE-04确认混合风格后，必须在Project Bible持久化Primary Style Logic、Secondary Borrowed Traits、Rejected Conflicts与最终主摄影/光线/剪辑体系。
 
-导演名和影片名是：
+导演名和影片名首先是：
 
 ```text
 Knowledge Retrieval Labels
 ```
 
-不是：
+但单独出现时不是完整的：
 
 ```text
 Final Production Language
@@ -94,7 +94,7 @@ Final Production Language
 | 色彩权力、仪式群像、东方空间、身体阵列与个体反抗 | 张艺谋 | 用主色系统、阵列和材质把社会秩序转成可见关系 |
 | 家庭群像、阶层、黑色喜剧、秘密空间和类型突然转调 | 奉俊昊 | 用楼层、门槛、路线和环境机制产生社会因果 |
 
-当用户只提供抽象描述而未说导演名时，可按上表进行知识检索，但输出仍只使用可执行特征。
+当用户只提供抽象描述而未说导演名时，可按上表进行知识检索。最终输出可保留用户的高层风格标签，但重要标签首次出现时必须同时给出项目特定含义与可执行特征。
 
 ---
 
@@ -243,9 +243,9 @@ STATE-08 将已确认的 Shot Design 和 Visual Direction 转换为 Seedance 可
 低频环境震动先于结构变化出现。
 ```
 
-导演名可在内部检索记录中保留，但【主风格】和各分镜字段应优先写上述可执行特征。
+导演名可在内部检索记录与最终Prompt中保留；最终【主风格】负责在重要标签首次出现时完成项目特定解释，各分镜字段只写当前镜头需要的具体变化，不重复整段解释。
 
-对每个当前Clip，先从导演知识中提取候选，再按`knowledge/prompt_compilation/state08_projection.md`只选择3—5个（或更少）最有价值且彼此兼容的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers。不得机械复制导演文件全部维度；具体carriers足够时省略导演名，保留名称时也必须与carriers并存。
+对每个当前Clip，先从导演知识中提取候选，再按`knowledge/prompt_compilation/state08_projection.md`唯一的Style Label Expansion Rule形成`Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`，只选择3—5个（或更少）最有价值且彼此兼容的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers。不得机械复制导演文件全部维度；名称可以保留，完全冗余时允许省略，但不以“carriers已足够”为默认删除理由。
 
 STATE-08 最终 Schema 唯一来源：
 
@@ -420,6 +420,8 @@ ARRI + RED + IMAX + Anamorphic + Cooke + 8K + award winning
 - [ ] 已说明风格服务的剧情功能。
 - [ ] 已提取该导演与其他导演的明确区分点。
 - [ ] 已将抽象词转成可观察、可执行的影视语言。
+- [ ] 最终Prompt中的重要风格标签首次出现时已获得项目特定解释，同一Prompt没有重复展开。
+- [ ] 后续连续Clip只在正式Style Source已锁定时使用标签/风格锚点 + 当前delta。
 - [ ] 未改变已确认角色、环境和道具资产。
 - [ ] 未机械堆叠器材和参数。
 - [ ] 未用复杂运镜代替叙事。
@@ -436,8 +438,9 @@ ARRI + RED + IMAX + Anamorphic + Cooke + 8K + award winning
 Visual Styles Knowledge 的目标不是让输出更像“某个名字”，而是让抽象参考成为可执行的电影决策：
 
 ```text
-导演标签用于检索
-→ 风格知识用于拆解
+导演标签用于检索，也可保留为创作锚点
+→ 风格知识建立项目特定含义
+→ 当前Clip选择可执行载体
 → STATE-04 建立统一视觉方向
 → STATE-06 设计具体镜头
 → STATE-08 转换为 Seedance 可执行信息

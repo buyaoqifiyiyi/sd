@@ -43,7 +43,7 @@ Knowledge不是必须填满的清单。只有能够明显增强当前Clip的叙�
 
 Director Decision Notes、剧本或用户输入中的文学化、情绪化与导演化表达可以保留为上游意图，但不能作为孤立形容词直接结束转译。每个会影响当前Clip的重要抽象描述，必须在不改变原意的前提下，至少落到一种可见或可听执行项：人物行为/微表情、环境变化、光线变化、摄影机行为、具体声音或时间状态。
 
-导演名、影片名、流派名、题材名、情绪标签与审美大词只作为内部检索/意图标签参与机会扫描，不默认投影到最终Prompt。本层应先从Director Style Knowledge中提取候选特征，再交给`knowledge/prompt_compilation/state08_projection.md`按当前Clip选择3—5个（或更少）高价值style carriers；carriers足够时省略导演名，名称保留时也不得脱离具体执行语义。
+导演名、影片名、流派名、题材风格名、情绪标签与审美大词既可作为内部检索/意图标签，也可作为最终Prompt中的高层创作锚点。本层先从Director Style Knowledge中提取候选特征并形成Project-specific Style Meaning，再交给`knowledge/prompt_compilation/state08_projection.md`按当前Clip选择3—5个（或更少）高价值style carriers。最终是否保留名称由该唯一Expansion Rule判断；不得把“carriers已经具体”解释成默认删除名称。
 
 转换时采用：`保留情绪功能 → 找到可观察证据 → 写出起止与变化 → 检查复杂度和连续性`。例如“宿命感”不能只保留为风格标签；可根据已确认事实转译为人物保持静止而背景持续运动、摄影机一次缓慢靠近、冷色环境保持、人物停顿后垂眼或持续声音压低等一项或多项具体手段。示例只说明转译方法，不授权自动添加冷色、推进或人物动作。
 
@@ -67,7 +67,7 @@ Director Decision Notes、剧本或用户输入中的文学化、情绪化与导
 | Performance | 注意、视线、呼吸、面部/身体动作、控制/泄漏或距离变化能否让情绪过程可见？ | 明确刺激→注意变化→最少可见反应→行动选择→稳定状态；不得只写“悲伤、克制、感动” |
 | Sound | 环境底声、同步Foley/动作声/呼吸/对白或剧情内声源能否强化空间、动作和情绪节奏？ | 明确声源、距离、同步点与声音尾部；背景音乐不进入STATE-08正向声音设计 |
 | Editing Rhythm | Clip内动作、停顿、视线或声音节拍，以及跨Clip边界，能否通过切点、出入镜锚点、同期Sound Bridge或Direct Cut更清楚？ | 明确节拍落点、Outgoing Anchor、Cut Point、Incoming Anchor、继承/重建方式与降级；不得把普通运镜当转场 |
-| Director Style | 已确认的导演/影片/类型风格是否有可转译、且不依赖姓名标签的行为特征？ | 从Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere中只筛选当前Clip必要的3—5项（或更少）；最终Prompt不得只写导演名字或“某某风格”，carriers足够时省略名称 |
+| Director Style | 已确认的导演/影片/类型风格在本项目中具体意味着什么，哪些特征对当前Clip有控制价值？ | 形成`Style Label → Project-specific Style Meaning → Executable Style Carriers`，从Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere中只筛选当前Clip必要的3—5项（或更少）；名称可保留，但首次出现必须得到可执行解释 |
 | Continuity | 哪些人物、资产、空间、动作、光态、色态、声音或尾帧状态需要显式继承/重建？ | 写出可核对的起始状态、结束状态、轴线/左右/道具/情绪锚点和下一镜关系 |
 | Seedance Stability | 哪个知识策略在当前时长和负荷内可稳定执行？需要何种简化或降级？ | 保留一个主要摄影机路径、有限动作事件、清楚身份与空间、低动作稳定结尾；必要时删辅助、降速、缩短路径、固定机位或返回拆分 |
 
@@ -112,6 +112,6 @@ Director Decision Notes、剧本或用户输入中的文学化、情绪化与导
 - 已选择1—3项最有价值策略，并且每项都有具体执行语句落点；其中可以包含有明确收益的克制 / 稳定策略。
 - 可用知识没有因惯性模板而完全消失；不适用知识也没有被强行填充。
 - 没有只写知识名、导演名、模式ID或抽象美学标签。
-- 重要风格标签已拆成当前Clip少量高价值carriers；没有机械填满维度、引入默认场景包，或在具体carriers足够时继续保留冗余导演名。
+- 重要风格标签已形成项目特定含义和当前Clip少量高价值carriers；首次出现有解释、同一Prompt不重复解释、后续已锁定风格只补delta，且没有机械填满维度或引入默认场景包。
 - 没有知识堆砌、相互冲突、动作/摄影机过载、剧情/资产/连续性破坏或Seedance难执行。
 - 最终只输出`templates/10_video_prompt.md`拥有的内容。

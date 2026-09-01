@@ -22,7 +22,7 @@ VALID_SOUND = "环境底声：室内空调低频底噪与轻微房间反射；�
 
 def valid_global_section(section: str) -> str:
     if section == "参考资产：":
-        return "参考资产：CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。"
+        return "参考资产：CHAR-001@v001角色资产；用途：锁定人物身份、脸型、发型与服装并保持一致。"
     return f"{section}有效内容"
 
 
@@ -40,7 +40,7 @@ def make_state08_global_sections(
 ) -> str:
     previous_token = f"[G{package_number - 1:02d}尾帧]"
     if reference is None:
-        reference = "CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。"
+        reference = "CHAR-001@v001角色资产；用途：锁定人物身份、脸型、发型与服装并保持一致。"
         if package_number > 1:
             reference += f"\n{previous_token}合法尾帧；用途：直接作为本段首帧；锁定空间、动作、道具、光色与摄影机边界。"
     if first_frame is None:
@@ -537,8 +537,11 @@ Next Workflow: Project Setup Workflow
             "Optics & Camera Choreography",
             "Timeline & State Evolution",
             "Aesthetic Medium & Rendering",
-            "Style Label Decomposition Rule",
+            "Style Label Expansion Rule",
             "Executable Style Carrier Rule",
+            "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression",
+            "具象化后不得默认强制删除",
+            "Style State And Delta Compression",
             "默认选择3—5个",
             "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt",
             "Blender / Unreal式严格物理仿真",
@@ -553,49 +556,67 @@ Next Workflow: Project Setup Workflow
             "R15-A Literary Camera Intent",
             "R15-B Over-Engineered Camera Data",
             "R15-C Canonical Assets Free Prompt Attention",
-            "R15-D Director Label Decomposition",
-            "R15-E Abstract Premium Label",
-            "R15-F Action-Heavy Clip Style Compression",
+            "R15-D Director Style Label Expansion",
+            "R15-E Cinematic Live-action Label Expansion",
+            "R15-F Stable Project Style Delta",
+            "R15-G Action-Heavy Clip Style Compression",
             "镜头像终于鼓起勇气一样靠近她",
             "0.137m/s",
             "CHAR-001@v003",
             "岩井俊二式青春电影氛围",
-            "画面要有高级感",
+            "电影级真人青春短片质感",
         ):
             self.assertIn(marker, regression)
-        case_d = regression.split("### R15-D Director Label Decomposition", 1)[1].split(
-            "### R15-E Abstract Premium Label", 1
+        case_d = regression.split("### R15-D Director Style Label Expansion", 1)[1].split(
+            "### R15-E Cinematic Live-action Label Expansion", 1
         )[0]
         for marker in (
-            "内部Director Style Knowledge检索标签",
+            "可以保留`岩井俊二式青春电影氛围`",
+            "Project-specific Style Meaning",
             "3—5个（或更少）高价值carriers",
-            "最终Prompt不只剩导演名",
-            "省略“岩井俊二式”",
-            "不得自动加入校园、校服、樱花、海边、夏日奔跑",
+            "名称完全冗余时允许省略",
+            "具象化后不默认删除",
+            "规定carriers足够后必须删除导演名",
         ):
             self.assertIn(marker, case_d)
-        case_e = regression.split("### R15-E Abstract Premium Label", 1)[1].split(
-            "### R15-F Action-Heavy Clip Style Compression", 1
+        case_e = regression.split("### R15-E Cinematic Live-action Label Expansion", 1)[1].split(
+            "### R15-F Stable Project Style Delta", 1
         )[0]
         for marker in (
-            "Composition / Texture / Lighting / Color",
-            "3—5个（或更少）具体carriers",
-            "单一有来源的侧光",
-            "有限色彩和受控高光",
-            "不要求机械同时采用全部示例",
+            "可以保留`电影级真人青春短片质感`",
+            "真实演员自然肤质与皮肤细节",
+            "自然曝光关系和真实暗部层次",
+            "浅景深",
+            "轻微胶片颗粒",
+            "受控高光或克制的镜头动态",
         ):
             self.assertIn(marker, case_e)
-        case_f = regression.split("### R15-F Action-Heavy Clip Style Compression", 1)[1].split(
+        case_f = regression.split("### R15-F Stable Project Style Delta", 1)[1].split(
+            "### R15-G Action-Heavy Clip Style Compression", 1
+        )[0]
+        for marker in (
+            "Source Carries State, Prompt Carries Delta",
+            "只补",
+            "当前delta与风险",
+            "不复制CLIP-001的完整",
+            "正式Style Source不可访问或含义发生变化",
+        ):
+            self.assertIn(marker, case_f)
+        case_g = regression.split("### R15-G Action-Heavy Clip Style Compression", 1)[1].split(
             "## R16 Delta / Budget / Scope / Canon / Authority / Retake", 1
         )[0]
         for marker in (
             "主体、动作、空间、时间顺序、摄影机路径、道具状态与Handoff优先",
-            "1—3个高价值carriers",
-            "其余导演名、审美词与装饰性材质描述在Prompt Compression中删除",
+            "1—3个或更少高价值carriers",
+            "一个仍有统一锚定价值的重要标签可以保留",
+            "具象化后默认删除导演名",
             "固定Template字段仍完整",
             "以压缩为由删除Template字段",
         ):
-            self.assertIn(marker, case_f)
+            self.assertIn(marker, case_g)
+        for content in files.values():
+            self.assertNotIn("具体carriers已足够时名称是否已删除", content)
+            self.assertNotIn("其余导演名、审美词与装饰性材质描述在Prompt Compression中删除", content)
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
     def test_global_runtime_rules_are_installed(self) -> None:
@@ -926,6 +947,112 @@ REV-0001
             path.write_text(f"{global_text}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
 
+    def test_state08_positive_first_body_and_single_final_negative_prompt_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            global_text = make_state08_global_sections(1, 1, "1", "10").replace(
+                "主风格：电影级写实，自然光，克制表演",
+                "主风格：岩井俊二式潮湿夏日青春气质；柔散自然窗光、低饱和灰绿与米白色关系、安静观察式摄影、克制含蓄表演与简洁自然镜头调度。",
+            )
+            fields = make_shot_fields()
+            ending = (
+                f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}\n"
+                "禁止广告式摆拍与无动机炫技运镜。"
+            )
+            path.write_text(f"{global_text}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
+    def test_state08_generic_negative_constraint_in_body_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            global_text = make_state08_global_sections(1, 1, "1", "10").replace(
+                "主风格：电影级写实，自然光，克制表演",
+                "主风格：禁止夸张微笑、甜宠式表演、广告摆拍、MV慢动作与炫技运镜。",
+            )
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
+
+    def test_state08_negative_prompt_must_be_final_field_and_paragraph(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            global_text = make_state08_global_sections(1, 1, "1", "10")
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}\n\n说明：后续继续补充正文。"
+            path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
+
+    def test_state08_local_physical_continuity_positive_constraint_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            global_text = make_state08_global_sections(1, 1, "1", "10")
+            fields = make_shot_fields().replace(
+                "道具状态：本镜头无关键道具变化。",
+                "道具状态：左手持续握住伞柄，整个动作链与结尾状态均保持左手持有。",
+            )
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜1\n{fields}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
+    def test_state08_clip03_state_once_voice_omission_and_compressed_negative_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            reference = (
+                "1. CHAR-001@v001角色资产；用途：锁定林夏身份与外观。\n"
+                "2. CHAR-002@v001角色资产；用途：锁定许栀身份与外观。\n"
+                "3. ENV-002@v001环境资产；用途：锁定旧音乐教室、钢琴、唯一横向长琴凳与窗户结构。\n"
+                "4. PROP-001@v001道具资产；用途：锁定乐谱纸张尺寸与材质。\n"
+                "5. REF-TAIL-02｜CLIP-02尾帧参考；用途：同镜头连续承接用途，锁定起始姿态、左右与构图。"
+            )
+            first_frame = (
+                "视觉连续；A Direct；Tail Frame Required = YES；"
+                "以 REF-TAIL-02｜CLIP-02尾帧参考 为直接承接依据起镜。"
+                "林夏在左、许栀在右，共同坐在唯一一张横向长琴凳；摄影机位于轴线同侧，"
+                "中景保持教室、钢琴、窗户与阴雨柔光，乐谱位于钢琴边缘，动作从姿态调整前开始。"
+            )
+            global_text = make_state08_global_sections(
+                3,
+                3,
+                "1、2、3",
+                "12",
+                title="落下的乐谱与四个单音",
+                reference=reference,
+                first_frame=first_frame,
+            ).replace(
+                "人物一致性：CHAR-001身份、脸型、发型、服装和身体比例保持一致",
+                "人物一致性：CHAR-001与CHAR-002的身份、年龄感、发型、服装和身体比例保持一致",
+            ).replace(
+                "环境一致性：已确认环境结构、轴线、背景与光线方向保持一致",
+                "环境一致性：ENV-002旧音乐教室结构、唯一横向长琴凳、阴雨天气与柔散窗光保持一致",
+            )
+            fields_1 = make_shot_fields(
+                "Continuous Handoff：同一Clip连续生成到分镜2，继承共坐状态。",
+                sound="雨声与风声形成环境底声；同步动作声为衣料与木质轻响；声音尾部持续承接。",
+                start_state="第一帧来源：直接继承REF-TAIL-02｜CLIP-02尾帧参考的左右、姿态、道具与轴线。",
+            ).replace("人物抬眼看向画面右侧，随后停稳。", "两人完成姿态调整，双脚落地并形成正常并排坐姿。")
+            fields_2 = make_shot_fields(
+                "Continuous Handoff：同一Clip连续生成到分镜3，乐谱留在地面。",
+                sound="雨声与风声形成环境底声；同步动作声为纸张滑动与落地轻响；声音尾部持续承接。",
+                start_state="第一帧来源：继承分镜1结尾的并排坐姿、左右、道具与轴线。",
+            ).replace("人物抬眼看向画面右侧，随后停稳。", "乐谱滑落到木地板，两人同步低头后重新看向窗外，乐谱留在地面。")
+            fields_3 = make_shot_fields(
+                sound="雨声形成环境底声；同步动作声为四个有明显停顿的轻短钢琴单音；声音尾部以雨声收束。",
+                start_state="第一帧来源：继承分镜2结尾的共坐状态、左右、地面乐谱与轴线。",
+                end_state="四个独立单音完成，人物与乐谱状态稳定；主体清楚可读，可作为下一Clip接口。",
+            ).replace("人物抬眼看向画面右侧，随后停稳。", "林夏与许栀交替各按两次单键，完成四个独立单音后停稳。")
+            ending = (
+                f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}\n"
+                "座椅结构分裂或人物左右互换、人物离座或拾取乐谱、肢体异常、演奏范围自动扩展、"
+                "人物身份或环境结构漂移、夸张表演或炫技摄影。"
+            )
+            prompt = f"{global_text}\n分镜1\n{fields_1}\n分镜2\n{fields_2}\n分镜3\n{fields_3}\n{ending}"
+            self.assertEqual(prompt.count("共同坐在唯一一张横向长琴凳"), 1)
+            self.assertEqual(prompt.count("反向提示词："), 1)
+            self.assertTrue(prompt.rstrip().endswith("夸张表演或炫技摄影。"))
+            for forbidden in ("音色特征：", "Voice Profile", "Voice Reference", "Audio Reference", "猫", "吉他", "手机", "磁带"):
+                self.assertNotIn(forbidden, prompt)
+            path.write_text(prompt, encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+
     def test_state08_reference_asset_eligibility_regression(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
@@ -957,7 +1084,7 @@ REV-0001
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "prompt.md"
             reference = (
-                "CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。\n"
+                "CHAR-001@v001角色资产；用途：锁定人物身份、脸型、发型与服装并保持一致。\n"
                 "REF-TAIL-001｜CLIP-001尾帧参考；用途：直接承接上一Clip最终有效尾帧；"
                 "锁定人物姿态、位置、朝向、距离、构图、机位、环境、光线、天气、道具与情绪。"
             )
@@ -1033,7 +1160,7 @@ REV-0001
                 "2",
                 "8",
                 reference=(
-                    "CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。\n"
+                    "CHAR-001@v001角色资产；用途：锁定人物身份、脸型、发型与服装并保持一致。\n"
                     "[G01尾帧]合法尾帧；用途：仅作为本段连续性参考；锁定人物、空间、道具与轴线。"
                 ),
                 first_frame=(
@@ -1080,7 +1207,7 @@ REV-0001
                 2,
                 "2",
                 "8",
-                reference="CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。",
+                reference="CHAR-001@v001角色资产；用途：锁定人物身份、脸型、发型与服装并保持一致。",
                 first_frame=first_frame,
             )
             fields = make_shot_fields(start_state="第一帧来源：从已确认新场景Scene初始状态建立，不继承旧场景空间。")
@@ -1105,7 +1232,7 @@ REV-0001
                 "2",
                 "8",
                 reference=(
-                    "CHAR-001@v001角色资产；用途：锁定人物身份；禁止模型修改脸型、发型与服装。\n"
+                    "CHAR-001@v001角色资产；用途：锁定人物身份、脸型、发型与服装并保持一致。\n"
                     "[G01尾帧]合法尾帧；用途：作为本段正式参考资产锁定空间。"
                 ),
                 first_frame=first_frame,
@@ -1175,12 +1302,21 @@ REV-0001
                 1,
                 "1",
                 "10",
-                reference="Voice Reference：CHAR-001-VOICE-REF；用途：只锁定声音身份，不作为视觉参考；禁止模型修改声音身份。",
+                reference="Voice Reference：CHAR-001-VOICE-REF；用途：只锁定声音身份并保持一致，不作为视觉参考。",
                 include_voice=True,
             )
             ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
             path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
-            self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
+            self.assertEqual(run_quiet(validator.validate_state08, path, True, None, False, True), 0)
+
+    def test_state08_voice_field_without_current_request_authorization_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "prompt.md"
+            global_text = make_state08_global_sections(1, 1, "1", "10", include_voice=True)
+            ending = f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            path.write_text(f"{global_text}\n分镜1\n{make_shot_fields()}\n{ending}", encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, path, True), 1)
+            self.assertEqual(run_quiet(validator.validate_state08, path, True, None, False, True), 0)
 
     def test_state08_voice_reference_without_explicit_control_field_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

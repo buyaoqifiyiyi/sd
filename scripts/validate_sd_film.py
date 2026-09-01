@@ -84,6 +84,9 @@ GLOBAL_SECTIONS = BASE_GLOBAL_SECTIONS
 OPTIONAL_GLOBAL_SECTIONS = (VOICE_SECTION,)
 ENDING_SECTIONS = ("反向提示词：",)
 SHOT_FIELDS = ("景别：", "镜头/机位：", "起始状态：", "画面描述：", "人物动作与情绪：", "空间关系：", "道具状态：", "台词：", "音效：", "镜头结尾状态：")
+POSITIVE_FIRST_GLOBAL_FIELDS = ("参考资产：", "主风格：", "人物一致性：", "环境一致性：")
+POSITIVE_FIRST_SHOT_FIELDS = ("画面描述：", "人物动作与情绪：")
+GENERAL_NEGATIVE_MARKER_PATTERN = re.compile(r"禁止|不要|避免")
 DIRECTOR_SECTIONS = ("Knowledge Role", "Core Identity", "Narrative Tone", "Emotional Grammar", "Composition", "Camera Movement", "Lens Tendencies", "Lighting", "Color Palette", "Production Design", "Character Blocking", "Performance Direction", "Editing Rhythm", "Sound Design", "Weather / Atmosphere", "Best Use Cases", "Avoid / Misuse", "Style Translation Rules", "Seedance Execution Language", "Combination Rules", "Final Principle")
 SEQUENCE_SECTIONS = ("# Sequence Plan", "## Narrative Contract", "## Scene Scope", "## Beat Map", "## Coverage Matrix", "## Generation Units", "## State Ledger", "## Handoff And Risk", "## Completion Check")
 CLIP_SECTIONS = ("# Clip Plan", "## Clip Table", "## Clip Detail Cards", "## Cross-Clip Continuity Ledger", "## Knowledge Projection Ledger", "## Coverage And Validation")
@@ -127,6 +130,10 @@ VOICE_REFERENCE_PATTERN = re.compile(
 )
 VOICE_DESCRIPTOR_PATTERN = re.compile(
     r"Voice\s*characteristics|\bpitch\b|\btimbre\b|\bresonance\b|vocal\s*weight|音高|声线|音域|共鸣|语速|音色质感",
+    re.IGNORECASE,
+)
+VOICE_STATE_PATTERN = re.compile(
+    r"Voice\s*Profile|No\s*Voice\s*Asset|默认音色|已有音色|参考音色锁定|未建立音色资产|无需音色",
     re.IGNORECASE,
 )
 REFERENCE_ITEM_PATTERN = re.compile(
@@ -733,6 +740,7 @@ def validate_state08(
     as_json: bool = False,
     clip_plan_path: Path | None = None,
     allow_batch_output: bool = False,
+    allow_voice_control: bool = False,
 ) -> int:
     """Validate the fixed STATE-08 Clip contract owned by templates/10_video_prompt.md."""
     errors: list[str] = []
@@ -838,6 +846,14 @@ def validate_state08(
             elif placeholder_pattern.fullmatch(value):
                 errors.append(f"CLIP-{clip_number:03d} global field uses forbidden shorthand: {label}")
 
+        for label in POSITIVE_FIRST_GLOBAL_FIELDS:
+            value = global_values.get(label, "")
+            if value and GENERAL_NEGATIVE_MARKER_PATTERN.search(value):
+                errors.append(
+                    f"CLIP-{clip_number:03d} {label} must use positive executable language; "
+                    "move general negative constraints to the single final 反向提示词： field"
+                )
+
         duration_text = global_values.get("时长：", "")
         duration_matches = re.findall(r"平台生成时长\s*[：:]\s*(\d+(?:\.\d+)?)\s*秒|(?<![\d.])(\d+(?:\.\d+)?)\s*秒", duration_text)
         duration_values = [float(first or second) for first, second in duration_matches]
@@ -868,6 +884,12 @@ def validate_state08(
         if tail_required_no and re.search(r"REF-TAIL-\w+｜CLIP-\w+尾帧参考", reference_text):
             errors.append(f"CLIP-{clip_number:03d} Tail Frame Required = NO must not formally reference the previous REF-TAIL asset")
         has_voice_reference = bool(VOICE_REFERENCE_PATTERN.search(reference_text))
+        has_voice_state_text = bool(VOICE_STATE_PATTERN.search(package))
+        if (voice_field_matches or has_voice_reference or has_voice_state_text) and not allow_voice_control:
+            errors.append(
+                f"CLIP-{clip_number:03d} voice identity/control text requires current-request authorization "
+                "and validator flag --allow-voice-control"
+            )
         if has_voice_reference and not voice_text:
             errors.append(f"CLIP-{clip_number:03d} Voice/Audio Reference requires explicit conditional 音色特征： control")
         if has_voice_reference and voice_text:
@@ -930,6 +952,13 @@ def validate_state08(
                     errors.append(f"CLIP-{clip_number:03d}/分镜{shot_number} field has no content: {label}")
                 elif placeholder_pattern.fullmatch(value):
                     errors.append(f"CLIP-{clip_number:03d}/分镜{shot_number} field uses forbidden shorthand: {label}")
+            for label in POSITIVE_FIRST_SHOT_FIELDS:
+                value = values.get(label, "")
+                if value and GENERAL_NEGATIVE_MARKER_PATTERN.search(value):
+                    errors.append(
+                        f"CLIP-{clip_number:03d}/分镜{shot_number} {label} must use positive executable language; "
+                        "move general negative constraints to the single final 反向提示词： field"
+                    )
             sound = values.get("音效：", "")
             if sound:
                 if MUSIC_PATTERN.search(sound):
@@ -954,6 +983,18 @@ def validate_state08(
         negative_lines = [line.strip() for line in negative_text.splitlines() if line.strip()]
         if not negative_lines or negative_lines[0] != DEFAULT_NO_BACKGROUND_MUSIC_LINE:
             errors.append(f"CLIP-{clip_number:03d} 反向提示词： first non-empty line must be exactly the default no-background-music line")
+        if negative_matches:
+            negative_tail = package[negative_matches[0].end():]
+            trailing_field_pattern = re.compile(
+                rf"^(?:#\s+|分镜\d+\s*$|备注：|说明：|补充：|"
+                rf"{'|'.join(re.escape(label) for label in BASE_GLOBAL_SECTIONS + OPTIONAL_GLOBAL_SECTIONS + SHOT_FIELDS)})",
+                re.MULTILINE,
+            )
+            if trailing_field_pattern.search(negative_tail) or re.search(r"\n\s*\n\s*\S", negative_tail):
+                errors.append(
+                    f"CLIP-{clip_number:03d} 反向提示词： must be the final field and final paragraph; "
+                    "no field, note, heading, or body content may follow it"
+                )
 
         if clip_number in plan_specs:
             plan_duration, plan_shots = plan_specs[clip_number]
@@ -1657,7 +1698,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
             for section in DIRECTOR_SECTIONS:
                 if f"## {section}" not in text:
                     errors.append(f"{path.name} missing director section: {section}")
-            for marker in ("检索标签", "适用阶段", "使用边界", "核心区分"):
+            for marker in ("检索标签", "适用阶段", "使用边界", "核心区分", "首次出现"):
                 if marker not in text:
                     errors.append(f"{path.name} missing director metadata marker: {marker}")
     for legacy_name in ("project_status.md", "project_bible.md", "asset_registry.md"):
@@ -1709,10 +1750,10 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
                 errors.append(f"Legacy or overriding route phrase in {relative}: {label}")
     integration_checks = {
         "rules/02_asset_rules.md": ("FX-001", "FX Asset", "Visual Asset Production Gate", "Prompt Draft", "Image Generated", "Reference Asset Eligibility Strengthening", "Reference Selection / Routing", "参考资产按需路由，不是越多越好", "板凳参考说明"),
-        "rules/03_prompt_rules.md": ("Prompt Attention / Control Allocation", "不声称能够直接或精准设置模型内部的交叉注意力数值", "提示词不是越长越好", "Style Label Decomposition", "标签不能单独承担执行控制", "Blender / Unreal式严格物理仿真器", "高价值视觉关系", "低价值工程精度"),
+        "rules/03_prompt_rules.md": ("Prompt Attention / Control Allocation", "不声称能够直接或精准设置模型内部的交叉注意力数值", "提示词不是越长越好", "Style Label Expansion", "首次出现", "具象化后不得默认删除标签", "Source Carries State, Prompt Carries Delta", "Blender / Unreal式严格物理仿真器", "高价值视觉关系", "低价值工程精度", "Negative Prompt Boundary Rule", "最后一个字段、最后一个段落", "唯一局部例外", "同类项合并压缩", "Field Ownership Assignment / State Once Gate", "历史事故物"),
         "workflows/03_asset_discovery_workflow.md": ("FX Asset Discovery", "15_fx_asset_workflow.md"),
         "workflows/07_visual_development_workflow.md": ("Performance Direction", "facial_action_language.md", "emotion_dynamics.md", "Sound Direction", "knowledge/lighting/index.md", "光源空间锚点", "focal_length_and_perspective.md", "全画幅等效倾向", "knowledge/color/index.md", "绿色—品红偏色", "肤色、眼白", "17_poster_design_workflow.md"),
-        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Script Adaptation And Optimization Gate Module Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
+        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Script Adaptation And Optimization Gate Module Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Style Label Expansion Rule", "具象化本身不是默认删除标签的理由", "Field Ownership Assignment / State Once Gate", "Negative Compression", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
         "knowledge/script_adaptation.md": ("Optimization Opportunity Report", "User Decision Gate", "Source Essence Extraction", "Adaptation Objective", "Preserve / Compress / Rewrite / Remove Decision", "Screen Translation", "Duration & Dramatic Restructuring", "Adaptation Fidelity Check", "LEVEL 1", "LEVEL 2", "LEVEL 3", "基本不要改剧情", "short_form_drama_adapter.md"),
         "knowledge/adaptation/short_form_drama_adapter.md": ("前3秒", "前30秒", "1个核心事件", "角色功能", "核心欲望", "性格标签", "标志动作", "语言特征", "视觉记忆点", "通常控制在7字左右", "1个主情绪", "爽 / 虐 / 甜 / 惊 / 燃 / 笑 / 悬", "Hook → Setup → Escalation → Payoff → Next Hook", "不是死时间码"),
         "workflows/02_script_analysis_workflow.md": ("Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate", "开场钩子", "核心冲突进入时机", "信息重复", "台词效率", "动作可视化", "人物记忆点", "节奏", "高潮力度", "情绪价值", "结尾Hook", "时长适配", "场景/人物复杂度", "A 无明显优化必要", "B 有轻度优化空间", "C 有明显结构问题", "拒绝优化或改编", "Production Script Proposal输出后必须再次停止", "A — Production Script", "B — Rough Script / First Draft", "C — Source Material", "Adaptation Target Detection", "Script Adaptation", "Adaptation Draft", "short_form_drama_adapter.md", "No Revision / Final Script"),
@@ -1728,8 +1769,8 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "workflows/09_shot_design_workflow.md": ("Professional Detailed Shot Script", "TC IN", "TC OUT", "时长(s)", "画面内容 / 构图", "镜头调度", "摄影机运动 + 人物调度", "光线 / 色彩", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "Performance Goal", "facial_action_language.md", "公开状态与内部泄漏", "Sound Purpose", "FX Behavior", "Coverage Mapping", "Coverage Completion", "Composition Intent", "Camera Language Integrity", "Camera Language Decision Gate", "selection_matrix.md", "实际读取的主运镜原子知识文件", "Focal Length Design", "focal_length_and_perspective.md", "knowledge/color/index.md", "CLR-01至CLR-09", "肤色漂移", "director_patterns/index.md", "knowledge/lighting/index.md", "起始光态", "高风险模式的基础镜头降级方案", "movement_combinations/index.md", "Low-Complexity Compound Path", "knowledge/transitions/", "Outgoing Anchor", "Direct Cut降级", "Source Script Label", "Artifact Revision"),
         "workflows/10_clip_production_workflow.md": ("STATE-07 Clip Production", "Professional Detailed Shot Script", "TC OUT - TC IN = 时长(s)", "画面内容/构图", "镜头调度", "光线/色彩", "Shot", "Clip", "Prompt", "Build Clip Candidates", "Author Clip Execution Contract", "Clip Movement Plan", "主导镜头语言", "超过4个Shot", "连续出现3次", "Duration And Continuity Ledger", "Shot-State Memory", "Clip End-State Record / Next-Clip Carryover", "Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "templates/20_clip_plan.md", "每个 Clip", "Source Script Label", "--project-status", "--shot-design"),
         "workflows/10_storyboard_workflow.md": ("Optional / Auxiliary", "不绑定任何固定 STATE", "用户明确要求", "templates/09_storyboard_prompt.md", "不得进入 STATE-08"),
-        "workflows/11_video_generation_workflow.md": ("knowledge/performance/", "Attention Shift", "Control / Leakage", "瞳孔地震", "knowledge/sound_language/", "knowledge/fx/", "knowledge/lighting/", "knowledge/color/", "Color Execution", "综合色彩闪变", "focal_length_and_perspective.md", "全画幅等效倾向", "movement_combinations/", "Low-Complexity Compound Path", "Camera Language Decision Hard Gate", "Clip Movement Plan Hard Gate", "selection_matrix.md", "禁止把“缓慢推进”", "Sequence Plan", "Sequence And Unit Continuity", "Sequence Coverage Check", "state08_projection.md", "Semantic Projection Check", "Projection Ledger", "结束光态", "knowledge/transitions/", "禁止生成背景音乐", "Outgoing Anchor", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "板凳参考说明", "Single-Clip Checkpoint", "First-Frame Check", "End-Frame Interface Check", "Cross-Clip Continuity Check", "Five-Dimensional Prompt Control Matrix", "3—5个（或更少）style carriers", "Prompt Compression Pass", "Prompt Attention / Compression Check"),
-        "workflows/13_review_workflow.md": ("FX Review", "Performance Review", "表情符合角色基线", "公开状态、短暂泄漏", "Sound Review", "Sequence Coverage Review", "Camera Language QA", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "人物/道具重置", "相机轴线跳变", "连续慢推", "超过4个Shot", "连续3次", "焦段倾向、摄影机距离", "背景尺度抽动", "主色、辅助色、强调色", "白平衡抽动", "Prompt Attention / Control Allocation", "Blender / Unreal式严格物理仿真器"),
+        "workflows/11_video_generation_workflow.md": ("knowledge/performance/", "Attention Shift", "Control / Leakage", "瞳孔地震", "knowledge/sound_language/", "knowledge/fx/", "knowledge/lighting/", "knowledge/color/", "Color Execution", "综合色彩闪变", "focal_length_and_perspective.md", "全画幅等效倾向", "movement_combinations/", "Low-Complexity Compound Path", "Camera Language Decision Hard Gate", "Clip Movement Plan Hard Gate", "selection_matrix.md", "禁止把“缓慢推进”", "Sequence Plan", "Sequence And Unit Continuity", "Sequence Coverage Check", "state08_projection.md", "Semantic Projection Check", "Projection Ledger", "结束光态", "knowledge/transitions/", "禁止生成背景音乐", "Outgoing Anchor", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "板凳参考说明", "Single-Clip Checkpoint", "First-Frame Check", "End-Frame Interface Check", "Cross-Clip Continuity Check", "Five-Dimensional Prompt Control Matrix", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "首次出现同段解释", "后续已锁定Style Source只补当前delta", "3—5个（或更少）style carriers", "Prompt Compression Pass", "Prompt Attention / Compression Check", "Field Ownership Assignment", "Negative Compression", "--allow-voice-control", "通用负向项末尾唯一收束", "必须贴近具体动作、空间关系或物理连续性"),
+        "workflows/13_review_workflow.md": ("FX Review", "Performance Review", "表情符合角色基线", "公开状态、短暂泄漏", "Sound Review", "Sequence Coverage Review", "Camera Language QA", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "人物/道具重置", "相机轴线跳变", "连续慢推", "超过4个Shot", "连续3次", "焦段倾向、摄影机距离", "背景尺度抽动", "主色、辅助色、强调色", "白平衡抽动", "Prompt Attention / Control Allocation", "重要风格标签若保留", "同一标签是否重复解释", "Blender / Unreal式严格物理仿真器"),
         "templates/01_project_bible_template.md": ("Performance Direction", "角色中性面部", "压抑 / 伪装 / 混合情绪", "FX Direction", "Sound Direction", "FX Continuity", "光源空间锚点与方向", "跨镜光影连续性", "全画幅等效倾向", "焦段不自动等于景别", "绿色—品红偏色", "Color模式语义"),
         "templates/03_asset_discovery_prompt.md": ("正式FX Asset / Inline Effect / 后期合成待定", "15_fx_asset_workflow.md"),
         "templates/08_shot_design_prompt.md": ("Professional Detailed Shot Script Template", "镜号", "TC IN", "TC OUT", "时长(s)", "景别", "焦段", "场景 / 美术", "画面内容 / 构图", "人物动作", "摄影机 / 镜头", "摄影参数", "镜头调度", "光线 / 色彩", "画面特效 / 转场", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "摄影机运动", "人物调度", "镜头结束状态", "前景、中景、背景", "Start Boundary", "End-Frame Constraint", "Next-Shot Handoff", "Director Decision Layer必须读取已经完成的专业分镜表", "templates/10_video_prompt.md", "Artifact Revision", "Source Script Labels"),
@@ -1763,12 +1804,14 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/camera_language/lens_language/focal_length_continuity.md": ("Continuity Ledger", "Identity And Edge Safety", "Motion Interaction", "STATE-08 Projection"),
         "knowledge/camera_language/director_patterns/index.md": ("Authority Boundary", "Stability Gate", "STATE-08", "advanced_composition.md", "action_composition.md", "character_composition.md", "atmosphere_composition.md"),
         "knowledge/knowledge_application_reflection.md": ("Director / Literary Intent Translation", "保留情绪功能", "至少落到一种可见或可听执行项", "3—5个（或更少）高价值style carriers", "五维未锁定项检查"),
-        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Prompt Attention / Control Allocation Gate", "Five-Dimensional Prompt Control Matrix", "Style Label Decomposition Rule", "Executable Style Carrier Rule", "默认选择3—5个", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
+        "knowledge/visual_styles/director_metadata_contract.md": ("高层创作锚点", "首次出现", "项目中的具体含义", "不得在完成具象化后默认强制删除"),
+        "knowledge/visual_styles/index.md": ("Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "首次出现", "后续连续Clip"),
+        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Prompt Attention / Control Allocation Gate", "Field Ownership Assignment / State Once Gate", "Source / Asset State Resolution → Field Ownership Assignment", "Field Ownership QA", "Five-Dimensional Prompt Control Matrix", "Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "Executable Style Carrier Rule", "Style State And Delta Compression", "默认选择3—5个", "Positive Specification And Negative Prompt Placement", "Negative Placement Pass", "Negative Compression Pass", "历史事故", "每个Clip只允许一个`反向提示词：`", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
         "knowledge/11_seedance_adapter.md": ("state08_projection.md", "主体画面位置", "构图主原子与支持层", "knowledge/color/index.md", "不得输出CLR编号", "focal_length_and_perspective.md", "焦段不自动提高画面质感", "knowledge/lighting/index.md", "LGT模式ID", "knowledge/performance/index.md", "Attention Shift", "PEX/AU编号", "knowledge/camera_language/movement_combinations/", "knowledge/transitions/", "背景音乐", "Delivery Mode Gate", "Four-Part Boundary Gate", "Physical Data Value Rule", "0.137m/s", "Blender / Unreal式物理仿真"),
-        "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "禁止生成背景音乐", "Prompt Attention / Compression", "3—5个（或更少）", "Semantic Trigger Pollution", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器"),
+        "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "字段职责与 Single Ownership", "Field Ownership Assignment / State Once Gate", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "条件声音身份控制", "必须进入各分镜`音效：`", "禁止生成背景音乐", "Prompt Attention / Compression", "Project-specific Style Meaning", "首次出现", "具象化后不默认删除标签", "后续连续Clip", "3—5个（或更少）", "Semantic Trigger Pollution", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器", "必须且只能出现一次", "最后一个字段、最后一个段落", "历史事故项", "不得散布通用负向清单"),
         "knowledge/clip_preflight_check.md": ("Four Global High-Priority Rules", "Visual Input Eligibility Test", "Reference Selection / Routing", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "NOT ELIGIBLE", "板凳参考说明", "九个Acceptance Scenarios"),
         "knowledge/reference_budget.md": ("Visual Input Eligibility", "0个图片位", "板凳参考说明", "Projected Final Count"),
-        "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention", "R15-D Director Label Decomposition", "R15-E Abstract Premium Label", "R15-F Action-Heavy Clip Style Compression"),
+        "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention", "R15-D Director Style Label Expansion", "R15-E Cinematic Live-action Label Expansion", "R15-F Stable Project Style Delta", "R15-G Action-Heavy Clip Style Compression", "R15-L CLIP-03 State Ownership / Negative Compression", "同一张长琴凳", "音色特征：", "猫、吉他、手机、磁带"),
         "knowledge/camera_language/movement_combinations/index.md": ("Foundations", "Decision Engine", "Combination Patterns", "Continuity And Projection", "Image Source Coverage", "Activation Gate"),
         "knowledge/camera_language/movement_combinations/foundations.md": ("Four Execution Classes", "One-Shot Compatibility Test", "Compatibility Matrix", "Split Triggers", "Stability Budget"),
         "knowledge/camera_language/movement_combinations/decision_engine.md": ("Gate 0", "Class A", "Coverage Sequence", "Transition / FX Sequence", "Stable Downgrade", "CMG-xx"),
@@ -1792,7 +1835,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/color/tone_patterns.md": ("CLR-01", "CLR-09", "Selection Rule"),
         "knowledge/color/color_continuity.md": ("Continuity Ledger", "Lighting Interaction", "STATE-08 Projection", "Stable Downgrade"),
         "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md", "Skill Update Self-Check / Change Safety Checklist"),
-        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "维护约定"),
+        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "重要标签首次出现在最终 Prompt", "具象化后不会默认删除标签", "后续连续 Clip 只补当前差异", "字段归属", "历史事故物", "维护约定"),
         "rules/runtime_reload.md": ("Reload Sequence", "Skill Definition", "Project Context", "Compatibility Mapping Result"),
         "rules/state_source.md": ("Selection Priority", "当前可验证的Project Context", "Project ID不一致", "Storyboard只能"),
         "rules/chat_compatibility.md": ("普通Chat不是缩减模式", "Portable Execution", "Behavior Parity"),
@@ -1818,6 +1861,22 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         for term in required_terms:
             if term not in text:
                 errors.append(f"{relative} is missing module integration marker: {term}")
+    forbidden_style_policy_phrases = (
+        "carriers足够时省略导演名",
+        "具体carriers已足够时名称是否已删除",
+        "其余导演名、审美词与装饰性材质描述在Prompt Compression中删除",
+        "导演名只作为检索标签",
+        "导演名只用于检索",
+        "导演名只作检索",
+        "导演名仅作检索标签",
+        "导演名只作知识检索",
+    )
+    for markdown_path in root.rglob("*.md"):
+        markdown_text = read_text(markdown_path)
+        for phrase in forbidden_style_policy_phrases:
+            if phrase in markdown_text:
+                relative = markdown_path.relative_to(root).as_posix()
+                errors.append(f"Legacy default-delete style policy in {relative}: {phrase}")
     pattern_specs = (
         ("knowledge/camera_language/director_patterns/emotional_patterns.md", "EMO-", 20),
         ("knowledge/camera_language/director_patterns/dynamic_patterns.md", "DYN-", 20),
@@ -2204,6 +2263,11 @@ def build_parser() -> argparse.ArgumentParser:
                 action="store_true",
                 help="Allow multiple Clip Prompt Packages only when the user explicitly requested batch output in the current request",
             )
+            sub.add_argument(
+                "--allow-voice-control",
+                action="store_true",
+                help="Allow the conditional voice-control field only when the current user request explicitly authorized video-model voice control",
+            )
         if name == "clip":
             sub.add_argument(
                 "--project-status",
@@ -2231,7 +2295,13 @@ def main() -> int:
     if args.command == "registry":
         return validate_registry(path, args.as_json)
     if args.command == "state08":
-        return validate_state08(path, args.as_json, Path(args.clip_plan), args.batch_output)
+        return validate_state08(
+            path,
+            args.as_json,
+            Path(args.clip_plan),
+            args.batch_output,
+            args.allow_voice_control,
+        )
     if args.command == "music":
         return validate_music_package(path, args.as_json)
     if args.command == "sequence":
