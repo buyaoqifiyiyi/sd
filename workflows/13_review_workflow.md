@@ -580,7 +580,7 @@ Shot Design Workflow
 
 □ 每个受审Take分别记录Planned Start / End与实际Observed Start / End；用户已接受Take时，Accepted Canon State来自该Take的Observed State并覆盖后续同维度Planned State。未接受Take未写入Canon；Accepted Take或`REF-TAIL`中的脸/服装/环境结构/道具造型漂移未覆盖正式Canonical资产，只继承授权的姿态、站位、动作阶段与其他瞬时状态
 
-□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：每个入选Reference声明Primary Role / Purpose；身份/外观、空间结构、道具造型、Visual Blocking、A/B尾帧、Motion、Camera、Audio与光线/场景状态使用正确Authority；`REF-SKETCH`只在Final Assessment=`REQUIRED`、Sketch Validation通过且Blocking Signature匹配时出现，并只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；Visual Blocking / Transient Reference没有覆盖正式身份/结构/造型；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
+□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：每个入选Reference声明Primary Role / Purpose；身份/外观、空间结构、道具造型、Visual Blocking、A/B尾帧、Motion、Camera、Audio与光线/场景状态使用正确Authority；`REF-SKETCH`只在Final Assessment=`REQUIRED`、Sketch Validation与Character Appearance Leakage Check通过且Blocking Signature匹配时出现，并只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；草图中的无性别调度人偶没有作为人物外观参考，Visual Blocking / Transient Reference没有覆盖正式身份/结构/造型；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
 
 □ Top-down Blocking Map仅作为Planning Reference，没有被登记为Canonical Asset、Storyboard或写入STATE-08【参考资产】
 

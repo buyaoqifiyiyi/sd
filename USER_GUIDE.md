@@ -40,7 +40,7 @@
 | 连续性检查 | `调用sd，只检查CLIP-002到CLIP-003的角色、站位、道具、轴线和首尾帧连续性，不重新生成。` | STATE-07 / STATE-09连续性核验 |
 | Review | `调用sd，审核这个实际生成结果，给出PASS / REVISE / REBUILD和最小返修方案。` | STATE-09 Review |
 | 电影海报 / Key Art | `调用sd，根据当前项目设计一张9:16数字竖版电影Key Art，沿用现有角色和环境资产。` | Poster Design辅助Workflow |
-| 继续旧项目 | `调用sd，按当前本地最新Skill恢复这个项目，从最后一个安全Checkpoint继续。` | Runtime Reload + Project Resume |
+| 继续旧项目 | `重新调用sd，按当前可访问的最新Skill恢复这个项目，从最后一个安全Checkpoint继续。` | Runtime Reload + Project Resume |
 | 检查Skill | `调用sd，只检查当前实际安装版的Pipeline、STATE和音色规则，不执行制作。` | Runtime Reload + 只读规则检查 |
 | 修改Skill | `进入Work，读取当前实际安装的sd Skill，只修改我指定的规则，并同步版本、回归检查和USER_GUIDE.md。` | Work / Codex本地修改任务 |
 
@@ -387,7 +387,7 @@
 - 一个 Confirmed Clip 对应一条完整 Prompt；即使包含多个 Shot，也不拆成多条 Shot Prompt。
 - 默认一次只交付一个待处理 Clip。批量授权只改变数量，不改变每个 Clip 的完整结构。
 - 每个Clip都会在最终Prompt前自动检查是否需要人物 / 空间调度草图。判定不需要时直接输出Prompt；判定需要时先生成并验证草图，把它作为只控制站位、朝向、距离、关系轴、姿态或动作路径的参考资产，下一次继续才输出Prompt。草图不替代角色、环境或道具正式资产。
-- 当前Skill已注册真实`REF-SKETCH-MASTER`图片。生成需要的草图时会把该PNG作为实际视觉参考输入，并走独立Technical Visual Blocking Sketch模板，不会调用Storyboard模板；只有文件或工具输入失败时才会明确报告文字合同回退。候选图缺少主Blocking、角色标签、箭头、适用俯视 / 路径图、镜头信息、动作权限或用途说明，或仍是单幅电影感铅笔插画时，会以`Artistic Storyboard Drift`失败并拒绝注册。
+- 当前Skill已注册真实`REF-SKETCH-MASTER`图片。生成需要的草图时会把该PNG作为实际视觉参考输入，并走独立Technical Visual Blocking Sketch模板，不会调用Storyboard模板；只有文件或工具输入失败时才会明确报告文字合同回退。草图人物默认统一使用无性别技术调度人偶，仅靠角色标签、技术颜色和位置区分；明显脸、发型、服装、性别化体态或角色外貌重绘会被拒绝注册。候选图缺少主Blocking、角色标签、箭头、适用俯视 / 路径图、镜头信息、动作权限或用途说明，或仍是单幅电影感铅笔插画时，也会以`Artistic Storyboard Drift`失败并拒绝注册。
 - `REF-SKETCH-MASTER`只用于生成当前Clip的`REF-SKETCH-XX`，默认不会出现在最终视频Prompt的`参考资产：`里，也不占视频模型的9张图片预算；真正投喂视频模型的是经验证的当前Clip草图。
 - 编译前会做 Prompt Control：只填补当前 Clip 尚未被资产、首尾帧或 Blocking 锁定且确实需要控制的内容；内部控制矩阵不会变成最终 Prompt 的额外栏目。
 - 会先做字段归属：每条约束只在一个权威字段完整定义。`首帧参考`负责起始状态，`尾帧限制`负责结束状态与carryover，`人物一致性`只负责长期人物身份，`环境一致性`只负责场景结构与环境基线，逐镜只写新增动作/状态变化/局部连续性；其他位置只在真实变化或边界接口需要时写最短Delta，不会为强调而在6—9个字段全文重复。
@@ -633,7 +633,7 @@
 ### 重新读取当前实际安装版再继续
 
 ```text
-调用sd，按当前本地最新Skill恢复这个项目，从最后一个安全Checkpoint继续。
+重新调用sd，按当前可访问的最新Skill恢复这个项目，从最后一个安全Checkpoint继续。
 ```
 
 或：
@@ -644,8 +644,11 @@
 
 **Skill 行为 / 停止点**
 
-- `调用SD / 调用sd / 重新调用SD / 重新加载SD / 按当前Skill继续` 会先执行 Runtime Reload，再判断项目状态和 Workflow。
-- 重载只刷新 Skill 规则，不会强制重开项目或抹掉已确认成果。
+- 首次或普通`调用SD / 调用sd / 调用SD流程`会激活SD Film，读取当前可访问规则并按项目事实进入正确STATE / Workflow；不存在可恢复项目时可建立新项目入口。
+- 明确`重新调用SD / 重新调用sd / 重新加载SD / 重新加载sd / 按当前Skill继续 / 按当前 skill 继续`会重新读取当前可访问Skill，同时保留已确认的项目事实，从当前STATE / Workflow入口重新处理当前对象；不会只拿上一版Prompt继续润色，也不会无故清空已确认资产、草图或进度。
+- 普通`继续 / 下一步 / 下一个`只从当前合法Checkpoint继续，不等于强制重新加载；当前Workflow本来要求的检查仍会照常执行。
+- 普通Chat会先使用当前运行时可访问的Skill资源；本机Windows路径不可读不代表必须切Work。只有直接编辑或检查本地Skill / 项目文件时才需要Work。
+- 只有本轮真的读到当前Skill入口、版本和必需路由文件，Skill才能说“已重新加载”或“严格按当前Skill执行”；失败时会说明实际使用的是当前可访问资源、Portable State或Project Context等fallback，不会拿旧对话摘要冒充当前安装版。
 - 会核验 Project ID、State Source、Revision、Checkpoint和 Artifact；不能唯一识别项目时会停下确认，不会猜“最近项目”。
 - 生成失败第一次最小修正，第二次稳定降级，第三次返回事实 / 设计拥有者。
 
@@ -675,7 +678,7 @@
 
 **Skill 行为 / 停止点**
 
-- “调用sd”会先重读当前安装入口；只有实际取得 `Skill Version` 和 `Build ID` 才能报告 `RELOADED`。
+- “调用sd”会先重新解析当前Chat可访问的Skill资源并重读入口；只有实际取得 `Skill Version`、`Build ID`和必要读取证据才能报告 `RELOADED`或声称严格遵守当前Skill。
 - 只检查不会自动推进主 Pipeline，也不会因发现问题直接修改 Skill 或项目成果。
 
 ## 27）进入 Work 修改 Skill 的推荐指令

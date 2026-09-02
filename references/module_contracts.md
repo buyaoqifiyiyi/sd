@@ -54,7 +54,7 @@
 
 ### Global Runtime Rule Owners
 
-- Runtime Reload：`rules/runtime_reload.md`
+- Runtime Reload / Workflow Re-entry：`rules/runtime_reload.md`
 - State Source：`rules/state_source.md`
 - Chat Compatibility：`rules/chat_compatibility.md`
 - Progression：`rules/progression_rules.md`
@@ -580,13 +580,13 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。每张当前草图还须通过Template Content Leakage Check，不得继承母版示例的人物数量、外观、钢琴 / 琴凳 / 窗户 / 乐谱 / 雨景 / 文字、光色或最终风格。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
 冲突路由：剧情/世界事实返回事实拥有者；资产/道具形态返回STATE-03；Shot / Blocking /转场设计返回STATE-06；Clip边界、预算或执行合同返回STATE-07；仅最终文案投影错误留在STATE-08。
 
-Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；Five Global High-Priority Rules、十三个Acceptance Scenarios、Before-Single-Clip-Prompt Gate、Blocking Signature、四种Reassessment结果、母版注册状态、两级Authority、七项Layout Validation与Template Content Leakage Check存在；所有显式文件引用有效。`Asset Status=REGISTERED`时真实相对文件必须存在；`UNAVAILABLE`时不得出现已注册路径声明。Candidate Evidence必须由`scripts/validate_sd_film.py sketch`拒绝单幅电影插画、缺失版式项、Blocking不匹配、模板内容泄漏或Confirmed前图片不可读。
+Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；Five Global High-Priority Rules、十三个Acceptance Scenarios、Before-Single-Clip-Prompt Gate、Blocking Signature、四种Reassessment结果、母版注册状态、两级Authority、七项Layout Validation、Template Content Leakage Check与Character Appearance Leakage Check存在；所有显式文件引用有效。`Asset Status=REGISTERED`时真实相对文件必须存在；`UNAVAILABLE`时不得出现已注册路径声明。Candidate Evidence必须由`scripts/validate_sd_film.py sketch`拒绝单幅电影插画、缺失版式项、Blocking不匹配、模板内容泄漏、人物外观 / 身份污染或Confirmed前图片不可读。
 
 ---
 
@@ -610,7 +610,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 在冲突时返回事实拥有者，不用Prompt文案静默调和
 - 按Confirmed Clip Production Plan一对一创建`# CLIP-X｜标题 Seedance视频提示词`独立Package；每个Package包含该Clip的1个或多个`分镜X`，但整个Clip只生成一条连续Prompt，不按Shot拆分，并拥有完整结尾帧、尾帧用途判定与反向提示词
 - 多Clip项目默认每轮只交付当前一个Clip；“下一个 / 下一步 / 继续”只推进一个Checkpoint。只有用户在当前请求中明确要求全部、一次性、批量或连续输出多个Clip时，才允许同轮输出多个独立Package
-- 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先生成Technical Director Blocking Sheet、执行Template Content Leakage Check与完整Sketch Validation、注册当前`REF-SKETCH-XX`、加入参考资产并停止，下一Checkpoint才输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
+- 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先用Neutral Mannequin Representation Rule生成Technical Director Blocking Sheet、执行Template Content Leakage Check、Character Appearance Leakage Check与完整Sketch Validation、注册当前`REF-SKETCH-XX`、加入参考资产并停止，下一Checkpoint才输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
 - 每个Clip必须为4—15秒；Clip内分镜保持原顺序、逐镜字段和显式状态链
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出

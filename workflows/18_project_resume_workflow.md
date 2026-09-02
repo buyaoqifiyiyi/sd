@@ -25,7 +25,7 @@
 
 ## Required Resources
 
-- `rules/runtime_reload.md`与当前安装版`SKILL.md`（触发Runtime Reload时必须本轮重读）
+- `rules/runtime_reload.md`与Current Accessible Skill Definition（触发Runtime Reload时必须从本轮解析的Loaded Source重读）
 - config.md与当前路由适用的rules/
 - references/project_workspace.md
 - references/project_state_contract.md
@@ -58,7 +58,7 @@ Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或
 
 如发现 STATE-06 / STATE-08 使用非标准短名、STATE-07 被标成 Storyboard，或待办表仍按 Shot Design、Storyboard、Video Generation 三项连续排列，先按`rules/compatibility_mapping.md`迁移。映射以可验证Artifact和Completion Gate为准；Storyboard只保留为Optional/Auxiliary Artifact，不得据旧状态直接选择Storyboard Workflow。
 
-迁移与Reload必须保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、已完成Checkpoint、Accepted Unaffected Artifacts与用户明确约束。只更新旧路由标签和必要状态摘要，不得因Skill升级强制重开或重做。
+迁移与Reload必须保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、Accepted Take Canon / Accepted Canon State、Shot-State Memory、已完成Checkpoint、Accepted Unaffected Artifacts与用户明确约束。只更新旧路由标签和必要状态摘要，不得因Skill升级、STATE名称或owner/file routing变化强制重开或重做。
 
 不一致时不合并猜测；记录Recovery Item并返回事实拥有者。
 
@@ -114,4 +114,4 @@ Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或
 - 依赖Revision存在。
 - 重试次数与降级策略已记录。
 - Next Workflow合法且没有跳过前置阶段。
-- 如本次触发Reload，已内部确认Reload Status、Loaded Skill Version、Loaded Build ID、Current State、State Source与Next Workflow。
+- 如本次触发Reload，已内部确认Reload Status、Loaded Source、Loaded Skill Version、Loaded Build ID、Owner Files Resolved、Last Routed State、State Source、Last Routed Workflow、Current Object与Workflow Entry Checkpoint；显式Re-entry已从该Workflow入口执行到合法Checkpoint后才声称完成重进；如为`UNAVAILABLE`，另有具体失败资源与Fallback Source，且没有作出“严格按当前Skill”声明。

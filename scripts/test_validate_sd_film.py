@@ -671,6 +671,95 @@ Next Workflow: Project Setup Workflow
             )
             self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
 
+    def test_routing_validator_rejects_missing_chat_hot_reload_trigger(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            runtime = copied / "rules" / "runtime_reload.md"
+            runtime.write_text(
+                runtime.read_text(encoding="utf-8").replace("重新调用sd", "reentry-token-removed"),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_missing_reload_evidence(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            runtime = copied / "rules" / "runtime_reload.md"
+            runtime.write_text(
+                runtime.read_text(encoding="utf-8").replace("Owner Files Resolved", "Owner Files Unknown"),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_missing_workflow_reentry_contract(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            runtime = copied / "rules" / "runtime_reload.md"
+            runtime.write_text(
+                runtime.read_text(encoding="utf-8").replace(
+                    "Current Skill + Current Project Context + Current User Task",
+                    "Previous output only",
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_runtime_reentry_r1_old_prompt_cannot_bypass_state08_entry(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        regressions = (skill_root / "references" / "regression_scenarios.md").read_text(encoding="utf-8")
+        for marker in ("Previous Assistant Output", "Reference Selection / Routing", "Prompt Compiler", "Final QA"):
+            self.assertIn(marker, runtime)
+        self.assertIn("### R12-I Old Prompt Does Not Bypass STATE-08 Entry", regressions)
+
+    def test_runtime_reentry_r2_stable_confirmed_sketch_is_reused(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        preflight = (skill_root / "knowledge" / "clip_preflight_check.md").read_text(encoding="utf-8")
+        self.assertIn("`KEEP`并复用", runtime)
+        self.assertIn("普通Prompt优化", preflight)
+        self.assertIn("必须复用原草图", preflight)
+
+    def test_runtime_reentry_r3_material_blocking_change_is_reassessed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        preflight = (skill_root / "knowledge" / "clip_preflight_check.md").read_text(encoding="utf-8")
+        self.assertIn("Blocking发生实质变化必须执行Reassessment", runtime)
+        for marker in ("REPLACE with REF-SKETCH-XX-v2", "RETIRE sketch", "CREATE new sketch"):
+            self.assertIn(marker, preflight)
+
+    def test_runtime_reentry_r4_updated_skill_and_owner_are_reread(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        for marker in ("Loaded Skill Version", "Loaded Build ID", "Owner Files Resolved", "Last Routed Workflow"):
+            self.assertIn(marker, runtime)
+        self.assertIn("Latest Successfully Loaded Current Skill Definition", runtime)
+
+    def test_runtime_reentry_r5_plain_next_does_not_force_reload(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        progression = (skill_root / "rules" / "progression_rules.md").read_text(encoding="utf-8")
+        self.assertIn("普通的“继续”“下一步”不是重载触发词", runtime)
+        self.assertIn("收到纯推进命令时", progression)
+
+    def test_runtime_reentry_r6_unavailable_load_reports_fallback(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        for marker in ("UNAVAILABLE", "Fallback Source", "不能声称已按current Skill完成Re-entry"):
+            self.assertIn(marker, runtime)
+
+    def test_runtime_reentry_r7_ordinary_chat_does_not_default_to_work(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
+        self.assertIn("普通Chat不是本地文件模式的降级版", runtime)
+        self.assertIn("普通制作执行不得默认要求Work", runtime)
+
     def test_routing_validator_rejects_completion_owner_overlap(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as temp:
@@ -1816,6 +1905,8 @@ MUS-CUE-001
             "Master Template carries sketch language; Current Clip data carries blocking content.",
             "Technical Director Blocking Sheet",
             "Template Content Leakage Check",
+            "Character Appearance Leakage Check",
+            "FAIL = Character Appearance Leakage / Identity Contamination",
             "Text Contract Fallback",
         ):
             self.assertIn(marker, preflight)
@@ -1825,7 +1916,9 @@ MUS-CUE-001
             "Persistent Asset Path：`assets/ref_sketch_master.png`",
             "REF-SKETCH-MASTER",
             "Sketch Presentation Authority",
+            "Neutral Mannequin Representation Rule",
             "Template Content Leakage Check",
+            "Character Appearance Leakage Check",
             "REF-SKETCH-XX",
         ):
             self.assertIn(marker, master)
@@ -1851,6 +1944,7 @@ MUS-CUE-001
             "R20-C A3 Action Remains Technical Previs",
             "R20-D Simple Head Turn Still Returns NONE",
             "R20-E Prompt Rewrite Reuses Current Sketch Without Recalling Master",
+            "R20-F Character Appearance Leakage Is A Hard Failure",
         ):
             self.assertIn(marker, regression)
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
@@ -1897,6 +1991,8 @@ MUS-CUE-001
                 },
                 "artistic_storyboard_drift": False,
                 "template_content_leakage": False,
+                "neutral_mannequin_representation": True,
+                "character_appearance_leakage": False,
                 "blocking_match": True,
                 "registration_status": "CONFIRMED",
             }
@@ -1909,6 +2005,23 @@ MUS-CUE-001
 
             evidence["artistic_storyboard_drift"] = True
             evidence["layout"]["spatial_top_down_diagram"] = False
+            evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
+            self.assertEqual(
+                run_quiet(validator.validate_ref_sketch_evidence, evidence_path, skill_root, True),
+                1,
+            )
+
+            evidence["artistic_storyboard_drift"] = False
+            evidence["layout"]["spatial_top_down_diagram"] = True
+            evidence["character_appearance_leakage"] = True
+            evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
+            self.assertEqual(
+                run_quiet(validator.validate_ref_sketch_evidence, evidence_path, skill_root, True),
+                1,
+            )
+
+            evidence["character_appearance_leakage"] = False
+            evidence["neutral_mannequin_representation"] = False
             evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
             self.assertEqual(
                 run_quiet(validator.validate_ref_sketch_evidence, evidence_path, skill_root, True),

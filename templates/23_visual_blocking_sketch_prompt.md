@@ -23,17 +23,17 @@
 
 - Clip ID / Sketch Type：`S-SKETCH / P-SKETCH / A-SKETCH / Combined`。
 - Blocking Signature：Characters、Position、Topology、Shared Facing、Seat / Spatial Relation、Allowed Delta、Camera Logic、Axis、Movement Path、Clip Start / End Blocking。
-- Role Mapping与Character Labels。
+- Role Mapping与Character Labels；只传递角色名 / ID、技术标注颜色和位置标签，不传递或模仿Character Asset外观。
 - Main Blocking：位置、身体朝向、距离、共享结构、当前环境锚点。
 - Direction Annotation：Facing、Gaze、Head Delta、Movement / Action Path与适用接触 / 受力方向。
 - Spatial Proof：Top-down或当前动作所需的空间 / 路径证明、Interaction / Eyeline / Action Axis、Camera Safe Side。
 - Camera Information：最小充分的Shot Size、Angle、Lens tendency、Camera Side。
 - Blocking / Movement Permission：LOCK / LIMITED / CHANGE与当前动作要点。
-- Usage / Reference Authority：只锁Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；不锁人物身份、环境 / 道具造型、材质、灯光、色彩或最终画风。
+- Usage / Reference Authority：只锁Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；最终Clip参考资产说明只需写`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`人物外观服从正式Character Asset；环境 / 道具造型、材质、灯光、色彩或最终画风也不由草图控制。
 
 ## High-Priority Image Instruction
 
-生成一张多区域工程版式的`Technical Director Blocking Sheet`，不是单幅叙事插画。最大区域必须是Main Blocking Panel；另有清楚分隔的Spatial / Top-down或Action Path Diagram、Camera Information、Blocking / Movement Permission与Usage / Reference Authority区域。用简化人体、角色标签、方向 / 视线 / 动作箭头和少量技术颜色标记证明Current Clip的空间与动作关系。技术可读性、标注和关系证明优先于人物五官、服装、场景美术与气氛。
+生成一张多区域工程版式的`Technical Director Blocking Sheet`，不是单幅叙事插画。最大区域必须是Main Blocking Panel；另有清楚分隔的Spatial / Top-down或Action Path Diagram、Camera Information、Blocking / Movement Permission与Usage / Reference Authority区域。人物绘制层严格执行`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：所有人物使用同一套无性别技术调度人偶 / 中性关节pose dummy，无真实五官、发型、具体服装、明显性别化胸腰臀 / 体态、年龄 / 美貌 / 气质身份；不根据Character Asset重画外观。只用角色名 / ID、少量技术颜色、左右 / 位置标签、姿态与方向 / 视线 / 动作箭头证明Current Clip的空间和动作关系。A-SKETCH只有物理约束所必需的比例可以表达，仍不得恢复角色视觉身份。
 
 最终电影风格、导演名、青春 / 阴雨 / 唯美气氛、cinematic illustration、海报感、概念艺术、高燃光效不得成为本次草图的正向风格目标。母版中的人物、钢琴、琴凳、窗户、乐谱、雨景或文字只有在Current Clip事实明确要求时才可出现。
 
@@ -71,9 +71,11 @@ python scripts/validate_sd_film.py sketch <evidence.json> --skill-root <current-
   },
   "artistic_storyboard_drift": false,
   "template_content_leakage": false,
+  "neutral_mannequin_representation": true,
+  "character_appearance_leakage": false,
   "blocking_match": true,
   "registration_status": "CONFIRMED"
 }
 ```
 
-`assessment=NONE`时使用`route=NONE`、`registration_status=NONE`且不生成图片。任何`REQUIRED`候选只有命令返回PASS才可注册；单幅叙事插画固定返回`FAIL = Artistic Storyboard Drift`，其他FAIL也保持`FAILED / REVISE`，不得进入最终Clip【参考资产】。
+`assessment=NONE`时使用`route=NONE`、`registration_status=NONE`且不生成图片。任何`REQUIRED`候选只有命令返回PASS才可注册；单幅叙事插画固定返回`FAIL = Artistic Storyboard Drift`；人物出现真实五官、具体发型 / 服装、明显性别化体态、角色外貌重绘或其他身份污染时固定返回`FAIL = Character Appearance Leakage / Identity Contamination`；其他FAIL也保持`FAILED / REVISE`，不得进入最终Clip【参考资产】。

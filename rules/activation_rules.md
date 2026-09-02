@@ -14,7 +14,7 @@
 
 ## Explicit Activation
 
-用户明确说“调用SD”“用SD Film”“按SD流程”“重新加载SD”或无歧义等价表达时激活。凡`SKILL.md` Runtime Reload Entry或`rules/runtime_reload.md`列出的重载表达，必须先完成Runtime Reload，再进行意图、State Source与Workflow路由；Activation不得把重载降级成仅激活。
+用户明确说“调用SD流程”“用SD Film”“按SD流程”或无歧义等价表达时激活。完整Runtime Reload Trigger词表只由`rules/runtime_reload.md`拥有；凡命中其中任一显式调用/重新调用/重新加载表达，必须先完成Runtime Reload Gate，再进行意图、State Source与Workflow路由。Activation不得把重载降级成仅激活，也不得另建平行触发表。
 
 ## Intent Is Goal, Not Current State
 

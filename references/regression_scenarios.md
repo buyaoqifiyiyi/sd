@@ -160,15 +160,15 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ---
 
-## R12 Runtime Skill Reload / Hot Reload
+## R12 Runtime Skill Reload / Workflow Re-entry
 
-三个案例均以用户在已工作的旧对话中输入“调用SD，按当前安装最新版Skill继续当前项目”为触发。
+以下案例覆盖新Chat、旧对话、重复Reload、Workflow Re-entry、资源不可访问、非Reload推进和Work边界。Reload / Re-entry成功判定只服从`rules/runtime_reload.md`；这些案例不创建新的测试协议。
 
 ### R12-A Stale Conversation Pipeline vs Current Installed Pipeline
 
 输入：旧对话缓存声称`STATE-07`对应`Storyboard`，磁盘当前`SKILL.md`却声明`STATE-07 Clip Production`并包含更新的Skill Version / Build ID。
 
-PASS：按`rules/runtime_reload.md`重新完整读取当前安装`SKILL.md`，记录`Reload Status: RELOADED`及磁盘版Skill Version / Build ID；当前安装Pipeline覆盖旧对话的Skill描述；再读取config、适用Rules、状态References、映射后Workflow与其依赖。
+PASS：按`rules/runtime_reload.md`重新解析当前runtime可访问资源，重新完整读取Current Skill `SKILL.md`，记录`Reload Status: RELOADED`、Loaded Source、Skill Version / Build ID与Owner Files Resolved；当前Skill Pipeline覆盖旧对话的Skill描述；再只读取状态owner、映射后Workflow与其适用依赖。
 
 FAIL：继续把Storyboard当作固定STATE-07；用历史摘要覆盖磁盘Skill；未实际重读却声称`RELOADED`；强制用户新建对话或项目。
 
@@ -187,6 +187,70 @@ FAIL：回退STATE-00；重做已确认Detailed Shot Design；将旧Storyboard�
 PASS：Reload后上述项目事实全部保留；只更新Skill Definition和必要路由标签；后续Workflow仍从Active / Canonical资产与Production-Locked Script读取真源。
 
 FAIL：把Script Status降回Source Material；丢失Confirmed Assets、Active Version或Canonical References；因Skill重载重新要求用户确认已接受结果；忽略用户锁定约束。
+
+### R12-D New / Ordinary Chat Uses Current Accessible Skill Resources
+
+输入：新普通Chat中用户说“调用sd”，当前runtime能读取exposed / installed SD Film resources，但不能访问Windows本机路径。
+
+PASS：先从当前Chat runtime可访问资源重读`SKILL.md`与基础路由owner，记录真实Loaded Source并继续State Source / Workflow路由；不要求Work，不要求用户上传本机Skill目录。
+
+FAIL：仅因`C:\Users\Lenovo\.codex\skills\sd`不可读就停止、声称BLOCKED、要求切Work，或未读取当前资源便声称严格按当前Skill。
+
+### R12-E Repeated Reload, Current Owner And Re-entry Evidence
+
+输入：Skill更新后，用户再次说“重新调用sd”；上一轮已有Reload Evidence与Project Context。
+
+PASS：生成新的Invocation Marker / Load Timestamp（运行时可提供时），重新读取当前Loaded Source，核对当前Skill Version / Build ID与Owner Files Resolved；版本、来源或owner变更时证据随之变化，未变化时也能证明本轮发生实际读取；Project Context保持；重新确认Current STATE / Workflow / Object，并从当前owner入口执行到合法Checkpoint后才报告已重进Workflow。
+
+FAIL：复用上一轮Evidence、只回显缓存版本、继续使用更新前owner、未实际读取却称已重新加载/已重进，或把Reload当作项目重置。
+
+### R12-F Current Skill Unavailable Uses Truthful Fallback
+
+输入：用户显式“重新加载SD”，但当前Skill入口或必需owner实际不可访问；存在有效Portable State或可验证Project Context。
+
+PASS：记录`Reload Status: UNAVAILABLE`、失败资源/原因和实际Fallback Source；保留项目并继续fallback合同允许的安全工作，不声称`RELOADED`、最新安装版或严格按当前Skill，不因本机路径不可见默认切Work。
+
+FAIL：用旧对话Skill摘要冒充Current Skill、隐瞒fallback、清空项目，或仅因路径不可见报告项目BLOCKED。
+
+### R12-G Plain Continue Does Not Force Full Reload
+
+输入：当前runtime已有一次成功loaded Skill Definition和有效Project Context，用户只说“下一步”。
+
+PASS：复用当前loaded definition，按需读取当前Workflow与依赖并推进一个合法Checkpoint；不全量重读Skill，不产生新的Reload Evidence，也不把“下一步”当作显式Reload。
+
+FAIL：每一步无意义重读全部Rules / Workflows / Knowledge，或伪称本轮再次RELOADED。
+
+### R12-H Work Is Only For Local File Operations
+
+输入A：普通制作请求“调用sd，继续CLIP-003”；输入B：用户要求修改本机`C:\Users\Lenovo\.codex\skills\sd`文件。
+
+PASS：A先使用当前Chat可访问Skill资源并正常路由，不默认Work；B进入具备本地文件能力的Work/Codex并遵守Skill维护流程。
+
+FAIL：A强制切Work，或B在无法直接操作本地文件的环境中伪称已经修改。
+
+### R12-I Old Prompt Does Not Bypass STATE-08 Entry
+
+输入：旧对话含CLIP-04旧Prompt、旧Skill摘要与上一次未验证结论；Project Context中已有Confirmed Clip Plan、Current Clip与已确认资产。用户说“重新调用sd，重写CLIP-04”。
+
+PASS：重新读取Current Skill并保留Project Context，重新确认STATE-08与`workflows/11_video_generation_workflow.md`，从Workflow入口依次执行Reference Selection / Routing、Final Visual Blocking Anchor Assessment、Prompt Compiler与Final QA；旧Prompt只作为待比较/修改对象，不成为Gate证据或唯一编译输入。
+
+FAIL：直接润色旧Prompt、沿用旧Skill摘要、跳过Reference Routing / Visual Blocking Gate / Final QA，或因重载清空Confirmed Project Context。
+
+### R12-J Confirmed Sketch Survives Re-entry When Blocking Is Stable
+
+输入：CLIP-04已有与当前Blocking Signature匹配的Confirmed `REF-SKETCH-04`；用户显式重新调用并只要求压缩措辞或优化Prompt，Blocking未实质变化。
+
+PASS：re-entry重新执行Final Assessment并得到`KEEP existing sketch`，复用同一草图、Revision与图片位，不重新生成草图；随后从Prompt Compiler与Final QA产生当前CLIP-04结果。
+
+FAIL：把re-entry解释为重置草图、重复生成`REF-SKETCH`、调用母版替换已确认Anchor，或跳过Assessment直接假设旧图有效。
+
+### R12-K Material Blocking Change Forces Reassessment
+
+输入：CLIP-04原为双人并排共坐，已有Confirmed `REF-SKETCH-04`；用户显式重新调用并把Blocking改为一人起身走到另一人面前，改变Topology、Position与Movement Path。
+
+PASS：保留旧草图Revision追溯，但re-entry重新执行Visual Blocking Anchor Reassessment并只得到`REPLACE / RETIRE / CREATE`中的适用结果；Final=`REQUIRED`且新Anchor尚未确认时停在草图Checkpoint，不沿用旧图或直接输出Prompt。
+
+FAIL：因旧图已存在而`KEEP`、只改Prompt文字掩盖Blocking冲突、跳过草图验证，或删除旧Revision追溯。
 
 ---
 
@@ -467,9 +531,9 @@ FAIL：为拿信加入蹬地、腰胯、脊柱传导、空气反馈、接触力�
 
 输入：CLIP-04中林夏在左、许栀在右，共坐同一张长琴凳，共同面向钢琴 / 窗外；许栀仅允许`Gaze + LIMITED Head`，Position / Torso / Shoulder / Distance锁定；林夏持续弹琴且不转头。用户首次请求`输出CLIP-04提示词`或只说`下一个`。
 
-PASS：STATE-07已记录Visual Blocking Risk Pre-Assessment；STATE-08 Final Assessment判`HIGH / REQUIRED`，本轮先生成中性S+P综合草图，核对role mapping、A左/B右、Side-by-side、Same Bench、Shared Facing、Pose Hierarchy、Eyeline Axis与Camera Safe Side。通过后注册`REF-SKETCH-04｜CLIP-04空间与姿态调度草图`，声明只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze，不控制脸、发型、服装、环境 / 道具造型、材质、色彩、灯光或最终画风；加入当前Clip参考资产并更新预算，本轮不输出Prompt。用户下一次继续且Signature未变时才输出Prompt。即使A/B左右未换，Side-by-side漂成Face-to-face仍判Blocking Drift。
+PASS：STATE-07已记录Visual Blocking Risk Pre-Assessment；STATE-08 Final Assessment判`HIGH / REQUIRED`，本轮先生成中性S+P综合草图，核对role mapping、林夏左 / 许栀右、Side-by-side、Same Bench、Shared Facing、许栀Gaze→林夏、`Head LIMITED`、Pose Hierarchy、Eyeline Axis与Camera Safe Side。林夏与许栀必须使用同一套无性别技术人偶，只靠蓝 / 红角色标签、姓名和左右位置区分，不以长发 / 短发、裙装 / 裤装或身体曲线区分。通过后注册`REF-SKETCH-04｜CLIP-04空间与姿态调度草图`，说明`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`加入当前Clip参考资产并更新预算，本轮不输出Prompt。用户下一次继续且Signature未变时才输出Prompt。即使A/B左右未换，Side-by-side漂成Face-to-face仍判Blocking Drift。
 
-FAIL：第一次请求直接输出Prompt；生成草图后未验证或未列入参考资产；把草图当角色 / 环境Canonical；让“许栀看林夏”自动导致全身转向；或认为左右没交换所以Face-to-face不算漂移。
+FAIL：第一次请求直接输出Prompt；生成草图后未验证或未列入参考资产；把草图当角色 / 环境Canonical；用性别、发型、服装或体型区分林夏 / 许栀；让“许栀看林夏”自动导致全身转向；或认为左右没交换所以Face-to-face不算漂移。
 
 ### R19-B Prompt Rewrite Reuses Anchor; Blocking Reconstruction Reassesses
 
@@ -491,7 +555,7 @@ FAIL：为了流程统一强制生成P-SKETCH或Formal Keyframe。
 
 输入：A3复杂格挡—转身—反制动作，双方起点、主Action Axis、道具、接触 / 近接触、受力方向、恢复终点与Next-action Carryover已确认，但单纯文字仍存在路径 / 接触漂移风险。
 
-PASS：Final Assessment可判`ACTION HIGH / REQUIRED`，选择A-SKETCH或S+P+A综合草图；草图以箭头、轴线、简化人体和接触点锁定Start / Path / Contact / Force / End / Carryover，通过Sketch Validation后作为受限Visual Blocking Anchor进入参考资产。角色、环境与道具身份继续由各自Canonical资产控制；Prompt正文只保留当前动作Delta与必要局部约束。
+PASS：Final Assessment可判`ACTION HIGH / REQUIRED`，选择A-SKETCH或S+P+A综合草图；双方使用同一套无性别技术人偶，以箭头、轴线、接触点和受力方向锁定Start / Path / Contact / Force / End / Carryover。只有动作可达性必需的身体比例可以表达，仍不恢复性别、脸、发型、服装或角色体型身份。通过Sketch Validation与Character Appearance Leakage Check后作为受限Visual Blocking Anchor进入参考资产。角色、环境与道具身份继续由各自Canonical资产控制；Prompt正文只保留当前动作Delta与必要局部约束。
 
 FAIL：A3一律强制多张正式Keyframe；草图带入写实五官、正式服装 / 灯光 / 画风并覆盖Canonical；或把全部动力链和草图标注复制进Prompt。
 
@@ -503,25 +567,25 @@ FAIL：A3一律强制多张正式Keyframe；草图带入写实五官、正式服
 
 输入：CLIP-04仍为林夏左 / 许栀右、Side-by-side、Shared Facing、Same Bench，许栀只有`Gaze + LIMITED Head` Delta；`REF-SKETCH-MASTER`注册为真实可读视觉输入，示例图本身也包含两女与钢琴内容。
 
-PASS：Final=`REQUIRED`时把母版只作为Sketch Presentation Authority输入，当前Blocking Signature作为内容权威。输出是自适应Technical Director Blocking Sheet，Main Blocking、Spatial / Top-down、Camera Information、Permission与Usage区能直接证明A左/B右、Side-by-side、Shared Facing、Same Bench和Gaze Delta；人物为简化技术人体与标签，不发展成电影感、青春感、岩井俊二式、阴雨氛围铅笔插画。当前`REF-SKETCH-04`通过验证后进入视频参考资产；母版本身不进入。
+PASS：Final=`REQUIRED`时把母版只作为Sketch Presentation Authority输入，当前Blocking Signature作为内容权威。输出是自适应Technical Director Blocking Sheet，Main Blocking、Spatial / Top-down、Camera Information、Permission与Usage区能直接证明林夏左 / 许栀右、Side-by-side、Shared Facing、Same Bench、许栀Gaze→林夏和`Head LIMITED`；两人使用同一套无性别人偶，只由蓝 / 红角色标签、姓名与位置区分，不继承母版或Character Asset中的性别、发型、服装、体型。当前`REF-SKETCH-04`通过验证后进入视频参考资产；母版本身不进入。
 
-FAIL：提示词核心仍是唯美铅笔Storyboard、雨天青春电影或人物插画；缺少Topology / Facing / Gaze / Camera证明；或因为案例内容与母版相似就把母版本身当当前Clip Blocking Authority。
+FAIL：提示词核心仍是唯美铅笔Storyboard、雨天青春电影或人物插画；以长发 / 短发、裙装、脸或身体曲线区分两人；缺少Topology / Facing / Gaze / Camera证明；或因为案例内容与母版相似就把母版本身当当前Clip Blocking Authority。
 
 ### R20-B Three People Around A Table Has No Template Content Leakage
 
 输入：Current Clip是A / B / C三人围圆桌交谈，环境为干燥会议室，无钢琴、长琴凳、窗边雨景或乐谱；需要锁定三人座位、共同视线中心、Camera Safe Side和发言者局部转头。
 
-PASS：继承母版的信息层级和技术标注语言，但Main Blocking与Top-down重新布局为三人环桌Topology；角色数量、位置、环境锚点和Camera完全来自Current Clip。Template Content Leakage Check确认没有两女、钢琴、琴凳、窗户、乐谱、雨景、母版文字、示例发型 / 服装或示例光色。
+PASS：继承母版的信息层级和技术标注语言，但Main Blocking与Top-down重新布局为三人环桌Topology；三人使用同一套无性别技术人偶，只靠A / B / C角色标签、技术颜色和座位位置区分；角色数量、位置、环境锚点和Camera完全来自Current Clip。Template Content Leakage Check确认没有两女、钢琴、琴凳、窗户、乐谱、雨景、母版文字、示例发型 / 服装或示例光色；Character Appearance Leakage Check确认没有任何身份化外观。
 
-FAIL：复制两个人物、钢琴 / 琴凳、窗户、乐谱、雨线、黑板文字或示例人物造型；为贴合母版把三人删成两人；或像素级复刻版式导致三人关系不可读。
+FAIL：复制两个人物、钢琴 / 琴凳、窗户、乐谱、雨线、黑板文字或示例人物造型；用三种发型、服装、性别或体型区分A / B / C；为贴合母版把三人删成两人；或像素级复刻版式导致三人关系不可读。
 
 ### R20-C A3 Action Remains Technical Previs
 
 输入：A3武打Clip需要A-SKETCH或S+P+A；Current Clip已确认双方起点、Action Axis、道具路径、接触 / 近接触、受力方向、恢复终点与Next-action Carryover。
 
-PASS：母版只提供Technical Director Blocking Sheet表达，草图用简化人体、Start / Path / Contact / Force / End箭头、轴线、Camera side与动作Permission完成技术预演；布局可为动作路径重新分区。没有高燃海报、能量爆炸、姿势美术定稿、电影光效或无依据FX；Canonical角色 / 环境 / 道具身份不受影响。
+PASS：母版只提供Technical Director Blocking Sheet表达，双方使用同一套无性别技术人偶，以Start / Path / Contact / Force / End箭头、轴线、Camera side与动作Permission完成技术预演；布局可为动作路径重新分区，必要身体比例只表达可达性 / 接触 / 受力约束。没有性别化体态、角色外貌重绘、高燃海报、能量爆炸、姿势美术定稿、电影光效或无依据FX；Canonical角色 / 环境 / 道具身份不受影响。
 
-FAIL：生成高燃概念插画、武打海报或动作Key Art；用母版的静态双人并排版式压扁动作路径；或把技术颜色标记当最终服装 / 光色设计。
+FAIL：生成高燃概念插画、武打海报或动作Key Art；根据Character Asset恢复双方脸、发型、服装、性别或体型身份；用母版的静态双人并排版式压扁动作路径；或把技术颜色标记当最终服装 / 光色设计。
 
 ### R20-D Simple Head Turn Still Returns NONE
 
@@ -539,6 +603,14 @@ PASS：结果为KEEP，复用现有`REF-SKETCH-04`与同一图片位，不重新
 
 FAIL：每次Prompt Rewrite都重新读取母版并生成新草图；母版成为持续视频参考；或Blocking重构后仍盲用旧草图。
 
+### R20-F Character Appearance Leakage Is A Hard Failure
+
+输入：候选S-SKETCH / P-SKETCH / A-SKETCH版式、标签、箭头、Camera和Blocking均正确，但任一人物出现写实五官、具体长短发、具体服装设计、明显胸腰臀性别体态、年龄 / 美貌 / 气质身份，或根据Character Asset重画外观。
+
+PASS：实际视觉检查把`character_appearance_leakage`记录为`true`或无法确认`neutral_mannequin_representation=true`；`scripts/validate_sd_film.py sketch`固定返回`FAIL = Character Appearance Leakage / Identity Contamination`。候选保持`FAILED / REVISE`并沿同一Technical Visual Blocking Sketch route重做，不注册Confirmed、不进入Clip参考资产，也不通过修改Character Asset或Blocking事实迁就草图。
+
+FAIL：因为版式与Blocking正确就忽略人物外观泄漏；用“只是代理”解释后仍注册；或把中性人偶QA扩写进最终Seedance Prompt的反向提示词。
+
 ---
 
 ## Deterministic Expectations
@@ -550,7 +622,7 @@ FAIL：每次Prompt Rewrite都重新读取母版并生成新草图；母版成�
 - R09-C/E/P均验证`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`，且Prompt确认前不出图、图片确认前不Active/Canonical。
 - R10验证Canonical Character Appearance And Form Lock从Asset、Visual Development、Storyboard/Poster、Shot Design、Clip、Prompt Generation、Final Video到Review的全阶段继承，并覆盖非人角色禁止未授权拟人化。
 - R11-A至R11-E验证条件性整合阈值、9张加必需尾帧的真实计数、12张自动压缩到≤9、实际资产存在性和多核心角色独立图硬门槛。
-- R12-A至R12-C验证旧对话缓存不能覆盖当前安装Skill、旧STATE按当前Artifact / Completion Gate映射，并且Production-Locked Script、Confirmed Assets、Checkpoint、Accepted Artifacts与用户约束在Reload后不丢失。
+- R12-A至R12-K验证旧对话缓存不能覆盖Latest Successfully Loaded Current Skill Definition、旧STATE按当前Artifact / Completion Gate映射、Project Context在Reload后不丢失、显式重新调用会从当前Workflow入口重跑而非润色旧Prompt、Confirmed草图按Blocking Signature复用或重评，以及普通Chat优先当前可访问Skill resources、重复Reload产生本轮证据、资源不可访问时诚实报告fallback、“下一步”不强制全量重载、Work只用于本地文件操作。
 - R13-A至R13-C验证尾帧需求先于资产可用性判定、严格承接主动请求截图与草案/最终版边界，以及非严格承接不强制截图。
 - R14验证纯文字“板凳参考说明”从参考资产删除并迁移到既有空间/道具/反向字段，1—5号视觉资产保持不动，真实双人钢琴凳图只以正式资产ID引用。
 - R15-A至R15-L验证文学意图可执行转译、工程级数据按视觉价值压缩、Canonical资产释放Prompt注意力、导演/电影级标签首次出现时的项目特定展开、已锁定项目风格的后续Clip delta压缩、动作复杂Clip中的风格让位、正文正向化、通用负向项末尾唯一收束、局部物理连续性约束保留、CLIP-03字段唯一归属与事故历史式反向段压缩，以及本次调整不破坏Voice opt-in；最终Template结构保持不变。
@@ -558,4 +630,4 @@ FAIL：每次Prompt Rewrite都重新读取母版并生成新草图；母版成�
 - R17-A至R17-C验证角色声音身份严格opt-in、常规STATE-08 Prompt完全省略声音身份文字、显式声音设计进入独立Seed Audio兼容模板，以及已有Confirmed Voice Source不会在只请求Clip Prompt时被自动序列化。
 - R18-A至R18-D验证Scene Spatial Snapshot与合法越轴、PL1克制表演、A3动作动力因果和A1简洁降级；四类均不得新增主STATE、Template字段或Prompt内部标签。
 - R19-A至R19-D验证每Clip必检查但不必出草图、首次Required Clip先草图后Prompt、Pose Hierarchy / Relationship Topology漂移、Confirmed Anchor持久复用、Blocking重构四种Reassessment结果、简单单人NONE与A3综合草图；草图不得覆盖Canonical资产或污染最终Prompt。
-- R20-A至R20-E验证母版只拥有Sketch Presentation Authority、Current Clip独占Blocking内容、钢琴双人案例保持Technical Director Blocking Sheet、三人围桌无Template Content Leakage、A3保持技术预演、简单单人NONE不受母版可用性影响、Prompt Rewrite复用当前草图且母版不进入最终视频参考资产或图片预算。
+- R20-A至R20-F验证母版只拥有Sketch Presentation Authority、Current Clip独占Blocking内容、钢琴双人 / 三人围桌 / A3统一使用无性别技术人偶、任何Character Appearance Leakage硬失败、简单单人NONE不受母版可用性影响、Prompt Rewrite复用当前草图且母版不进入最终视频参考资产或图片预算。

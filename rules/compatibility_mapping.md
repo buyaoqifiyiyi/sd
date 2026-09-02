@@ -48,6 +48,8 @@ Storyboard只保留为Optional/Auxiliary Artifact；它不是STATE，不计入Co
 5. 只迁移路由字段、状态摘要和必要兼容记录，不修改交付物正文。
 6. 在Version History记录原值、映射结果、证据与时间。
 
+旧对话在显式Reload后继续时，历史Skill名称、owner和文件路由只作为待映射输入；Latest Successfully Loaded Current Skill Definition拥有路由权威。映射不得要求项目从STATE-00重启，也不得丢弃Production-Locked Script、Confirmed Assets、Accepted Take Canon / Accepted Canon State、Shot-State Memory、Checkpoint或Accepted Unaffected Artifacts。
+
 ## Portable Schema Migration
 
 Portable字段结构由`references/project_state_contract.md`拥有。旧文本出现缺字段、自创区块、自然语言Workflow、`READY / INITIALIZED / ACTIVE / PASSED`作为State Status时，先按Canonical Schema迁移：

@@ -75,7 +75,7 @@
 
 若母版注册记录为`REGISTERED`且真实相对路径可读，必须按`templates/23_visual_blocking_sketch_prompt.md`把解析后的绝对路径传入图像工具的真实视觉参考参数；只在文字中写“参考母版”不算加载。若记录为`UNAVAILABLE`、`NOT REGISTERED`、文件不可读或工具不支持图像参考，只允许明确使用`Text Contract Fallback`并记录失败来源，不得声称已经看见、加载或引用母版图片，也不得伪造路径。母版是否可用不改变Assessment，不得因存在母版而把`NONE`升级为`REQUIRED`。
 
-草图是导演技术调度锚点，不是正式美术资产，也不是电影感铅笔插画。生成核心必须写成`Technical Director Blocking Sheet / Spatial Blocking Diagram`，不得以铅笔感、电影感、青春感、岩井俊二、阴雨氛围、唯美、高燃或其他最终画风词驱动。默认信息组织按母版合同自适应包含：最大区域的Main Blocking Diagram；证明Topology / Shared Facing / Axis / Camera Safe Side的Spatial / Top-down Diagram；最小Camera Information；按风险选择的Blocking / Movement Permission；Usage / Reference Authority。人物使用简化人体、角色标签、方向 / 视线 / 动作箭头与必要技术颜色标记；无真实五官、具体发型 / 服装纹理、最终灯光、材质或画风。三人围桌、追逐、武打、车辆内等场景允许重新布局，不要求像素级复刻。
+草图是导演技术调度锚点，不是正式美术资产，也不是电影感铅笔插画。生成核心必须写成`Technical Director Blocking Sheet / Spatial Blocking Diagram`，不得以铅笔感、电影感、青春感、岩井俊二、阴雨氛围、唯美、高燃或其他最终画风词驱动。默认信息组织按母版合同自适应包含：最大区域的Main Blocking Diagram；证明Topology / Shared Facing / Axis / Camera Safe Side的Spatial / Top-down Diagram；最小Camera Information；按风险选择的Blocking / Movement Permission；Usage / Reference Authority。人物绘制层必须服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined统一使用无性别技术调度人偶，只靠角色名 / ID、技术颜色与位置标签区分；不得从Character Asset重画脸、发型、服装、年龄感、体型或身份。三人围桌、追逐、武打、车辆内等场景允许重新布局，不要求像素级复刻。
 
 Formal Keyframe只在确需锁定最终视觉身份、光影、材质、构图或画面状态时另行使用；它不是默认草图替代物，也不能因Blocking风险自动创建。
 
@@ -84,6 +84,8 @@ Formal Keyframe只在确需锁定最终视觉身份、光影、材质、构图�
 生成或接收草图后，注册Confirmed前先执行Layout Validation Gate。实际视觉检查必须确认：1）Main Blocking Panel；2）Character / role labels；3）Direction / gaze / movement annotation；4）Spatial / Top-down Diagram（S/P高风险默认必须，A-SKETCH至少有可验证的Spatial / Action Path Diagram）；5）Camera Information；6）Blocking / Movement notes or permission；7）Usage / Authority note。候选若退化成单幅电影场景、单幅铅笔叙事插画或只有完整人物 / 环境而无上述技术分区，即使大致站位正确，也固定判`FAIL = Artistic Storyboard Drift`。
 
 随后继续核对：role mapping；left / right / front / back；Position；Torso / Body Facing；Relationship Topology；Same-seat / prop / environment-anchor relation；Gaze / Head Delta；Interaction / Eyeline Axis；Camera side与意外跨轴；Movement Path（适用时）；是否提前出现未来动作；是否与Active Character / Environment / Prop资产、Scene Spatial Snapshot、Shot-State Memory、Accepted Canon State或canonical blocking发生Authority冲突；并执行`references/ref_sketch_master.md`定义的`Template Content Leakage Check`，确认没有无依据继承母版示例的人物数量、人物外观、钢琴、琴凳、窗户、乐谱、雨景、文字、色彩 / 灯光或其他剧情内容。
+
+再独立执行`Character Appearance Leakage Check`：确认所有人物均为无真实五官、无发型、无具体服装、无明显性别化胸腰臀 / 体态、无年龄 / 美貌 / 气质身份表达的中性技术人偶；角色只由名称 / ID、技术颜色与位置标签识别；没有依据Character Asset重画人物外观。A-SKETCH因物理可达性确需比例时也只能保留最小必要比例，不恢复角色视觉身份。任一人物不通过即固定判`FAIL = Character Appearance Leakage / Identity Contamination`，状态为`FAILED / REVISE`，不得注册Confirmed。
 
 视觉检查结果必须按`templates/23_visual_blocking_sketch_prompt.md`写Candidate Evidence Record，并实际运行`scripts/validate_sd_film.py sketch`。命令PASS只是注册的必要条件，不替代视觉检查；任何版式项、Blocking Match、泄漏检查或图片可读性失败都不得登记Confirmed。
 
@@ -94,10 +96,10 @@ Confirmed条目至少解释：
 ```text
 REF-SKETCH-04｜CLIP-04空间与姿态调度草图
 用途：只控制人物位置、身体朝向、共同座椅 / 空间关系、人物距离、视线、轴线、摄影机位置与适用动作路径。
-不控制：人物五官、发型、服装、身体身份、环境 / 道具造型、材质、色彩、灯光与最终画风。
+Authority：草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考；人物外观服从正式Character Asset。草图也不控制环境 / 道具造型、材质、色彩、灯光与最终画风。
 ```
 
-Character Asset继续拥有identity / face / hair / costume / body identity；Environment Asset拥有scene identity / spatial structure / material baseline；Prop Asset拥有prop identity / canonical state；`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前Clip的Confirmed `REF-SKETCH-XX`才拥有Clip Blocking Authority，即Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；REF-TAIL只拥有上一Accepted transient end state与连续性；Formal Keyframe只在明确需要时拥有最终视觉构图 / 光线 / 状态锁。母版与当前草图都不得覆盖前三类Canonical Authority。
+Character Asset继续拥有gender / identity / face / hair / costume / age impression / body identity与其他人物视觉身份；Environment Asset拥有scene identity / spatial structure / material baseline；Prop Asset拥有prop identity / canonical state；`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；草图人偶只是blocking proxy且不拥有Character Identity Authority；当前Clip的Confirmed `REF-SKETCH-XX`只拥有Clip Blocking Authority，即Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；REF-TAIL只拥有上一Accepted transient end state与连续性；Formal Keyframe只在明确需要时拥有最终视觉构图 / 光线 / 状态锁。母版与当前草图都不得覆盖前三类Canonical Authority。
 
 ### Sketch Persistence / Blocking Canon
 
@@ -111,7 +113,7 @@ Reassessment只能得到：`KEEP existing sketch`、`REPLACE with REF-SKETCH-XX-
 
 ### Prompt Pollution Boundary
 
-Confirmed Visual Anchor进入`参考资产`时只写ID、用途、Authority与必要状态，不复制草图全部标注。Prompt正文继续执行`Source Carries State, Prompt Carries Delta`：只保留当前Clip Delta与仍需贴近局部动作 / 空间才能消歧的最小高风险约束；不得在人物一致性、环境一致性、首帧、每个分镜和反向段反复重述同一Blocking。反向提示词继续在末尾唯一收束，除非现有规则允许的最小局部连续性约束确需留在对应字段。
+Confirmed Visual Anchor进入`参考资产`时只写ID、用途、Authority、必要状态与一句：`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`不复制草图全部标注，也不把中性人偶规则展开成负面词清单。Prompt正文继续执行`Source Carries State, Prompt Carries Delta`：只保留当前Clip Delta与仍需贴近局部动作 / 空间才能消歧的最小高风险约束；不得在人物一致性、环境一致性、首帧、每个分镜和反向段反复重述同一Blocking。反向提示词继续在末尾唯一收束，除非现有规则允许的最小局部连续性约束确需留在对应字段。
 
 Scene Top-down Blocking Map、Storyboard、多格分镜板与设计表截图继续禁止进入STATE-08；经本Gate生成、验证、确认且绑定单一Clip / Blocking Signature的Visual Blocking Sketch是严格受限的执行参考例外，不是Canonical Asset或Storyboard。
 
@@ -265,9 +267,9 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 | H. C新镜头且无需尾帧 | `Tail Frame Required = NO`；不列`REF-TAIL`、不要求截图；依靠Canonical基础资产、Confirmed Spatial Blocking、文字空间规则与当前Scene / World-State / Start Boundary建立新首帧 |
 | I. `板凳参考说明｜用途：锁定两人共坐同一张板凳……`混入参考资产 | Visual Input Eligibility为`NOT ELIGIBLE`；从【参考资产】删除并迁移到`空间关系`或`道具状态`。原清单1—5号真实视觉资产保持不动；若确有双人钢琴凳参考图，则改用真实`PROP-BENCH-01｜双人钢琴凳`及其文件/受控ID |
 | J. 简单单人原地转头 | Visual Blocking Final Assessment=`NONE`；不生成草图，直接编译Prompt |
-| K. CLIP-04：林夏左 / 许栀右，共坐同一长琴凳并共同朝向钢琴 / 窗外；许栀只允许Gaze + LIMITED Head，其他上层姿态与距离锁定 | 首次单Clip Prompt前判为HIGH / REQUIRED，先生成并验证S+P综合草图，注册`REF-SKETCH-04`并加入参考资产，本轮不输出Prompt；Side-by-side漂成Face-to-face即使左右未换仍判Blocking Drift；后续普通Prompt重写复用原图；若重构为许栀起身走到林夏面前，触发Reassessment并REPLACE或RETIRE / CREATE |
-| L. A3武打 / 复杂动作 | 可判ACTION HIGH / REQUIRED，使用A-SKETCH或S+P+A综合草图锁定起点、路径、接触 / 受力、终点与Next-action Carryover；草图不得覆盖角色 / 环境 / 道具身份 |
-| M. 三人围桌且母版示例为两女 + 钢琴 | 继承Technical Director Blocking Sheet的信息层级并重排为三人Topology；不得复制两女、钢琴、琴凳、窗户、乐谱、雨景或示例文字；Template Content Leakage命中即FAILED / REVISE |
+| K. CLIP-04：林夏左 / 许栀右，共坐同一长琴凳并共同朝向钢琴 / 窗外；许栀只允许Gaze + LIMITED Head，其他上层姿态与距离锁定 | 首次单Clip Prompt前判为HIGH / REQUIRED，先生成并验证S+P综合草图；两人使用同一套无性别技术人偶，只由蓝 / 红角色标签、姓名与左右位置区分，不用长短发、裙装或身体曲线区分；注册`REF-SKETCH-04`并加入参考资产，本轮不输出Prompt；Side-by-side漂成Face-to-face即使左右未换仍判Blocking Drift；后续普通Prompt重写复用原图；若重构为许栀起身走到林夏面前，触发Reassessment并REPLACE或RETIRE / CREATE |
+| L. A3武打 / 复杂动作 | 可判ACTION HIGH / REQUIRED，使用中性技术人偶的A-SKETCH或S+P+A综合草图锁定起点、路径、接触 / 受力、终点与Next-action Carryover；必要身体比例只表达物理约束，不恢复性别、脸、发型、服装或角色体型身份；草图不得覆盖角色 / 环境 / 道具身份 |
+| M. 三人围桌且母版示例为两女 + 钢琴 | 继承Technical Director Blocking Sheet的信息层级并重排为三人Topology；三人使用同一套无性别人偶语言，只靠角色标签、技术颜色与位置区分；不得复制两女外观、钢琴、琴凳、窗户、乐谱、雨景或示例文字；Template Content Leakage或Character Appearance Leakage命中即FAILED / REVISE |
 
 ## Validator Invariants
 
@@ -275,4 +277,4 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 - `templates/20_clip_plan.md`具有逐Clip Preflight记录与PASS / Return Route。
 - `templates/10_video_prompt.md`不新增Preflight字段，只在既有字段内容合同中承载世界状态、数量、空间、转场与道具语义。
 - Reference Budget在Continuity Classification与World-State过滤之后执行。
-- 十三个Acceptance Scenarios与Five Global High-Priority Rules可被静态检索。
+- 十三个Acceptance Scenarios与Five Global High-Priority Rules可被静态检索；Sketch Validation同时包含`Character Appearance Leakage Check`与固定失败码。

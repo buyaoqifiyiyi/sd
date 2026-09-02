@@ -21,7 +21,7 @@
 
 - `Technical Director Blocking Sheet`的整体技术图表达语言；
 - 主Blocking图 + 辅助信息区的版式逻辑与信息层级；
-- 简化人体的抽象程度，不追求人物美术完成度；
+- 由下述`Neutral Mannequin Representation Rule`统一控制的中性技术人偶抽象程度；
 - Character Label、Facing / Gaze / Action Arrow与必要技术颜色标记；
 - Spatial / Top-down Diagram的存在、Relationship Topology、Shared Facing、Interaction / Eyeline Axis与Camera Safe Side表达；
 - Camera Information、Blocking / Action Notes、Reference Authority / Usage Notes区；
@@ -38,6 +38,17 @@
 正式原则：
 
 `Master Template carries sketch language; Current Clip data carries blocking content.`
+
+## Neutral Mannequin Representation Rule
+
+本规则统一拥有S-SKETCH / P-SKETCH / A-SKETCH / Combined的人物绘制层；它是`Sketch Presentation Authority`的一部分，不新增Character Authority或平行草图标准。
+
+- 默认把每名人物画成同一套`gender-neutral technical blocking mannequin / neutral pose dummy`：简化关节与中性人体块面、无真实五官、无发型、无具体服装或身份装饰、无胸部 / 腰臀等明显性别化体态，也不通过身材曲线、年龄感、美貌或角色气质表达视觉身份。
+- 不读取或模仿正式Character Asset中的性别、脸、发型、服装、年龄感、体型或身份特征来重画草图人物。正式Character Asset仍是这些维度的唯一视觉权威；草图人偶只是`blocking proxy`，不拥有任何`Character Identity Authority`。
+- 所有角色优先使用相同的人偶语言；人物识别只通过`角色名 / 角色ID + 技术标注颜色 + 左右 / 前后 / 位置标签`完成，不通过长发 / 短发、裙装 / 裤装、脸、身体曲线或其他外观差异完成。
+- S-SKETCH、P-SKETCH与A-SKETCH均适用。A-SKETCH只有在身体比例本身构成动作路径、接触点、受力方向或可达性的必要物理约束时，才表达最小必要比例；即使如此也保持无性别、无身份化，不恢复角色外观。
+- Position、Facing、Gaze Arrow、`Head LIMITED / LOCK`等Pose Permission、Relationship Topology、Camera / Axis与Action Path继续通过人偶姿态、标签、箭头、接触点和技术颜色表达。
+- 本规则覆盖母版示例中的人物绘制内容：`REF-SKETCH-MASTER`只控制Layout / Diagram Language / Annotation / Information Hierarchy；即使母版示例出现发型、服装、性别或体型特征，当前草图也不得继承。
 
 ## Runtime Use Gate
 
@@ -62,7 +73,7 @@ S-SKETCH / P-SKETCH / A-SKETCH / Combined只有在`knowledge/clip_preflight_chec
 2. **Spatial / Top-down Diagram**：证明左右 / 前后、Shared Facing、Interaction / Eyeline / Action Axis、Camera Safe Side和适用Movement Path。
 3. **Camera Information**：只保留当前真正有控制价值的Shot Size、Camera Angle、Lens tendency与Camera Side，不堆砌器材参数。
 4. **Blocking / Movement Permission**：按风险选择性标注`Position LOCK / Torso LOCK / Head LIMITED / Gaze CHANGE`等Permission；不要求每次机械列全。
-5. **Usage / Reference Authority**：明确当前草图只锁空间、姿态、机位、视线或动作路径，不锁人物外观、环境 / 道具造型、材质、灯光与最终画风。
+5. **Usage / Reference Authority**：明确当前草图只锁空间、姿态、机位、视线或动作路径；草图人物是无性别调度人偶，不作为人物外观参考；人物外观服从正式Character Asset，环境 / 道具造型、材质、灯光与最终画风也不由草图控制。
 
 布局继承信息层级与技术表达语言，不要求像素级复刻。三人围桌、追逐、武打、车辆内、狭窄空间或复杂道具场景可以重新分配区域、改变标注数量或合并信息区，只要Main Blocking、空间证明、Camera、Permission与Authority仍清楚可检验。
 
@@ -85,3 +96,5 @@ S-SKETCH / P-SKETCH / A-SKETCH / Combined只有在`knowledge/clip_preflight_chec
 - 是否把母版固定版式机械套用到三人围桌、武打、追逐或车辆内场景，导致当前Topology / Action Path不可读。
 
 任一项命中即`FAILED / REVISE`，必须以Current Clip数据重做；不得删除或改写当前Clip事实来让结果贴近母版示例。
+
+Template Content Leakage之外还必须执行`Character Appearance Leakage Check`：候选人物若出现明显真实五官、具体发型、具体服装设计、明显性别化胸腰臀 / 体态、年龄 / 美貌 / 气质身份表达，或依据正式Character Asset重画角色外貌，固定判`FAIL = Character Appearance Leakage / Identity Contamination`并重做；不得注册为Confirmed `REF-SKETCH-XX`。

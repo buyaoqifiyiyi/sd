@@ -8,9 +8,9 @@
 
 每次执行按需、渐进式读取：
 
-1. 若命中重载触发，先执行`rules/runtime_reload.md`。
-2. 读取`SKILL.md`入口并确认版本、主Pipeline和路由索引。
-3. 读取`config.md`及当前行为所需的全局规则。
+1. 若命中重载触发，先执行`rules/runtime_reload.md`，由它重新解析并重读Current Skill Definition及基础owner pointers。
+2. 未命中重载触发时，复用当前runtime最近一次成功加载且仍可访问的`SKILL.md`定义；若本runtime尚无已验证入口则读取一次并确认版本、主Pipeline和路由索引，但不得把这次普通初始化声称为用户触发的`RELOADED`。
+3. 读取`config.md`及当前行为实际需要的全局规则，不为“保险”或普通“继续 / 下一步”全量重读所有Rules。
 4. 读取`references/project_state_contract.md`与`references/project_workspace.md`，按`rules/state_source.md`选定状态。
 5. 读取`workflows/workflow_map.md`和当前Workflow全文。
 6. 读取当前Workflow列出的Required Resources、Applicable / Conditional Resources及必要索引。
@@ -22,6 +22,7 @@
 ## Actual Read Gate
 
 - 路径被提及、文件曾在旧轮次读取、或SKILL中记录说明，不等于本次已读取。
+- 显式Reload必须产生`rules/runtime_reload.md`要求的本轮读取证据；非显式推进只需保有可验证的当前loaded definition，不伪造新Reload证据。
 - 必需资源读取失败时，明确列出资源和失败原因；先尝试当前运行时的合法检索机制。
 - 只有实际检索失败后才能请求用户提供资源。
 - 资源缺失导致当前Workflow无法继续时，按状态合同记录Pending Decision或真正适用的`BLOCKED`，不得虚构执行结果。

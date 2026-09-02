@@ -7,9 +7,9 @@ description: AI影视虚拟制片生产系统，用于剧本改编与分析、�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.02-r3
+Skill Version: 2026.09.02-r6
 
-Build ID: sd-film-2026.09.02-r3
+Build ID: sd-film-2026.09.02-r6
 
 User-facing usage manual: `USER_GUIDE.md`.
 
@@ -75,7 +75,7 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 
 ## Activation Entry
 
-当用户请求剧本、影视资产、视觉开发、场景/镜头设计、Clip Production、AI视频/Seedance Prompt、海报/Key Art或Review时自动激活。用户明确说“调用SD”“用SD Film”或“按SD流程”时显式激活。
+当用户请求剧本、影视资产、视觉开发、场景/镜头设计、Clip Production、AI视频/Seedance Prompt、海报/Key Art或Review时自动激活。用户明确说“调用SD”“调用sd”“调用SD流程”“用SD Film”或“按SD流程”时显式激活；其中凡命中`rules/runtime_reload.md`统一拥有的Runtime Reload Trigger，必须先过Reload Gate，不能只切换行为模式。
 
 激活只识别生产目标，不证明当前STATE。必须先按当前State Source与Completion Gate路由，不能因用户说“Seedance”“视频Prompt”就跳到STATE-08。
 
@@ -83,7 +83,9 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 
 ## Runtime Reload Entry
 
-用户说“调用SD”“调用sd”“重新调用SD”“重新加载SD”“按当前Skill继续”、明确要求使用最新/本地/当前安装版规则，或使用无歧义等价表达时，在状态解析和Workflow路由前执行Runtime Reload：完整重读当前安装入口、配置、全局规则、状态合同、Workflow及适用依赖，同时保留Project Context与已确认成果。只有实际重读权威入口并取得版本字段才可报告`RELOADED`；否则必须报告`UNAVAILABLE`与失败来源。
+用户说“调用SD”“调用sd”“调用SD流程”“重新调用SD”“重新调用sd”“重新加载SD”“重新加载sd”“按当前Skill继续”“按当前 skill 继续”、明确要求使用最新/当前可访问/当前安装版规则，或使用无歧义等价表达时，在状态解析和Workflow路由前执行Runtime Reload：先重新解析当前Chat runtime实际可访问的SD Film资源，实际重读当前`SKILL.md`并核对`Skill Version`、`Build ID`及本次路由必需的owner pointers，再按需读取当前Workflow与依赖，不无意义全量加载。首次“调用”完成正常activation与routing；明确“重新调用 / 重新加载 / 按当前Skill继续”必须执行`Runtime Skill Reload + Workflow Re-entry / Re-route`，以当前Skill与保留的Project Context重新确认Pipeline、STATE、Workflow与Current Object，并从该Workflow入口重跑当前适用Gate / Routing / QA，不得只拿上一版assistant输出继续润色。普通Chat先使用当前runtime可访问或exposed的Skill资源，不能仅因Windows本机路径不可读就要求切Work。
+
+只有实际重读权威入口并取得版本字段才可报告`RELOADED`；只有同时完成当前STATE、Workflow与Current Object的重新路由，才可声称“已重新加载并进入当前Workflow”。严格声称“已重新加载当前SD Film Skill / 严格按当前Skill执行”还必须有本轮`Loaded Source`与`Owner Files Resolved`证据。失败时报告`UNAVAILABLE`、具体失败来源与实际`Fallback Source`，不得用旧对话Skill摘要冒充当前安装版。
 
 完整协议：`rules/runtime_reload.md`。
 

@@ -2,7 +2,7 @@
 
 ## Runtime Skill Source
 
-作为已安装Skill运行时，Runtime Reload是否触发及如何报告只服从`rules/runtime_reload.md`，并在解析项目前执行。旧对话中的Skill描述不是权威Skill Source。普通Chat无法访问本机目录时，继续按`rules/state_source.md`选择下一可用来源。
+Runtime Reload是否触发、如何解析当前可访问Skill resources及如何报告只服从`rules/runtime_reload.md`，并在解析项目前执行。普通Chat先使用当前runtime实际可访问的installed / exposed Skill resources，不因Windows本机路径不可读默认切Work。Portable State只携带项目状态，不是Skill Definition。旧对话中的Skill描述不是权威Skill Source。Skill Definition解析完成后，再按`rules/state_source.md`为Project Context选择唯一来源。
 
 ## Purpose
 
