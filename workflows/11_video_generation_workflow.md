@@ -149,7 +149,7 @@ Voice/Audio Reference默认不进入视频Prompt。只有用户明确要求把�
 
 视觉条目只允许实际会向模型投喂/引用的已确认视觉文件或受控ID，以及明确需要用户实际补入、写明具体图像对象、投喂用途和`待用户补充/待上传、未确认`状态的视觉图占位。纯文字站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项和镜头规则不得成为条目；按语义迁移到现有`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。若对象已有真实视觉资产则引用正式ID，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用“板凳参考说明”之类伪资产。既有Voice/Audio Reference继续服从独立声音输入合同，并在常规视频Prompt中默认省略。
 
-通过资格检查后仍不得全选。必须读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State与`Continuity Risks`，按当前Clip生成目标执行Reference Selection / Routing，并为每个入选Reference声明Primary Role / Purpose：身份/外观风险选Active Character Canonical References；空间结构风险选Active Environment Canonical References并把Confirmed Spatial Blocking作为文字语义消费；道具造型风险选Active Prop Canonical References；A/B状态锚定选对应`REF-TAIL`并区分用途，C不选旧尾帧；Motion / Camera / Audio Reference只控制其授权维度；光线、天气或场景状态漂移只有存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。Transient Reference不得覆盖正式身份、环境结构或道具造型。每个入选条目必须对应一项具体风险/目标；Eligible、Registry存在、上一Clip使用过或仍有预算空位都不是充分理由。参考资产按需路由，不是越多越好。
+通过资格检查后仍不得全选。必须读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、适用Accepted Canon State与`Continuity Risks`，按当前Clip生成目标执行Reference Selection / Routing，并为每个入选Reference声明Primary Role / Purpose：身份/外观风险选Active Character Canonical References；空间结构风险选Active Environment Canonical References并把Confirmed Spatial Blocking作为文字语义消费；道具造型风险选Active Prop Canonical References；Final Visual Blocking Assessment=`REQUIRED`时选已通过Sketch Validation且Blocking Signature匹配的Confirmed `REF-SKETCH`，只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；A/B状态锚定选对应`REF-TAIL`并区分用途，C不选旧尾帧；Motion / Camera / Audio Reference只控制其授权维度；光线、天气或场景状态漂移只有存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。Visual Blocking / Transient Reference不得覆盖正式身份、环境结构或道具造型。每个入选条目必须对应一项具体风险/目标；Eligible、Registry存在、上一Clip使用过或仍有预算空位都不是充分理由。参考资产按需路由，不是越多越好。
 
 同时必须读取`knowledge/reference_budget.md`并按实际图片文件/帧执行单Clip预算。默认保留原始独立资产，不默认整合：Projected Final Count≤7不整合；8张且无额外帧需求不整合；9张仅在没有尚未计入的连续性图片需求时允许；当前9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张必须去重、整合同类非角色信息、仍超限再按优先级裁剪，最终≤9。每个核心角色保留各自独立三视图/角色锁定图，动作/互动图不得替代外貌基准。
 
@@ -334,10 +334,10 @@ Clip Production Plan用于：
 
 不得：
 
-读取、描述或引用Storyboard图片、线稿、分镜板、漫画格、接触表、拼图或任何多画面材料。
+读取、描述或引用Storyboard图片、分镜板、漫画格、接触表、拼图、Scene Top-down Blocking Map或任何多画面材料。按Before-Single-Clip-Prompt Gate生成 / 接收、通过Sketch Validation与Template Content Leakage Check并绑定当前Clip / Blocking Signature的单图`REF-SKETCH-XX`是受限Clip Blocking / Visual Blocking Reference例外，不得扩展为其他线稿或Planning材料。真实已注册`REF-SKETCH-MASTER`只能在生成该草图时作为Sketch Presentation输入，不能作为最终视频输入。
 
 
-【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、合法首尾帧，以及其他已经明确需要实际投喂的视觉参考图；Voice/Audio Reference只有在用户明确要求当前视频模型使用它进行声音控制时才可作为非视觉Source最小列入。缺失视觉图只有在写明具体图像对象、实际投喂用途和“待用户补充/待上传、未确认”时才可作受控占位，且不得代替正式Canonical资产的STATE-03确认流程。A/B必需但尚待用户补充的`REF-TAIL`继续以统一名称直接列入并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不得伪造路径或声称已上传/已确认，Prompt可交付但实际提交生成前补图。C不要求截图、不列`REF-TAIL`，可在【首帧参考】与首镜“起始状态”依靠Canonical资产、Spatial Blocking与文字状态承接或重建。不得使用纯文字参考说明、Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
+【参考资产】只允许使用Canonical Character / Environment / Prop / FX Assets、Final=`REQUIRED`且验证通过的当前Confirmed Visual Blocking Anchor、合法首尾帧，以及其他已经明确需要实际投喂的视觉参考图；`REF-SKETCH-MASTER`默认禁止列入。Voice/Audio Reference只有在用户明确要求当前视频模型使用它进行声音控制时才可作为非视觉Source最小列入。缺失视觉图只有在写明具体图像对象、实际投喂用途和“待用户补充/待上传、未确认”时才可作受控占位，且不得代替正式Canonical资产的STATE-03确认流程。Required `REF-SKETCH-XX`不能用占位绕过生成 / 验证；A/B必需但尚待用户补充的`REF-TAIL`继续以统一名称直接列入并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，不得伪造路径或声称已上传/已确认，Prompt可交付但实际提交生成前补图。C不要求截图、不列`REF-TAIL`，可在【首帧参考】与首镜“起始状态”依靠Canonical资产、Spatial Blocking与文字状态承接或重建。不得使用纯文字参考说明、Storyboard、Detailed Shot Design或Clip Plan截图/渲染图。
 
 
 ---
@@ -575,6 +575,14 @@ knowledge/clip_preflight_check.md
 
 在Reference Budget和正式Prompt编译前执行STATE-08最终版：区分视觉连续、剧情连续与主动切场 / 切世界；逐分镜锁定World-State、角色精确数量、空间构图、关键道具状态及适用转场五要素；只有PASS才能继续。Preflight结果只进入STATE-07既有计划记录与STATE-08内部Projection / QA，不新增最终字段。
 
+生成S-SKETCH / P-SKETCH / A-SKETCH / Combined时还必须使用：
+
+references/ref_sketch_master.md
+
+用于：
+
+读取`REF-SKETCH-MASTER`真实注册状态、Sketch Presentation Authority、自适应Technical Director Blocking Sheet版式与Template Content Leakage Check。只有`REGISTERED`且真实文件可读时才把母版作为草图生成视觉输入；否则明确使用Text Contract Fallback，不得声称已引用母版图片。该Reference不改变Final Assessment，不新增最终字段，也不自动进入视频`参考资产：`。
+
 必须使用：
 
 knowledge/reference_budget.md
@@ -788,6 +796,10 @@ Read Confirmed Clip Production Plan
 ↓
 
 Run Final Clip Preflight Check
+
+↓
+
+Run Before-Single-Clip-Prompt Gate / Final Visual Blocking Anchor Assessment
 
 ↓
 
@@ -1147,6 +1159,19 @@ Clip Movement Plan Hard Gate：
 
 结果为FAIL时，不得继续Step 05或Template Mapping；按模块Return Route做最小修正并从第1项重跑。结果为PASS时，内部记录Evidence Present，并把通过语义映射到既有Template字段，不输出Preflight标题或检查表。
 
+## Step 04B｜Before-Single-Clip-Prompt Gate
+
+在撰写当前Clip任何最终Prompt句子、运行Knowledge Reflection或Template Mapping前，必须执行`knowledge/clip_preflight_check.md`的Final Visual Blocking Anchor Assessment。该Gate适用于指定Clip、默认Single-Clip Checkpoint、用户说“下一个 / 下一步 / 继续”以及Explicit Batch Override中的每一个Clip；无需用户提醒。
+
+- Final=`NONE`：不生成草图，直接继续Step 05。
+- Final=`REQUIRED`且没有适用Confirmed Anchor：固定路由`TECHNICAL_VISUAL_BLOCKING_SKETCH → templates/23_visual_blocking_sketch_prompt.md`，不得进入Storyboard Workflow或读取Storyboard模板。先读取`references/ref_sketch_master.md`；母版`REGISTERED`且真实文件可读时，按专用模板把解析后的绝对路径实际传入图像工具的视觉参考参数，并记录`VISUAL_REFERENCE`，不能只在文字中提到母版；只有文件 / 工具输入失败时才记录具体原因并使用`Text Contract Fallback`。随后按最小充分类型生成`S-SKETCH / P-SKETCH / A-SKETCH / Combined`。候选图先通过七项Layout Validation；缺少Main Blocking、角色标签、方向 / 视线 / 动作标注、适用Spatial / Top-down或Action Path Diagram、Camera Information、Blocking / Movement Notes、Usage / Authority中的任何必需项，或退化为单幅电影铅笔场景，一律`FAIL = Artistic Storyboard Drift`。再执行Blocking、Authority与Template Content Leakage Check，填写Candidate Evidence Record并运行`scripts/validate_sd_film.py sketch`。只有命令PASS才登记`REF-SKETCH-XX｜CLIP-XX…草图`、Blocking Signature与用途，加入当前Clip【参考资产】，重跑Visual Input Eligibility与Reference Budget；本轮在草图和用途说明处停止，不输出最终Prompt。
+- Final=`REQUIRED`且已有Confirmed Anchor：先比较Current Revision与Blocking Signature。未实质变化时`KEEP`并继续Prompt；Blocking-affecting Revision时执行`KEEP / REPLACE / RETIRE / CREATE`，其中REPLACE / CREATE必须重新生成、验证并在本轮停止。
+- 图像工具不可用、草图验证失败、与Canonical资产 / Scene Spatial Snapshot / Shot-State / Accepted Canon冲突，或预算无法容纳Required Anchor时：当前Prompt保持Pending，按最小Return Route修正；不得绕过Gate。
+
+同一Clip的普通Prompt重写、压缩、风格优化、反向提示词整理、台词 / 音效调整或Template修正不得再次生成草图。只有Topology、Position、Same-seat、Allowed Delta、Axis / Camera、Movement Path、角色数量或Clip Start / End Blocking发生实质改变时才重新评估。
+
+`REF-SKETCH-MASTER`只服务上述草图生成，不绑定当前Clip / Blocking Signature、不写入最终视频`参考资产：`、不计视频图片预算；真正进入视频输入的是验证通过的当前`REF-SKETCH-XX`。母版不得覆盖Character / Environment / Prop Canonical Authority或Current Clip语义权威。
+
 
 ---
 
@@ -1279,7 +1304,7 @@ knowledge/prompt_compilation/state08_projection.md
 
 禁止为了让每个模块“看起来被使用”而增加不存在的内容；但任何已确认且适用的模块都不得在Template Mapping时丢失。
 
-完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并严格调用`knowledge/prompt_compilation/state08_projection.md`唯一拥有的Compiler链：`Source / Asset State Resolution → Field Ownership Assignment → Positive Specification → Local Constraint Retention → Duplicate Merge → Voice Field Gate → Negative Consolidation → Negative Compression → Prompt Compression → Final QA`。先为每条约束指定权威字段，再去重和压缩；不得先在多个字段全文重复，再交给反向段兜底。重要抽象语义至少落到一个可见/可听项；导演名、流派名、题材风格名、情绪标签与审美大词按唯一Style Label Expansion Rule执行`Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`，首次出现同段解释，标签可保留且不因具象化默认删除；展开后的carriers使用正向执行语言。后续已锁定Style Source只补当前delta；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。正文中的通用`禁止 / 不要 / 避免`清单必须归入末尾唯一反向段；只有必须贴近特定动作、空间或物理连续性才能保持指代清楚的最小局部约束可以留在对应分镜字段。
+完成Applicable Knowledge Set后，必须在同一内部Projection中依次执行`Prompt Attention / Control Allocation Gate → Generation Budget Allocation Gate → Five-Dimensional Prompt Control Matrix`。先明确一个`Primary Spend`、最多一至两个`Secondary Spend`和主动降低复杂度的`Economized`，再让五维只检查参考资产/上游尚未锁死且当前Clip确需控制的项目；三类预算和五维都不成为最终大字段。若Identity Fidelity、Motion Boldness、Scene Density、复杂Camera、Crowd、Dialogue / Lip-sync、FX与光色变化仍同时高负荷，必须把非核心项降级或返回STATE-07/06拆分。随后调用`rules/03_prompt_rules.md`中的Prompt Pollution诊断，并严格调用`knowledge/prompt_compilation/state08_projection.md`唯一拥有的Compiler链：`Source / Asset State Resolution → Field Ownership Assignment → Positive Specification → Local Constraint Retention → Duplicate Merge → Voice Field Gate → Negative Consolidation → Negative Compression → Prompt Compression → Final QA`。先为每条约束指定权威字段，再去重和压缩；不得先在多个字段全文重复，再交给反向段兜底。重要抽象语义至少落到一个可见/可听项；导演名、流派名、题材风格名、情绪标签与审美大词按唯一Style Label Expansion Rule执行`Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`，首次出现同段解释，标签可保留且不因具象化默认删除；展开后的carriers使用正向执行语言。后续已锁定Style Source只补当前delta；高共现大词必须拆成当前Clip真实存在的视觉/声音元素；数字按视觉控制价值保留、降精度或删除；已由正式资产锁定的外观/环境结构只作最小确认。正文中的通用`禁止 / 不要 / 避免`清单按“通用负向项末尾唯一收束”处理，必须归入末尾唯一反向段；只有必须贴近特定动作、空间或物理连续性才能保持指代清楚的最小局部约束可以留在对应分镜字段。
 
 
 ## Knowledge Application Reflection Layer
@@ -2711,7 +2736,7 @@ Coverage遗漏返回Sequence Planning或Shot Design，不在STATE-08临时创造
 - B Reference-Only Handoff的G02及以后同样标记`Tail Frame Required = YES`；【参考资产】列统一`REF-TAIL`名称与“空间/站位/景别参考用途”，【首帧参考】说明延续空间逻辑但另起新镜头重新构图，禁止使用A的固定直接承接句；未提供时同样列待补充状态
 - C新镜头且无需尾帧标记`Tail Frame Required = NO`，不要求用户截图、不把上一尾帧列入【参考资产】；在【首帧参考】明确Canonical资产、Spatial Blocking、文字核对/重建原因与保留锚点
 
-默认交付模式是Single-Clip Checkpoint：多Clip项目本轮只输出当前待处理的一个Clip及其G段，完成该Package全部章节后停止，等待用户审核、修改或确认。用户只说“下一个”“下一步”或“继续”时，只推进并输出下一个尚未交付Clip，不得倾倒剩余全部Clip；完整视频提示词是项目最终目标，不是本轮批量交付授权。
+默认交付模式是Single-Clip Checkpoint：多Clip项目本轮只处理当前待处理的一个Clip。先自动执行Before-Single-Clip-Prompt Gate：Final=`NONE`或已有匹配Confirmed Anchor时输出该Clip及其G段；Final=`REQUIRED`且需新草图时，本轮只交付经验证草图、注册信息与用途说明并停止，下一次“下一个 / 下一步 / 继续”才输出该Clip Prompt。用户只说“下一个”“下一步”或“继续”时，只推进一个合法Checkpoint，不得倾倒剩余全部Clip；完整视频提示词是项目最终目标，不是本轮批量交付授权。
 
 只有用户在当前请求中明确要求“全部输出”“一次性输出”“批量输出”或“连续输出多个Clip”时，才切换为Explicit Batch Override并连续列出多个独立完整Clip区块。该覆盖只改变本轮Package数量；每段仍必须完全自足、逐段通过Final Validation并保持独立Checkpoint语义。不得从用户的最终目标、项目规模或此前曾要求完整视频推定批量授权。不得因为批量而压缩、共享、合并、删减或改名字段；如果完整内容超出单次回复容量，自动按完整Clip分批，批次边界不得拆开单个Clip。
 
@@ -2760,7 +2785,7 @@ Template需要的数据。
 
 已通过的Clip Preflight语义副本：连续性三选一主分类；逐分镜World-State；角色精确数量与唯一性；追逐/战斗/多人空间构图；关键道具形态/尺寸/持有/悬浮/转换状态；适用转场五要素。该副本只用于把语义映射到现有字段，不成为新栏目。
 
-`参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`、适用的Accepted Canon State与当前Continuity Risks，按身份/外观、空间结构、道具造型、A/B状态锚定、Motion、Camera、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、合法首尾帧与其他确定需要实际投喂的视觉参考图。Voice/Audio Reference默认不列；只有用户明确要求当前视频模型使用它进行声音控制时，才作为非视觉Source最小列出。每个入选Reference必须写明唯一Primary Role / Purpose、所解决风险和锁定约束，并遵守Reference Authority Hierarchy：Transient / Motion / Camera / Audio Reference只控制授权维度，不得覆盖正式角色身份、环境结构或道具造型；尾帧脸部漂移时仍由Active Character Canonical Reference控制身份，只继承合法姿态/站位/动作阶段。不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
+`参考资产：`清单：先读取`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、适用的Accepted Canon State与当前Continuity Risks，按身份/外观、空间结构、Visual Blocking、道具造型、A/B状态锚定、Motion、Camera、光线/场景状态等实际风险路由最小充分资产，再显式列出本Clip实际使用的Canonical Character / Environment / Prop / FX Assets、Confirmed `REF-SKETCH-XX`、合法首尾帧与其他确定需要实际投喂的视觉参考图。`REF-SKETCH-MASTER`是草图生成阶段的Sketch Presentation Authority，默认不得列入本字段。Voice/Audio Reference默认不列；只有用户明确要求当前视频模型使用它进行声音控制时，才作为非视觉Source最小列出。每个入选Reference必须写明唯一Primary Role / Purpose、所解决风险和锁定约束，并遵守Reference Authority Hierarchy：Clip Blocking / Visual Blocking、Transient、Motion、Camera、Audio Reference只控制授权维度，不得覆盖正式角色身份、环境结构或道具造型；草图或尾帧脸部漂移时仍由Active Character Canonical Reference控制身份，只消费合法Blocking / 姿态 / 站位 / 动作阶段。`REF-SKETCH-XX`只在Final=`REQUIRED`、Sketch Validation与Template Content Leakage Check通过且Blocking Signature匹配时列入，并说明不控制五官、发型、服装、材质、色彩、灯光或最终画风。不得把整个Registry或所有Eligible资产机械复制进来。已确认资产不得被临时文字描述覆盖。每个视觉条目序列化前必须通过Visual Input Eligibility；纯文字约束移到对应既有字段，受控待补视觉图写具体图像对象、实际投喂用途与未确认状态。上一Clip尾帧先由Previous-Clip Continuity Decision中的A/B/C决定：A/B均以`REF-TAIL-XX｜CLIP-XX尾帧参考`直接列入本字段并分别标明“同镜头连续承接用途”或“空间/站位/景别参考用途”；缺图时同一条目写“待用户提供/待上传、未确认”，不得声称已上传/已确认。C不要求截图且不列旧尾帧。
 
 在序列化该清单前，先执行Visual Input Eligibility并记录文字伪资产迁移，再按Preflight逐分镜World-State删除非当前Clip出场角色、未使用环境/道具/动作图及当前阶段不适用资产；A/B无论尾帧是否已上传都预留1个Projected位并列出待补充声明，只有实际尾帧图存在、可访问、已确认时才计入已提交图片数；C不预留旧尾帧。其他受控待补视觉图同样只计Projected位且必须说明具体图像与实际投喂用途。再按`knowledge/reference_budget.md`复算：≤7直接保留独立图；8张且无额外帧需求直接保留；9张确认无待加入连续性图片后才保留；>9才整合同类非角色信息，仍超限按优先级裁剪。已有9张且新增或待上传上一尾帧时按10计算并至少释放1位。Projected Final Count与已提交图片数均≤9；真实图片参考必须存在且已确认；每个核心角色各自独立三视图/角色锁定图不可合并或由动作图替代。
 
@@ -3134,7 +3159,7 @@ STATE-08。
 
 使用正确资产。
 
-`参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、合法首尾帧与其他确定会实际投喂的视觉参考图，并写明用途、状态和锁定约束；Voice/Audio Reference是否只在用户明确要求当前视频模型使用时作为非视觉Source最小列出。每个视觉条目是否能肯定回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否是否已移出并归类到正确字段。A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他受控待补视觉图必须说明具体图像对象与实际投喂用途。未参与实际输入的说明、普通缺失占位或伪资产不得输出。
+`参考资产：`是否逐项列出当前Clip实际使用的Canonical角色、环境、道具、FX、Confirmed Visual Blocking Anchor、合法首尾帧与其他确定会实际投喂的视觉参考图，并写明用途、状态和锁定约束；Voice/Audio Reference是否只在用户明确要求当前视频模型使用时作为非视觉Source最小列出。每个视觉条目是否能肯定回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否是否已移出并归类到正确字段。`REF-SKETCH`是否只在Final=`REQUIRED`、验证通过且Signature匹配时出现，并明确只控制Blocking / Pose / Axis / Camera / Action Path且不覆盖Canonical身份；A/B所需`REF-TAIL`缺图时必须作为“待用户提供/待上传、未确认”的受控声明列出且注明用途，不得因尚未上传而省略；其他受控待补视觉图必须说明具体图像对象与实际投喂用途。未参与实际输入的说明、普通缺失占位或伪资产不得输出。
 
 是否已按`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State、当前目标与Continuity Risks完成Reference Selection / Routing；每个入选条目能否声明Primary Role / Purpose并说明所解决风险；身份/外观、空间结构、道具造型、A/B尾帧、Motion、Camera、Audio与光线/场景状态是否选择正确Authority；C是否未选旧尾帧；Transient Reference是否未覆盖正式身份/结构/造型；是否不存在必需资产漏选、用途选错、无风险依据的过量条目或把Spatial Blocking Map当视觉参考。
 
@@ -3146,6 +3171,7 @@ STATE-08。
 
 是否已按`knowledge/clip_preflight_check.md`执行STATE-08最终版并为PASS：
 
+- 是否已执行Before-Single-Clip-Prompt Gate；Final=`NONE`时没有生成草图且没有因母版存在升级Assessment。Final=`REQUIRED`时是否已读取母版注册状态：真实文件可读才声明使用视觉母版，否则明确Text Contract Fallback；当前草图是否为Technical Director Blocking Sheet而非艺术型Storyboard Illustration，是否通过Sketch Validation、Template Content Leakage Check且Blocking Signature匹配。若本轮刚CREATE / REPLACE，是否已在草图处停止而没有同时输出Prompt；普通Prompt Rewrite是否KEEP并复用原图；`REF-SKETCH-MASTER`是否未进入最终视频参考资产或图片预算
 - Continuity Classification是否在视觉连续、剧情连续、主动切场/切世界中三选一，并明确A/B/C；A/B是否标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、用途与真实状态，缺图时是否写“待用户提供/待上传、未确认”且未冒充已提交图片；A/B的首帧句式是否正确区分；C是否标记`NO`、不列`REF-TAIL`并采用Canonical资产、Spatial Blocking与文字重建。
 - 每个分镜是否明确World-State；参考资产是否只含当前阶段实际存在/出场/使用项；完全位于耳中玉境等转换后世界的Clip是否排除现实阶段环境/道具。
 - 每个视觉条目是否通过Visual Input Eligibility；站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项或镜头规则是否没有伪装成资产，并已迁移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`；真实道具图是否使用正式ID。
@@ -3530,6 +3556,11 @@ Character Consistency问题。
 Template Mapping问题。
 
 
+每次改写当前Clip Prompt前，先比较`Current Revision vs Blocking Signature`：
+
+- 仅措辞、压缩、风格、反向提示词、台词 / 音效或Template修正：复用Confirmed `REF-SKETCH`，不重新生成。
+- Blocking-affecting Revision：执行Visual Blocking Anchor Reassessment，结果只能为KEEP / REPLACE / RETIRE / CREATE；REPLACE / CREATE重新验证并在本轮先停于草图。
+
 修改时：
 
 只处理对应问题。
@@ -3602,6 +3633,8 @@ Clip Production：
 Reference Budget审计缺失、连续性帧加入后超限或裁剪/整合计划错误属于Clip Production，返回STATE-07；若唯一可行方案需要新建环境/道具/空间/动作总图，则返回对应STATE-03资产Workflow完成真实生成与确认，不能留在STATE-08虚构名称。
 
 `Clip End-State Record / Next-Clip Carryover`缺失、与Exit / Spatial Blocking / Handoff冲突，或Reference Selection / Routing在STATE-07漏选、选错、过量时返回STATE-07只修Affected Clip；若记录与SHOT / Blocking事实冲突返回STATE-06，若资产本身版本/形态错误返回STATE-03。上游选择正确而STATE-08仅序列化遗漏、用途误写或误把未选资产加入`参考资产：`时，留在STATE-08只修Affected Clip Prompt。
+
+Visual Blocking Risk Pre-Assessment缺失、Blocking Signature与Confirmed Clip事实冲突或Clip组织导致Signature不可成立时返回STATE-07；Scene Spatial Snapshot、Pose Hierarchy、Relationship Topology、Action Path或轴线设计错误返回STATE-06。Final Assessment=`REQUIRED`但草图未生成 / 未验证 / 与Canonical Authority冲突时留在STATE-08完成或修正Anchor，不得先输出Prompt。普通Prompt wording变化不得被误路由为草图重做。
 
 Clip Preflight在STATE-07记录缺失、连续性主分类错误、World-State/角色数量/空间构图/道具状态/转场五要素设计不完整或Reference Asset Check失败时，返回STATE-07修正Affected Clip；若根因属于资产形态/版本返回STATE-03，属于Shot / Blocking /转场设计返回STATE-06。只有上游Preflight正确而最终字段转译遗漏时留在STATE-08修正。
 

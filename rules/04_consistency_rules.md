@@ -284,12 +284,15 @@ Reference Selection / Routing除决定“是否使用”外，还必须为每个
 - **Identity Authority**：Active Character Canonical References；唯一负责角色身份、脸、年龄、体型、基础服装、物种与身体结构。
 - **Environment Authority**：Active Environment Canonical References；负责正式环境结构、固定布局、材质与长期空间识别。
 - **Prop Authority**：Active Prop Canonical References；负责正式道具身份、造型、材质与Canonical形态。
+- **Sketch Presentation Authority**：`references/ref_sketch_master.md`登记的`REF-SKETCH-MASTER`；只负责Technical Director Blocking Sheet的表达语言、信息层级、简化人物程度、技术标注和自适应版式。它不绑定Clip、不拥有Blocking Signature，不控制人物 / 场景 / 道具身份、数量、位置、Camera、Action、光色材质或最终画风。
+- **Clip Blocking Authority / Visual Blocking Authority**：由`knowledge/clip_preflight_check.md`的Before-Single-Clip-Prompt Gate生成或接收、通过Sketch Validation并绑定当前Clip / Blocking Signature的Confirmed `REF-SKETCH-XX`；只负责Position、Facing、Distance、Relationship Topology、Axis、Camera、Pose Hierarchy、Gaze与Action Path。Scene Top-down Blocking Map、Storyboard、`REF-SKETCH-MASTER`或未验证草图不具有该Authority。
 - **Transient State Authority**：用户已接受Take的Accepted Canon State，以及与该Take绑定的上一Clip / `REF-TAIL`；只负责姿态、站位、朝向、人物距离、动作阶段、短时道具持有、临时光态/天气/环境状态与起始构图。
 - **Motion Authority**：实际入选的已确认动作或视频参考；只负责动作路径、节奏、受力、速度感或表演阶段，不负责身份、环境结构或道具造型。
 - **Camera Authority**：实际入选的已确认镜头/机位/运动参考；只负责机位、景别、构图、轴线侧、焦点与摄影机路径，不负责角色身份或资产设计。
+- **Formal Keyframe Authority**：只有明确需要并经确认的正式Keyframe才负责最终视觉构图、光线、材质或画面状态锁；Blocking风险不自动触发Keyframe，Keyframe也不替代角色 / 环境 / 道具Canonical Authority。
 - **Audio Authority**：当前系统已支持且实际入选的Confirmed Voice/Audio Reference；只负责声音身份或授权的音频执行，不得改变视觉身份。它默认由输入音频自身携带状态，不投影进STATE-08视频Prompt；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按最小Delta引用。没有适用声音资产不构成缺失项，不写`No Voice Asset`，也不自动触发AUDIO模块。
 
-同一Reference可以有一个Primary Role和必要的兼容Secondary用途，但Secondary不得越过上述Authority。发生冲突时，正式角色/环境/道具Authority分别高于Transient、Motion、Camera与风格参考；临时状态Reference中的脸部、服装、环境结构或道具造型漂移不得被下一Clip继承。尤其`REF-TAIL`脸部轻微漂移时，下一Clip仍以Active Character Canonical References保持身份，只从尾帧或Accepted Canon State消费已确认的姿态、站位、动作阶段与其他合法瞬时状态。
+同一Reference可以有一个Primary Role和必要的兼容Secondary用途，但Secondary不得越过上述Authority。发生冲突时，正式角色/环境/道具Authority分别高于Sketch Presentation、Clip Blocking、Transient、Motion、Camera、Formal Keyframe中的越权信息与风格参考；母版示例、草图、临时状态Reference或Keyframe中的人物数量、脸部、发型、服装、环境结构、道具造型、光色或装饰内容不得被继承。尤其`REF-SKETCH-MASTER`中的示例剧情内容必须通过Template Content Leakage Check排除；`REF-SKETCH-XX`或`REF-TAIL`脸部轻微漂移时，下一Clip仍以Active Character Canonical References保持身份，只从其合法Authority消费已确认的Blocking、姿态、站位、动作阶段与其他瞬时状态。
 
 
 
@@ -405,8 +408,8 @@ STATE-07必须把已经散布在Entry、内部Shot状态链、Exit、Spatial Blo
 
 记录固定使用八组语义：
 
-- `Character State`：各人物位置、左右/前后、朝向、坐/站/移动姿态、人物间距离、动作结果/阶段，以及谁持有什么。
-- `Spatial State`：环境锚点、关系轴/180度轴线、路径、视线或来源—路径—目标连线、不可穿越与不可换边事实。
+- `Character State`：各人物Position、Torso / Shoulder / Head Orientation、Gaze、左右/前后、坐/站/移动姿态、人物间距离、动作结果/阶段、Allowed Delta，以及谁持有什么；Pose Hierarchy上层默认继承。
+- `Spatial State`：环境锚点、Relationship Topology（Side-by-side / Face-to-face / Back-to-back / Shared Facing / Same Seat or Bench / Distance / Eye Contact）、关系轴/180度轴线、路径、视线或来源—路径—目标连线、不可穿越与不可换边事实；按需保存Visual Anchor State / Blocking Signature及Anchor Revision。
 - `Prop State`：关键道具身份、形态、持有者/左右手、位置、方向、接触、损伤/开合/转换等当前状态。
 - `Camera State`：摄影机位置、高度、朝向、轴线侧、最终机位、景别、构图、焦点与稳定状态。
 - `Environment State`：当前Scene / World-State、固定结构、时间、天气、光线、综合色彩、材质/介质与持续声音状态。

@@ -55,7 +55,7 @@ Style Label Expansion、抽象转译、冲突消解、参数压缩、Cross-Shot�
 
 | 信息类型 | 权威字段 | 后续字段允许内容 |
 |---|---|---|
-| 实际输入Source、Canonical身份与Reference用途 | `参考资产` | 只引用资产携带的Authority，不把临时站位、动作、数量或禁止项写成资产用途全文 |
+| 实际输入Source、Canonical身份与Reference用途 | `参考资产` | 只引用资产携带的Authority；Confirmed Visual Blocking Anchor只写ID、用途及Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path职责，不复制草图标注全文，也不把纯文字站位、动作、数量或禁止项伪装成资产 |
 | 当前Clip第一帧的构图、人物位置/姿态、道具瞬时状态、动作阶段与跨Clip承接 | `首帧参考` | 首镜`起始状态`只写来源和当前镜执行所需的最短继承，不重抄整份首帧合同 |
 | 当前Clip最终稳定状态与下一Clip carryover | `尾帧限制` | 末镜`镜头结尾状态`写本镜形成该Endpoint的结果和Boundary Class，不重抄整份尾帧合同 |
 | 长期角色身份、年龄感、五官、发型、服装、身体比例与物种边界 | `人物一致性` | Clip临时坐姿、左右、距离、动作次数、道具接触和“是否拾取”等不进入本字段 |
@@ -205,11 +205,11 @@ STATE-08内部转换链固定为：
 
 ## Reference Budget Projection Gate
 
-每个Clip在Clip Preflight通过后才可建立`参考资产：`。读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；A/B无论尾帧是否已上传都预留1个Projected位，并直接列出统一`REF-TAIL`名称、用途和真实状态；未提供时为“待用户提供/待上传、未确认”，不计入已提交图片数。C不加入或预留旧尾帧。得到Projected Final Count后执行既有阈值：≤7不整合；8张且无额外帧需求不整合；9张只有在没有未计入的合法连续性需求时允许直接使用；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9必须整合同类非角色信息，仍超限则按规定优先级裁剪，最终≤9。
+每个Clip在Clip Preflight与Before-Single-Clip-Prompt Gate通过后才可建立`参考资产：`。Final Visual Blocking Assessment=`REQUIRED`时，只有实际生成 / 接收、通过Sketch Validation且Blocking Signature匹配的Confirmed `REF-SKETCH`才可进入；未完成时本轮停止，不编译Prompt。Final=`NONE`不生成或预留草图；普通Prompt Rewrite复用现有Anchor。随后读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；A/B无论尾帧是否已上传都预留1个Projected位，并直接列出统一`REF-TAIL`名称、用途和真实状态；未提供时为“待用户提供/待上传、未确认”，不计入已提交图片数。C不加入或预留旧尾帧。得到Projected Final Count后执行既有阈值：≤7不整合；8张且无额外帧需求不整合；9张只有在没有未计入的合法连续性需求时允许直接使用；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9必须整合同类非角色信息，仍超限则按规定优先级裁剪，最终≤9。
 
 当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
-最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
+最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。Confirmed `REF-SKETCH`是经Gate验证的单Clip Visual Blocking Anchor，不属于上述未确认总图；它必须写明仅控制Blocking / Pose / Axis / Camera / Action Path并明确不控制身份、材质、色彩、灯光或最终画风。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
 
 每个Clip投影前必须通过四项硬门槛：
 
@@ -236,7 +236,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 |---|---|---|
 | Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、4—15秒平台生成时长；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
 | Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
-| Character / Environment / Prop / FX Assets | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；逐项写资产ID/名称、真实引用或待补充状态、用途与禁止修改特征；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
+| Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
 | Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
 | Clip End State / Next Clip | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
 | Character Continuity / Performance | 人物一致性；主风格 | 外观与状态锁定、表演尺度、跨镜湿润/伤痕/体力/情绪连续性 |

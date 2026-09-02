@@ -104,6 +104,7 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 
 - knowledge/spatial_blocking_layer.md（所有Scene；在正式分镜生成前完成Spatial Blocking Decision）
 - knowledge/director_decision_layer.md（所有Scene / Shot Group；在STATE-06结束前形成内部Director Decision Notes）
+- knowledge/action_previs.md（Action-dominant / Mixed，以及需要展开物理动作的Performance-dominant镜头）
 - knowledge/camera_language/shot_language_router.md（所有正式SHOT）
 - knowledge/camera_language/camera_movement/selection_matrix.md（所有正式SHOT）
 - knowledge/camera_language/camera_movement/index.md与被选主运镜对应的原子知识文件（所有正式SHOT；辅助项构成真实运镜时也读取对应原子文件）
@@ -226,6 +227,29 @@ Work/Codex把结果写入`<active-project-root>/shots/spatial_blocking/SCENE-xxx
 
 本阶段只创建`SHOT-xxx`。不得创建任何Draft、Provisional、Tentative、占位或正式`CLIP-xxx`；Clip Boundary相关信息只用于下游连续性判断，不得预先决定Clip数量或分配。
 
+## Shot Purpose Gate
+
+创建或保留每个SHOT前，必须证明它至少承担一项当前Scene已确认的任务：
+
+- Narrative Change
+- Emotional Change
+- Relationship Change
+- Spatial / Action Progression
+- Information Reveal
+- Atmosphere Establishment
+
+任务必须写成该镜头产生的具体变化或建立结果，不能只写“有电影感、增加压力、好看、过渡”。一个镜头可以承担多项，但不得为凑任务新增剧情。若完全没有任务，优先与相邻兼容SHOT合并或删除；若它承担必要呼吸、观察、场景建立或剪辑接口，应归入上述对应任务并说明可见 / 可听结果。Shot Purpose Gate是内部导演决策，不新增Template字段，也不进入STATE-08 Prompt。
+
+## Scene / Shot Mode Routing
+
+在动作和表演细化前，对每个Scene / Shot或连续Shot Group选择：
+
+- `Performance-dominant`：主要变化来自注意、情绪、关系、对白倾听或控制/泄漏；执行`knowledge/performance/micro_expression.md`的Performance Progression Engine。
+- `Action-dominant`：主要变化来自位移、接触、受力、追逐、多人协调、复杂道具、特技或动作结果；执行`knowledge/action_previs.md`。
+- `Mixed`：表演选择会改变动作，或动作后果会改变情绪/关系；联合执行两者，但只保留当前SHOT完成目的所需的信息，并先保证空间、动作因果和容量。
+
+路由可以按Shot变化，不把整场永久贴成“文戏 / 武戏”。它是STATE-06内部编译选择，不创建新STATE、模式ID、用户可见章节或STATE-08字段。
+
 
 存在Sequence Plan时：
 
@@ -280,13 +304,7 @@ Sequence Plan只提供覆盖需求，不决定景别、机位、焦段、运镜�
 动作过程。
 
 
-包括：
-
-开始。
-
-发展。
-
-结束。
+包括可见起因、物理过程、结果、恢复与下一动作继承。按`knowledge/action_previs.md`选择A1 / A2 / A3最小充分等级；A1只需起点—路径/变化—终点，A2补协调、重心、接触/受力和状态继承，A3启用完整PREVIS与Kinetic Chain。动作复杂度不得自动决定Realistic / Commercial / Stylized-Fantasy视觉风格。
 
 
 
@@ -629,6 +647,20 @@ Camera Language Decision至少包含：
 
 ---
 
+## Action Execution Goal
+
+每个存在可见物理动作的SHOT必须先读取Confirmed Spatial Blocking Result，再说明：
+
+- Action Execution Level：A1 / A2 / A3，以及为什么这是最小充分等级
+- 起始姿态、位置、朝向、支撑与触发
+- 可见路径、接触 / 近接触、参与者或道具的先后关系
+- A2/A3适用的重心、力源、躯干传递、轨迹、反馈、惯性与恢复
+- 稳定结束位置、姿态、持有 / 接触状态和Next-action Carryover
+- 关键动作在当前景别、遮挡、时长与摄影机路径下如何可读
+- 超出模型或镜头容量时的Stable Downgrade
+
+A1不得被过度工程化。A3关键Beat要尽量写清物理因果，但不机械填满十一环；只有省略会造成瞬移、无来源发力、接触不清或状态重置的链节才强制补齐。不得只写“猛烈攻击、快速躲闪、激烈打斗、优雅舞动”。
+
 ## Performance Goal
 
 
@@ -640,11 +672,11 @@ Camera Language Decision至少包含：
 - 眉眼/眼睑/嘴角/下颌中一个主要面部变化
 - 呼吸/肩颈/手部/重心中一个支持变化
 - 公开状态与内部泄漏（如有），以及人物最终行动选择
-- 表演强度
+- 表演强度，以及PL1 / PL2 / PL3最小充分载体负荷
 - 结束时可继承的视线、呼吸、面部/身体张力、动作与情绪状态
 
 
-按需读取`knowledge/performance/facial_action_language.md`、`emotion_dynamics.md`与`expression_patterns.md`。禁止只写“悲伤、愤怒、震惊、甜蜜、坚定”或PEX/AU编号；禁止把瞳孔、脸红、落泪、露齿数和颤抖写成必然结果。
+先读取`knowledge/performance/micro_expression.md`执行Performance Progression Engine，再按需读取`facial_action_language.md`、`emotion_dynamics.md`与`expression_patterns.md`。PL1只选1—2个可执行载体；PL2选2—4个递进载体；PL3只在高压、崩溃或重大揭示授权时允许较完整链。禁止把六阶段当所有文戏固定时间轴，禁止只写“悲伤、愤怒、震惊、甜蜜、坚定”或PEX/AU编号，也禁止把瞳孔、脸红、落泪、露齿数和颤抖写成必然结果。
 
 
 对白镜头还需说明：
@@ -820,7 +852,7 @@ FX-001（如适用）
 ## Motivation
 
 
-镜头是否有叙事目的。
+镜头是否通过Shot Purpose Gate，至少形成Narrative、Emotional、Relationship、Spatial / Action、Information或Atmosphere中的一项具体变化 / 建立结果；完全无任务的镜头是否已合并或删除。
 
 
 
@@ -841,9 +873,11 @@ FX-001（如适用）
 - 景别、机位角度、摄影机物理运动、光学变化、视点和剪辑关系是否分类正确
 - Pan 与 Truck、Tilt 与 Crane、Push/Pull 与 Optical Zoom 是否被混用
 - OTS、POV、Reverse Shot 是否保持人物身份、眼线与 180 度轴线
-- 适用镜头是否已把左右、朝向、关系轴、摄影机轴线侧和来源—目标空间连线写成可画出的几何，而非抽象“面对对方”；双方同框时是否避免双正脸
-- Spatial Blocking Decision是否与场景复杂度一致；双锁场景是否同时具备可读Top-down Map描述 / 图像和Text Spatial Rules，且正式SHOT没有推翻其角色路径、摄影机侧、关键道具或Clip首尾站位
+- 适用镜头是否已读取Interaction / Eyeline / Action Axis，标记camera safe side，并把左右、朝向、关系轴、摄影机轴线侧和来源—目标空间连线写成可画出的几何，而非抽象“面对对方”；双方同框时是否避免双正脸
+- Spatial Blocking Decision是否与场景复杂度一致；Scene Spatial Snapshot是否锁定长期几何与固定环境锚点；双锁场景是否同时具备可读Top-down Map描述 / 图像和Text Spatial Rules，且正式SHOT没有推翻其角色路径、摄影机侧、关键道具或Clip首尾站位
+- 反打、双人对话、并排坐、追逐和相向动作是否无意越轴；有意越轴是否使用中性镜头、观众可见的摄影机移动、角色明确换位或插入隔离后建立新轴线等可感知合法过渡，并在新safe side稳定重建方位
 - 情绪用途是否有剧情与表演依据，而不是把镜头名称当作固定情绪公式
+- Performance-dominant / Action-dominant / Mixed路由是否正确；PL1没有被强制扩成完整递进链，A1没有被强制扩成完整Kinetic Chain，A3关键Beat是否具有明确物理因果、恢复和Next-action Carryover
 - 复合模式是否仍只有一个主要路径，并具有可执行降级方案
 - “运镜组合”是否已区分一镜路径与多镜Coverage；低复杂度复合路径是否只有一次同向延续，Coverage / Transition Sequence是否已拆镜并交给Transition处理边界
 - 构图是否拥有明确主体位置、层次、空间来源、焦点主次和结束几何关系
@@ -924,11 +958,15 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 
 □ 所有镜头拥有SHOT ID
 
-□ 每个Scene已在正式分镜前完成Spatial Blocking Decision，并保存Decision Factors、Map Mode、Structured Blocking Map、Text Spatial Rules、Clip Boundary Spatial Ledger与状态
+□ 每个Scene已在正式分镜前完成Spatial Blocking Decision，并保存Decision Factors、Map Mode、Scene Spatial Snapshot、Structured Blocking Map、Text Spatial Rules、Clip Boundary Spatial Ledger与状态
 
 □ 单人无走位 / 简单双人静态只用文字时具有明确理由；双人明显走位、3人以上、打斗 / 追逐 / 多人进出、复杂道具空间、连续多Clip或严格180度轴线场景已优先双锁，或记录用户拒绝 / 工具不可用的Structured Text Fallback与风险
 
-□ 所有Spatial Blocking结果完整标注场景边界、固定结构 / 关键道具、A/B/C起终点与路径、C1/C2/C3位置 / 朝向、180度轴线、关键视线、Clip首尾站位及Previous Clip End State → Next Clip First Frame Reference
+□ 所有Spatial Blocking结果完整标注场景边界、固定环境锚点、A/B/C起终点与路径、C1/C2/C3位置 / 朝向、Interaction / Eyeline / Action Axis、camera safe side、合法越轴方式、关键视线、Clip首尾站位及Previous Clip End State → Next Clip First Frame Reference
+
+□ 每个SHOT已通过Shot Purpose Gate，至少承担一项具体变化 / 建立任务；无任务SHOT已合并或删除，内部任务标签没有进入最终Seedance Prompt
+
+□ 每个SHOT / Group已完成Performance-dominant / Action-dominant / Mixed路由；Performance按PL1/PL2/PL3选择最小充分载体，Action按A1/A2/A3选择最小充分物理展开，Mixed没有机械叠加两套完整链
 
 □ 正式输出为`Professional Detailed Shot Script`，每个SHOT均完整填写`templates/08_shot_design_prompt.md`当前定义的全部字段
 
@@ -945,6 +983,8 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 □ 每镜`画面内容/构图`均明确前景/中景/背景、主体位置、焦点层次及适用的遮挡/反射/景深/负空间；没有只写单层居中或抽象“电影感”
 
 □ 每镜`人物动作`均为可观察的动作与表演链，包含起始、刺激/注意、反应、动作选择与稳定结束状态
+
+□ A3关键动作具有可见触发、动力传递、轨迹、接触 / 近接触、反馈、惯性 / 恢复与Next-action Carryover；A1简单动作保持起点—路径 / 变化—终点，没有无效工程参数
 
 □ 每镜`镜头调度`均完整记录摄影机运动、人物调度、两者配合/触发关系和镜头结束状态；没有只写运镜名
 
@@ -975,6 +1015,8 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 □ 所有镜头包含可执行Composition Intent及必要降级方案
 
 □ 所有战斗、双主体、对峙、对话、追逐与相向运动镜头均已完成Relational Screen Geometry锁定；首帧与尾帧几何可复核，攻击/视线/水流等来源—目标方向一致
+
+□ 反打、双人对话、并排坐、追逐与相向运动均保持已建立camera safe side，或记录了可感知、可解释、可连续的合法越轴与新轴线重建；没有把“永不越轴”误作全局禁令
 
 □ Professional Detailed Shot Script已把Confirmed Spatial Blocking Result投影到现有Template字段，没有新增表头，也没有把Top-down Blocking Map列为Canonical / STATE-08参考资产
 

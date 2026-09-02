@@ -28,9 +28,10 @@
 
 若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止。不得把用户最终目标误解释为本轮立即交付全部后续成果。
 
+STATE-08的Before-Single-Clip-Prompt Gate是本规则的窄范围例外：用户请求指定Clip或说“下一个 / 下一步 / 继续”时，已授权系统执行该Clip的Final Visual Blocking Anchor Assessment。Final=`REQUIRED`时，生成并验证一张受限`REF-SKETCH`属于当前Prompt的自动内部生产步骤，不等同于STATE-03资产生图、Storyboard激活或Candidate确认；无需另行把纯推进命令解释为资产Prompt确认。本轮必须停在草图、注册与用途说明，下一次推进才输出Prompt。任何角色 / 环境 / 道具 / FX资产图、Formal Keyframe或非Gate图片仍服从原授权边界。
+
 ## Revision And Resume
 
 - Review退回或用户局部修改时，只恢复受影响的最小范围，保留Accepted Unaffected Artifacts。
 - 同一生成失败第二次必须降级，第三次返回事实或设计拥有者；禁止盲重试。
 - 项目中断、跨轮继续或Checkpoint恢复调用`workflows/18_project_resume_workflow.md`，但不创建新STATE。
-

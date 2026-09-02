@@ -32,6 +32,7 @@
   - World-State Map（逐分镜）：当前现实 / 幻想 / 耳中玉境 / 其他已确认层；Pre/Post Transition阶段；实际角色、环境、道具、FX；不适用资产删除结果
   - Character Count Lock（逐分镜）：角色身份 × 精确数量；唯一角色的正向唯一性与前/中/背景无第二个同类锁；复制/分身/镜像/背景重复风险
   - Spatial Composition Lock：前后景、左右、朝向、视线、关系轴、摄影机轴线侧、追逃/攻击/视线路线、正脸/侧背/背身许可、同一景深许可；追逐默认后追前逃并禁止并排合影
+  - Visual Blocking Risk Pre-Assessment：`NONE / POSSIBLE / REQUIRED`；命中风险；建议`S-SKETCH / P-SKETCH / A-SKETCH / Combined`；Blocking Signature摘要；STATE-07只预判不生成。已有Confirmed `REF-SKETCH`时记录KEEP候选与Revision；最终CREATE / REPLACE / RETIRE由STATE-08 Before-Single-Clip-Prompt Gate决定
   - Prop State Check（逐关键道具）：当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换是否完成、结尾状态与下一镜继承
   - Transition Check（适用时）：起点状态；转换媒介；运动方向/过程；终点状态；转场后首个稳定构图；不适用时写明理由
   - Reference Asset Check：每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；只列当前World-State实际存在/出场/使用且Confirmed并可回查的视觉资产，或明确需要用户实际补入、写明具体图像对象/实际投喂用途/`待用户补充或待上传、未确认`的视觉图占位。纯文字站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头规则标记`NOT ELIGIBLE`并迁移到正确既有字段；角色独立图优先；C不机械计入上一尾帧；任何`REF-TAIL`必须声明用途；再进入Reference Budget
@@ -57,7 +58,7 @@
 - 下一Clip Handoff：
 - Clip End-State Record / Next-Clip Carryover（STATE-07内部连续性记录；归并已有状态，不新增STATE或STATE-08字段）：
   - Character State（人物位置/朝向/坐站姿态/距离/动作阶段/谁持有什么）：
-  - Spatial State（左右前后/环境锚点/路径/关系轴与180度轴线/视线或来源—路径—目标连线）：
+  - Spatial State（左右前后/环境锚点/路径/关系轴与180度轴线/视线或来源—路径—目标连线；按需保存Visual Anchor State / Blocking Signature：Characters、Topology、Position、Shared Facing、Seat / Spatial Relation、Allowed Delta、Camera Logic、Axis、Movement Path、Clip Start / End Blocking、Anchor ID / Revision / Status）：
   - Prop State（身份/形态/持有者与左右手/位置/方向/接触/当前状态）：
   - Camera State（位置/高度/朝向/轴线侧/景别/构图/焦点/稳定终点）：
   - Environment State（Scene / World-State/固定结构/时间/天气/光线/综合色彩/持续声音）：
@@ -66,7 +67,7 @@
   - Next-Clip Carryover（必须保持/允许改变/不继承/待确认；A/B/C、Tail Frame Requirement、参考用途或重建依据）：
 - 模型执行风险与安全降级：
 - Reference Budget Audit：
-  - Reference Selection / Routing（当前Clip目标与风险 → 选择的角色/环境/道具Canonical资产、Spatial Blocking文字语义、A/B `REF-TAIL`或合格场景状态参考；逐项写用途；Eligible但未选项与理由；明确“参考资产按需路由，不是越多越好”）：
+  - Reference Selection / Routing（当前Clip目标与风险 → 选择的角色/环境/道具Canonical资产、Spatial Blocking文字语义、已有Confirmed且Signature未变的`REF-SKETCH`、A/B `REF-TAIL`或合格场景状态参考；逐项写用途与Authority；STATE-07的草图风险预判不等于已存在视觉资产；Eligible但未选项与理由；明确“参考资产按需路由，不是越多越好”）：
   - 原始候选图片资产（逐项写实际资产ID/名称、Active/Confirmed状态、真实文件/受控ID、当前Clip用途、图片位数）：
   - Visual Input Eligibility（逐项回答是否为实际会投喂/引用的视觉资产；列出移除的文字伪资产、0图片位及迁移字段；待补视觉图列具体图像、实际投喂用途与未确认状态）：
   - 删除的当前Clip无关项（未出场角色 / 未使用环境 / 未使用道具 / 未使用动作图 / 其他）及理由：
@@ -122,6 +123,7 @@
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：
 - 每个Clip是否把已有Entry / Exit / Handoff归并为八组`Clip End-State Record / Next-Clip Carryover`，且下一Clip首帧能逐项消费、没有人物/道具/相机/环境状态重置：
 - 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一并明确A/B/C；A/B是否标记`Tail Frame Required = YES`、在参考资产声明直接列统一`REF-TAIL`名称、对应用途与真实状态，缺图时写“待用户提供/待上传、未确认”且不冒充已提交图片；A/B首帧句式是否正确区分；C是否标记`NO`、不列`REF-TAIL`并以Canonical资产、Spatial Blocking、文字状态或当前Scene / World-State / Start Boundary重建：
+- 每个Clip是否完成Visual Blocking Risk Pre-Assessment并记录`NONE / POSSIBLE / REQUIRED`、风险、建议草图类型与Blocking Signature；是否只做预判而未提前生成；已有Confirmed Anchor是否仅在Signature未变时标记KEEP：
 - 是否逐分镜明确World-State，并删除未出场、未使用或当前阶段不适用的角色/环境/道具/FX；完全位于耳中玉境等转换后世界的Clip是否没有现实阶段道具：
 - 是否逐分镜锁定角色精确数量；剧情唯一角色是否在正向设计中明确唯一一只/名、前中后景无第二个同类，并预置复制/分身/镜像/背景重复禁令：
 - 追逐/战斗/对峙/多人镜头是否锁定前后景、朝向、关系轴、运动方向、正脸许可与同景深许可；追逐是否默认后追前逃并禁止双方并排正对镜头、海报式合影和群像站桩：
@@ -133,7 +135,7 @@
 - 每个 Clip 是否有风险降级、稳定尾帧、尾帧用途与下一 Clip Handoff：
 - 每个 Clip 是否有明确主导运镜逻辑、逐镜变化、视觉高潮、最克制镜头、重复规避与Seedance复杂度控制：
 - 超过4个Shot的Clip是否通常至少有2种不同运镜逻辑；同类主运镜连续3次以上是否具有逐镜叙事理由；是否避免为了多样而强制每镜不同：
-- 是否完全未使用 Storyboard 图片、线稿、分镜板、拼图或多画面材料作为 Clip / STATE-08 视觉参考：
+- 是否完全未使用Storyboard图片、分镜板、拼图、Scene Top-down Blocking Map或多画面材料作为Clip / STATE-08视觉参考；只有经Before-Single-Clip-Prompt Gate确认、绑定当前Blocking Signature的单Clip `REF-SKETCH`可作为受限例外：
 - 每个Clip是否执行Reference Budget Check；≤7未整合、8张且无额外帧需求未整合、9张无未计入连续性需求才直接使用、>9已去重/整合同类非角色信息/按优先级裁剪并最终≤9：
 - 是否只列实际存在且已确认资产，没有虚构总设定图/空间关系图/动作关系图；独立资产更清晰且未超限时是否继续使用独立图：
 - 是否逐项通过Visual Input Eligibility；纯文字站位/不可换边/人物距离/同坐一张板凳/道具数量/空间关系/行为/禁止项/镜头规则没有伪装成参考资产，并已迁移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`：

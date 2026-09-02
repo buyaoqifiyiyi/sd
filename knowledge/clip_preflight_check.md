@@ -3,33 +3,119 @@
 ## Module Contract
 
 - Module Name：`Clip Preflight Check / Clip生成前检查`。
-- Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge Gate；不创建新主STATE，不拥有最终Prompt Schema。
-- Trigger：每个候选Clip在STATE-07形成执行合同时执行前置版；每个Confirmed Clip在STATE-08正式Prompt编译与Template Mapping之前执行最终版。
+- Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge Gate；同时唯一拥有Visual Blocking Anchor Assessment、Sketch Validation与Persistence判断；不创建新主STATE，不拥有最终Prompt Schema。
+- Trigger：每个候选Clip在STATE-07形成执行合同时执行前置版；每个Confirmed Clip在STATE-08正式Prompt编译与Template Mapping之前执行最终版；用户以“下一个 / 下一步 / 继续”逐Clip请求时自动执行，无需另行提醒。
 - Not Triggered As：不得把它当成新的制作阶段、资产生成Workflow、转场特效生成器或STATE-08新增栏目。
-- Required Inputs：上一Clip End State与尾帧用途、当前Clip Start Requirement、逐分镜世界状态、Confirmed Assets及其Active Version、角色数量事实、Spatial Blocking / Relational Screen Geometry、关键道具状态链、适用Transition事实与Confirmed Clip Production Plan。
+- Required Inputs：上一Clip End State与尾帧用途、当前Clip Start Requirement、逐分镜世界状态、Confirmed Assets及其Active Version、角色数量事实、Spatial Blocking / Relational Screen Geometry、Pose Hierarchy、Relationship Topology、关键道具状态链、适用Transition事实、Action PREVIS、Confirmed Clip Production Plan，以及生成草图时必须读取的`references/ref_sketch_master.md`注册状态与Sketch Presentation Authority合同；实际生图输入包由`templates/23_visual_blocking_sketch_prompt.md`唯一拥有。
 - Input Owners：剧情与时空事实由Script / Scene拥有；资产身份与版本由Asset Registry拥有；镜头与Blocking由STATE-06拥有；Clip边界与组织由STATE-07拥有。
 - Output Owner：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过后的语义映射到`templates/10_video_prompt.md`现有字段，本模块不新增、删除或改名最终字段。
-- Allowed Writes：STATE-07 Clip Plan中的Preflight记录、既有连续性/预算/风险栏目，以及STATE-08内部Projection / QA记录；不得把内部检查表原样输出为Seedance字段。
+- Allowed Writes：STATE-07 Clip Plan中的Preflight记录、`Spatial State / Continuity Risks / Reference Budget`既有栏目，以及STATE-08当前Clip Checkpoint / Projection / QA记录；可在这些既有位置保存Visual Anchor State与Blocking Signature，不新增主STATE、平行Registry或Seedance字段。Work/Codex把Confirmed Visual Blocking Sketch作为当前Clip受控参考写入Active Project Root既有`clips/`交付目录并登记文件 / 受控ID与Revision；普通Chat保留可回查的当前对话媒体引用和Checkpoint摘要。它计入图片预算，但不得登记为Canonical Character / Environment / Prop / FX Asset。
 - Consumers：`workflows/10_clip_production_workflow.md`、`workflows/11_video_generation_workflow.md`与STATE-09 Review。
 - Conflict Route：剧情/世界层事实冲突返回其事实拥有者；资产状态冲突返回STATE-03；Shot / Blocking /转场设计冲突返回STATE-06；Clip边界、参考预算或Clip执行合同冲突留在STATE-07；仅Prompt转译措辞错误留在STATE-08。
 
-## Four Global High-Priority Rules
+## Five Global High-Priority Rules
 
-以下四条先于Reference Budget、Prompt润色与模型适配执行：
+以下五条先于Reference Budget、Prompt润色与模型适配执行：
 
 1. **视觉连续 ≠ 剧情连续，尾帧需求 ≠ 尾帧当前可用性。** 先做连续性主分类，再在既有判定中把尾帧使用方式明确为A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B均标记`Tail Frame Required = YES`，C标记`NO`；图片暂缺不能改变A/B/C。A/B缺图时仍须在【参考资产】直接列出统一`REF-TAIL`名称、用途与“待用户提供/待上传、未确认”，占Projected位但不计为已提交图片；不得伪造路径或声称已上传/已确认。Prompt可完整编译和交付，实际提交生成前补图。
 2. **参考资产必须先通过当前世界状态检查。** 资产只有在当前分镜所在时空层实际存在、实际出场或正在执行合法状态转换时，才有资格进入候选清单。
 3. **跨世界镜头必须先设计转场，再生成提示词。** 先锁定转场五要素，再写正式视频执行语句；不得用含糊的“金光一闪 / 突然切换”替代过程，除非用户明确要求这种省略。
 4. **视觉参考条目必须具有实际视觉输入资格。** 每个视觉候选都必须能回答“这是不是一张实际会被投喂/引用的视觉资产？”只有答案为“是”的真实视觉文件/受控ID，或已经确定需要用户实际补入、且明确标记`待用户补充/待上传、未确认`的具体视觉参考图，才可进入【参考资产】。站位、换边、距离、共坐关系、数量、空间、行为、禁止项与镜头规则等纯文字约束一律移入其既有语义字段，不得用“参考说明”伪装成资产。
+5. **每个Clip必须检查草图，但不强制每个Clip生成草图。** STATE-07只做Visual Blocking Risk Pre-Assessment；每次真正输出单Clip最终Prompt前执行Before-Single-Clip-Prompt Gate。Final=`NONE`直接编译Prompt；Final=`REQUIRED`时本轮先生成并验证适用草图，注册为Confirmed Visual Anchor并加入当前Clip【参考资产】，本轮不得同时输出最终Prompt。普通Prompt重写只复用已确认草图；Blocking Signature发生实质变化时才重新评估。
 
 ## Execution Order
 
 每个Clip固定按以下顺序执行，不得把Reference Budget提前到世界状态和连续性分类之前：
 
-`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget → PASS或Return Route`
+`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Visual Blocking Anchor Assessment → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget → PASS或Return Route`
 
-- STATE-07执行前置版：检查设计是否可生成，并把结果写入Clip Plan。任何失败先修Clip设计，禁止确认Clip Plan。
-- STATE-08执行最终版：按实际资产、实际首尾帧和最终逐镜文案复核。任何失败不得Template Mapping、不得输出Prompt；先回到对应拥有者做最小必要修正。
+- STATE-07执行前置版：检查设计是否可生成，并对每个Clip记录`Visual Blocking Risk Pre-Assessment = NONE / POSSIBLE / REQUIRED`及理由；只标风险，不生成草图。任何失败先修Clip设计，禁止确认Clip Plan。
+- STATE-08执行最终版：按实际资产、实际首尾帧和当前Blocking Signature复核；在撰写任何最终Prompt句子前执行Before-Single-Clip-Prompt Gate。任何失败不得Template Mapping、不得输出Prompt；先回到对应拥有者做最小必要修正。
+
+## Visual Blocking Anchor Assessment / Before-Single-Clip-Prompt Gate
+
+本Gate服务单个Clip的生成执行，不等同于STATE-06 Scene Top-down Blocking Map、Storyboard或正式Keyframe。每个Clip都检查，但只有高漂移风险且视觉锚点能实质降低歧义时才生成草图；不得为了流程统一给所有Clip出图。
+
+### Dual Trigger, Single Execution
+
+1. **Shot → Clip Integration / STATE-07**：轻量预判`NONE / POSSIBLE / REQUIRED`，记录风险来源、建议`S-SKETCH / P-SKETCH / A-SKETCH / Combined`和初始Blocking Signature；不调用图像生成。
+2. **Before Every Single-Clip Prompt / STATE-08**：用户请求指定Clip、说“下一个 / 下一步 / 继续”，或普通/批量流程即将编译某Clip最终Prompt时，执行Final Assessment。不得要求用户另说“检查草图”。
+3. **Final = NONE**：直接继续Prompt编译；简单单人、固定位置、普通转头且无复杂空间/轴线/动作关系时通常属于NONE。
+4. **Final = REQUIRED**：选择最小充分草图类型，先生成或接收草图并执行Sketch Validation。验证通过后注册`REF-SKETCH-XX｜CLIP-XX…草图`为Confirmed Visual Anchor，加入当前Clip【参考资产】，说明用途与Authority，更新Reference Budget；本轮在草图和用途说明处停止，不输出该Clip最终Prompt。用户下一次继续时先确认Anchor仍为Confirmed且Blocking Signature未变化，再输出Prompt。
+5. 图像工具不可用、草图未生成或验证失败时，保持当前Clip Prompt Pending并说明缺口；不得以纯文字假装已完成Required Anchor，也不得越过Gate输出最终Prompt。
+
+批量输出仍逐Clip执行。若按顺序遇到`REQUIRED`且尚无Confirmed Anchor的Clip，在该Clip处暂停，不得跳过、重排或为保持批量而绕过草图。
+
+### Risk Assessment Dimensions
+
+至少检查以下维度，并沿用现有执行风险术语；内部可使用`LOW / MEDIUM / HIGH / ACTION HIGH`，但不得机械输出为最终Prompt字段：
+
+1. 两人及以上角色；
+2. 固定左右 / 前后关系；
+3. 共享同一座椅、桌面、车辆、床、门口或其他空间结构；
+4. Facing、Eyeline、Interaction Axis或180°轴线；
+5. 身体不动、只允许眼睛 / 头部 / 手部变化等局部姿态约束；
+6. 人物换位、走位、进出画；
+7. 前 / 中 / 后景复杂关系；
+8. 复杂道具交互；
+9. 正反打、并排、背对背、包围、追逐等高漂移Relationship Topology；
+10. A2 / A3复杂动作或复杂机位。
+
+任一维度命中不自动等于REQUIRED。最终判断必须比较：现有Canonical资产、Scene Spatial Snapshot、文字Blocking、REF-TAIL或Accepted Canon是否已足够唯一；新增一张中性草图是否能显著降低Position / Facing / Topology / Axis / Action Path歧义。
+
+### Sketch Types And REF-SKETCH-MASTER Presentation Routing
+
+- `S-SKETCH / Spatial Sketch`：空间拓扑、左右 / 前后、环境锚点、Interaction Axis、Camera Safe Side与机位。
+- `P-SKETCH / Pose Sketch`：Position、Torso Orientation、Shoulder Orientation、Head Orientation、Gaze Direction、Distance与Movement Permission。
+- `A-SKETCH / Action Sketch`：动作起点、路径、接触 / 近接触点、受力方向、终点与Next-action Carryover。
+
+允许一张综合草图承担S+P或S+P+A；不得机械拆成多张。选择最小充分草图类型后，必须读取`references/ref_sketch_master.md`：`REF-SKETCH-MASTER`拥有`Sketch Presentation Authority`，只负责技术图表达语言、信息组织与简化程度；Current Clip的Spatial Snapshot、Blocking Signature、Pose / Topology、Camera / Axis与Action Path继续拥有草图内容。内部固定原则为`Master Template carries sketch language; Current Clip data carries blocking content.`
+
+生成分支固定为`TECHNICAL_VISUAL_BLOCKING_SKETCH → templates/23_visual_blocking_sketch_prompt.md`。不得路由到`workflows/10_storyboard_workflow.md`或`templates/09_storyboard_prompt.md`，也不得复用Storyboard的“单镜头视觉预演 / 叙事构图”默认生图指令。
+
+若母版注册记录为`REGISTERED`且真实相对路径可读，必须按`templates/23_visual_blocking_sketch_prompt.md`把解析后的绝对路径传入图像工具的真实视觉参考参数；只在文字中写“参考母版”不算加载。若记录为`UNAVAILABLE`、`NOT REGISTERED`、文件不可读或工具不支持图像参考，只允许明确使用`Text Contract Fallback`并记录失败来源，不得声称已经看见、加载或引用母版图片，也不得伪造路径。母版是否可用不改变Assessment，不得因存在母版而把`NONE`升级为`REQUIRED`。
+
+草图是导演技术调度锚点，不是正式美术资产，也不是电影感铅笔插画。生成核心必须写成`Technical Director Blocking Sheet / Spatial Blocking Diagram`，不得以铅笔感、电影感、青春感、岩井俊二、阴雨氛围、唯美、高燃或其他最终画风词驱动。默认信息组织按母版合同自适应包含：最大区域的Main Blocking Diagram；证明Topology / Shared Facing / Axis / Camera Safe Side的Spatial / Top-down Diagram；最小Camera Information；按风险选择的Blocking / Movement Permission；Usage / Reference Authority。人物使用简化人体、角色标签、方向 / 视线 / 动作箭头与必要技术颜色标记；无真实五官、具体发型 / 服装纹理、最终灯光、材质或画风。三人围桌、追逐、武打、车辆内等场景允许重新布局，不要求像素级复刻。
+
+Formal Keyframe只在确需锁定最终视觉身份、光影、材质、构图或画面状态时另行使用；它不是默认草图替代物，也不能因Blocking风险自动创建。
+
+### Sketch Validation Gate And Reference Authority
+
+生成或接收草图后，注册Confirmed前先执行Layout Validation Gate。实际视觉检查必须确认：1）Main Blocking Panel；2）Character / role labels；3）Direction / gaze / movement annotation；4）Spatial / Top-down Diagram（S/P高风险默认必须，A-SKETCH至少有可验证的Spatial / Action Path Diagram）；5）Camera Information；6）Blocking / Movement notes or permission；7）Usage / Authority note。候选若退化成单幅电影场景、单幅铅笔叙事插画或只有完整人物 / 环境而无上述技术分区，即使大致站位正确，也固定判`FAIL = Artistic Storyboard Drift`。
+
+随后继续核对：role mapping；left / right / front / back；Position；Torso / Body Facing；Relationship Topology；Same-seat / prop / environment-anchor relation；Gaze / Head Delta；Interaction / Eyeline Axis；Camera side与意外跨轴；Movement Path（适用时）；是否提前出现未来动作；是否与Active Character / Environment / Prop资产、Scene Spatial Snapshot、Shot-State Memory、Accepted Canon State或canonical blocking发生Authority冲突；并执行`references/ref_sketch_master.md`定义的`Template Content Leakage Check`，确认没有无依据继承母版示例的人物数量、人物外观、钢琴、琴凳、窗户、乐谱、雨景、文字、色彩 / 灯光或其他剧情内容。
+
+视觉检查结果必须按`templates/23_visual_blocking_sketch_prompt.md`写Candidate Evidence Record，并实际运行`scripts/validate_sd_film.py sketch`。命令PASS只是注册的必要条件，不替代视觉检查；任何版式项、Blocking Match、泄漏检查或图片可读性失败都不得登记Confirmed。
+
+任一项不通过，草图状态为`FAILED / REVISE`，不得进入当前Clip的Confirmed Visual Anchor。`Artistic Storyboard Drift`必须回到同一Technical Visual Blocking Sketch route按专用模板重做，不得转入Storyboard。若草图与已确认Spatial Snapshot或canonical blocking冲突，修正 / 重做草图；不得反向修改正式空间事实来迁就草图。
+
+Confirmed条目至少解释：
+
+```text
+REF-SKETCH-04｜CLIP-04空间与姿态调度草图
+用途：只控制人物位置、身体朝向、共同座椅 / 空间关系、人物距离、视线、轴线、摄影机位置与适用动作路径。
+不控制：人物五官、发型、服装、身体身份、环境 / 道具造型、材质、色彩、灯光与最终画风。
+```
+
+Character Asset继续拥有identity / face / hair / costume / body identity；Environment Asset拥有scene identity / spatial structure / material baseline；Prop Asset拥有prop identity / canonical state；`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前Clip的Confirmed `REF-SKETCH-XX`才拥有Clip Blocking Authority，即Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；REF-TAIL只拥有上一Accepted transient end state与连续性；Formal Keyframe只在明确需要时拥有最终视觉构图 / 光线 / 状态锁。母版与当前草图都不得覆盖前三类Canonical Authority。
+
+### Sketch Persistence / Blocking Canon
+
+同一Clip针对当前稳定Blocking State的Confirmed `REF-SKETCH`默认只生成一次并持续有效。普通Prompt优化、压缩、措辞重写、主风格优化、反向提示词整理、台词 / 音效调整或Template重映射，只要Blocking Signature没有实质变化，必须复用原草图，不得再次生成。
+
+Visual Anchor State / Blocking Signature保存在Clip Plan现有`Spatial State / Continuity Risks / Reference Budget`或当前STATE-08 Checkpoint中，按需包含：Characters、Topology、Position、Shared Facing、Seat / Spatial Relation、Allowed Delta、Camera Logic、Axis、Movement Path、Clip Start / End Blocking、Anchor ID / Revision与`NONE / POSSIBLE / REQUIRED / CONFIRMED / RETIRED`状态。每次Prompt Rewrite前只比较`Current Revision vs Blocking Signature`。
+
+只有Blocking-affecting Revision才触发Visual Blocking Anchor Reassessment，包括但不限于：并排变面对面 / 背对背；左右 / 前后交换；共同坐变一人起身 / 离开；仅侧眼变明显转身 / 靠近；双人同框与正反打互换；轴线侧重大改变或环绕；增删角色；新增复杂道具交互；Movement Path显著变化；Shot合并 / 拆分改变空间状态；Clip起点 / 终点Blocking大幅变化；机位 / 构图重构到足以改变Topology读取。
+
+Reassessment只能得到：`KEEP existing sketch`、`REPLACE with REF-SKETCH-XX-v2`、`RETIRE sketch`或`CREATE new sketch`。轻微机位、措辞或风格变化不构成自动替换依据。REPLACE / CREATE必须重新通过Sketch Validation；RETIRE后从当前Clip实际投喂清单移除并更新预算，但保留Revision追溯，不假装旧图从未存在。
+
+### Prompt Pollution Boundary
+
+Confirmed Visual Anchor进入`参考资产`时只写ID、用途、Authority与必要状态，不复制草图全部标注。Prompt正文继续执行`Source Carries State, Prompt Carries Delta`：只保留当前Clip Delta与仍需贴近局部动作 / 空间才能消歧的最小高风险约束；不得在人物一致性、环境一致性、首帧、每个分镜和反向段反复重述同一Blocking。反向提示词继续在末尾唯一收束，除非现有规则允许的最小局部连续性约束确需留在对应字段。
+
+Scene Top-down Blocking Map、Storyboard、多格分镜板与设计表截图继续禁止进入STATE-08；经本Gate生成、验证、确认且绑定单一Clip / Blocking Signature的Visual Blocking Sketch是严格受限的执行参考例外，不是Canonical Asset或Storyboard。
+
+`REF-SKETCH-MASTER`不属于当前Clip视频输入，不写入最终`参考资产：`、不计入视频模型图片预算。它只在当前执行环境明确支持且真实文件已注册时服务草图生成；真正进入视频参考资产的是验证通过并绑定当前Blocking Signature的`REF-SKETCH-XX`。
 
 ## A. Temporal / Spatial Continuity Classification
 
@@ -89,10 +175,10 @@
 
 World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 
-1. 先逐项执行Visual Input Eligibility Test：`这是不是一张实际会被投喂/引用的视觉资产？`。允许通过的视觉类型为：已确认角色图、环境图、道具图、正式FX图、参考板、合法首尾帧，以及其他当前Clip确实需要用户实际投喂的视觉参考图。真实资产必须有可回查文件/受控ID与用途；待补图必须写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得伪造路径或确认状态。
+1. 先逐项执行Visual Input Eligibility Test：`这是不是一张实际会被投喂/引用的视觉资产？`。允许通过的视觉类型为：已确认角色图、环境图、道具图、正式FX图、参考板、合法首尾帧、经本Gate确认的单Clip Visual Blocking Sketch，以及其他当前Clip确实需要用户实际投喂的视觉参考图。真实资产必须有可回查文件/受控ID与用途；待补图必须写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得伪造路径或确认状态。
 2. 纯文字规则一律判定为`NOT ELIGIBLE`并从视觉候选中移除。站位/不可换边/人物距离/同坐一张板凳/道具数量/空间关系进入`空间关系`、Spatial Blocking Rules或适用的`起始状态`；持有、数量、同一张板凳等道具事实进入`道具状态`；首尾边界分别进入`首帧参考`、`尾帧限制`；禁止项进入`反向提示词`；动作与镜头规则进入对应分镜现有字段。迁移只改变归类，不改变约束本身。
 3. 如果对象本身存在正式视觉资产，按真实ID引用，例如`PROP-BENCH-01｜双人钢琴凳`；`板凳参考说明｜用途：锁定两人共坐同一张板凳`不得进入清单。若缺的是应成为Canonical的正式CHAR / ENV / PROP / FX资产，返回STATE-03完成双确认，不得用待补占位绕过Asset System。
-4. 读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、当前Clip目标与`Continuity Risks`，对已经Eligible的候选执行Reference Selection / Routing。身份/外观风险选择当前Active Character Canonical References；空间结构风险选择Active Environment Canonical References并继续消费Confirmed Spatial Blocking文字语义；道具造型风险选择Active Prop Canonical References；A/B状态锚定选择对应`REF-TAIL`，C不选择旧尾帧；光线/天气/场景状态漂移只有在存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。不得因“Eligible、Registry里存在、上一Clip用过或预算有空位”机械全选。
+4. 读取STATE-07的`Clip End-State Record / Next-Clip Carryover`、当前Clip目标、Visual Anchor State与`Continuity Risks`，对已经Eligible的候选执行Reference Selection / Routing。身份/外观风险选择当前Active Character Canonical References；空间结构风险选择Active Environment Canonical References并继续消费Confirmed Spatial Blocking文字语义；道具造型风险选择Active Prop Canonical References；Visual Blocking Final Assessment为REQUIRED时选择对应Confirmed `REF-SKETCH`并只赋予Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path Authority；A/B状态锚定选择对应`REF-TAIL`，C不选择旧尾帧；光线/天气/场景状态漂移只有在存在真实、已确认且合格的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。不得因“Eligible、Registry里存在、上一Clip用过或预算有空位”机械全选。
 5. 每个入选条目记录`解决的具体风险 / 生成目标 → 资产角色 → 用途`；对Eligible但未选条目记录不选理由。当前Clip每个出场核心角色都视为具有持续身份/外观风险，仍按既有硬门槛保留各自独立三视图/角色锁定图；Reference Routing不得削弱该规则。
 6. 删除未出场角色、未使用环境、未使用道具、未使用动作图、当前World-State不适用以及不能解决当前风险的资产。参考资产按需路由，不是越多越好。
 7. 去重后，读取同一连续性判定中的A/B/C与`Tail Frame Required`。A/B无论尾帧当前是否已上传都预留1个Projected连续性图片位，并在【参考资产】直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、A类“同镜头连续承接用途”或B类“空间/站位/景别参考用途”及真实状态；未提供时标明“待用户提供/待上传、未确认”，不计入已提交图片数，不伪造路径。C不得加入或预留旧尾帧图片位，可由Canonical资产、Spatial Blocking和文字状态承接或重建。
@@ -178,6 +264,10 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 | G. B新镜头参考型但无实际尾帧图 | `Tail Frame Required = YES`；`参考资产`直接列`REF-TAIL`、空间/站位/景别参考用途与“待用户提供/待上传、未确认”；`首帧参考`说明另起新镜头重新构图且不使用Direct固定句 |
 | H. C新镜头且无需尾帧 | `Tail Frame Required = NO`；不列`REF-TAIL`、不要求截图；依靠Canonical基础资产、Confirmed Spatial Blocking、文字空间规则与当前Scene / World-State / Start Boundary建立新首帧 |
 | I. `板凳参考说明｜用途：锁定两人共坐同一张板凳……`混入参考资产 | Visual Input Eligibility为`NOT ELIGIBLE`；从【参考资产】删除并迁移到`空间关系`或`道具状态`。原清单1—5号真实视觉资产保持不动；若确有双人钢琴凳参考图，则改用真实`PROP-BENCH-01｜双人钢琴凳`及其文件/受控ID |
+| J. 简单单人原地转头 | Visual Blocking Final Assessment=`NONE`；不生成草图，直接编译Prompt |
+| K. CLIP-04：林夏左 / 许栀右，共坐同一长琴凳并共同朝向钢琴 / 窗外；许栀只允许Gaze + LIMITED Head，其他上层姿态与距离锁定 | 首次单Clip Prompt前判为HIGH / REQUIRED，先生成并验证S+P综合草图，注册`REF-SKETCH-04`并加入参考资产，本轮不输出Prompt；Side-by-side漂成Face-to-face即使左右未换仍判Blocking Drift；后续普通Prompt重写复用原图；若重构为许栀起身走到林夏面前，触发Reassessment并REPLACE或RETIRE / CREATE |
+| L. A3武打 / 复杂动作 | 可判ACTION HIGH / REQUIRED，使用A-SKETCH或S+P+A综合草图锁定起点、路径、接触 / 受力、终点与Next-action Carryover；草图不得覆盖角色 / 环境 / 道具身份 |
+| M. 三人围桌且母版示例为两女 + 钢琴 | 继承Technical Director Blocking Sheet的信息层级并重排为三人Topology；不得复制两女、钢琴、琴凳、窗户、乐谱、雨景或示例文字；Template Content Leakage命中即FAILED / REVISE |
 
 ## Validator Invariants
 
@@ -185,4 +275,4 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 - `templates/20_clip_plan.md`具有逐Clip Preflight记录与PASS / Return Route。
 - `templates/10_video_prompt.md`不新增Preflight字段，只在既有字段内容合同中承载世界状态、数量、空间、转场与道具语义。
 - Reference Budget在Continuity Classification与World-State过滤之后执行。
-- 九个Acceptance Scenarios与Four Global High-Priority Rules可被静态检索。
+- 十三个Acceptance Scenarios与Five Global High-Priority Rules可被静态检索。

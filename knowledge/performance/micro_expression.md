@@ -47,6 +47,24 @@ Action Choice / Settled State
 
 单个短镜头优先一个主要情绪转折和少量辅助信号。
 
+## Performance Progression Engine
+
+重要情绪先按内部诊断链理解，再选择当前 Shot 真正可见、可执行的部分：
+
+`Emotion Intent → Trigger → First Physiological Response → Social Suppression / Masking → Local Leakage → Control Failure（条件）→ Emotional Residue → Performance Blocking`
+
+这条链是诊断与编译工具，不是固定六阶段时间轴。`Control Failure`只在剧情确实授权破防、崩溃或重大揭示时启用；克制文戏可以在短暂泄漏后重新控制。最终动作必须落到 gaze / eye movement、breath / breathing pause、jaw / mouth corner / swallow、hand / fingertip tension、posture / shoulder / body weight、pause / delayed reaction、social suppression / masking 或 emotional residue 等少量可观察载体，不能把“悲伤、震惊、复杂、克制”本身当成完整控制。
+
+### Performance Load
+
+为避免与 Quality QA 的 P0/P1/P2 严重度混淆，本模块使用 `PL1 / PL2 / PL3`：
+
+- **PL1 Micro / Restrained**：1—2个载体；适合青春片、隐忍、观察、未确认信息和短反应镜头。优先一处视线/呼吸变化，必要时再加一处手部、姿态或延迟反应。
+- **PL2 Clear Change**：2—4个按先后发生的载体；适合明确情绪转折、关系变化或重要台词后的反应。必须说明公开状态、泄漏与行动选择，不能让所有载体同时爆发。
+- **PL3 High Pressure / Break**：可使用较完整递进链；只适用于高压、崩溃、重大揭示或类型授权的强烈表演。仍须保留触发、先后、控制逻辑、动作容量和稳定余韵，不等于通道越多越好。
+
+选择最小充分等级。若 PL2/PL3 会挤压对白、动作、口型或镜头容量，先降为“公开状态 + 一处泄漏 + 稳定结尾”，不改变剧情意义。
+
 ---
 
 ## Intensity Scale
@@ -66,6 +84,8 @@ Action Choice / Settled State
 禁止默认把所有高潮写成大哭、瞪眼、尖叫或猛烈动作。
 
 强度增加时仍须保持动作先后、口型容量、呼吸和结束后果；不得通过同时堆叠瞪眼、张嘴、握拳、后退、落泪制造“强烈”。
+
+`Restrained / Open / Heightened`描述表演外显尺度；`PL1 / PL2 / PL3`描述当前 Shot 需要编译的载体数量与递进深度。两者相关但不能机械一一绑定。
 
 ---
 

@@ -295,7 +295,7 @@ Prompt必须锁定并继承：脸型、五官、年龄感、发型、头饰、�
 
 场景视觉开发。
 
-合法的单一首帧/尾帧；禁止Storyboard图片、分镜板、线稿、拼图或多画面参考。
+合法的单一首帧/尾帧；禁止Storyboard图片、分镜板、拼图、Scene Top-down Blocking Map或多画面参考。只有`knowledge/clip_preflight_check.md`的Before-Single-Clip-Prompt Gate判定REQUIRED、通过Sketch Validation并注册为当前Clip Confirmed Visual Anchor的中性单图`REF-SKETCH`，可作为受限Blocking / Pose / Axis / Camera / Action Path参考；它不是Storyboard、Canonical Asset或最终画风参考。
 
 
 图片Prompt重点描述：
@@ -1281,7 +1281,7 @@ Seedance适配知识：
 唯一局部例外：某项约束若必须紧贴某个具体分镜动作、空间关系或物理连续性才能消除指代歧义或防止执行错误，允许在该分镜对应字段保留一条最小必要的约束性说明。仍优先写成正向持续状态，例如`左手持续握住伞柄，整个动作链保持左手持有`；只有正向句仍无法明确边界时才保留最短局部否定。该例外不得扩展成通用负向清单，也不得把同一通用限制复制到多个分镜；跨镜通用部分仍归入末尾唯一反向提示词。逐镜的结尾稳定、禁止提前动作和合法衔接属于此类局部边界，但必须保持最小、贴近受控动作并服务连续性，不能被机械移走导致执行不清。
 
 
-反向提示词只汇总当前生成段真正高风险、难以通过正文正向状态完全锁定的错误。删除低价值、抽象化、与正文重复、同义重复或与当前Clip无关的项；历史事故物、其他Clip状态和未来情节默认删除，同类项按当前Clip失败类别合并压缩，且不得在篇幅或语义权重上压过主体、动作、空间、摄影机、时间顺序和状态承接。具体Negative Compression算法只由`knowledge/prompt_compilation/state08_projection.md`拥有，本Rule不复制类别表或阈值。
+反向提示词只汇总当前生成段真正高风险、难以通过正文正向状态完全锁定的错误。删除低价值、抽象化、与正文重复、同义重复或与当前Clip无关的项；历史事故物、其他Clip状态和未来情节默认删除，同类项合并压缩为当前Clip失败类别，且不得在篇幅或语义权重上压过主体、动作、空间、摄影机、时间顺序和状态承接。具体Negative Compression算法只由`knowledge/prompt_compilation/state08_projection.md`拥有，本Rule不复制类别表或阈值。
 
 “禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”是STATE-08永久平台边界，不受“只选项目高风险项”规则影响，必须作为【反向提示词】首个非空内容行保留，不存在任何省略或Clip例外。
 

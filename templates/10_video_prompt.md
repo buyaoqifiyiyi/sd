@@ -86,7 +86,7 @@
 
 固定字段必须完整，但同一约束不得因此在多个字段全文复述。Template Mapping前先执行`knowledge/prompt_compilation/state08_projection.md`的Field Ownership Assignment / State Once Gate；每条约束只有一个权威字段，其他位置只在真实状态变化、边界接口或局部物理连续性高风险时写最短Delta。
 
-- `参考资产：`拥有实际输入Source、Canonical身份、Reference Authority与用途；不拥有临时站位、人物距离、动作次数、道具接触、行为限制或禁止项。
+- `参考资产：`拥有实际输入Source、Canonical身份、Reference Authority与用途；当前Clip的Confirmed `REF-SKETCH-XX`可在Final Visual Blocking Assessment=`REQUIRED`时以受限Clip Blocking / Visual Blocking Authority锁定Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path。`REF-SKETCH-MASTER`只服务草图生成，默认禁止进入本字段。本字段不拥有纯文字临时站位、动作次数、道具接触、行为限制或禁止项全文。
 - `首帧参考：`拥有当前Clip第一帧的构图、人物位置/姿态、道具瞬时状态、动作阶段与A/B/C承接；首镜`起始状态：`只写镜头执行所需的来源与最短继承。
 - `尾帧限制：`拥有当前Clip最终稳定状态与下一Clip carryover；末镜`镜头结尾状态：`只写本镜如何形成该Endpoint及其Boundary Class。
 - `人物一致性：`拥有长期人物身份；不拥有本Clip临时左右、坐/站、共用物体、动作次数、是否接触/拾取道具等blocking。
@@ -110,13 +110,13 @@
 
 ### 参考资产：
 
-逐项列出当前 Clip 实际使用的 Canonical 角色、环境、道具、FX、合法首尾帧与其他确定需要实际投喂的视觉参考图；每项写明资产名称或 ID、用途、锁定对象、真实可用状态和不得改变的特征。真实图片资产必须实际存在、可回查且已确认。已经明确需要用户实际补入的视觉参考图可以作受控占位，但必须写出具体图像对象、实际投喂用途和`待用户补充/待上传、未确认`状态，不得伪造路径、受控ID、上传或确认状态；若缺的是应成为Canonical的正式CHAR / ENV / PROP / FX资产，必须返回STATE-03完成双确认，不得以占位绕过Asset System。Voice/Audio Reference默认不列入本字段；只有用户明确要求当前视频模型使用该Reference进行声音控制时，才可作为非视觉输入按最小必要信息列出。
+逐项列出当前 Clip 实际使用的 Canonical 角色、环境、道具、FX、经Before-Single-Clip-Prompt Gate确认的当前Confirmed Visual Blocking Anchor、合法首尾帧与其他确定需要实际投喂的视觉参考图；每项写明资产名称或 ID、用途、锁定对象、真实可用状态和不得改变的特征。`REF-SKETCH-MASTER`无论注册状态如何都默认不列入：它只向当前`REF-SKETCH-XX`的草图生成提供Sketch Presentation Authority，不是视频模型输入。真实图片资产必须实际存在、可回查且已确认。已经明确需要用户实际补入的视觉参考图可以作受控占位，但必须写出具体图像对象、实际投喂用途和`待用户补充/待上传、未确认`状态，不得伪造路径、受控ID、上传或确认状态；若缺的是应成为Canonical的正式CHAR / ENV / PROP / FX资产，必须返回STATE-03完成双确认，不得以占位绕过Asset System。Voice/Audio Reference默认不列入本字段；只有用户明确要求当前视频模型使用该Reference进行声音控制时，才可作为非视觉输入按最小必要信息列出。
 
 列清单前必须通过`knowledge/clip_preflight_check.md`：先把当前Clip分类为视觉连续、剧情连续或主动切场/切世界，再逐分镜确认现实、幻想、耳中玉境或其他已确认World-State。只有当前阶段实际存在、实际出场且状态适用的资产才可列入；完全位于转换后世界的Clip不得保留转换前环境/道具形态，只有当前Clip正在执行合法转换时才可按Pre/Post阶段同时列出两种状态。
 
-随后对每个视觉候选逐项执行最终Visual Input Eligibility QA：`这是不是一张实际会被投喂/引用的视觉资产？`。答案为“否”时必须从本字段移出并按语义归类，不得为了强调而保留。站位说明、不可换边、人物距离、同坐一张板凳、道具数量限制、空间关系说明、行为约束、禁止项与镜头规则分别进入适用的`空间关系`、`起始状态`、`道具状态`、`首帧参考`、`尾帧限制`、`反向提示词`或Spatial Blocking Rules。若对象本身有真实视觉资产，使用正式资产ID与真实引用，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用`板凳参考说明`这类纯文字伪资产。
+随后对每个视觉候选逐项执行最终Visual Input Eligibility QA：`这是不是一张实际会被投喂/引用的视觉资产？`。答案为“否”时必须从本字段移出并按语义归类，不得为了强调而保留。站位说明、不可换边、人物距离、同坐一张板凳、道具数量限制、空间关系说明、行为约束、禁止项与镜头规则分别进入适用的`空间关系`、`起始状态`、`道具状态`、`首帧参考`、`尾帧限制`、`反向提示词`或Spatial Blocking Rules。若对象本身有真实视觉资产，使用正式资产ID与真实引用，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用`板凳参考说明`这类纯文字伪资产。当前`REF-SKETCH-XX`只有在Final Assessment=`REQUIRED`、实际图像通过Sketch Validation与Template Content Leakage Check且Blocking Signature匹配时才是Eligible；预判标签、草图Prompt、`REF-SKETCH-MASTER`或未验证草图不是当前视频视觉资产。
 
-资格通过后，依据Confirmed Clip Plan中的`Clip End-State Record / Next-Clip Carryover`、当前生成目标与`Continuity Risks`按需选择最小充分集合，而不是把全部Eligible资产或Asset Registry机械复制进来：身份/外观风险选择Active Character Canonical References；空间结构风险选择Active Environment Canonical References，Spatial Blocking只以文字语义进入现有字段；道具造型风险选择Active Prop Canonical References；A/B需要上一状态锚定时选择对应用途的`REF-TAIL`，C不选择旧尾帧；光线、天气或场景状态漂移只有存在实际、已确认且合格的场景视觉基准或合法参考帧时才选择图片，否则写入`主风格 / 环境一致性 / 首帧参考 / 起始状态 / 尾帧限制`。每项必须写清用途与所解决风险；参考资产按需路由，不是越多越好。
+资格通过后，依据Confirmed Clip Plan中的`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、当前生成目标与`Continuity Risks`按需选择最小充分集合，而不是把全部Eligible资产或Asset Registry机械复制进来：身份/外观风险选择Active Character Canonical References；空间结构风险选择Active Environment Canonical References，Spatial Blocking只以文字语义进入现有字段；道具造型风险选择Active Prop Canonical References；Final=`REQUIRED`时选择已验证`REF-SKETCH`并只声明Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path用途；A/B需要上一状态锚定时选择对应用途的`REF-TAIL`，C不选择旧尾帧；光线、天气或场景状态漂移只有存在实际、已确认且合格的场景视觉基准或合法参考帧时才选择图片，否则写入`主风格 / 环境一致性 / 首帧参考 / 起始状态 / 尾帧限制`。每项必须写清用途与所解决风险；参考资产按需路由，不是越多越好。
 
 提交给视频模型的图片参考每Clip硬上限为9张，并按`knowledge/reference_budget.md`执行条件性整合。先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再计入Direct / Reference-Only所需首尾帧：最终需求≤7不整合；8张且无额外帧需求原则上不整合；9张仅在无未计入连续性需求时允许；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张必须整合同类非角色信息，仍超限时按优先级裁剪，最终≤9。
 
@@ -124,7 +124,7 @@
 
 若独立资产表达更清晰准确且未超限，继续使用独立资产，不因已有总设定图强制替换。总图只有真实存在、已确认且完整覆盖对应零散图时才能列入；不得虚构不存在或未确认的总设定图、空间关系图、动作关系图。每项必须能回查到实际文件/受控ID。
 
-不得写“同上”“沿用前文”“有效内容”或只列文件名。不得引用 Storyboard、多格分镜板、线稿、拼图或 Detailed Shot Design / Clip Plan 截图作为视频生成参考资产。
+不得写“同上”“沿用前文”“有效内容”或只列文件名。不得引用Storyboard、多格分镜板、拼图、Scene Top-down Blocking Map或Detailed Shot Design / Clip Plan截图作为视频生成参考资产。经`knowledge/clip_preflight_check.md`为当前单一Clip生成 / 接收、验证并注册的技术型`REF-SKETCH-XX`是受限Clip Blocking / Visual Blocking Reference例外；它必须明确不控制人物五官、发型、服装、身体身份、环境 / 道具造型、材质、色彩、灯光或最终画风，且不得把草图全部文字标注复制进Prompt。`REF-SKETCH-MASTER`不是该例外，不得出现在最终清单。
 
 Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】，再检查尾帧是否存在。A/B均标记`Tail Frame Required = YES`并把上一尾帧直接列入本字段，统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`：A必须注明“同镜头连续承接用途”；B必须注明“空间/站位/景别参考用途”，推荐写作`REF-TAIL-XX｜CLIP-XX尾帧参考（用于延续上一镜头结尾的角色站位、朝向、景别与空间关系；空间/站位/景别参考用途）`。尚未提供时仍列出该名称和用途，但必须同时标明“待用户提供/待上传、未确认”，不得写假路径或声称已上传/已确认；用户将在实际生成前自行截取并添加。该待补充声明占Projected图片位但不计入已提交图片数，Prompt可以完整交付。C标记`Tail Frame Required = NO`，不要求截图、不列`REF-TAIL`，只依靠Canonical基础资产、Confirmed Spatial Blocking与文字空间规则保持连续性。
 
@@ -258,7 +258,7 @@ Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜�
 - `参考资产：`、`首帧参考：`、`尾帧限制：`均非空且位于`主风格：`之前。
 - `参考资产：`的Projected图片项总数与已提交图片数均≤9；真实视觉条目只含当前Clip实际使用且真实存在/已确认的资产与合法帧；受控待补视觉条目均写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`且未绕过正式资产确认；无重复占位；每个核心角色有各自独立图；只在超限风险触发后整合同类非角色信息。
 - 对每个视觉条目逐项提问“这是不是一张实际会被投喂/引用的视觉资产？”且答案均为“是”；任何答案为“否”的文字伪资产已从`参考资产：`移出，并按语义进入`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。真实道具图使用正式资产ID，不使用“参考说明”代替。
-- 是否根据`Clip End-State Record / Next-Clip Carryover`与Continuity Risks完成按需路由；每个入选视觉条目是否对应具体风险/目标；身份、空间结构、道具造型、A/B尾帧、光线/场景状态来源是否选对；C是否不列旧尾帧；是否没有漏选、选错、过量引用或把Top-down Blocking Map当视频参考资产。
+- 是否根据`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State与Continuity Risks完成按需路由；每个入选视觉条目是否对应具体风险/目标；身份、空间结构、道具造型、Visual Blocking、A/B尾帧、光线/场景状态来源是否选对；当前`REF-SKETCH-XX`是否只在Final=`REQUIRED`、Sketch Validation与Template Content Leakage Check通过时出现并服从Canonical Authority；`REF-SKETCH-MASTER`是否未进入最终清单；C是否不列旧尾帧；是否没有漏选、选错、过量引用或把Top-down Blocking Map当视频参考资产。
 - 是否明确A/B/C及`Tail Frame Required = YES / NO`；A/B缺图时是否仍直接列统一`REF-TAIL`名称、用途与“待用户提供/待上传、未确认”，且未声称上传或确认；C是否完全未列`REF-TAIL`、未要求截图并采用Canonical资产、Spatial Blocking与文字重建。
 - 任何`REF-TAIL`是否明确标注“同镜头连续承接用途”或“空间/站位/景别参考用途”；用途是否与`首帧参考：`一致。
 - A的`首帧参考：`是否逐字包含固定直接承接句，并继续锁定姿态、位置、朝向、距离、动作阶段、构图、景别、机位、环境、光线、天气、道具、情绪与持续声音；B是否明确另起新镜头重新构图、写清保持项与允许变化且未使用A固定句；使用上一尾帧的A/B是否都在`尾帧限制：`定义本Clip新的结束状态。

@@ -357,7 +357,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 视觉条目只有满足以下任一条件才有资格进入Clip计划或最终`参考资产：`：
 
-- 已确认角色图、环境图、道具图、正式FX图、已确认参考板、合法首帧/尾帧或其他当前Clip确实会向目标模型投喂/引用的真实视觉文件或受控ID；
+- 已确认角色图、环境图、道具图、正式FX图、已确认参考板、合法首帧/尾帧、经Before-Single-Clip-Prompt Gate验证并绑定当前Blocking Signature的Confirmed `REF-SKETCH`，或其他当前Clip确实会向目标模型投喂/引用的真实视觉文件或受控ID；`REF-SKETCH`是受限Visual Blocking Reference，不新增Canonical资产类型；
 - 已经确定必须由用户实际补入的视觉参考图，但当前文件尚未提供。此类条目必须明确写出具体图像对象、实际投喂用途和`待用户补充/待上传、未确认`状态，不得伪造路径、受控ID、上传或确认状态；A/B `REF-TAIL`继续按既有专用规则命名、计入Projected位并区分用途。
 
 纯文字约束没有视觉输入资格，不得通过添加“参考”“说明”“用途”或编号伪装成资产。禁止项包括但不限于：站位说明、不可换边、人物距离、同坐一张板凳、道具数量限制、空间关系说明、动作/行为约束、禁止项、镜头/机位规则、首尾帧文字合同或Spatial Blocking Text Rules。它们必须按语义进入现有`空间关系`、`起始状态`、`道具状态`、`首帧参考`、`尾帧限制`、`反向提示词`或Spatial Blocking Rules；不得为了强调而重复塞入`参考资产：`。
@@ -373,6 +373,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 - 身份、脸型、服装、物种或基础外观漂移风险 → 当前Active Character Version的适用Canonical References。
 - 场景结构、门窗/家具/地标、方位或空间尺度漂移风险 → 当前Active Environment Canonical References；站位、路径、轴线与摄影机侧继续由Confirmed Spatial Blocking与文字空间规则承担，Top-down Blocking Map本身没有视频视觉输入资格。
 - 道具造型、材质、尺寸或可识别状态漂移风险 → 当前Active Prop Canonical References；持有者、左右手、位置、方向、接触和变化过程仍写入`道具状态`及起止状态，不把文字合同伪装成图片。
+- Final Visual Blocking Assessment=`REQUIRED`且文字 / Canonical / REF-TAIL仍不足以唯一锁定Position、Facing、Distance、Topology、Axis、Camera、Pose、Gaze或Action Path → 选择经Sketch Validation确认的当前`REF-SKETCH`；它不得承担身份、环境结构、道具造型、材质、色彩、灯光或最终画风。
 - A【同镜头连续承接】或B【新镜头参考型】确需上一状态锚定 → 按既有规则选择`REF-TAIL`并声明对应用途；C【新镜头且无需尾帧】不得引用或预留旧`REF-TAIL`。
 - 光线、天气、综合色彩或场景当前状态存在漂移风险 → 只有实际存在、可回查且已确认的场景视觉基准图、合法首帧/尾帧或其他合格状态参考才可作为视觉输入；如果只有Project Bible、场景视觉基准或环境状态文字，则投影到`主风格 / 环境一致性 / 首帧参考 / 起始状态 / 尾帧限制`，不得虚构“Scene Anchor”或关键帧资产。
 

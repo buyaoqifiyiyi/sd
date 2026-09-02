@@ -519,7 +519,7 @@ Video Generation只能使用：
 - 已确认资产
 - Confirmed Clip Production Plan
 
-视频参考资产禁止包含Storyboard图片、线稿、分镜板、拼图、多画面材料或Detailed Shot Design / Clip Plan截图。
+视频参考资产禁止包含Storyboard图片、分镜板、拼图、多画面材料、Scene Top-down Blocking Map或Detailed Shot Design / Clip Plan截图。唯一受限例外是STATE-08 Before-Single-Clip-Prompt Gate判定REQUIRED、通过Sketch Validation并绑定当前Clip / Blocking Signature的Confirmed `REF-SKETCH`；它不得反向成为Storyboard、Canonical Asset或新主阶段。
 
 
 

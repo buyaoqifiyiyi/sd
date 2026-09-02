@@ -26,6 +26,7 @@
 - Storyboard 不参与 Clip 划分；Clip Production 只读取 Detailed Shot Design 与已确认生产事实
 - Storyboard 图片、线稿、多格拼图、接触表及其截图不得登记为 Canonical Asset，不得进入 STATE-08【参考资产】
 - STATE-08 不从 Storyboard 反推人物、环境、道具、动作、镜头或 Prompt
+- `REF-SKETCH-XX`、Visual Blocking Anchor、S/P/A-SKETCH或Before-Single-Clip-Prompt Gate请求不属于Storyboard；必须返回STATE-08的`TECHNICAL_VISUAL_BLOCKING_SKETCH → templates/23_visual_blocking_sketch_prompt.md`专用分支。两者不得共享默认生图模板或把单镜头电影感铅笔预览注册为Clip Blocking Authority。
 
 ## Completion
 

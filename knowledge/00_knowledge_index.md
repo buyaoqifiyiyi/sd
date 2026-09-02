@@ -249,6 +249,7 @@ knowledge/sequence/
 Required：
 
 - knowledge/spatial_blocking_layer.md（每个Scene先执行Spatial Blocking Decision；复杂场景准备Top-down Map + Text Spatial Rules）
+- knowledge/action_previs.md（Action-dominant / Mixed，以及需要展开物理动作的镜头；拥有A1/A2/A3与Kinetic Chain，不拥有动作构图或最终Prompt字段）
 - knowledge/camera_language/index.md
 - knowledge/transitions/index.md（存在相邻镜头时）
 
@@ -261,7 +262,7 @@ Conditional：
 
 按镜头内容追加：
 
-- knowledge/performance/
+- knowledge/performance/（Performance-dominant / Mixed；按PL1/PL2/PL3选择最小充分表演载体）
 - knowledge/sound_language/
 - knowledge/fx/
 - knowledge/sequence/（已建立Sequence Plan时）
@@ -307,6 +308,7 @@ knowledge/sequence/
 主资源：
 
 - knowledge/spatial_blocking_layer.md（读取STATE-06 Confirmed Spatial Blocking Result，不重新设计Blocking）
+- knowledge/clip_preflight_check.md（每个Clip执行Visual Blocking Risk Pre-Assessment，只标记NONE / POSSIBLE / REQUIRED，不提前生成草图）
 - knowledge/clip_planning/
 - workflows/10_clip_production_workflow.md
 - templates/20_clip_plan.md
@@ -327,7 +329,7 @@ AI视频模型相关知识。
 
 STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video_generation_workflow.md`拥有。本索引不复制Resource Gate；它只提供以下发现入口，实际读取范围以当前Workflow判定为准：
 
-- Preflight与参考预算：`knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
+- Preflight、Before-Single-Clip-Prompt Gate与参考预算：`knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
 - Prompt编译与投影：`knowledge/knowledge_application_reflection.md`、`knowledge/prompt_compilation/`
 - 模型适配：`knowledge/11_seedance_adapter.md`
 - Clip连续性：`knowledge/clip_planning/`
@@ -343,6 +345,7 @@ STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video
 辅助：
 
 - 在每个Clip Prompt编译前扫描Knowledge机会、筛选0—3项高价值策略并转译为现有字段中的可执行语义；默认不向用户输出内部Reflection
+- 在每个单Clip Prompt前自动完成Final Visual Blocking Anchor Assessment；NONE直接Prompt，REQUIRED先生成 / 验证 / 注册草图并在下一Checkpoint才Prompt；普通Prompt Rewrite复用Confirmed Anchor
 - Prompt结构
 - 模型适配
 - 动作描述

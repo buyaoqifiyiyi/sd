@@ -55,7 +55,8 @@
 5. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
 6. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
 7. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
-8. Review 发现问题时，停在 `REVISE` 或 `REBUILD`，说明最小 Return Route；修复后必须重新 Review。
+8. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，本轮会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；你下次说“继续 / 下一个”时再输出该Clip Prompt。简单Clip不会为了统一流程强制出草图。
+9. Review 发现问题时，停在 `REVISE` 或 `REBUILD`，说明最小 Return Route；修复后必须重新 Review。
 
 ---
 
@@ -385,6 +386,9 @@
 - 必须已有 Confirmed Clip Production Plan；不能直接根据原始剧本生成最终 Prompt。
 - 一个 Confirmed Clip 对应一条完整 Prompt；即使包含多个 Shot，也不拆成多条 Shot Prompt。
 - 默认一次只交付一个待处理 Clip。批量授权只改变数量，不改变每个 Clip 的完整结构。
+- 每个Clip都会在最终Prompt前自动检查是否需要人物 / 空间调度草图。判定不需要时直接输出Prompt；判定需要时先生成并验证草图，把它作为只控制站位、朝向、距离、关系轴、姿态或动作路径的参考资产，下一次继续才输出Prompt。草图不替代角色、环境或道具正式资产。
+- 当前Skill已注册真实`REF-SKETCH-MASTER`图片。生成需要的草图时会把该PNG作为实际视觉参考输入，并走独立Technical Visual Blocking Sketch模板，不会调用Storyboard模板；只有文件或工具输入失败时才会明确报告文字合同回退。候选图缺少主Blocking、角色标签、箭头、适用俯视 / 路径图、镜头信息、动作权限或用途说明，或仍是单幅电影感铅笔插画时，会以`Artistic Storyboard Drift`失败并拒绝注册。
+- `REF-SKETCH-MASTER`只用于生成当前Clip的`REF-SKETCH-XX`，默认不会出现在最终视频Prompt的`参考资产：`里，也不占视频模型的9张图片预算；真正投喂视频模型的是经验证的当前Clip草图。
 - 编译前会做 Prompt Control：只填补当前 Clip 尚未被资产、首尾帧或 Blocking 锁定且确实需要控制的内容；内部控制矩阵不会变成最终 Prompt 的额外栏目。
 - 会先做字段归属：每条约束只在一个权威字段完整定义。`首帧参考`负责起始状态，`尾帧限制`负责结束状态与carryover，`人物一致性`只负责长期人物身份，`环境一致性`只负责场景结构与环境基线，逐镜只写新增动作/状态变化/局部连续性；其他位置只在真实变化或边界接口需要时写最短Delta，不会为强调而在6—9个字段全文重复。
 - 会做 Prompt Pollution 清理：合并重复、消解冲突。导演名、流派名、题材风格名、情绪标签和“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日”等高层词可以保留；重要标签首次出现在最终 Prompt 时，会在同一风格段解释它在本项目中的具体含义，并选择当前 Clip 必要的 3—5 个（或更少）可见 / 可听执行项。具象化后不会默认删除标签，只有完全冗余、无关、冲突或会误触发默认视觉包时才省略。项目风格已由正式资产、视觉开发或 Style Bible 锁定后，后续连续 Clip 只补当前差异，不重复整段解释；动作复杂 Clip 会把风格压到 1—3 项或更少，确保主体、动作、空间、时间顺序、镜头与状态承接优先。“短”或“长”本身都不是质量标准。
@@ -416,7 +420,7 @@
 **Skill 行为 / 停止点**
 
 - 会读取当前 Checkpoint，只输出下一个未交付 Clip，不重复已完成内容。
-- “下一个 / 继续”只授权合法的下一生产步骤，不自动授权批量输出、生成图片、确认候选资产、启用音色或启用配乐。
+- “下一个 / 继续”只授权一个合法Checkpoint，不自动授权批量输出、普通资产生图、确认候选资产、启用音色或启用配乐；但它会自动执行单Clip草图Gate。若当前Clip确实需要Visual Blocking Anchor，系统可先生成并验证这张受限调度草图，因为这是该Prompt的内部必经检查，不是角色 / 环境 / 道具资产制作授权。
 - 下一步若需要确认、外部输入或尾帧，会在对应 Checkpoint 停下说明。
 
 ## 16）优化 / 返修某个 Clip Prompt
@@ -446,6 +450,7 @@
 - 先诊断问题属于 Identity、Spatial / Blocking、Prop、Motion / Performance、Camera、Lighting / Color、FX / Sound、Coverage 或 Prompt Scope / Template。
 - 第一轮只改影响最大的一个变量及必需相邻边界，保留 Accepted Unaffected Artifacts。
 - 如果根因在角色 / 环境 / 道具资产、Shot Design或Clip Plan，会返回对应上游最小修正；不会用 Prompt 掩盖上游错误。
+- 同一Clip只是改措辞、压缩、主风格、反向提示词、台词或音效时，会继续复用已确认草图，不重复生成。只有并排变面对面、换位、离座、明显转身 / 靠近、正反打切换、轴线侧 / 环绕、角色数量、复杂道具、动作路径或Clip起止Blocking发生实质重构时，才重新判断并KEEP / REPLACE / RETIRE / CREATE草图。
 - 同类失败第二次必须使用稳定降级；第三次停止盲重试并返回事实 / 设计拥有者。
 
 ## 17）长视频连续性：REF-TAIL 三种模式

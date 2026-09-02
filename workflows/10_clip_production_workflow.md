@@ -114,7 +114,7 @@ Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相�
 
 每个候选Clip在编写正式执行合同、Reference Budget Audit与尾帧用途之前，必须按`knowledge/clip_preflight_check.md`执行STATE-07前置版。顺序不可变：
 
-`Continuity Classification → World-State Check → Character Count Lock → Spatial Composition Lock → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget`
+`Continuity Classification → World-State Check → Character Count Lock → Spatial Composition Lock → Visual Blocking Risk Pre-Assessment → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget`
 
 逐Clip至少记录：
 
@@ -122,6 +122,7 @@ Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相�
 - **World-State Map**：逐分镜写现实世界、幻想世界、耳中玉境或项目已确认层，列出该层实际角色、环境、道具、FX与转换前/后阶段。完全在耳中玉境的Clip必须删除现实标准耳勺等现实阶段资产；转换Clip才可按阶段同时保留两种道具形态。
 - **Character Count Lock**：逐分镜列出`角色 × 精确数量`。剧情唯一角色必须正向锁定唯一数量与前中后景无第二个同类，并预置反向复制/分身/镜像/背景重复限制。
 - **Spatial Composition Lock**：对追逐、战斗、对峙、对话和多人镜头锁定前后景、左右、朝向、关系轴、摄影机轴线侧、追逃/攻击/视线路线、可见面部与同景深许可。追逐默认后追前逃，禁止并排正对镜头和海报式合影。
+- **Visual Blocking Risk Pre-Assessment**：每个Clip都按`knowledge/clip_preflight_check.md`检查人物数量、固定左右/前后、共享座椅/桌面/车辆/床/门口、Facing / Eyeline / Axis、局部Pose权限、换位/进出画、前中后景、复杂道具、Relationship Topology、A2/A3动作与复杂机位，记录`NONE / POSSIBLE / REQUIRED`、建议`S / P / A / Combined`与轻量Blocking Signature。此处只标风险，不生成草图；STATE-08最终Gate可因实际Reference、Accepted Canon或修订变化调整结果。
 - **Prop State Check**：逐关键道具写当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换是否完成与结束状态；不同世界形态不得无过程混用。
 - **Transition Five Elements**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态转换时，必须先锁定起点状态、转换媒介、运动方向/过程、终点状态、转场后首个稳定构图。缺一不得用“金光一闪 / 突然切换”代替。
 - **Reference Asset Check**：只在上述项目通过后筛选资产。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；只有真实可回查的已确认视觉资产，或明确需要用户实际补入、写明具体图像对象/投喂用途/`待用户补充或待上传、未确认`状态的视觉图占位可继续。纯文字站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头规则必须移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`，不得作为资产。之后再删除未出场、未使用及当前World-State不适用项并执行预算；角色独立锁定图优先，最终≤9，只有超限风险时整合非角色信息。
@@ -139,6 +140,7 @@ Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相�
 - 摄影机/构图/焦段/对焦的执行路径
 - 人物与环境的空间关系、轴线、视线和行进方向
 - Spatial Blocking继承：引用当前Scene的Decision / Map Mode，逐项锁定固定结构、角色路径、C1/C2/C3摄影机侧和Text Spatial Rules；不得把Top-down Map本身登记为视频参考资产
+- Visual Anchor State / Blocking Signature：复用`Spatial State / Continuity Risks / Reference Budget`既有位置记录Characters、Topology、Position、Shared Facing、Seat / Spatial Relation、Allowed Delta、Camera Logic、Axis、Movement Path、Clip Start / End Blocking与Pre-Assessment；不新增Template顶级字段。已有Confirmed `REF-SKETCH`且Signature未变时标记KEEP，原为NONE或旧草图失效时仅记录需由STATE-08 Final Assessment决定CREATE / REPLACE / RETIRE
 - 战斗/双主体/对峙关系的几何锁定：A/B左右与前后、朝向、距离、主轴、摄影机轴线侧、Connector及首尾帧继承；双方同框相对时禁止双正脸
 - 道具持有者、位置、方向、状态及变化
 - 光影、色彩、FX 与声音连续性
@@ -146,7 +148,7 @@ Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相�
 - 模型执行风险与安全降级
 - `Clip End-State Record / Next-Clip Carryover`：把上述已有Entry、内部Shot状态链、Exit、Spatial Blocking、道具连续性、摄影机路径、环境/表演状态和Handoff合并为STATE-07内部连续性记录，作为Shot-State Memory所需语义的既有合同内实现。固定使用`Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover`八组简洁语义；不新增STATE、ID、资产类型或STATE-08字段，不复制Professional Detailed Shot Script全部字段。下一Clip必须以此记录而不是凭记忆重建起始状态；若上一Clip已有用户接受Take及`Accepted Canon State`，以该Take的Observed State覆盖同维度Planned State，再组织本Clip首帧。未接受Take不得改变记录
 - Clip Preflight Check：连续性主分类、逐分镜World-State、角色精确数量、空间构图锁、关键道具状态、适用Transition五要素、Reference Asset Check与`PASS / Return Route`
-- Reference Selection / Routing + Reference Budget Audit：先从当前Clip目标、八组End-State Record、`Continuity Risks`与下一Clip起始要求选择最小充分视觉参考，再执行预算；不是把全部Eligible或Registry资产机械塞入。每个入选Reference必须声明唯一`Primary Role / Purpose`并遵守`rules/04_consistency_rules.md`的Reference Authority Hierarchy：身份/外观风险路由到Active Character Canonical References；空间结构风险路由到Active Environment Canonical References并消费Confirmed Spatial Blocking文字语义；道具造型风险路由到Active Prop Canonical References；A/B状态锚定路由到对应Accepted Canon State / `REF-TAIL`并声明用途，C不路由旧尾帧；Motion / Camera / Audio Reference只控制其授权维度。临时状态参考不得覆盖正式角色身份、环境结构或道具造型；尾帧脸部漂移时只继承合法姿态/站位/动作阶段。光线/天气/场景状态漂移只有在实际存在已确认的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。每个入选条目记录所解决的具体风险/目标，合格但无关项记录不选理由。随后只列通过Visual Input Eligibility、当前Clip实际需要且通过World-State的候选图片资产；真实资产须存在/已确认并可回查文件或受控ID。明确需要用户实际补入的视觉参考图占位须写具体图像对象、投喂用途与“待用户补充/待上传、未确认”，只计Projected位、不计已提交图片；它不得绕过应返回STATE-03的正式Canonical资产流程。A/B `REF-TAIL`继续以统一名称、用途类型和专用状态声明预留1个Projected连续性图片位；C不加入或预留旧尾帧。再计算Projected Final Count，并按`knowledge/reference_budget.md`记录文字伪资产迁移、是否触发整合、替代关系、裁剪与最终≤9张提交清单
+- Reference Selection / Routing + Reference Budget Audit：先从当前Clip目标、八组End-State Record、Visual Anchor State、`Continuity Risks`与下一Clip起始要求选择最小充分视觉参考，再执行预算；不是把全部Eligible或Registry资产机械塞入。每个入选Reference必须声明唯一`Primary Role / Purpose`并遵守`rules/04_consistency_rules.md`的Reference Authority Hierarchy：身份/外观风险路由到Active Character Canonical References；空间结构风险路由到Active Environment Canonical References并消费Confirmed Spatial Blocking文字语义；道具造型风险路由到Active Prop Canonical References；已有Confirmed `REF-SKETCH`且Blocking Signature未变时仅路由其Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path Authority；STATE-07新判`POSSIBLE / REQUIRED`只记录预判，不虚构或预先生成草图；A/B状态锚定路由到对应Accepted Canon State / `REF-TAIL`并声明用途，C不路由旧尾帧；Motion / Camera / Audio Reference只控制其授权维度。草图与临时状态参考不得覆盖正式角色身份、环境结构或道具造型；尾帧或草图脸部漂移时只消费合法Authority。光线/天气/场景状态漂移只有在实际存在已确认的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。每个入选条目记录所解决的具体风险/目标，合格但无关项记录不选理由。随后只列通过Visual Input Eligibility、当前Clip实际需要且通过World-State的候选图片资产；真实资产须存在/已确认并可回查文件或受控ID。明确需要用户实际补入的视觉参考图占位须写具体图像对象、投喂用途与“待用户补充/待上传、未确认”，只计Projected位、不计已提交图片；它不得绕过应返回STATE-03的正式Canonical资产流程。A/B `REF-TAIL`继续以统一名称、用途类型和专用状态声明预留1个Projected连续性图片位；C不加入或预留旧尾帧。再计算Projected Final Count，并按`knowledge/reference_budget.md`记录文字伪资产迁移、是否触发整合、替代关系、裁剪与最终≤9张提交清单
 
 参考资产默认保持原始独立结构。Projected Final Count≤7时不得整合；8张且无额外帧需求时原则上不整合；9张只有在确认没有未计入连续性需求时才允许；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张时才执行同类非角色信息的去重/整合/裁剪。当前Clip每个核心角色始终保留各自独立三视图/角色锁定图，多个核心角色不得合并成角色总表，动作图不得替代外貌基准。
 
@@ -232,6 +234,7 @@ Portable模式没有本地Artifact路径时，必须从Portable Checkpoint交叉
 - 每个 Clip 的已有Entry / Exit / Handoff事实已归并为八组`Clip End-State Record / Next-Clip Carryover`；下一Clip首帧能逐项消费Character、Spatial、Prop、Camera、Environment、Performance、Continuity Risks与Carryover，不存在无依据的人物/道具重置
 - 上一Clip存在用户接受Take时，本Clip已从Execution Ledger读取Observed Start / End与Accepted Canon State，并以其合法瞬时状态覆盖同维度Planned State；被拒绝或未确认Take未进入Canon，Accepted Take中的身份/结构漂移未覆盖正式Canonical资产
 - 每个Clip已完成STATE-07 Clip Preflight前置版并为PASS：连续性已三选一；逐分镜World-State与实际资产一致；角色精确数量、空间构图、道具状态已锁定；适用转场五要素完整；预算只在前述检查后执行
+- 每个Clip已完成Visual Blocking Risk Pre-Assessment并记录`NONE / POSSIBLE / REQUIRED`、风险理由、建议草图类型与Blocking Signature；STATE-07没有为统一流程提前生成草图，也没有把Scene Top-down Blocking Map误登记为Clip视觉参考
 - 每个相邻Clip已在既有判定中明确A【同镜头连续承接】、B【新镜头参考型】或C【新镜头且无需尾帧】，未用资产可用性反向决定需求；A/B均在参考资产声明列出统一`REF-TAIL`名称、对应用途和真实状态，缺图时明确“待用户提供/待上传、未确认”且未伪造路径或确认；C未列`REF-TAIL`，并从Canonical基础资产、Confirmed Spatial Blocking、文字End State或当前Scene / World-State / Start Boundary建立首帧
 - 每个完全位于转换后世界的Clip已删除转换前世界资产；只有正在执行转换的Clip才按阶段引用转换前后资产，且没有把同一道具不同形态混成两件道具
 - 剧情规定唯一角色时，Clip Plan已有正向唯一数量锁与背景无第二个同类限制；追逐镜头默认后追前逃且无双方并排正对镜头、同景深合影或群像站桩

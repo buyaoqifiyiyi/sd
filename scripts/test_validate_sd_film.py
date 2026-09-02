@@ -1779,6 +1779,164 @@ MUS-CUE-001
             prompt.write_text(f"{global_text}\n【分镜1】\n{make_shot_fields()}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, prompt, True, clip_plan), 1)
 
+    def test_visual_blocking_sketch_clip_prompt_gate_is_installed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        files = {
+            relative: (skill_root / relative).read_text(encoding="utf-8")
+            for relative in (
+                "knowledge/clip_preflight_check.md",
+                "knowledge/spatial_blocking_layer.md",
+                "knowledge/reference_budget.md",
+                "references/ref_sketch_master.md",
+                "rules/04_consistency_rules.md",
+                "workflows/10_clip_production_workflow.md",
+                "workflows/11_video_generation_workflow.md",
+                "templates/10_video_prompt.md",
+                "references/regression_scenarios.md",
+            )
+        }
+        preflight = files["knowledge/clip_preflight_check.md"]
+        for marker in (
+            "Visual Blocking Risk Pre-Assessment",
+            "Before-Single-Clip-Prompt Gate",
+            "Final = NONE",
+            "Final = REQUIRED",
+            "S-SKETCH / Spatial Sketch",
+            "P-SKETCH / Pose Sketch",
+            "A-SKETCH / Action Sketch",
+            "Sketch Validation Gate And Reference Authority",
+            "Sketch Persistence / Blocking Canon",
+            "Visual Anchor State / Blocking Signature",
+            "KEEP existing sketch",
+            "REPLACE with REF-SKETCH-XX-v2",
+            "RETIRE sketch",
+            "CREATE new sketch",
+            "REF-SKETCH-MASTER",
+            "Sketch Presentation Authority",
+            "Master Template carries sketch language; Current Clip data carries blocking content.",
+            "Technical Director Blocking Sheet",
+            "Template Content Leakage Check",
+            "Text Contract Fallback",
+        ):
+            self.assertIn(marker, preflight)
+        master = files["references/ref_sketch_master.md"]
+        for marker in (
+            "Asset Status：`REGISTERED`",
+            "Persistent Asset Path：`assets/ref_sketch_master.png`",
+            "REF-SKETCH-MASTER",
+            "Sketch Presentation Authority",
+            "Template Content Leakage Check",
+            "REF-SKETCH-XX",
+        ):
+            self.assertIn(marker, master)
+        spatial = files["knowledge/spatial_blocking_layer.md"]
+        self.assertIn(
+            "Position → Torso Orientation → Shoulder Orientation → Head Orientation → Gaze Direction",
+            spatial,
+        )
+        self.assertIn("Side-by-side → Face-to-face", spatial)
+        self.assertIn("Previous Blocking State + Current Shot Delta = Current Blocking State", spatial)
+        self.assertIn("Visual Blocking Authority", files["rules/04_consistency_rules.md"])
+        self.assertIn("REF-SKETCH", files["templates/10_video_prompt.md"])
+        self.assertIn("普通Prompt Rewrite", files["workflows/11_video_generation_workflow.md"])
+        self.assertIn("Final Assessment=`REQUIRED`", files["knowledge/reference_budget.md"])
+        regression = files["references/regression_scenarios.md"]
+        for marker in (
+            "R19-A CLIP-04 First Prompt Requires One Confirmed S+P Anchor",
+            "R19-B Prompt Rewrite Reuses Anchor; Blocking Reconstruction Reassesses",
+            "R19-C Simple Single Person Is NONE",
+            "R19-D A3 Action May Use A-SKETCH Or Combined Anchor",
+            "R20-A Piano Pair Uses Technical Blocking Sheet Language",
+            "R20-B Three People Around A Table Has No Template Content Leakage",
+            "R20-C A3 Action Remains Technical Previs",
+            "R20-D Simple Head Turn Still Returns NONE",
+            "R20-E Prompt Rewrite Reuses Current Sketch Without Recalling Master",
+        ):
+            self.assertIn(marker, regression)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
+    def test_ref_sketch_master_registration_requires_a_real_asset(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            asset_path = copied / "assets" / "ref_sketch_master.png"
+            asset_path.unlink()
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
+
+            shutil.copy2(skill_root / "assets" / "ref_sketch_master.png", asset_path)
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 0)
+
+    def test_visual_blocking_layout_gate_passes_technical_sheet_and_rejects_storyboard_drift(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            temp_root = Path(temp)
+            candidate = temp_root / "candidate.png"
+            shutil.copy2(skill_root / "assets" / "ref_sketch_master.png", candidate)
+            evidence = {
+                "schema_version": 1,
+                "clip_id": "CLIP-004",
+                "assessment": "REQUIRED",
+                "route": "TECHNICAL_VISUAL_BLOCKING_SKETCH",
+                "generator_template": "templates/23_visual_blocking_sketch_prompt.md",
+                "sketch_type": "S+P",
+                "master_input_mode": "VISUAL_REFERENCE",
+                "master_asset_path": "assets/ref_sketch_master.png",
+                "image_path": str(candidate),
+                "blocking_signature": "Characters=A,B; Topology=Side-by-side; Shared Facing=Forward; Same Seat; Gaze Delta=B to A",
+                "spatial_top_down_required": True,
+                "layout": {
+                    "main_blocking_panel": True,
+                    "character_role_labels": True,
+                    "direction_gaze_movement_annotation": True,
+                    "spatial_top_down_diagram": True,
+                    "camera_information": True,
+                    "blocking_movement_notes_or_permission": True,
+                    "usage_authority_note": True,
+                },
+                "artistic_storyboard_drift": False,
+                "template_content_leakage": False,
+                "blocking_match": True,
+                "registration_status": "CONFIRMED",
+            }
+            evidence_path = temp_root / "evidence.json"
+            evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
+            self.assertEqual(
+                run_quiet(validator.validate_ref_sketch_evidence, evidence_path, skill_root, True),
+                0,
+            )
+
+            evidence["artistic_storyboard_drift"] = True
+            evidence["layout"]["spatial_top_down_diagram"] = False
+            evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
+            self.assertEqual(
+                run_quiet(validator.validate_ref_sketch_evidence, evidence_path, skill_root, True),
+                1,
+            )
+
+    def test_visual_blocking_layout_gate_none_does_not_generate(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            evidence_path = Path(temp) / "none.json"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "clip_id": "CLIP-005",
+                        "assessment": "NONE",
+                        "route": "NONE",
+                        "registration_status": "NONE",
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                run_quiet(validator.validate_ref_sketch_evidence, evidence_path, skill_root, True),
+                0,
+            )
+
     def test_second_repeated_failure_requires_downgrade(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "execution_ledger.md"

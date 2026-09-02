@@ -19,7 +19,7 @@
 
 ## Routing
 
-- micro_expression.md：微表情、身体表演、强度和连续性基础
+- micro_expression.md：Performance Progression Engine、PL1/PL2/PL3载体负荷、微表情、身体表演、强度和连续性基础
 - facial_action_language.md：FACS启发的眉眼、眼睑、嘴角、下颌、注视和生理结果语言
 - emotion_dynamics.md：刺激、评估、冲动、控制/泄漏、混合情绪、身体状态与恢复曲线
 - expression_patterns.md：36个去重后的条件性表演模式

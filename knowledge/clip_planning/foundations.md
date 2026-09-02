@@ -64,6 +64,6 @@ Clip内存在多个`分镜X`时，它们是同一次长镜头中的连续执行�
 
 ## Visual Reference Boundary
 
-Clip Production只读取Detailed Shot Design生产语义与Canonical Assets。禁止读取或转发Storyboard图片、线稿、分镜板、漫画格、拼图、接触表及任何设计表截图；这些材料不得进入STATE-08【参考资产】。
+Clip Production只读取Detailed Shot Design生产语义与Canonical Assets。禁止读取或转发Storyboard图片、分镜板、漫画格、拼图、接触表、Scene Top-down Blocking Map及任何设计表截图；这些材料不得进入STATE-08【参考资产】。STATE-08稍后按Before-Single-Clip-Prompt Gate生成 / 接收并验证的单Clip `REF-SKETCH`不来自上述Planning材料，按独立Visual Blocking Authority合同处理。
 
 每个候选Clip还必须按`knowledge/reference_budget.md`建立图片参考预算。默认保留原始独立资产，只有Projected Final Count出现接近或超过9张上限的风险时才整合同类非角色信息；核心角色独立三视图/角色锁定图不得合并或由动作图替代。预算失败不通过Clip确认。

@@ -95,6 +95,8 @@ Relevant knowledge:
 
 knowledge/clip_planning/
 
+knowledge/clip_preflight_check.md（STATE-07每Clip只做Visual Blocking Risk Pre-Assessment；STATE-08每个单Clip Prompt前执行Final Gate）
+
 Formal workflow:
 
 workflows/10_clip_production_workflow.md
@@ -103,4 +105,4 @@ Output owner:
 
 templates/20_clip_plan.md
 
-Clip Production是STATE-07主阶段；STATE-08以Confirmed Clip Production Plan为最小生成单位，每个Clip只生成一条连续Prompt。
+Clip Production是STATE-07主阶段；STATE-08以Confirmed Clip Production Plan为最小生成单位，每个Clip只生成一条连续Prompt。每Clip必须检查但不强制生成Visual Blocking Sketch；Required时先草图、验证、注册并在下一Checkpoint才Prompt。

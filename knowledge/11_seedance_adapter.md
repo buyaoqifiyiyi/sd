@@ -1393,10 +1393,12 @@ Canonical FX Asset（如适用）。
 
 合法首/尾帧。
 
+Final Visual Blocking Assessment=`REQUIRED`且经Sketch Validation确认、绑定当前Clip / Blocking Signature的`REF-SKETCH`；只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不控制身份、环境 / 道具造型、材质、色彩、灯光或最终画风。
+
 当前角色的Voice/Audio Reference属于声音身份专用Source，不得作为视觉Canonical Reference使用。默认不写入【参考资产】；只有用户明确要求当前视频模型使用该Reference进行声音控制时，才按最小必要信息列出。Confirmed Voice Profile同样默认不投影，不作为无Reference时的自动文字回退。
 
 
-禁止把Storyboard图片、分镜板、线稿、漫画格、接触表、拼图、多画面参考或Detailed Shot Design / Clip Plan截图提供给Seedance。此类材料不是Canonical Asset，容易把线条、边框、标注或多画面结构带入生成结果。
+禁止把Storyboard图片、分镜板、漫画格、接触表、拼图、多画面参考、Scene Top-down Blocking Map或Detailed Shot Design / Clip Plan截图提供给Seedance。此类材料不是Canonical Asset，容易把线条、边框、标注或多画面结构带入生成结果。唯一例外是按`knowledge/clip_preflight_check.md`为单一Clip生成 / 接收、通过Sketch Validation并注册的中性`REF-SKETCH`；它只承担Visual Blocking Authority，Prompt不得复制全部标注或让其覆盖Canonical资产。
 
 
 文字描述用于：

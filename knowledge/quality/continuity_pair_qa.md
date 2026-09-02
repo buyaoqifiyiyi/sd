@@ -39,6 +39,11 @@
 11. 视线、攻击、武器、追逐路线、水流、能量或抛射物形成来源—路径—目标一致的空间连线；不得与喷口/武器方向、屏幕方向或受击位置矛盾。
 12. 双方同框且相互面对时没有同时完整正脸；侧面、背侧或OTS关系锚点清楚。
 13. Continuous Handoff的Outgoing Tail Frame与Incoming First Frame保持同一镜头几何；Reference-Only或Not Inherited具有合法边界说明。
+14. 双人对话、反打、并排坐、追逐、对峙与相向运动均读取已建立的Interaction / Eyeline / Action Axis和camera safe side；切换机位后人物屏幕左右与相反眼线可以从Scene Spatial Snapshot和固定环境锚点复算。
+15. 屏幕左右发生翻转时，不机械判定为错误，也不以“创意越轴”免责：必须存在沿轴线中性镜头、观众可见的摄影机跨轴移动、角色镜内明确换位，或插入隔离后以建立镜重建新轴线中的至少一种可感知过渡；新机位侧、固定地标与后续方向已稳定。
+16. 同一连续场景内的人物位置变化满足`Start Position → Visible Movement Path → End Position`；下一镜无可见过程的换边、换位、前后层级交换或道具瞬移判定为失败。
+17. Scene Spatial Snapshot只承担长期场景几何；Shot-State Memory、Accepted Canon State与REF-TAIL只承担各自局部/瞬时状态，任何一个临时来源都没有覆盖Environment Canonical的空间身份。
+18. Pose按`Position → Torso → Shoulder → Head → Gaze`逐层继承，未授权上层没有被局部视线 / 头部Delta带动；Relationship Topology即使左右不变也未从Side-by-side漂成Face-to-face。存在Confirmed `REF-SKETCH`时，它与Blocking Signature一致、只承担Visual Blocking Authority，且普通Prompt Rewrite没有重复生成草图。
 
 ---
 

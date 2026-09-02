@@ -67,6 +67,17 @@
 
 其他模块只能引用这些所有者，不得在`SKILL.md`、`config.md`、References、Knowledge、Templates、兼容入口或各Workflow中维护竞争副本。`SKILL.md`可保留激活/重载入口和路由索引，但不得复制完整运行协议。
 
+### Production Knowledge Rule Owners
+
+- Scene Spatial Snapshot、Spatial Blocking Decision、camera safe side与合法越轴空间合同：`knowledge/spatial_blocking_layer.md`
+- Visual Blocking Risk Pre-Assessment、Before-Single-Clip-Prompt Gate、Sketch Validation、Visual Anchor State / Blocking Signature与KEEP / REPLACE / RETIRE / CREATE：`knowledge/clip_preflight_check.md`
+- Performance Progression Engine、PL1 / PL2 / PL3载体负荷与微表情基础：`knowledge/performance/micro_expression.md`；更细的刺激—评估—控制/泄漏过程由`knowledge/performance/emotion_dynamics.md`拥有
+- Action Execution Level A1 / A2 / A3与通用Kinetic Chain：`knowledge/action_previs.md`
+- 动作构图模式：`knowledge/camera_language/director_patterns/action_composition.md`；不得复制Action PREVIS动力链
+- STATE-08 Field Ownership、State Once、Style / Delta / Negative / Prompt Compression：`knowledge/prompt_compilation/state08_projection.md`；十类Prompt Pollution定义由`rules/03_prompt_rules.md`拥有
+
+Workflow只负责触发、路由、执行顺序和Completion Gate；Quality只检查这些所有者产生的不变量；Template不复制内部算法。
+
 ### Additive By Default
 
 优先增加新的辅助信息，不删除或重新解释已有字段。
@@ -557,25 +568,25 @@ Module Type：STATE-07主流程Workflow / Knowledge。
 
 Module Name：`Clip Preflight Check / Clip生成前检查`。
 
-Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge Gate；不创建新主STATE、不创建新ID命名空间、不拥有STATE-08最终字段。
+Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge Gate；同时拥有Visual Blocking Anchor Assessment / Persistence算法，并通过`references/ref_sketch_master.md`消费独立的Sketch Presentation Authority合同；不创建新主STATE、不创建平行Registry、不拥有STATE-08最终字段。
 
-触发：每个STATE-07候选Clip形成执行合同时执行前置版；每个STATE-08 Confirmed Clip在正式Prompt编译与Template Mapping前执行最终版。普通资产制作、海报、Storyboard或纯音色任务不独立触发。
+触发：每个STATE-07候选Clip形成执行合同时执行Visual Blocking Risk Pre-Assessment；每个STATE-08 Confirmed Clip在正式Prompt编译与Template Mapping前执行Final Assessment，包括用户指定Clip、说“下一个 / 下一步 / 继续”及批量中的每个Clip。普通资产制作、海报、Storyboard或纯音色任务不独立触发。
 
-Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、八组`Clip End-State Record / Next-Clip Carryover`、当前Clip Start Requirement与Clip边界由STATE-07拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Spatial Blocking与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
+Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、八组`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、当前Clip Start Requirement与Clip边界由STATE-07 / 当前STATE-08 Checkpoint拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Scene Spatial Snapshot、Pose Hierarchy、Relationship Topology、Action PREVIS与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
 
-Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过结果投影到`templates/10_video_prompt.md`既有字段；`knowledge/clip_preflight_check.md`只拥有分类、检查顺序、失败条件与返回路由。
+Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过结果投影到`templates/10_video_prompt.md`既有字段；`knowledge/clip_preflight_check.md`拥有分类、检查顺序、失败条件与返回路由；`templates/23_visual_blocking_sketch_prompt.md`唯一拥有Technical Visual Blocking Sketch的图像生成输入包与Candidate Evidence Record，不拥有Assessment或最终视频Prompt Schema。
 
-允许读取：Confirmed Clip Production Plan、Detailed Shot Design、Spatial Blocking、Asset Registry、Reference Budget、Transition、相邻Clip边界与实际首尾帧。允许写入：Clip Plan中的Preflight记录、既有预算/连续性/风险栏目及STATE-08内部Projection / QA记录。
+允许读取：Confirmed Clip Production Plan、Detailed Shot Design、Spatial Blocking、Action PREVIS、Asset Registry、Reference Budget、Transition、相邻Clip边界、实际首尾帧、已存在Visual Anchor Revision，以及`references/ref_sketch_master.md`中母版图片的真实注册状态与Presentation合同。允许写入：Clip Plan现有Preflight / Spatial State / Continuity Risks / Reference Budget栏目、当前STATE-08 Checkpoint / Projection / QA，以及绑定单一Clip的Confirmed `REF-SKETCH-XX`。不得新增主STATE、顶级Template字段或Canonical资产类型；不得把母版示例内容写入Current Clip事实。
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。每张当前草图还须通过Template Content Leakage Check，不得继承母版示例的人物数量、外观、钢琴 / 琴凳 / 窗户 / 乐谱 / 雨景 / 文字、光色或最终风格。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
 冲突路由：剧情/世界事实返回事实拥有者；资产/道具形态返回STATE-03；Shot / Blocking /转场设计返回STATE-06；Clip边界、预算或执行合同返回STATE-07；仅最终文案投影错误留在STATE-08。
 
-Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；八个Acceptance Scenarios和三条高优先级规则存在；所有显式文件引用有效。
+Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；Five Global High-Priority Rules、十三个Acceptance Scenarios、Before-Single-Clip-Prompt Gate、Blocking Signature、四种Reassessment结果、母版注册状态、两级Authority、七项Layout Validation与Template Content Leakage Check存在；所有显式文件引用有效。`Asset Status=REGISTERED`时真实相对文件必须存在；`UNAVAILABLE`时不得出现已注册路径声明。Candidate Evidence必须由`scripts/validate_sd_film.py sketch`拒绝单幅电影插画、缺失版式项、Blocking不匹配、模板内容泄漏或Confirmed前图片不可读。
 
 ---
 
@@ -599,6 +610,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 在冲突时返回事实拥有者，不用Prompt文案静默调和
 - 按Confirmed Clip Production Plan一对一创建`# CLIP-X｜标题 Seedance视频提示词`独立Package；每个Package包含该Clip的1个或多个`分镜X`，但整个Clip只生成一条连续Prompt，不按Shot拆分，并拥有完整结尾帧、尾帧用途判定与反向提示词
 - 多Clip项目默认每轮只交付当前一个Clip；“下一个 / 下一步 / 继续”只推进一个Checkpoint。只有用户在当前请求中明确要求全部、一次性、批量或连续输出多个Clip时，才允许同轮输出多个独立Package
+- 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先生成Technical Director Blocking Sheet、执行Template Content Leakage Check与完整Sketch Validation、注册当前`REF-SKETCH-XX`、加入参考资产并停止，下一Checkpoint才输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
 - 每个Clip必须为4—15秒；Clip内分镜保持原顺序、逐镜字段和显式状态链
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
@@ -713,13 +725,13 @@ Read current rules
 
 1. **Duplicate Rule Check**：搜索语义相同但措辞不同的并行规则，以及本应由单一来源拥有却复制到`SKILL.md`、Rule、Workflow、Knowledge、Template、Reference或Validator的规范。保留一个权威来源，其他位置只保留必要路由、引用或不变量，不复制完整协议或Schema。
 2. **Conflict Check**：核对Pipeline、STATE编号、Gate、优先级、默认行为与辅助模块边界。重点排除显式调用与默认必经并存、Storyboard Auxiliary与固定STATE并存、Shot/Clip/Prompt单位关系冲突，以及同一Template字段被不同文件定义。
-3. **Terminology Drift Check**：复用当前正式术语与ID，包括Shot、Clip、Prompt、Voice Profile、Accepted Take、Accepted Canon State、Shot-State Memory、Reference Selection / Routing与REF-TAIL。新名称只有在代表新概念且不会形成同义命名时才允许。
+3. **Terminology Drift Check**：复用当前正式术语与ID，包括Shot、Clip、Prompt、Voice Profile、Accepted Take、Accepted Canon State、Shot-State Memory、Reference Selection / Routing、REF-TAIL、Visual Blocking Anchor、Visual Anchor State与Blocking Signature。新名称只有在代表新概念且不会形成同义命名时才允许。
 4. **Rule Ownership Check**：按本文件Authority Matrix检查归属。`SKILL.md`只保留身份、版本、入口、主路由、全局硬规则和索引；详细算法、门槛、知识、Schema与合同分别留在Workflow、Rules、Knowledge、Templates和References。不得为提高可见性而在入口复制细粒度规则或Template字段。
 5. **Prompt Pollution Check**：确认新增内部控制不会直接膨胀最终Prompt。检查重复、冲突、抽象语义模板、否定词堆叠、资产重述、无效精密参数、跨镜头残留、风格堆叠与优先级淹没；内部QA、分数、Issue ID、路由说明和维护术语不得进入最终Prompt。
 6. **Routing Integrity Check**：确认新模块有正确入口、触发和返回路由；显式调用模块未变为默认必经；Optional/Auxiliary Workflow未写入主Pipeline；Legacy Compatibility未成为新项目主路由；普通“继续”未被误判为Reload、AUDIO或MUSIC授权。
 7. **Template Consistency Check**：核对Workflow声明的Output Owner、字段语义与当前Template；废弃字段不得残留。Template继续唯一拥有用户可见字段、顺序、必填性和排版。音色未显式投影时，常规STATE-08输出不得默认保留声音身份或“音色特征”字段。
 8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py skill <skill-root>`执行可确定的结构与引用检查。
-9. **State / Continuity Compatibility Check**：确认STATE-00至STATE-09、Shot-State Memory、Accepted Take、Accepted Canon State、Reference Selection / Routing、REF-TAIL A Direct / B Reference-Only / C Not Required、Spatial Blocking、资产锁、Revision与Checkpoint不被破坏；维护QA不得创建新主STATE或项目事实。
+9. **State / Continuity Compatibility Check**：确认STATE-00至STATE-09、Shot-State Memory、Accepted Take、Accepted Canon State、Reference Selection / Routing、REF-TAIL A Direct / B Reference-Only / C Not Required、Visual Anchor State / Blocking Signature、Spatial Blocking、资产锁、Revision与Checkpoint不被破坏；维护QA不得创建新主STATE或项目事实。
 10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
 11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
 12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。

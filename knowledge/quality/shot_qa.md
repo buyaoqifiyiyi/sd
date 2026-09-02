@@ -10,11 +10,11 @@
 
 任一失败则该SHOT不得进入下一阶段：
 
-1. Story / Coverage：镜头目的来自已确认Scene或COV，没有新增剧情。
+1. Story / Coverage：镜头目的来自已确认Scene或COV，没有新增剧情；已通过Shot Purpose Gate，至少承担Narrative Change、Emotional Change、Relationship Change、Spatial / Action Progression、Information Reveal或Atmosphere Establishment中的一项具体任务，完全无任务的镜头已合并或删除。
 2. Asset Lock：所有出现资产绑定存在的Active Version。
 3. Start / End：起始来源、稳定结束状态和下一镜衔接完整。
-4. Space：人物左右、方向、视线、距离、轴线与行动路线可读。
-5. Action：有起因、过程、结果，容量足够且无瞬移。
+4. Space：人物左右、方向、视线、距离、Interaction / Eyeline / Action Axis、camera safe side与行动路线可读；有意越轴具有可感知的合法过渡和新轴线重建。
+5. Action：按A1 / A2 / A3最小充分等级具有起因、可见过程、结果、恢复与Next-action Carryover，容量足够且无瞬移；A1未被过度工程化，A3关键Beat无抽象跳步。
 6. Camera：一个主要路径；复杂组合已分类并有降级。
 7. Evidence：关键剧情、表演、道具或FX结果在选定景别和遮挡条件下可见。
 8. Seedance Boundary：最终Prompt遵守Template、无时间轴、无背景音乐生成要求。
@@ -27,6 +27,7 @@
 
 - 身份、版本、服装和当前身体状态正确。
 - 刺激、注意、反应、行动选择、Settled State可见。
+- PL1 / PL2 / PL3载体负荷与剧情强度、镜头容量和表演尺度匹配；克制文戏没有被强制写成完整递进链。
 - 嘴部动作、呼吸、哭笑、遮脸和台词不存在容量冲突。
 
 ### Dialogue / Lip-sync
