@@ -42,7 +42,7 @@ AI视频生成。
 SD Film遵循：
 
 
-剧本
+创意 / Brief / 已有剧本
 
 ↓
 
@@ -115,17 +115,20 @@ Clip Production
 ## 02 Script Analysis
 
 
-分类、改编并分析输入故事内容。
+在同一STATE中从创意生成可导演剧本，或分类、诊断、改编并分析已有故事内容。
 
 
 包括：
 
 
+- Creation Brief直接进入Director-first Screenplay Development，不要求用户先在Skill外写完整剧本
+- Dramatic Intent、Audience Experience、人物目标/关系、信息策略、视觉动作、表演机会、空间潜力、节奏与AIGC Directability
+- 每场内部Scene Director Intent与Directable Screenplay QA；最终剧本不变成分析表或提前写好的分镜
 - 剧情结构
 - 人物关系
 - 环境信息
 - 视觉元素
-- 所有可改写输入先输出Optimization Opportunity Report并等待用户决定
+- Existing Script / Material先输出Optimization Opportunity Report；已有明确“直接优化”授权时不重复询问
 - 用户明确授权后执行C类Source Material的Script Adaptation，或A/B类Screenwriting Optimization
 - Production Script Proposal输出后的第二次确认与Production-Locked门禁
 

@@ -727,7 +727,7 @@ knowledge/transitions/
 
 负责：
 
-把情绪、对白意图和人物关系转换为可观察的表演节拍。
+把情绪、对白意图和人物关系转换为可观察的表演节拍，并检查逐角色跨镜Performance Arc、动作前/中/后余韵与多人相对表演层级；不新增剧情或镜头。
 
 
 ## Sound Language Knowledge
@@ -904,7 +904,7 @@ Output
 
 其中不可反转的核心编译顺序为：
 
-`Clip Production Result → Director Decision Notes → Knowledge Application Reflection → Seedance Prompt`
+`Clip Production Result → Director Decision Notes → Knowledge Application Reflection → Director-to-Prompt Translation Pass → Seedance Prompt`
 
 Director Decision先决定方向；Knowledge Reflection只从已读取知识中选择1—3个最适合的实现策略。不得先浏览“有哪些技巧”，再用技巧反向主导剧情、人物关系或观众体验。
 
@@ -1153,9 +1153,10 @@ Clip Movement Plan Hard Gate：
 2. **World-State Check**：逐分镜确认现实、幻想、耳中玉境或其他已确认层，以及Pre/Post Transition阶段。删除未出场、未使用及当前阶段不适用资产。完全在耳中玉境的Clip不得引用现实标准耳勺；只有转换Clip可按阶段使用现实与武器化两种状态。
 3. **Character Count Lock**：逐分镜核对`角色 × 精确数量`。唯一角色必须在正向Prompt目标中明确唯一一只/名、前中后景无第二个同类，并准备复制、分身、镜像、背景第二只/名、相似替身的反向限制。
 4. **Spatial Composition Lock**：追逐/战斗/对峙/多人镜头逐项核对前后景、左右、朝向、运动轴、摄影机轴线侧、正脸许可与同景深许可。追逐默认后追前逃，禁止双方并排正对镜头、海报式合影和群像站桩。
-5. **Prop State Check**：每个关键道具核对当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换完成状态与下一镜继承；现实/幻想形态不得跨世界混用或无过程转换。
-6. **Transition Check**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态变化，必须已有起点状态、转换媒介、运动方向/过程、终点状态和转场后首个稳定构图；缺一不得以“金光一闪 / 突然切换”补写。
-7. **Reference Asset Eligibility / Selection / Budget**：前六项通过后才筛选并计数。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否的站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头文字规则从【参考资产】删除并迁移到对应既有字段。答案为是的真实资产必须可回查文件/受控ID；待补视觉图必须写具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得绕过正式Canonical资产确认。再依据`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State、当前目标和Continuity Risks逐项路由并声明Primary Role / Purpose：身份/外观→Character Canonical；空间结构→Environment Canonical + Spatial Blocking文字语义；道具造型→Prop Canonical；A/B状态锚定→对应用途`REF-TAIL`；C→不选旧尾帧；Motion / Camera / Audio只控制授权维度；光线/场景状态→只选实际已确认合格的视觉基准或合法帧，否则写入文字字段。Transient Reference不得覆盖正式身份、结构或造型。记录每个入选条目解决的风险和Eligible但未选项的理由；漏选、选错、越权或无依据过量引用均FAIL。之后只保留当前World-State实际存在/出场/使用项，核心角色独立图优先，最终≤9，只有超限风险时整合非角色信息。
+5. **Performance / Emotion Check**：逐角色读取STATE-06 Performance Goal / Performance Arc Map与STATE-07 Performance State，核对Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint与Next-shot Carryover；Intentional Hold仍有注意、呼吸/姿态、延迟或行动证据。多人镜头明确Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序、相对幅度与视觉重点交接。只写静态情绪标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸均FAIL。
+6. **Prop State Check**：每个关键道具核对当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换完成状态与下一镜继承；现实/幻想形态不得跨世界混用或无过程转换。
+7. **Transition Check**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态变化，必须已有起点状态、转换媒介、运动方向/过程、终点状态和转场后首个稳定构图；缺一不得以“金光一闪 / 突然切换”补写。
+8. **Reference Asset Eligibility / Selection / Budget**：前七项通过后才筛选并计数。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；答案为否的站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头文字规则从【参考资产】删除并迁移到对应既有字段。答案为是的真实资产必须可回查文件/受控ID；待补视觉图必须写具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`，不得绕过正式Canonical资产确认。再依据`Clip End-State Record / Next-Clip Carryover`、适用Accepted Canon State、当前目标和Continuity Risks逐项路由并声明Primary Role / Purpose：身份/外观→Character Canonical；空间结构→Environment Canonical + Spatial Blocking文字语义；道具造型→Prop Canonical；A/B状态锚定→对应用途`REF-TAIL`；C→不选旧尾帧；Motion / Camera / Audio只控制授权维度；光线/场景状态→只选实际已确认合格的视觉基准或合法帧，否则写入文字字段。Transient Reference不得覆盖正式身份、结构或造型。记录每个入选条目解决的风险和Eligible但未选项的理由；漏选、选错、越权或无依据过量引用均FAIL。之后只保留当前World-State实际存在/出场/使用项，核心角色独立图优先，最终≤9，只有超限风险时整合非角色信息。
 
 结果为FAIL时，不得继续Step 05或Template Mapping；按模块Return Route做最小修正并从第1项重跑。结果为PASS时，内部记录Evidence Present，并把通过语义映射到既有Template字段，不输出Preflight标题或检查表。
 
@@ -1322,6 +1323,24 @@ STATE-07的Knowledge Opportunity Notes只能作为线索，不能替代本步骤
 禁止只根据剧情平铺直叙生成Prompt。禁止在没有当前Clip叙事理由与上游决策依据时，默认退化为“缓慢推进 + 轻微横移 + 低饱和冷暖对比”的单一安全写法。必须逐Clip判断色调、运镜、构图、表演、声音与剪辑节奏中哪些维度能真正服务当前段落；最合适的导演决策也可以是克制、静止、简单、少动，但必须把这种克制写成可执行的空间、表演、声音与稳定结尾约束。
 
 Reflection Record只进入内部执行上下文或既有Projection / QA记录，不成为Template Data。除非用户明确要求查看，否则不得输出Opportunity Check、候选、拒绝理由、选择表或内部分析过程。
+
+## Director-to-Prompt Translation Pass
+
+Knowledge Reflection之后、任何最终Prompt句子之前，逐Clip执行以下内部Pass。本Pass只保存导演意图并翻译模型执行，不重新导演，不新增Template字段：
+
+1. **Dramatic Priority Extraction**：从Clip-level Director Intent提取当前Clip最重要的1—3个目标；Primary必须能写成Start→End dramatic delta。
+2. **Audience Attention Hierarchy**：明确第一眼、第二眼与被延迟的目标；通过动作先后、构图位置、焦点、遮挡/解除、景深和人物活动幅度分配注意力，不能让所有主体同时抢权重。
+3. **Performance Beat Translation**：把“悲伤、紧张、激动”等转成当前可见的gaze、breath、pause、jaw / mouth / swallow、hand / fingertip tension、shoulder / weight、delayed reaction、suppression / leakage与residue中的最小充分组合。强度与承载量沿用现有PL1 / PL2 / PL3逻辑，不另建P1/P2/P3系统，也不机械堆满通道。
+4. **Composition Function Translation**：只保留有功能的距离、压迫、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡与Reveal；禁止只写“电影构图”。
+5. **Camera Motivation Translation**：把Shot Size、Lens / Distance、Camera Position与Movement翻译为执行顺序；写清什么时候保持不动、哪个人物/信息Beat触发运动、路径、停止点和结束构图，不写理论理由句。
+6. **Information Timing Translation**：把Reveal / Withhold / Delay / Confirm / Recontextualize转成action order、delayed gaze、delayed rack focus、temporary occlusion、hold before reveal或适用的sound-before-image，并服从单Clip容量。
+7. **Spatial & Relationship Translation**：继承Spatial Snapshot、Relationship Topology、Pose Hierarchy、Delta Blocking、REF-SKETCH和REF-TAIL；只翻译Director Module已确认的关系原因，不重建Blocking规则。
+8. **Rhythm Translation**：把内部BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、反应延迟、镜头保持、Cut时机与稳定余韵；最终Prompt不输出抽象标签。
+9. **Sound Direction**：如当前Clip需要声音，把前景/中景/背景声功能、声音先行、声音尾部或有理由的近静默投影到现有`台词 / 音效 / 镜头结尾状态`。Sound Strategy不等于Voice Profile；未获当前明确授权时完全省略音色字段和声音身份资产。
+10. **Prompt Compression**：严格执行`Source Carries State, Prompt Carries Delta`，优先保留dramatic delta、critical performance、critical blocking、critical camera behavior、critical timing与critical information control；已由Source锁定的信息不重复。
+11. **Director Intent Preservation QA**：只读最终Prompt时仍能辨认核心戏剧变化、第一/第二注意目标、可见关键表演、关系与Blocking、构图功能、Camera trigger / stop、Reveal timing与emotional residue；同时没有理论说明、抽象堆叠、参数堆积或明显变长。
+
+任何Pass发现上游意图互斥，按Owner返回STATE-06/07；只有翻译、压缩或字段落位问题留在STATE-08修正。
 
 
 ---
@@ -1658,6 +1677,8 @@ knowledge/performance/
 
 Baseline → Stimulus → Attention Shift → Appraisal → Impulse → Control / Leakage → Visible Response → Action Choice → Settled State。
 
+再读取`emotion_dynamics.md`的Performance Arc Map，逐角色核对`Inherited Baseline → Trigger → Pre-action → In-action → Post-action Residue → Arc Endpoint → Next-shot Carryover`。一个SHOT只投影当前可见段，不把整条弧强塞进单镜；如果STATE-06缺少弧、触发或容量，返回STATE-06，不在STATE-08改剧情或加镜头。
+
 
 再从`facial_action_language.md`中选择最少的可见通道：
 
@@ -1676,6 +1697,8 @@ Baseline → Stimulus → Attention Shift → Appraisal → Impulse → Control 
 多人镜头必须确定：
 
 Primary Performer、Secondary Reactor、背景保持者和反应顺序。
+
+同时按`group_reaction.md`确定Listener / Witness、相对`Restrained / Open / Heightened`幅度与视觉重点交接。主表演者不必最大幅度，但同一时点必须只有一个清楚重点；禁止所有角色同强度表演或同脸冻结。
 
 人物表演优先使用：
 
@@ -3177,6 +3200,7 @@ STATE-08。
 - 每个视觉条目是否通过Visual Input Eligibility；站位、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为约束、禁止项或镜头规则是否没有伪装成资产，并已迁移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`；真实道具图是否使用正式ID。
 - 每个分镜是否锁定角色精确数量；唯一角色是否在正向字段明确唯一一只/名和前中后景无第二个同类，并在反向提示词禁止复制、分身、镜像重复、背景第二个与相似替身。
 - 追逐/战斗/对峙/多人镜头是否锁定前后景、左右、朝向、关系轴、运动方向、正脸许可与同景深许可；追逐是否默认后追前逃并禁止双方并排正对镜头、海报式合影和群像站桩。
+- Performance / Emotion Check是否逐角色继承Baseline并具备已确认Trigger、当前可见的Pre-action / In-action / Post-action Residue、Arc Endpoint与Carryover；Intentional Hold是否仍有注意、呼吸/姿态、延迟或行动证据；多人相对层级和视觉重点交接是否清楚；是否没有静态情绪标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸。
 - 每个关键道具是否明确当前形态、尺寸、持有者/左右手、位置、是否允许悬浮、转换完成状态与下一镜继承；现实与武器化等不同世界状态是否没有混用。
 - 现实↔幻想/耳中玉境、地点/时间、尺度或角色/道具形态转换是否完整定义起点状态、转换媒介、运动方向/过程、终点状态与转场后首个稳定构图；是否没有用含糊闪光替代过程。
 - Reference Budget是否只在前述检查通过后执行，最终≤9且只在信息超限风险时整合非角色资产。

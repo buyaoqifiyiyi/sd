@@ -147,7 +147,12 @@ Sequence Plan（如适用）
 # Review Pipeline
 
 
-审核顺序：
+审核分为两层并按同一受审对象对照：
+
+1. **Technical Review**：identity、continuity、blocking、props、action、camera/visual defects、sound/FX与Seedance稳定性。
+2. **Director's Cut Review**：Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Timing、Shot Necessity、Rhythm与Emotional Residue。
+
+执行顺序：
 
 
 视觉一致性
@@ -399,6 +404,8 @@ Shot Design Workflow或Video Generation Workflow。
 
 □ 表演具有刺激、注意转移、局部面部/身体变化、行动选择与稳定结束状态，没有只写喜怒哀乐
 
+□ 动作、台词或信息接收在`Pre-action / In-action / Post-action`中保留当前镜头可见的最小充分阶段，动作后确认、延迟反应、恢复或余韵没有被截掉；Intentional Hold仍有注意、压制/延迟、呼吸/姿态或行动证据
+
 □ 表情符合角色基线；瞳孔、脸红、泪液、颤抖等条件性结果没有被机械套用
 
 □ 压抑、伪装与混合情绪的公开状态、短暂泄漏和恢复过程清楚
@@ -406,8 +413,12 @@ Shot Design Workflow或Video Generation Workflow。
 
 □ 情绪强度连续，没有无原因重置
 
+□ 逐角色Performance Arc从Inherited Baseline到Arc Endpoint可复算，上一镜Settled State与下一镜Baseline一致；不存在固定脸完成动作或结果后瞬间恢复默认脸
+
 
 □ 多人反应顺序和视觉重点清晰
+
+□ Primary Performer、Secondary Reactor / Listener / Background Holder的相对幅度与视觉重点交接清楚，没有全员同强度表演或全员同脸冻结
 
 
 □ 对白说话者、倾听者与口型可执行
@@ -604,13 +615,15 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 # Director QA
 
 
-逐Scene / Shot Group对照Director Decision Notes，并逐Clip检查其在Clip Movement Plan、STATE-08 Prompt或生成结果中的实现。Director QA审核“为什么这样拍及观众如何经历”，不替代Camera Language QA的技术核对，也不重新进行Knowledge选择。
+逐Scene / Shot Group对照当前Director Intent / Director Decision Notes，并逐Clip检查其在Clip Movement Plan、STATE-08 Prompt、剪辑或生成结果中的实现。Director QA即Director's Cut Review，审核“为什么这样拍及观众如何经历”，不替代Technical Review或Camera Language QA，也不重新进行Knowledge选择。
 
 
 检查：
 
 
 □ 每个镜头是否有明确叙事目的；能否说明观众在当前段落应知道什么、感受什么、等待什么，而不是只提供漂亮画面
+
+□ 如果删除当前Shot，观众是否会损失具体Narrative / Emotional / Relationship / Spatial-Action / Information / Atmosphere-Rhythm证据；没有损失的镜头不得因“好看”而自动KEEP
 
 
 □ 人物调度是否通过距离、视线、站位、身体朝向、先后动作、靠近/后退或停顿表达人物关系；是否存在人物只是并排站立说台词的平铺直叙
@@ -633,6 +646,10 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 
 □ Editing / Rhythm是否有建立、累积、高潮、停顿、释放或余韵；视觉高潮与最克制镜头是否有层级，摄影强调是否平均铺满整段
 
+□ Audience Attention第一/第二目标是否清楚；关键反应、Performance Truth、Relationship Readability、Information Timing与Emotional Residue是否按意图出现
+
+□ 技术连续性即使完全正确，只要情绪或关键信息提前暴露、反应被切掉、关系读反或余韵消失，仍判Director-level failure，不得判KEEP；若现有素材可通过切点/顺序/声音恢复则RE-EDIT，否则REDIRECT或REGENERATE
+
 
 □ 是否存在两种相反失败：一是知识、运镜、构图、色光或声音堆砌造成纯炫技；二是所有镜头只按剧情顺序平铺、没有关系调度、观众等待、高潮或留白
 
@@ -646,6 +663,17 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 - 导演方向正确，但Clip主导镜头语言、节奏、调度、视觉高潮/留白或复杂度组织错误：返回STATE-07，只修Affected Clip。
 - STATE-07保持正确，但Knowledge策略选择、执行转译或内部Notes泄漏：返回STATE-08，只修Affected Clip Prompt。
 - 设计与Prompt均正确、仅生成或后期呈现偏差：进入Video Generation重试、Editing或对应局部修复；不得无必要重做上游。
+
+## Failure Origin And Disposition
+
+Review必须在兼容的`PASS / REVISE / REBUILD` Result之外选择一个处置，不创建新STATE：
+
+- `KEEP`：Technical Review与Director's Cut Review均通过；映射Result=`PASS`
+- `RE-EDIT`：素材包含正确导演信息，可通过剪辑顺序、Cut / Hold、反应优先级、声音桥或局部后期修复；映射Result=`REVISE`并进入Editing
+- `REGENERATE`：上游Director / Shot / Clip / Prompt设计正确，但模型执行、身份、动作、相机或视觉生成失败；映射Result=`REVISE`并只重试Affected Clip
+- `REDIRECT`：导演目的、观众注意、信息时序、Shot必要性、Camera动机、关系表达或Clip编排本身错误；映射Result=`REVISE`或严重时`REBUILD`，返回实际owner
+
+同时记录`Failure Origin: Generation / Editing / Directing / Upstream Fact`。Generation failure指正确设计未被模型实现；Directing failure指结果即使技术正确，也执行了错误的注意力、关系、信息时机、表演、镜头必要性或节奏决定。不得用REGENERATE掩盖REDIRECT，也不得用REDIRECT重做本可RE-EDIT的素材。
 
 
 ---
@@ -823,10 +851,10 @@ Color设计或综合色彩连续性错误：
 - 从Identity、Spatial / Blocking、Prop、Motion / Performance、Camera / Focus、Lighting / Color、FX / Sound、Coverage、Prompt Scope / Template中选择一个对当前失败影响最大的变量；把它写入Review Report现有`Problems And Corrective Actions → Minimum Necessary Fix`与`Recheck Scope`，不新增Template字段。
 - 第一轮只修改该变量及其必需相邻边界，保持Accepted Unaffected Artifacts、正式资产版本、无关镜头、导演方向和其他Prompt维度不变。站位错误优先只修Blocking / Spatial与必要边界；身份漂移优先修Identity Reference路由；动作失败优先修Motion / Performance；镜头失败优先修Camera；不得一上来整段重写所有字段。
 - Retake后必须与前一Take按同一问题、同一Affected IDs和同一连续性边界比较，确认目标变量改善且没有引入新的Hard Gate失败，再决定PASS、继续REVISE、返回更上游或进入Editing。
-- 能安全后期修复且不破坏身份、空间、动作结果或连续性的局部问题，沿现有Editing Workflow处理；不为可后期解决的问题无必要Re-roll。无问题或已接受结果沿用PASS / Accepted Unaffected Artifacts；本Workflow不新增Keep、Fix in post、Re-roll等竞争结果标签。
+- 能安全后期修复且不破坏身份、空间、动作结果或连续性的局部问题，选择Disposition=`RE-EDIT`并沿现有Editing Workflow处理；不为可后期解决的问题无必要Re-roll。无问题或已接受结果选择`KEEP`并沿用PASS / Accepted Unaffected Artifacts。Disposition是Result下的执行分流，不替代PASS / REVISE / REBUILD。
 - 只有根因有明确多变量耦合证据、单变量修复无法形成合法输入，或用户明确要求整体重做时，才允许多变量修订或REBUILD；必须记录耦合变量、理由和Must Not Change，不能用“整体感觉不对”代替诊断。
 
-同一失败连续两次仍执行现有Stable Downgrade；连续三次返回事实/设计拥有者，不继续同参数盲重试。单变量协议不改变PASS / REVISE / REBUILD、Return Route或最小必要修改原则。
+同一失败连续两次仍执行现有Stable Downgrade；连续三次返回事实/设计拥有者，不继续同参数盲重试。单变量协议不改变PASS / REVISE / REBUILD、Disposition、Return Route或最小必要修改原则。
 
 ---
 
@@ -834,6 +862,8 @@ Color设计或综合色彩连续性错误：
 
 
 审核结果分为：
+
+Result继续使用兼容的PASS / REVISE / REBUILD；每份报告另给唯一Disposition=`KEEP / RE-EDIT / REGENERATE / REDIRECT`与Failure Origin。不得把Disposition写入Project State的Review Result字段。
 
 
 ## PASS

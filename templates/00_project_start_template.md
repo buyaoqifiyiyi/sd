@@ -43,7 +43,13 @@ STATE-00 Project Setup
 输入类型：
 
 
+□ Idea / Brief / Concept
+
+□ 品牌需求
+
 □ 完整剧本
+
+□ 粗略剧本 / 初稿
 
 □ 剧情大纲
 
@@ -56,6 +62,13 @@ STATE-00 Project Setup
 
 
 输入内容摘要：
+
+
+Script Entry Route：
+
+□ Creation Brief → STATE-01 Screenplay Generation branch
+
+□ Existing Script / Material → STATE-01 Script Diagnosis branch
 
 
 

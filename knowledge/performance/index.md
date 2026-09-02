@@ -19,13 +19,13 @@
 
 ## Routing
 
-- micro_expression.md：Performance Progression Engine、PL1/PL2/PL3载体负荷、微表情、身体表演、强度和连续性基础
+- micro_expression.md：Performance Progression Engine、Pre-action / In-action / Post-action动作阶段、PL1/PL2/PL3载体负荷、微表情、身体表演、强度和连续性基础
 - facial_action_language.md：FACS启发的眉眼、眼睑、嘴角、下颌、注视和生理结果语言
-- emotion_dynamics.md：刺激、评估、冲动、控制/泄漏、混合情绪、身体状态与恢复曲线
+- emotion_dynamics.md：Performance Arc Map、刺激、评估、冲动、控制/泄漏、混合情绪、身体状态、恢复曲线与跨镜情绪弧
 - expression_patterns.md：36个去重后的条件性表演模式
 - expression_image_source_coverage.md：8张附件候选内容、归并结果与专业校正
 - dialogue_performance.md：对白节拍、口型容量、倾听和反应
-- group_reaction.md：双人及多人反应顺序、空间与注意力
+- group_reaction.md：双人及多人相对表演层级、反应顺序、空间与注意力
 
 只加载当前镜头需要的文件。
 

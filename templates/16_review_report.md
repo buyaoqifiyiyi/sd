@@ -28,11 +28,19 @@ Review Date：
 
 Result：PASS / REVISE / REBUILD
 
+Disposition：KEEP / RE-EDIT / REGENERATE / REDIRECT
+
+Failure Origin：None / Generation / Editing / Directing / Upstream Fact
+
 Hard Gate Result：PASS / FAIL
 
 Prompt Quality Score（如适用）：/100
 
 Summary：
+
+Technical Review Summary：
+
+Director's Cut Review Summary（Intent vs Result / Audience Attention / Performance Truth / Relationship Readability / Information Timing / Shot Necessity / Rhythm / Emotional Residue）：
 
 ---
 
@@ -80,6 +88,8 @@ Boundaries：
 
 Severity：P0 Blocker / P1 Major / P2 Minor。
 
+技术连续性正确但情绪/信息提前暴露属于Director-level failure；现有素材可通过剪辑恢复时选择RE-EDIT，否则按根因选择REGENERATE或REDIRECT，不得选择KEEP。
+
 ---
 
 ## Return Control
@@ -101,5 +111,7 @@ Must Not Change：
 - PASS：所有硬门槛通过，允许STATE-09 Complete。
 - REVISE：局部可修复，STATE-09保持IN_PROGRESS并返回指定Workflow。
 - REBUILD：上游事实或设计严重错误，STATE-09保持IN_PROGRESS并返回事实拥有者。
+
+Disposition映射：KEEP→PASS；RE-EDIT→REVISE并进入Editing；REGENERATE→REVISE并只重试Affected Clip；REDIRECT→REVISE或REBUILD并返回Director / Scene / Shot / Clip owner。
 
 不得同时选择多个结果。

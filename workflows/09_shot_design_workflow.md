@@ -91,6 +91,8 @@ SCENE已建立。
 
 Scene Breakdown已提供足以唯一判断的场景边界、固定结构、入口 / 出口、关键家具 / 障碍、人物剧情动作和道具空间事实；缺失时返回STATE-05或相应资产拥有者，不得由Blocking Map猜测补造。
 
+Scene Breakdown已经投影Production-Locked Directable Screenplay的Scene Director Intent，包括Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Strategy、Performance Opportunity、Spatial Potential与Rhythm Intent。STATE-06必须读取这一上游意图作为Shot Purpose、Blocking与Director Decision Notes的来源；不得原样复制为Template字段，也不得用Camera技巧反向修改它。Intent与锁定剧本冲突时返回STATE-01/05，不在镜头层调和剧情。
+
 Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / Clip A”只作为Source Script Labels追溯，不是正式SHOT或CLIP。进入本阶段时不得继承任何上游预划Clip、Clip数量或Shot-to-Clip分配。
 
 
@@ -235,10 +237,10 @@ Work/Codex把结果写入`<active-project-root>/shots/spatial_blocking/SCENE-xxx
 - Emotional Change
 - Relationship Change
 - Spatial / Action Progression
-- Information Reveal
-- Atmosphere Establishment
+- Information Reveal / Withhold
+- Atmosphere / Rhythm Control
 
-任务必须写成该镜头产生的具体变化或建立结果，不能只写“有电影感、增加压力、好看、过渡”。一个镜头可以承担多项，但不得为凑任务新增剧情。若完全没有任务，优先与相邻兼容SHOT合并或删除；若它承担必要呼吸、观察、场景建立或剪辑接口，应归入上述对应任务并说明可见 / 可听结果。Shot Purpose Gate是内部导演决策，不新增Template字段，也不进入STATE-08 Prompt。
+任务必须写成该镜头产生的具体变化或建立结果，不能只写“有电影感、增加压力、好看、过渡”。创建或保留前必须回答：`如果删掉这个SHOT，观众会损失什么？` 一个镜头可以承担多项，但不得为凑任务新增剧情。若没有具体信息、情绪、关系、空间/动作、氛围/节奏或边界损失，优先与相邻兼容SHOT合并或删除；若它承担必要呼吸、观察、场景建立或剪辑接口，应归入上述对应任务并说明可见 / 可听结果。Shot Purpose Gate是内部导演决策，不新增Template字段，也不进入STATE-08 Prompt。
 
 ## Scene / Shot Mode Routing
 
@@ -247,6 +249,9 @@ Work/Codex把结果写入`<active-project-root>/shots/spatial_blocking/SCENE-xxx
 - `Performance-dominant`：主要变化来自注意、情绪、关系、对白倾听或控制/泄漏；执行`knowledge/performance/micro_expression.md`的Performance Progression Engine。
 - `Action-dominant`：主要变化来自位移、接触、受力、追逐、多人协调、复杂道具、特技或动作结果；执行`knowledge/action_previs.md`。
 - `Mixed`：表演选择会改变动作，或动作后果会改变情绪/关系；联合执行两者，但只保留当前SHOT完成目的所需的信息，并先保证空间、动作因果和容量。
+- `Spatial-Blocking-dominant`：主要变化来自距离、站位、朝向、共享空间、遮挡或权力关系；以Spatial Blocking / Pose Hierarchy / Relationship Topology / Delta Blocking为主。
+- `Information-dominant`：主要变化来自Reveal / Withhold / Delay / Confirm / Recontextualize；以Audience Position、注意力顺序、遮挡、焦点和反应时机为主。
+- `Atmosphere-Rhythm-dominant`：主要价值来自等待、压迫、呼吸、环境接管或余韵；仍须通过Deletion Loss检验。
 
 路由可以按Shot变化，不把整场永久贴成“文戏 / 武戏”。它是STATE-06内部编译选择，不创建新STATE、模式ID、用户可见章节或STATE-08字段。
 
@@ -433,21 +438,25 @@ Template定义的全部字段属于同一SHOT的统一生产记录，不能用�
 
 每个Detailed Shot在写Camera Movement、Camera Speed与最终Visual Description之前，必须先完成Camera Language Decision。不得先套用“缓慢推进/轻微横移”，再倒推理由。
 
-决策顺序：
+决策顺序固定为：
 
-1. 从Scene、Coverage与Confirmed Spatial Blocking Result提取镜头目的、情绪功能、空间功能、人物运动和节奏阶段；不得在Camera Language Decision中重新摆位、换边或改变轴线。
-2. 实际读取`knowledge/camera_language/camera_movement/selection_matrix.md`与`camera_movement/index.md`，按五项输入选择候选。
-3. 实际读取被选主运镜对应的原子知识文件；辅助项若构成摄影机物理运动，也读取对应原子文件。
-4. 结合关系轴、人物动作容量、焦段、表演可读性和模型复杂度确定Seedance稳定等级、禁止运镜与安全降级。
-5. 候选包含两种以上主要运动、多个机位/视点或一镜到底时，进入Movement Combination判定；复杂Orbit / 360、穿墙、无人机或连续越轴还必须进入Advanced Camera Movement门控。
+`Shot Purpose → Audience Attention → POV / Audience Position → Relationship & Blocking → Composition Strategy → Shot Size → Lens → Camera Position → Camera Movement → Duration / Hold → Cut Motivation`
+
+1. 先从Scene Camera Strategy、Coverage与Confirmed Spatial Blocking Result提取目的、观众第一/第二注意目标、信息位置、关系和表演载体；不得重新摆位、换边或改变轴线。
+2. 在选择技术前确定Composition Function，以及观众需要通过脸、身体、人物间距、前中后景、遮挡或共享空间看到什么；情绪不自动触发特写。
+3. 依序确定Shot Size、Lens / Distance、Camera Position，再实际读取`selection_matrix.md`、Camera Movement Index与候选原子知识。
+4. Camera Movement必须写`Trigger → Path → Stop → End Composition`；没有充分触发时使用有理由的Static / Locked-Off。禁止只写“镜头缓慢推进”。
+5. 再确定Duration / Hold与Cut Motivation，为关键反应、信息延迟、动作后余韵或关系变化留出可见时间。
+6. 结合关系轴、人物动作容量、焦段、表演可读性和模型复杂度确定Seedance稳定等级、禁止运镜与安全降级；多主要运动、多个机位/视点或一镜到底进入Movement Combination，复杂路径进入Advanced Camera Movement门控。
 
 Camera Language Decision至少包含：
 
 - 镜头目的
-- 情绪功能
-- 空间功能
-- 人物运动
-- 节奏阶段
+- Audience Attention Hierarchy与POV / Audience Position
+- Relationship & Blocking来源
+- Composition Function、Shot Size、Lens / Distance与Camera Position
+- 人物运动、Camera Movement Trigger / Stop
+- Duration / Hold与Cut Motivation
 - 推荐主运镜，或有叙事理由的Static / Locked-Off
 - 可选辅助运镜/支持行为
 - 禁止运镜
@@ -455,7 +464,7 @@ Camera Language Decision至少包含：
 - 选择理由
 - 已实际读取的主运镜原子知识文件；适用时记录辅助/组合/高级知识文件
 
-主运镜必须承担清楚的叙事功能，并能够写出起点、路径、速度、人物配合、终点与轴线限制。Camera Language Decision缺失、只写抽象风格词或没有原子知识证据时，本SHOT不得确认。
+主运镜必须承担清楚的叙事功能，并能够写出起点、触发、路径、速度、人物配合、停止点、终点构图与轴线限制。Camera Language Decision缺失、只写抽象风格词、没有Trigger / Stop或没有原子知识证据时，本SHOT不得确认。
 
 
 ## Duration
@@ -673,10 +682,12 @@ A1不得被过度工程化。A3关键Beat要尽量写清物理因果，但不机
 - 呼吸/肩颈/手部/重心中一个支持变化
 - 公开状态与内部泄漏（如有），以及人物最终行动选择
 - 表演强度，以及PL1 / PL2 / PL3最小充分载体负荷
+- 当前动作/台词的`Pre-action → In-action → Post-action`表演阶段；不在本镜出现的阶段由相邻SHOT承接，不得机械填满
+- 多人镜头的Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序与相对表演幅度
 - 结束时可继承的视线、呼吸、面部/身体张力、动作与情绪状态
 
 
-先读取`knowledge/performance/micro_expression.md`执行Performance Progression Engine，再按需读取`facial_action_language.md`、`emotion_dynamics.md`与`expression_patterns.md`。PL1只选1—2个可执行载体；PL2选2—4个递进载体；PL3只在高压、崩溃或重大揭示授权时允许较完整链。禁止把六阶段当所有文戏固定时间轴，禁止只写“悲伤、愤怒、震惊、甜蜜、坚定”或PEX/AU编号，也禁止把瞳孔、脸红、落泪、露齿数和颤抖写成必然结果。
+先读取`knowledge/performance/micro_expression.md`执行Performance Progression Engine与Action-phase Performance Rule，再按需读取`facial_action_language.md`、`emotion_dynamics.md`、`expression_patterns.md`与`group_reaction.md`。在Scene / Shot Group层用`emotion_dynamics.md`的Performance Arc Map核对每个相关角色的Inherited Baseline、Trigger、Pre-action、In-action、Post-action Residue、Arc Endpoint、相对幅度/视觉优先级与Next-shot Carryover；该Map为内部检查，不新增Template字段。PL1只选1—2个可执行载体；PL2选2—4个递进载体；PL3只在高压、崩溃或重大揭示授权时允许较完整链。禁止把六阶段当所有文戏固定时间轴，禁止只写“悲伤、愤怒、震惊、甜蜜、坚定”或PEX/AU编号，也禁止把瞳孔、脸红、落泪、露齿数和颤抖写成必然结果。
 
 
 对白镜头还需说明：
@@ -887,6 +898,20 @@ FX-001（如适用）
 - 连续镜头是否保持综合色温、资产固有色、肤色、强调色位置与材质响应，变化是否有空间/光源/断点依据
 - 反射、群体、复杂遮挡、FX与动作构图是否存在身份复制、空间融化、人物融合或剧情越权风险
 
+## Performance / Emotion Check
+
+对每个Scene / Shot Group按`knowledge/performance/emotion_dynamics.md`与`group_reaction.md`检查：
+
+- 每个相关角色是否从可验证Inherited Baseline出发；`Previous Settled State = Current Inherited Baseline`，没有无刺激的情绪重置、升级、回落或恢复
+- 当前SHOT是否至少具有一项可观察变化，或有证据充分的`Intentional Hold / 主动保持`；“一直平静 / 紧张 / 从容 / 面无表情”后没有注意目标、呼吸/姿态、延迟反应或行动选择时固定FAIL
+- 动作、台词或信息是否具有当前可见的Pre-action、In-action、Post-action阶段及余韵；简单镜头只保留最小充分阶段，不强制整条弧塞进单镜
+- 多人镜头是否明确Primary Performer、Secondary Reactor / Listener / Background Holder及视觉重点交接；除非剧情明确授权，不得所有人同一时点同强度表演，也不得所有人保持同一张无反应的脸
+- 角色相对幅度是否服务人物功能、关系、类型和当前Beat，而不是把所有角色机械设为相同`Restrained / Open / Heightened`或相同PL负荷
+- 关键眼神、微表情、停顿、呼吸和动作后余韵在当前景别、遮挡、时长、对白/动作容量与Camera路径下是否可读
+- Arc Endpoint、Post-action Residue与Next-shot Carryover是否已经进入现有`人物动作`、End-Frame Constraint和Next-Shot Handoff语义，没有创建新Template字段
+
+失败时只修Affected SHOT及相邻Handoff并重跑本Check。不得为“增加情绪”改剧情、增加无必要镜头或把表演检查留到STATE-08用Prompt形容词补救；只有现有SHOT的时长、景别或边界本身无法容纳已确认表演Beat时，才在STATE-06做最小镜头调整。
+
 
 ## Coverage Completion
 
@@ -938,7 +963,7 @@ Professional Detailed Shot Script的全部Template字段、内部Camera Language
 - 人物关系如何通过距离、视线、站位与动作变化表达
 - 镜头应该动还是停，为什么；运动由什么触发并在哪里停止
 - 色彩/灯光是否需要随剧情发生功能性变化；若保持不变，稳定保护什么
-- 表演应外放还是克制，谁先泄漏、谁压住
+- 每个相关角色的跨镜情绪弧如何从Inherited Baseline到Arc Endpoint；表演应外放还是克制，谁是当前Primary Performer、谁先泄漏、谁压住、谁延迟反应，视觉重点何时交接
 - 声音哪里加强、哪里留白、尾部如何连接下一节拍
 
 
@@ -983,6 +1008,10 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 □ 每镜`画面内容/构图`均明确前景/中景/背景、主体位置、焦点层次及适用的遮挡/反射/景深/负空间；没有只写单层居中或抽象“电影感”
 
 □ 每镜`人物动作`均为可观察的动作与表演链，包含起始、刺激/注意、反应、动作选择与稳定结束状态
+
+□ 每个Scene / Shot Group已通过Performance / Emotion Check：相关角色具有可复算的Performance Arc Map；动作前/中/后至少投影当前可见的最小充分阶段；Intentional Hold仍有注意、呼吸/姿态、延迟或行动证据；不存在静态情绪标签冒充表演
+
+□ 多人场景已锁定Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序、相对表演幅度与视觉重点交接；没有全员同强度表演或全员同脸冻结
 
 □ A3关键动作具有可见触发、动力传递、轨迹、接触 / 近接触、反馈、惯性 / 恢复与Next-action Carryover；A1简单动作保持起点—路径 / 变化—终点，没有无效工程参数
 
@@ -1044,6 +1073,8 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 □ 相邻镜头已经成对检查，叙事断点没有被误写为连续动作
 
 □ 每个Scene / Shot Group均已生成当前有效的Director Decision Notes，十三个维度完整或具有明确Not Applicable理由
+
+□ Director Decision Notes可追溯到Production-Locked Directable Screenplay与Scene Director Intent投影；没有从Camera / Knowledge候选反向发明场景目的、关系变化或信息策略
 
 □ 每组Notes均已回答观众知道/感受/等待、关系调度、镜头动/停、功能性色光、表演尺度和声音加强/留白；不存在只写风格标签、技巧名称或“为了电影感”
 

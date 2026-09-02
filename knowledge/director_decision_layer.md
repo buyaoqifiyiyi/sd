@@ -1,211 +1,274 @@
-# Director Decision Layer
+# Director Module / Director Intelligence Layer
 
 ## Purpose
 
-本层在STATE-06 Detailed Shot Design结束前、STATE-07组织Clip之前，为每个Scene / Shot Group建立导演级内部决策。它先回答“为什么这样拍、观众如何经历这一段、人物关系如何被看见”，再允许Camera、Composition、Lens、Color、Lighting、Performance、Sound、Editing与Seedance相关Knowledge选择实现方法。
+本文件是SD Film贯穿式Director Thinking、唯一的`Director Module / Director Intelligence Layer`连续性owner。它从STATE-00建立项目导演基线，在STATE-01形成剧本级意图，在STATE-05投影为场景执行意图，在STATE-06具体化为Shot级Director Decision Notes，在STATE-07形成Clip级执行合同，在STATE-08由Prompt Compiler翻译，在Editing中保护剪辑观点，并在STATE-09执行Director's Cut Review。
 
-本层不创建新STATE，不改写主Pipeline，不拥有任何用户可见Template字段，也不直接生成Seedance Prompt。默认产物为内部`Director Decision Notes`；正式Prompt只保留Notes所导出的可执行视听语义，不输出Notes标题、维度表、候选方案、拒绝理由或内部推理过程。
+核心分层固定为：
+
+`Director Module = 决策层 → Workflow = 执行层 → Knowledge = 专业知识支持层 → Prompt Compiler = 模型执行翻译层`
+
+本层是persistent cross-stage decision layer，不创建新主STATE，不改变STATE-00至STATE-09，不拥有任何最终Template Schema，也不直接生成Seedance Prompt。内部使用轻量`DIRECTOR INTENT PACKET`传递方向；正式用户交付只保留当前阶段有用的摘要或可执行结果，不机械展示Packet字段、候选方案、拒绝理由或逐步推理。
 
 ## Module Contract
 
-- **Module Name**：Director Decision Layer
-- **Module Type**：STATE-06末端生成、STATE-07/08消费、STATE-09审核的内部导演决策Knowledge
-- **Trigger**：所有完成内容分镜、准备确认Detailed Shot Design的Scene；每个Scene至少覆盖一个Shot Group
-- **Not Triggered As**：独立Workflow、新主STATE、导演风格库、Camera Movement选择器、Knowledge Reflection替代品、用户可见固定章节或STATE-08最终Schema
-- **Position**：`STATE-06 Detailed Shot Design → Director Decision Notes → STATE-07 Clip Production`；进入STATE-08后固定为`Clip Production Result → Director Decision Notes → Knowledge Application Reflection → Seedance Prompt`
-- **Required Inputs / Owners**：Scene / Beat事实、人物关系、Confirmed Assets、Visual Direction，以及`templates/08_shot_design_prompt.md`形成的Professional Detailed Shot Script由各上游拥有者提供；本层必须读取其时间码、画面内容/构图、人物动作链、摄影机/镜头、摄影参数、镜头调度、光线/色彩、声音、AI制作备注与素材/资产。本层只读，不新增剧情事实
-- **Output Owner**：STATE-06 Workflow拥有一次性内部`Director Decision Notes`；Work/Codex需要跨轮持久化时写入Active Project Root的`shots/director_decision_notes.md`或既有Execution Ledger，普通Chat保留在当前Workflow内部上下文；不得写入Skill根目录或Portable State正文
-- **Read / Write Boundary**：允许读取当前项目已确认产物；只允许写内部决策记录与既有执行账本，不修改Template Schema、Canonical Assets或已确认剧情
-- **Downstream Consumers**：STATE-07 Clip Production、STATE-08 Knowledge Application Reflection / Prompt Compilation、STATE-09 Director QA
-- **Protected Upstream Facts**：剧情、角色/环境/道具/FX身份、Visual Direction、SHOT编号与顺序、关系轴、边界合同、时长和用户明确要求
-- **Conflict Route**：事实或关系冲突返回其上游拥有者；逐镜目的、Blocking或技术设计不能服务Notes时留在STATE-06最小修订；Clip组织冲突返回STATE-07；仅Knowledge实现与Prompt转译问题留在STATE-08
-- **Deterministic Invariants**：每个Scene / Shot Group有且只有一份当前有效Notes；十三个决策维度均有结论或明确Not Applicable理由；观众“知道 / 感受 / 等待”已回答；Notes先于Knowledge Reflection；无新STATE、无新最终字段、无内部决策泄漏
+- **Module Name**：Director Module / Director Intelligence Layer；`Director Decision Layer`保留为兼容名称
+- **Module Type**：贯穿STATE-00至STATE-09与Editing的内部导演决策Knowledge；不是Workflow、Template、新STATE或第二套Project State
+- **Owner**：`knowledge/director_decision_layer.md`
+- **Core Externalization**：Camera Language Module，owner为`knowledge/camera_language/index.md`
+- **Trigger**：所有SD Film主流程项目；按当前阶段、当前Scene / Shot / Clip和任务dominance只运行最小充分部分
+- **Not Triggered As**：独立用户步骤、固定分析报告、导演风格库、Camera Movement选择器、Knowledge Reflection替代品、最终Prompt新字段
+- **Position**：`STATE-00 Project Director Baseline → STATE-01 Scene Director Intent → STATE-05 Scene Projection → STATE-06 Director Decision Notes → STATE-07 Clip Production → STATE-08 Director-to-Prompt Translation → Editing / STATE-09 Review`
+- **Required Inputs / Owners**：剧情、项目目标、Confirmed Assets、Visual Direction、Scene / Shot / Clip事实、时长、边界和用户约束均由对应上游owner提供；本层只作导演判断，不静默新增或改写事实
+- **Internal Output Owner**：本文件定义Packet与传递合同；当前Workflow拥有本阶段投影。Work/Codex按项目现有工件保存到`project_bible.md`相关既有区、确认剧本的Scene Intent source data、Scene Breakdown、`shots/director_decision_notes.md`或既有Execution Ledger、Clip Plan内部合同；普通Chat保留在当前Checkpoint / 可恢复上下文。不得在Skill根目录创建项目状态副本
+- **Read / Write Boundary**：只读已确认项目事实；只写当前阶段内部导演数据和既有工件中的投影，不修改Canonical资产、Template字段、正式SHOT / CLIP顺序或Production-Locked剧情
+- **Downstream Consumers**：STATE-00至STATE-09对应Workflow、`workflows/12_editing_workflow.md`、Prompt Compiler与Review
+- **Conflict Route**：Project / Story事实返回STATE-00/01；资产叙事功能与外观权威返回STATE-02/03；Visual Dramaturgy返回STATE-04；Scene边界/Beat返回STATE-05；Shot Purpose / Blocking / Camera Decision返回STATE-06；Clip编排返回STATE-07；仅模型翻译、Prompt压缩或生成执行偏差留在STATE-08；后期可修项进入Editing
+- **Deterministic Invariants**：主Pipeline不变；Packet不成为新Schema；每个Scene / Shot Group有且只有一份当前有效Director Decision Notes；Director Intent先于Knowledge选择；Camera choice由intent推导；最终Prompt保持`templates/10_video_prompt.md`兼容；Voice仍opt-in；Source Carries State, Prompt Carries Delta
 
-## Responsibility Boundary
+## Camera Language Is The Execution Language Of Director Intent
 
-Director Decision负责：
+镜头语言是Director Intent最主要、最直观的执行语言。它必须改变或控制观众知道什么、感受到什么、期待什么或理解什么，不能只为了“更电影”。
 
-- 为什么这样拍，以及这一段的唯一主叙事目的
-- 观众此刻应该知道什么、感受什么、等待什么
-- 人物关系如何通过距离、视线、站位、动作与空间变化表达
-- 总体摄影、构图、焦段距离、色光、表演、声音与节奏方向
-- 哪一刻应被强调，哪一刻应留白，以及哪些连续性与Seedance风险必须提前限制
+Director Module决定：为什么观察或介入、观众站在哪里、何时隐藏或揭示、人物关系需要被压缩还是拉开、镜头何时必须停住或开始运动。Camera Language Module负责把这些决定落实为构图、景别、机位、POV / Audience Position、焦段与画面距离感、前中后景、遮挡/Reveal、人物关系构图、运镜触发、Hold / Pause / Cut节奏及稳定降级。
 
-Director Decision不得绕过Professional Detailed Shot Script直接从剧本或知识库重新设计镜头。若专业分镜的十八项正式字段缺失、互相冲突，或不足以支持导演判断，返回STATE-06补齐受影响SHOT及相邻边界；不得在Notes中静默补造正式分镜事实。
+空间与轴线不重复造规则：Camera Language必须调用现有Spatial Blocking、Pose Hierarchy、Relationship Topology、Delta Blocking、Relational Screen Geometry、REF-SKETCH与REF-TAIL合同。Director Module决定为什么保持或改变关系，Blocking系统决定如何锁定和验证。
 
-Director Decision不负责：
+## DIRECTOR INTENT PACKET
 
-- 从知识库选择具体技巧、模式ID、导演标签或1—3项实现策略
-- 重做Camera Language原子定义、Clip Movement Plan或Seedance Adapter
-- 创建SHOT / CLIP、改变正式顺序、合并镜头或新增剧情动作
-- 定义STATE-08字段、排版、编号或向用户展示内部推理
+Packet是按项目逐步充实、按当前任务投影的内部source data，不是一次性长表，也不是要求用户填写的问卷。未知项保持Unknown / Not Applicable；只有会改变当前阶段决策的内容才进入工作上下文。上游事实改变时，只重算受影响层与下游投影。
 
-`knowledge/knowledge_application_reflection.md`只回答“用哪些已读取知识最有效地实现已确认导演意图”。它不得反向重定义本层已经锁定的叙事目的、观众体验、人物关系或总体视听策略。
+### Project-level
 
-## Decision Unit
+- Directorial Thesis
+- Audience Contract / Intended Audience Experience
+- Genre Strategy
+- Emotional / Dramatic Core
+- Character & Relationship Arc
+- Information Strategy
+- Performance Strategy
+- Spatial Dramaturgy
+- Visual Dramaturgy
+- Rhythm Strategy
+- Sound Strategy
+- AIGC Directability Constraints
 
-默认按`Scene / Shot Group`决策。Shot Group是同一Scene内承担同一主叙事推进、人物关系变化或情绪阶段的一组连续正式SHOT；它不是新ID实体，不占用SHOT、CLIP、BEAT、COV或UNIT命名空间。
+STATE-00只建立可由用户输入直接确认的最小Project Director Baseline：`Directorial Thesis / Audience Contract / Genre Strategy / Intended Viewing Experience / Non-negotiable Dramatic Core`。STATE-01至04可以依据确认剧本与资产逐步补齐其余项目项，但不得把早期假设冒充锁定事实。
 
-- 同一Scene只有一个清楚的关系/情绪推进时，可以整Scene作为一个Shot Group。
-- 主叙事目的、关系状态、时空、观察立场或节奏阶段发生实质变化时，建立新的Shot Group。
-- Shot Group边界不得重排SHOT，也不得替代STATE-07的Clip边界；一个Group可映射一个或多个Clip，一个Clip原则上只执行一个清楚的主导演方向。若Clip跨越互相冲突的Group方向，返回STATE-07拆分或STATE-06复核。
+### Scene-level
+
+- Scene Objective
+- Audience Start State
+- Audience End State
+- Character Objective
+- Relationship Delta
+- Information Change / Reveal Strategy
+- Performance Opportunity / Peak
+- Spatial Evolution
+- Rhythm Intent
+- Transition Intent
+
+Scene-level Packet由STATE-01生成source data，STATE-05结合Production-Locked剧本正式投影。它描述“这场戏怎样改变观众、人物与关系”，不写35mm、特写、低机位或推镜等Shot Design参数。
+
+### Shot-level
+
+- Shot Purpose
+- Audience Effect
+- POV / Audience Position
+- Information Function
+- Performance Function
+- Blocking Function
+- Camera Motivation
+- Composition Strategy
+- Shot Size / Lens / Camera choice as consequence of intent
+- Cut / Hold Motivation
+
+Shot-level Packet在STATE-06形成，并兼容既有`Director Decision Notes`。具体Camera choice必须服从固定决策顺序和现有Camera / Blocking owner，不能先选技术再补理由。
+
+### Clip-level
+
+- Clip Dramatic Function
+- Start Dramatic State
+- End Dramatic State
+- Critical Performance Beat
+- Critical Blocking / Spatial State
+- Continuity Requirement
+- Rhythm Requirement
+- Information Timing Requirement
+- Generation Risk / Simplification Boundary
+
+Clip-level Packet由STATE-07在现有Clip Contract内投影，把Clip定义为`Dramatic Execution Unit`。它决定哪些相邻Shots必须保持在同一Clip才能完成情绪、关系或信息积累；不能为了技术方便把“怀疑→证据→确认”错误拆断，也不能为了保留情绪而把不兼容的时空、动作或模型负荷强行合并。
+
+## Packet Persistence And Projection
+
+Packet遵守“source data向下传递、阶段owner只写自己的具体化结果”：
+
+1. STATE-00在Project Bible既有项目/故事/制作方向区域保存最小Project Director Baseline；不增加Portable State字段。
+2. STATE-01把项目基线具体化为Project-level剩余策略与Scene Director Intent source data，随Production-Locked Directable Screenplay版本绑定。
+3. STATE-02/03只读取资产相关的Dramatic Function、Narrative Priority与Casting / Screen Presence要求，不复制完整Packet。
+4. STATE-04把项目意图翻译为Visual Dramaturgy / Mise-en-scène Direction，写入现有Visual Direction / Project Bible区域。
+5. STATE-05生成Scene-level投影与Scene Camera Strategy，不创建SHOT或具体摄影参数。
+6. STATE-06生成Shot-level Director Decision Notes，并让Camera Language / Performance / Blocking / Action PREVIS等能力执行。
+7. STATE-07在现有Clip Detail / Clip Director Direction中形成Clip-level执行合同，不创建新ID或顶级Schema。
+8. STATE-08只读取当前Clip必要的1—3个导演优先级并执行Director-to-Prompt Translation；Packet标题和内部标签不得输出。
+9. Editing与STATE-09读取实际结果和当前有效Packet，不重新导演；如果结果证明上游决定错误，按owner返回。
+
+## Task Dominance Router
+
+每个Scene / Shot Group / Clip选择一种主要dominance；Mixed只在两个以上维度共同决定结果时使用。不得机械全量运行全部导演知识。
+
+- **Performance-dominant**：主要变化来自注意、压制/泄漏、反应、对白倾听或关系微变；调用现有Performance Progression与Performance Arc Map
+- **Spatial-Blocking-dominant**：主要变化来自距离、朝向、站位、遮挡、权力或共享空间；调用Spatial Blocking / Pose Hierarchy / Relationship Topology / Delta Blocking
+- **Action-dominant**：主要变化来自路径、接触、受力、追逐、打斗或动作结果；调用Action PREVIS A1/A2/A3，并优先动作可读性、空间和力线
+- **Information-dominant**：主要变化来自Reveal / Withhold / Delay / Confirm / Recontextualize；优先观众信息顺序、视点、遮挡、焦点与反应时机
+- **Atmosphere-Rhythm-dominant**：主要价值来自等待、压迫、呼吸、余韵、环境接管或声画节奏；仍须能说明观众损失，不能把氛围当空洞装饰
+- **Mixed**：只联合运行直接影响当前目的的能力，并先保护剧情、空间、动作因果和生成容量
+
+## Stage Responsibilities
+
+### STATE-00 Project Setup
+
+建立最小Project Director Baseline，而不只记录平台、时长、画幅和最终目标。基线只来自用户已明确内容与可安全标记的假设，不进行剧本、视觉或镜头设计。
+
+### STATE-01 Screenplay Development And Analysis
+
+导演层控制Dramatic Intent、Audience Experience、Character Objective、Relationship Arc、Information Strategy、Visual Action、Performance Opportunity、Spatial Potential、Rhythm与AIGC Directability。Creation Brief与Existing Script / Diagnosis双入口保持不变。剧本阶段识别可镜头化机会，例如“先看见她没有回头，随后才意识到另一个人一直看她”，但不提前写Shot List、焦段、景别、机位或运镜。
+
+### STATE-02 Asset Discovery
+
+每个候选资产内部判断Asset Dramatic Function、Narrative Priority、Casting Logic、identity-critical / supporting，以及道具/环境是否承载故事意义、关系或状态变化。结果投影到现有Tier、Priority与制作依据，不膨胀用户输出。
+
+### STATE-03 Asset Development
+
+资产设计服从Character Presence / Screen Presence、必要的Costume / Silhouette Dramaturgy、Performance Feasibility、Prop State Evolution、Environment Narrative Force与story-function-based visual authority；不覆盖Canonical身份和双确认合同。
+
+### STATE-04 Visual Development
+
+把Style Development升级为`Visual Dramaturgy / Mise-en-scène Direction`：建立Visual Arc，而不是全片统一色调说明；让色彩、光线、对比、深度、负空间、环境压力、视觉层级、前中后景关系和视觉母题随戏剧推进保持或变化。项目级摄影倾向仍不预定逐Shot参数。
+
+### STATE-05 Scene Breakdown
+
+拆分Dramatic Beat、Relationship Beat、Information Beat、Performance Beat、Scene / Dramatic Geography、Spatial Evolution、Reveal / Withhold Timing与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
+
+### STATE-06 Detailed Shot Design
+
+每个Shot固定按以下顺序决策：
+
+`Shot Purpose → Audience Attention → POV / Audience Position → Relationship & Blocking → Composition Strategy → Shot Size → Lens → Camera Position → Camera Movement → Duration / Hold → Cut Motivation`
+
+Shot Purpose类别为：`Narrative Change / Emotional Change / Relationship Change / Spatial-Action Progression / Information Reveal-Withhold / Atmosphere-Rhythm Control`。创建或保留前必须回答：`如果删掉这个Shot，观众会损失什么？` 若没有具体信息、情绪、关系、空间/动作、氛围/节奏或边界损失，合并或删除。
+
+Camera Movement必须有`Camera Movement Trigger`：人物进入/退出、动作启动/停止、关系改变、信息Beat完成、注意转移或节奏释放。人物压抑且没有触发时可以整镜固定；摄影机可以在关键表演或信息Beat完成后才启动，并必须写停止点。禁止只写“镜头缓慢推进”。
+
+### STATE-07 Clip Production
+
+Clip是Dramatic Execution Unit，不只是时长合并单元。检查Start→End dramatic delta、performance buildup、blocking continuity、Camera Continuity / Visual Rhythm、information timing和generation boundary。必须同Clip完成的情绪/信息链不得因技术便利拆开；超过容量或跨越互斥导演方向时仍须拆分或返回STATE-06。
+
+### STATE-08 Clip-based Video Prompt / Video Generation
+
+本阶段不重新导演，执行`Director Intent Preservation + Model Translation`。先提取当前Clip最重要的1—3个导演目标，再由`knowledge/prompt_compilation/state08_projection.md`完成Dramatic Priority、Audience Attention、Performance Beat、Composition Function、Camera Motivation、Information Timing、Spatial / Relationship、Rhythm与Sound Function翻译，最后压缩并做Director Intent Preservation QA。最终Schema保持不变。
+
+### Editing
+
+Editing保护Editorial POV、Cut / Hold动机、Information Timing、Reaction Priority、Emotional Rhythm、Ellipsis、Match / Contrast、J-cut / L-cut、Sound Bridge、Transition Logic与shot-duration pressure / release。优先用剪辑恢复导演意图；素材不能支持时返回生成或上游owner。
+
+### STATE-09 Review
+
+并行区分Technical Review与Director's Cut Review。前者检查identity、continuity、blocking、props、camera/visual defects等；后者检查Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Timing、Shot Necessity、Rhythm与Emotional Residue。技术正确但情绪信息提前暴露仍是Director-level failure，不得判KEEP。
 
 ## Required Decision Dimensions
 
-每个Scene / Shot Group依次形成以下十三项内部结论。结论必须具体到当前剧情与空间；没有适用变化时写明保持项及原因，不得用“电影感、克制、高级、紧张”等抽象词代替。
+STATE-06的当前有效Director Decision Notes继续按Scene / Shot Group覆盖十三项，作为Shot-level Packet的兼容具体化：Narrative Objective、Audience Experience、Character Relationship、Blocking、Camera Strategy、Composition Strategy、Lens / Distance、Color & Lighting Strategy、Performance Direction、Sound Strategy、Editing / Rhythm、Continuity Risk、Seedance Feasibility。
 
-### 1. Narrative Objective
-
-- 这一段观众必须知道什么？
-- 哪一项信息、选择、关系变化或动作结果是唯一主推进？
-- 哪些信息现在不能提前揭示？
-
-### 2. Audience Experience
-
-- 观众应感受什么？情绪是建立、累积、转折、释放还是余韵？
-- 观众应等待什么，等待在何种可见或可听信号后结束？
-- 观众是先于人物知道、与人物同时知道，还是晚于人物知道？
-
-### 3. Character Relationship
-
-- 当前权力、亲密、疏离、戒备、依赖或误解关系是什么？
-- 本段结束时关系是否变化；变化的可见证据是什么？
-- 谁拥有观察权、行动权或沉默权？
-
-### 4. Blocking
-
-- 人物初始距离、站位、身体朝向、视线目标和高低/前后关系是什么？
-- 谁先动、谁停、谁靠近或后退、谁回避或保持视线；这些变化如何表达关系？
-- 动作结束后留下什么可继承的空间状态？
-
-### 5. Camera Strategy
-
-- 镜头总体应该动还是停，为什么？
-- 摄影机是在观察、跟随、逼近、揭示、释放还是拒绝介入？
-- 运动只在什么人物动作、信息或节奏变化上被触发；哪些炫技或无动机运动必须禁止？
-
-本项只定义导演方向，不替代STATE-06 Camera Language Decision中的具体主运镜、起点、路径、速度、终点和原子知识证据。
-
-### 6. Composition Strategy
-
-- 谁占据画面、谁被留在边缘/前景/背景/负空间；这种分配如何表达关系与信息？
-- 视觉焦点何时转移，遮挡、反射、内框或引导线是否有真实空间依据？
-- 结束构图应压住、打开、对称、失衡还是保持距离，为什么？
-
-### 7. Lens / Distance
-
-- 摄影机与人物应保持近、中、远何种关系，目的是亲近、隔离、压缩关系、保留环境还是保护表演？
-- 需要怎样的脸部几何、背景尺度、前后层次和对焦可读性？
-- 焦段倾向只能与摄影机距离和景别共同决定，不把焦段单独当作情绪或透视原因。
-
-### 8. Color & Lighting Strategy
-
-- 已确认光源、时间、天气、材质和资产提供什么颜色与光线依据？
-- 色彩/灯光是否需要随剧情发生功能性变化；如果需要，变化由什么真实事件或空间移动触发，承担什么叙事功能？
-- 如果不需要变化，哪些综合色温、肤色、中性色、资产固有色与受光方向必须稳定？
-
-### 9. Performance Direction
-
-- 表演应外放还是克制，为什么符合角色与当前关系？
-- 情绪通过哪一个主要面部变化和哪一个支持身体/呼吸/手部变化泄漏？
-- 谁先反应、谁延迟、谁压住；结束时留下什么可继承的情绪与身体张力？
-
-### 10. Sound Strategy
-
-- 哪个环境声、动作声、对白、呼吸、Foley或剧情内声源承担主声音叙事？
-- 哪里加强前景声，哪里削弱声场或保留有理由的近静默？
-- 什么声音跨越镜头，什么声音在切点停止，尾部如何服务等待、转折或余韵？
-
-### 11. Editing / Rhythm
-
-- 信息、动作、视线、对白和静默的节拍如何排列？
-- 哪一刻应延长观察，哪一刻应切断或加快；视觉高潮与留白分别在哪里？
-- 边界使用连续继承、明确断点还是未决安全尾帧；普通运镜不得被当作转场。
-
-### 12. Continuity Risk
-
-- 人物左右、朝向、关系轴、视线、动作阶段、道具、情绪、光态、色态、声音和尾帧中，哪些最容易漂移或翻转？
-- 必须锁定哪些首尾状态；哪些变化需要明确断点？
-- 为保证关系表达，哪些连续性限制高于视觉技巧？
-
-### 13. Seedance Feasibility
-
-- 当前时长内人物、口型、动作、摄影机、FX、光色变化与声音负荷是否可稳定执行？
-- 哪些方向应简化为单一路径、有限动作、少量变化或固定机位？
-- 安全降级是什么；若降级仍不能保留导演意图，应返回拆Clip或拆Shot，而不是让Prompt自行调和。
+每项只记录结论或Not Applicable理由。`Downstream Non-negotiables`只保留3—7条；不预选知识技巧。
 
 ## Mandatory Director Questions
 
-每个Scene / Shot Group在确认前必须能直接回答：
-
 1. 观众在这一段应知道什么、感受什么、等待什么？
-2. 人物关系如何通过距离、视线、站位和动作变化被看见？
-3. 镜头应该动还是停，为什么；运动由什么触发，在哪里停止？
-4. 色彩或灯光是否需要随剧情发生功能性变化；若不变，稳定本身保护什么？
-5. 表演应外放还是克制，谁先泄漏、谁压住？
-6. 声音在哪里加强、在哪里留白、以什么尾部连接下一节拍？
+2. 人物关系如何通过距离、视线、站位、动作、遮挡或共享空间被看见？
+3. 镜头应该动还是停；什么Beat触发运动，在哪里停止？
+4. 构图、景别、机位和距离分别承担什么信息/关系功能？
+5. 表演由脸、身体、呼吸、手部还是延迟反应承担；谁先泄漏、谁压住？
+6. 哪项信息应Reveal / Withhold / Delay / Confirm / Recontextualize？
+7. 声音在哪里成为前景、在哪里退后或留白；剪辑为何Hold或Cut？
+8. 删除这一Scene / Shot / Clip后，观众具体损失什么？
 
-任一问题只能用风格标签、技巧名称或“为了电影感”回答时，Notes不合格。
+只能用风格标签、技巧名称、器材参数或“为了电影感”回答时，决策不合格。
 
 ## Internal Notes Shape
-
-内部可使用以下紧凑记录；这是决策记录，不是逐步隐式推理，也不是用户可见Template：
 
 ```text
 Scene / Shot Group:
 Source SHOTs:
+Dominance:
 Narrative Objective:
 Audience Experience — Know / Feel / Wait:
-Character Relationship:
-Blocking:
-Camera Strategy — Move / Hold + Reason:
-Composition Strategy:
-Lens / Distance:
-Color & Lighting Strategy — Functional Change / Hold:
-Performance Direction — Expressive / Restrained:
-Sound Strategy — Emphasis / Restraint / Tail:
-Editing / Rhythm — Build / Peak / Negative Space / Boundary:
+Character Relationship / Blocking:
+Information Strategy:
+Camera Strategy — Audience Position + Move / Hold + Trigger + Stop:
+Composition / Lens-Distance:
+Performance Direction:
+Color / Lighting / Sound Function:
+Editing / Rhythm — Hold / Cut / Reaction / Residue:
 Continuity Risk:
 Seedance Feasibility / Safe Downgrade:
+Deletion Loss:
 Downstream Non-negotiables:
 ```
 
-`Downstream Non-negotiables`只保留3—7条必须由STATE-07/08维持的方向，不列Knowledge候选，也不预选1—3项策略。
+这是紧凑决策记录，不是逐步隐式推理，也不是用户可见Template。
+
+## Director-to-Prompt Boundary
+
+STATE-08固定链为：
+
+`Clip Production Result → Current Director Intent → Dramatic Priority Extraction → Director-to-Prompt Translation → Prompt Compression → Director Intent Preservation QA → Final Clip Prompt`
+
+Knowledge Application Reflection只能选择最适合实现已确认意图的1—3项策略，不能反向决定剧情、关系、信息顺序或镜头目的。Prompt Compiler负责把理论判断改写成动作顺序、视觉优先级、可见表演、空间关系、摄影机行为、声画节拍和稳定Endpoint；不得输出Director Module、Packet、dominance、BUILD/HOLD/PEAK/RELEASE等内部标签。
 
 ## Workflow Handoff
 
+### From STATE-01 / Through STATE-05
+
+STATE-05读取确认剧本中的Scene Director Intent source data，并投影Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Change、Performance Opportunity、Spatial Evolution、Rhythm Intent与Transition Intent。与剧本冲突时返回STATE-01；没有独立Artifact时只从锁定剧本提取可验证事实。
+
+### To STATE-06
+
+STATE-06先读取Scene-level Packet，再按固定导演决策顺序建立正式SHOT、Camera Language Decision与Director Decision Notes。Director Notes不能绕过Professional Detailed Shot Script静默补造字段。
+
 ### To STATE-07
 
-STATE-07先读取Notes，再组织Clip。Clip内的主导镜头语言、节奏、Blocking延续、视觉高潮与最克制/留白镜头必须能够追溯到Notes；不能为了减少Clip数量把互相冲突的导演方向强行合并。
+STATE-07读取当前有效Notes并形成Clip-level Dramatic Execution Contract。不能为了减少Clip数量合并互相冲突的方向，也不能拆断必须连续积累的performance / information beat。
 
 ### To STATE-08
 
-STATE-08读取Confirmed Clip Production Result后，重新读取该Clip对应Notes，先锁定导演方向，再调用Knowledge Application Reflection选择1—3项最合适的实现策略。顺序不可反转：Knowledge只能实现导演意图，不能根据知识库里“有什么技巧”反向改写剧情方向。
+STATE-08先锁定Current Director Intent，后运行`STATE-08 Knowledge Application Reflection / Prompt`翻译。顺序不可反转。跨阶段只传递source data与当前投影，不要求把相同规则复制进每个Workflow。
 
-### To STATE-09
+### To Editing / STATE-09
 
-STATE-09执行Director QA，检查叙事目的、人物关系、Blocking、镜头运动理由、功能性色光、表演尺度、声音/节奏与高潮/留白是否实现，并识别纯炫技或平铺直叙。
+Editing只改变有素材依据的排列、时长、反应优先级、声音连接和后期可修项。STATE-09区分generation failure与directing failure，并输出兼容Result及`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。
 
 ## Internal Visibility Rule
 
-默认不向用户输出Director Decision Notes。用户明确要求查看时，只给简洁的导演决策摘要，不展示逐步隐式推理；该摘要仍不得成为后续Seedance Prompt固定章节。
+默认不向用户输出完整Packet或Director Decision Notes。用户明确要求“显示导演意图 / 为什么这样拍 / 显示镜头语言策略”时，只给当前对象的简洁决策摘要，不展示逐步推理；摘要不得成为后续Seedance Prompt固定章节。
 
-正式Prompt中禁止出现：
+正式Prompt禁止出现：
 
-- `Director Decision Notes`标题或十三维度表
-- “观众应知道 / 感受 / 等待”的内部问答
-- 候选方案、被拒绝方案、风险权衡过程或Knowledge文件名
-- “因为导演决策所以……”等元说明
+- `DIRECTOR INTENT PACKET`、`Director Decision Notes`、dominance或十三维度标题
+- “观众应知道 / 感受 / 等待”的内部问答、候选方案、拒绝理由、风险权衡过程或Knowledge文件名
+- “因为导演决策所以……”等理论解释句
+- Shot Purpose类别、BUILD / HOLD / PEAK / RELEASE、S1-S4或内部模式ID
 
-正式Prompt只保留能够被模型执行和观察的构图、调度、摄影机、光色、表演、声音、节奏、边界与稳定降级语义。
+只保留模型能执行和观察的构图、调度、摄影机、光色、表演、声音、节奏、信息时序、边界与稳定降级语义。
 
 ## Completion Check
 
-- 每个Scene / Shot Group均回答Mandatory Director Questions。
-- 十三个维度均有具体结论或Not Applicable理由。
-- 镜头动/停、色光变/不变、表演外放/克制和声音加强/留白均有叙事原因。
-- 决策没有新增剧情、资产、光源、FX、动作结果或关系事实。
-- Notes与Detailed Shot Design、边界合同和Seedance容量兼容；冲突已在STATE-06最小修订。
-- STATE-07/08可消费Notes，但Notes没有成为新Template字段。
-- Knowledge Reflection只选择实现策略，没有反向主导剧情。
-- 最终Prompt无内部决策泄漏。
+- Director Thinking从STATE-00/01持续到Scene、Shot、Clip、Prompt、Editing与Review，没有创建新主STATE。
+- Project / Scene / Shot / Clip四层Packet具有当前有效source、owner、Revision或Checkpoint关联；未知项没有被虚构。
+- 每个Shot通过固定决策顺序和Deletion Loss检查；Camera choice是intent的后果。
+- 镜头运动具有Trigger与Stop；Static同样具有保护对象和理由。
+- Director Module调用现有Performance、Spatial Blocking、Action PREVIS、Camera Language、Prompt Compiler与Continuity能力，没有复制其规则。
+- Clip保留必要的performance / information积累，且通过Camera Continuity / Visual Rhythm与生成容量检查。
+- STATE-08只翻译、不重新导演；最终Prompt可读出核心dramatic delta、注意力、表演、关系、Camera trigger和信息时序，但没有理论说明或Packet泄漏。
+- Editing与Review能区分技术失败、生成失败、剪辑可修和导演决策失败。
+- `templates/10_video_prompt.md`、Voice opt-in、REF-SKETCH、REF-TAIL、Accepted Take Canon、Shot-State Memory、Runtime Reload / Re-entry与Source Carries State, Prompt Carries Delta均保持兼容。

@@ -4,7 +4,7 @@
 
 当用户目标涉及以下任一范围时自动激活SD Film：
 
-- 剧本改编、分析、优化、导演化或制作拆解
+- 从创意/题材/品牌Brief开始的剧本创作，以及剧本改编、分析、优化、导演化或制作拆解
 - AI影视项目初始化、项目恢复或制作流程推进
 - 角色、环境、道具、FX资产设计与一致性管理
 - 视觉开发、场景拆解、电影海报或Key Art
@@ -21,6 +21,8 @@
 用户提到“视频Prompt”“Seedance”“海报”“Storyboard”等通常描述目标，不证明前置阶段已经完成。激活后必须先按`rules/state_source.md`确认当前State，并按主Pipeline补齐Completion Gate，不能依据关键词直接跳转。
 
 例外仅限已有有效State Source与Confirmed Artifact明确证明前置阶段已完成，或当前请求是独立辅助交付且其Workflow允许在主STATE不变时执行。
+
+用户明确说“帮我写剧本 / 我只有一个想法 / 根据品牌需求从剧本开始”时，目标是STATE-01 Creation Brief分支；用户上传完整/粗略剧本或来源叙事文本时，目标是STATE-01 Existing Script / Material分支。两者都先服从STATE-00项目入口与状态证据，但不得要求Creation Brief用户先在Skill外完成剧本，也不得把Existing Script误路由为从零创作。
 
 ## Optional Storyboard Isolation
 

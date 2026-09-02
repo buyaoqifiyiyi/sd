@@ -4,6 +4,14 @@
 
 内部 Pipeline、字段权威和开发规则仍以 `SKILL.md`、`rules/`、`workflows/`、`references/` 与 `templates/` 为准；当前安装版本只看 `SKILL.md` 中的 `Skill Version` 和 `Build ID`。
 
+## 默认导演系统
+
+SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧本→视觉→场景→镜头→Clip→Prompt→Editing→Review。它从“这段戏为什么存在、观众先知道/感受什么、人物关系怎样变化”开始，再让镜头语言承担构图、景别、机位、焦段/距离、前中后景、遮挡/揭示、运镜触发与Hold / Cut节奏。最终Seedance Prompt仍使用原有模板，不会多出一整套导演分析字段。
+
+正常调用方式不变：继续使用`调用sd`开始或路由，使用`下一步 / 继续`从当前Checkpoint推进。普通“下一步”不会无意义全量reload。
+
+如需查看内部方向，可以说：`显示当前Scene的导演意图`、`为什么这样拍`或`显示这个Clip的镜头语言策略`。Skill只会给简洁摘要，不会把完整内部Packet塞进最终Prompt。
+
 ## 先记住这条万能公式
 
 ```text
@@ -21,7 +29,8 @@
 | 任务 | 你可以直接这样说 | 默认进入 / 调用模块 |
 |---|---|---|
 | 完整视频 | `调用sd，根据这个剧本进入完整视频制作流程。` | STATE-00 → STATE-09 主流程 |
-| 故事概念变剧本 | `调用sd，我只有一个故事概念，先开发成可制作剧本，给完诊断后停下来。` | STATE-01 Script Analysis 内部改编 / 优化 Gate |
+| 从创意写剧本 | `调用sd，我只有一个故事概念，直接从剧本开始。` | STATE-01 Screenplay Generation branch |
+| 品牌需求写短片 | `调用sd，根据这个品牌需求写一支宣传短片，先完成剧本提案。` | STATE-01 Screenplay Generation branch |
 | 剧本优化 | `调用sd，分析这个剧本并给出优化机会报告，先不要改写。` | STATE-01 Script Analysis |
 | 定稿剧本直接制作 | `调用sd，这个剧本已经定稿，不要修改剧情，直接进入制作。` | STATE-01 No Revision / Final Script 路由 |
 | 资产缺失检查 | `调用sd，只检查当前项目缺少哪些角色、环境、道具和正式FX资产，不生成图片。` | STATE-02 Asset Discovery / 状态核验 |
@@ -38,7 +47,7 @@
 | 下一个Clip | `调用sd，下一个Clip。` | STATE-08 下一个未交付Clip |
 | Clip返修 | `调用sd，只修CLIP-003的站位错误，其他内容和字段保持不变。` | STATE-08最小修订或对应上游Return Route |
 | 连续性检查 | `调用sd，只检查CLIP-002到CLIP-003的角色、站位、道具、轴线和首尾帧连续性，不重新生成。` | STATE-07 / STATE-09连续性核验 |
-| Review | `调用sd，审核这个实际生成结果，给出PASS / REVISE / REBUILD和最小返修方案。` | STATE-09 Review |
+| Review | `调用sd，审核这个实际生成结果，给出PASS / REVISE / REBUILD、KEEP / RE-EDIT / REGENERATE / REDIRECT和最小返修方案。` | STATE-09 Technical + Director's Cut Review |
 | 电影海报 / Key Art | `调用sd，根据当前项目设计一张9:16数字竖版电影Key Art，沿用现有角色和环境资产。` | Poster Design辅助Workflow |
 | 继续旧项目 | `重新调用sd，按当前可访问的最新Skill恢复这个项目，从最后一个安全Checkpoint继续。` | Runtime Reload + Project Resume |
 | 检查Skill | `调用sd，只检查当前实际安装版的Pipeline、STATE和音色规则，不执行制作。` | Runtime Reload + 只读规则检查 |
@@ -48,15 +57,16 @@
 
 常见停止点如下：
 
-1. 新剧本首次进入时，先完成项目初始化，不会立即越级输出分镜或视频 Prompt。
-2. 未明确禁止改稿时，先给 `Optimization Opportunity Report`，等你决定锁定、轻度优化或结构优化。
-3. 生成优化后的 `Production Script Proposal` 后，再停一次，等你确认制作版剧本。
-4. 每类视觉资产先给生图 Prompt，等你确认；生成候选图后再停一次，等你确认图片。
-5. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
-6. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
-7. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
-8. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，本轮会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；你下次说“继续 / 下一个”时再输出该Clip Prompt。简单Clip不会为了统一流程强制出草图。
-9. Review 发现问题时，停在 `REVISE` 或 `REBUILD`，说明最小 Return Route；修复后必须重新 Review。
+1. 新项目首次进入时，先完成项目初始化和`Creation Brief / Existing Script / Material`入口登记，不会立即越级输出分镜或视频 Prompt。
+2. 只有创意并明确要写剧本时，STATE-01直接生成`Production Script Proposal`，不要求你先去普通Chat写完整剧本，也不先对不存在的剧本做优化机会报告。
+3. 上传已有剧本/来源材料时，默认先给 `Optimization Opportunity Report`，等你决定锁定、轻度优化或结构优化；如果当前指令已明确“直接优化 / 直接改写”，不会重复询问是否优化。
+4. 任一创作或优化分支生成 `Production Script Proposal` 后都会停下来，等你确认制作版剧本。
+5. 每类视觉资产先给生图 Prompt，等你确认；生成候选图后再停一次，等你确认图片。
+6. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
+7. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
+8. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
+9. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，本轮会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；你下次说“继续 / 下一个”时再输出该Clip Prompt。简单Clip不会为了统一流程强制出草图。
+10. Review同时区分Technical Review与Director's Cut Review，并在兼容的`PASS / REVISE / REBUILD`外给出`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。技术正确但信息或情绪提前暴露仍会返修；修复后必须重新Review。
 
 ---
 
@@ -90,19 +100,33 @@
 调用sd，我只有一个故事概念，先开发剧本。
 ```
 
+也可以直接说：
+
+```text
+调用sd，帮我写一个雨夜双女主重逢短片。
+```
+
+```text
+调用sd，根据这个品牌需求写一支宣传短片，先从剧本开始。
+```
+
 **进阶指令**
 
 ```text
-调用sd，把这个故事概念开发成一条3分钟竖屏剧情片的可制作剧本。必须保留核心人物、世界观和结局；先做剧本诊断和优化机会报告，不要直接改写，等我选择改编强度。
+调用sd，把这个故事概念开发成一条3分钟竖屏剧情片的可制作剧本。必须保留核心人物、世界观和结局；从导演意图、观众体验、人物目标与关系、信息揭示、视觉动作、表演机会、空间潜力、节奏和AIGC可执行性开始，完成完整剧本提案后停下来等我确认。不要提前写分镜、焦段或运镜。
 ```
 
 **Skill 行为 / 停止点**
 
-- 故事概念通常会被识别为 `Class C — Source Material`。
-- 第一步只做诊断和优化机会报告，说明问题、影响和可优化方向，不直接代写。
-- 你明确同意结构优化 / 改编后，才进入 `Adaptation Draft → Screenwriting Optimization → Directorial Interpretation → Production Script Proposal`。
-- Proposal 输出后会再次停下；只有你明确确认，才成为 `Production-Locked Script`。
-- 如果目标形式、时长或平台会实质改变改编结构但尚未说明，Skill 会先请求最小必要决定，不会猜。
+- 只有Idea / Brief且明确要求写剧本时，会被识别为 `Creation Brief`，STATE-01直接进入Screenplay Generation，不要求你先提供完整剧本。
+- 导演思维从剧本生成开始：控制为什么这一场存在、观众前后知道/感觉什么、人物目标与关系变化、信息何时揭示、动作/停顿/空间如何承载情绪，以及AIGC是否可执行。
+- 这不等于提前写分镜；35mm、推镜、特写、摇镜、机位、SHOT / CLIP仍留给后续STATE-06/07。
+- 剧本内部会经过Directable Screenplay QA，但最终交给你的仍是可独立阅读的剧本，不是十项分析报告。
+- Proposal 输出后会停下；只有你明确确认，才成为 `Production-Locked Directable Screenplay`并进入后续资产阶段。
+- 你说“修改这一场”时会保持在Script Development，只改该场与必要相邻因果，不会跳到Shot Design。
+- 只有当缺失信息会实质改变故事架构或造成品牌/事实风险时，Skill才会询问最小必要问题；其他可安全信息会用清楚、可修订的假设继续。
+
+如果你提供的是小说章节、已有故事梗概、品牌文案或其他要保留/转换的叙事正文，它属于`Existing Script / Material`，仍会先诊断并保护来源事实，不会冒充从零创作。
 
 ## 3）分析 / 优化 / 改写剧本
 
@@ -110,6 +134,12 @@
 
 ```text
 调用sd，分析并优化这个剧本。
+```
+
+如果你不想在诊断后重复确认是否优化，可以明确说：
+
+```text
+调用sd，直接优化这个剧本；保持世界观、人物身份和结局，完成Production Script Proposal后停下来等我确认。
 ```
 
 **更稳妥的两步指令**
@@ -127,7 +157,8 @@
 
 **Skill 行为 / 停止点**
 
-- 默认先评为 A（无明显优化必要）、B（轻度优化空间）或 C（明显结构问题），然后停在 User Decision Gate。
+- 只要求分析、没有明确允许改写时，会先评为 A（无明显优化必要）、B（轻度优化空间）或 C（明显结构问题），然后停在 User Decision Gate。
+- 如果当前指令已经明确“分析并优化 / 直接优化 / 直接改写 / 只优化某一场”，这已构成改写授权；Skill仍先保留诊断依据，但不会重复问你是否要优化。最终Proposal仍必须由你确认。
 - 单独说“继续”“好的”“下一步”不等于授权改写，也不等于确认 Proposal。
 - 局部优化只改指定范围；若必须影响相邻内容，会先列为待决定项。
 - 改写后仍需你明确确认当前 Proposal，才能锁定并进入资产阶段。

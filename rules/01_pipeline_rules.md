@@ -372,18 +372,20 @@ STATE-00 Project Setup
 
 # Rule 06
 
-# Script Analysis Boundary
+# Screenplay Development And Script Analysis Boundary
 
 
-剧本分析阶段负责：
+STATE-01剧本开发与分析阶段负责：
 
 
 - 故事理解
 - 人物分析
 - 环境识别
 - 视觉元素发现
-- 在任何内容改写前固定执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`
-- 对C类小说、故事梗概、品牌文案、历史事件、影视桥段、长篇素材或概念先报告Adaptation Need，只有用户明确授权后才执行STATE-01内部Script Adaptation
+- 先识别`Creation Brief / Existing Script / Material`两条互斥入口
+- 对Creation Brief执行`Idea / Brief → Director-first Screenplay Development → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation`；用户要求创作本身已授权生成Proposal，不要求先在Skill外提供剧本
+- 对Existing Script / Material在任何内容改写前执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`
+- 对C类小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材先报告Adaptation Need，只有用户明确授权后才执行STATE-01内部Script Adaptation
 - 对B类粗略剧本/初稿先报告轻度/结构优化空间，只有用户明确授权后才执行优化，且不强制改编
 - 只在短剧、竖屏剧情或1—3分钟剧情视频目标下加载Short-form Drama Adapter
 - 在用户确认后锁定唯一制作版剧本
@@ -401,9 +403,10 @@ STATE-00 Project Setup
 
 Script Optimization Gate硬规则：
 
+- Creation Brief不输出Optimization Opportunity Report，也不询问“是否允许写剧本”；只在真正缺失会改变架构或造成品牌/事实风险的关键信息时最小澄清。原创Proposal必须经过Scene Director Intent与十项Directable Screenplay QA，但最终剧本不得变成分析表或提前写好的分镜表。
 - Optimization Opportunity Report只指出问题、影响与可优化方向，不得直接重写剧本正文；至少检查开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度。
 - 报告只使用A无明显优化必要、B有轻度优化空间、C有明显结构问题三档，并分别询问直接锁定、轻度优化或结构优化。
-- 用户明确表示“优化 / 继续优化 / 进入优化”或无歧义同义授权前，不得执行Script Adaptation、编剧优化、导演化处理或Production Script Proposal；单独“继续 / 下一步 / 好的”不构成授权。
+- Existing Script / Material只有在用户明确表示“优化 / 分析并优化 / 继续优化 / 进入优化 / 直接优化 / 直接改写”或无歧义同义授权后，才执行Script Adaptation、编剧优化、导演化处理或Production Script Proposal；授权可在初始请求中给出，已明确时不得在报告后重复确认。单独“继续 / 下一步 / 好的”不构成授权。
 - C类获准路径必须完成`Script Adaptation → Adaptation Draft → 编剧优化 → 导演化处理 → Production Script Proposal → 用户确认`。
 - A/B类获准路径只完成`编剧优化 → 导演化处理 → Production Script Proposal → 用户确认`，不得强制改编。
 - 用户拒绝优化/改编时，不改一字，原版本完成Script Analysis后直接Production-Lock并进入STATE-02。
@@ -414,6 +417,7 @@ Script Optimization Gate硬规则：
 - 局部优化只能修改用户指定范围。
 - 不得擅自修改世界观、角色身份、核心创意、关键设定或品牌要求。
 - 用户明确“不要改剧本 / 严格按这个版本制作 / 已定稿”时跳过Optimization Opportunity Report与内容改写，只做原有Script Analysis并按授权锁定。
+- 剧本阶段只决定事件、行动、信息、关系、表演机会、空间潜力与节奏；不得机械写入35mm、特写、推镜、摇镜、机位、SHOT、CLIP或正式分镜表，Camera继续由STATE-06具体化。
 
 
 

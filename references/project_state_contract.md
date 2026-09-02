@@ -63,7 +63,7 @@ Updated At
 
 允许的 `Script Status`：
 
-- `Source Material`：用户原始文本、尚未获锁定授权的完整剧本，或仍需分类、改编、优化范围决定的版本。
+- `Source Material`：尚待STATE-01生成Proposal的Idea / Brief / Concept、用户原始文本、尚未获锁定授权的完整剧本，或仍需分类、改编、优化范围决定的版本。
 - `Adaptation Draft`：C类Source Material已经完成通用改编与Fidelity Check、但仍需Screenwriting Optimization和Directorial Interpretation的改编稿；不得进入STATE-02。
 - `Optimized Proposal`：已经完成编剧优化与导演化处理、正在等待用户确认或局部修订的制作版剧本提案。
 - `Production-Locked`：用户明确要求原版定稿制作，或用户已经确认Production Script Proposal；只有该值允许STATE-01完成并进入STATE-02。
@@ -245,7 +245,7 @@ None
 - `Pending Decision`记录缺失输入；没有则写`None`。
 - 按Persistence And Synchronization更新或刷新Portable State。
 
-STATE-01另有硬门槛：`Script Status`必须为`Production-Locked`。`Source Material`、`Adaptation Draft`或`Optimized Proposal`不得写STATE-01 COMPLETE，必须保留`02_script_analysis_workflow.md`为Active / Next Workflow，并在Pending Decision记录需要分类、目标/范围决定、后续优化或用户确认。
+STATE-01另有硬门槛：`Script Status`必须为`Production-Locked`。`Source Material`、`Adaptation Draft`或`Optimized Proposal`不得写STATE-01 COMPLETE，必须保留`02_script_analysis_workflow.md`为Active / Next Workflow，并在Pending Decision记录需要Screenplay Development、分类、目标/范围决定、后续优化或用户确认。
 
 ### Apply COMPLETE Decision
 

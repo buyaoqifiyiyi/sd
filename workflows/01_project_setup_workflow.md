@@ -94,6 +94,7 @@ references/project_state_contract.md
 
 当用户输入：
 
+- 一个创意、题材、品牌需求、角色设定、情绪/场景或“帮我写剧本 / 先从剧本开始”
 - 完整剧本
 - 剧情大纲
 - 小说文本
@@ -135,6 +136,8 @@ config.md
 rules/01_pipeline_rules.md
 
 rules/05_output_rules.md
+
+knowledge/director_decision_layer.md
 
 templates/00_project_start_template.md
 
@@ -447,13 +450,15 @@ STATE-00可以记录：
 
 输入类型可以包括：
 
+- Idea / Brief / Concept（尚无可诊断的剧本或来源叙事正文）
 - 完整剧本
+- 粗略剧本 / 初稿
 - 剧情大纲
 - 小说章节
 - 故事文本
 - 人物设定
 - 世界观设定
-
+- 品牌需求 / 品牌文案
 
 记录：
 
@@ -462,6 +467,13 @@ STATE-00可以记录：
 输入素材名称。
 
 素材完整程度。
+
+Script Entry Route：
+
+- `Creation Brief`：用户要从创意/需求开始写剧本，且没有可供逐段诊断的既有剧本或来源叙事文本。
+- `Existing Script / Material`：用户已提供完整剧本、粗略剧本、初稿、小说/故事文本、剧情大纲、品牌文案或其他需要保留/转换的既有内容。
+
+STATE-00只负责识别并登记入口，不在本阶段创作、诊断或改写。`Creation Brief`的Next Workflow仍是`02_script_analysis_workflow.md`，由STATE-01正式执行Screenplay Generation；`Existing Script / Material`由同一Workflow执行Script Diagnosis。若用户同时上传剧本并说“调用sd”，必须优先登记Existing Script route，不得误入从零创作。
 
 
 如果素材存在明显缺失：
@@ -474,6 +486,8 @@ STATE-00可以记录：
 禁止：
 
 为了补齐项目资料自行创作剧情。
+
+本禁令只约束STATE-00初始化；不得据此拒绝用户在STATE-01明确请求的剧本创作。
 
 
 ---
@@ -525,6 +539,21 @@ STATE-00 Project Setup。
 
 STATE-08 Clip-based Video Prompt / Video Generation。
 
+
+---
+
+# Project Director Baseline｜Internal
+
+STATE-00除Final Goal、平台、时长和画幅外，必须从用户已明确输入中建立最小`Project Director Baseline`：
+
+- Directorial Thesis：这部作品最终要让观众经历什么变化
+- Audience Contract / Intended Viewing Experience：观众被邀请以何种距离、信息位置和情绪预期观看
+- Genre Strategy：类型承诺及当前明确的偏离/限制
+- Non-negotiable Dramatic Core：后续优化、资产和生成都不能丢失的核心关系、冲突或品牌目的
+
+这四项属于`knowledge/director_decision_layer.md`定义的Project-level Director Intent source data。只记录用户直接提供或可明确标为Assumption的内容；未知项保持待后续STATE-01确认。不得在STATE-00据此创作剧情、分析完整人物关系、建立Scene、写Camera Language或预选镜头参数。
+
+Work/Codex把Baseline投影到`project_bible.md`既有Story Foundation / Narrative Style / Emotional Direction / Production Notes区域；普通Chat保留在当前STATE-00 Checkpoint。不得新增Portable State字段或平行Director文件。
 
 ---
 
@@ -727,6 +756,8 @@ Project Information。
 
 用户明确提供的Visual Reference。
 
+已确认或明确标记Assumption的Project Director Baseline；只写入既有项目/故事/制作方向区域，不创建新Schema。
+
 
 其他尚未确认区域：
 
@@ -892,6 +923,7 @@ STATE-00允许输出：
 - Project Status
 - Project Information
 - Input Material
+- Script Entry Route：Creation Brief / Existing Script / Material
 - Project Initialization
 - Initial Production Goal
 - 已明确的Story Overview
@@ -1188,8 +1220,10 @@ STATE-00不得：
 - Project ID已经确定
 - Work/Codex中独立Project Root与project_manifest.json已经初始化并登记；普通Chat中Portable State已记录待本地落盘的Project ID
 - 输入素材已经登记
+- Script Entry Route已经登记；同时存在上传剧本时优先为Existing Script / Material
 - 项目基础信息已经记录
 - 最终制作目标已经确认
+- 最小Project Director Baseline已经建立，或所有未知项已明确留给STATE-01而未虚构
 - Work/Codex中project_bible.md、asset_registry.md、project_status.md、execution_ledger.md与artifact_registry.md已经初始化；普通Chat中Portable State已完成最小STATE-00初始化且未虚构这些本机文件
 - 当前STATE已经确认
 - 下一Workflow已经确定

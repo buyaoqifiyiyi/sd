@@ -613,6 +613,102 @@ FAIL：因为版式与Blocking正确就忽略人物外观泄漏；用“只是�
 
 ---
 
+## R21 Performance Arc / Emotion Preflight
+
+### R21-A Restrained Character Changes Across Shots Without Extra Coverage
+
+输入：同一Scene有三个已确认SHOT。角色先冷静检查异常，第二镜确认目标，第三镜完成处理并恢复克制；剧情、SHOT数量、机位、时长和动作结果均已锁定，不允许加镜头。
+
+PASS：STATE-06建立同一角色的Performance Arc Map：Inherited Baseline为专业冷静；第一镜通过视线先移、一次短暂停眼或呼吸变浅表现疑惑；第二镜在确认刺激后眼神稳定、下颌或手部张力略增并选择行动；第三镜动作完成后先复核结果、缓慢释放肩颈/呼吸，再回到新的受控Settled State。每镜只承载当前可见段，`Previous Settled State = Current Inherited Baseline`，STATE-07/08 Performance / Emotion Check为PASS，最终只写入既有`人物动作 / 人物动作与情绪 / 镜头结尾状态 / Performance State`语义，不新增SHOT、Clip、STATE或Template字段。
+
+FAIL：三镜都只写“角色始终冷静从容”；每镜从默认脸重新开始；为了补情绪增加无必要特写/反应镜；或在STATE-08用“更有情绪、更生动”形容词替代上游表演链。
+
+### R21-B Ensemble Uses Relative Amplitude And Reaction Order
+
+输入：同一Clip含克制处理者、受惊逃跑者、刚解除痛苦的委托者与旁观者。剧情要求处理者始终最克制，受惊者最外放；委托者只在确认危险解除后放松，旁观者延迟反应。
+
+PASS：每个Beat只有一个清楚Primary Performer；受惊者可使用Open / Heightened并承担大幅逃跑，处理者用PL1/PL2眼神、呼吸或动作后停顿承接，委托者从谨慎倾听到确认安静再肩膀放松，旁观者作为Listener / Background Holder先保持低幅、收到共享刺激后才升级。视觉重点交接由刺激、视线或动作结果触发，四个角色各有不同Arc Endpoint和Next-shot Carryover。
+
+FAIL：所有人同时瞪眼、张嘴、后退；所有人都用同一`紧张→放松`模板；为保持主角“高冷”让处理者完全无注意/呼吸/停顿变化；或让背景人物无刺激抢走视觉重点。
+
+### R21-C Intentional Hold Is Active, Not Frozen
+
+输入：4秒近景中角色必须保持面无表情以隐藏真实反应，只听完一句关键信息，不说话、不移动位置。
+
+PASS：表演被定义为Intentional Hold：视线先停在说话者、关键字后眨眼短暂停止或呼吸轻微受抑，手部原动作停住，延迟一拍后恢复控制但视线未完全放松；Post-action Residue进入镜头结尾。动作/口型容量没有被无关微表情堆满。
+
+FAIL：只写“全程面无表情”；或为了避免面瘫同时加入挑眉、瞪眼、吞咽、握拳、后退、落泪和转身。
+
+---
+
+## R22 Screenplay Creation / Existing Script Dual Entry
+
+### R22-A Idea Enters Screenplay Generation
+
+输入：`调用sd，写一个雨夜双女主重逢短片。`
+
+PASS：STATE-00登记`Creation Brief`，STATE-01进入Director-first Screenplay Development；不要求先提供完整剧本，不对尚不存在的文本输出Optimization Opportunity Report。Proposal具有视觉动作、关系变化、信息层次、表演机会、空间潜力与AIGC Directability，并在用户确认Gate停止。
+
+FAIL：把创意归为Existing Class C后要求先批准改编；要求去普通Chat写完剧本；或直接进入Shot Design。
+
+### R22-B Uploaded Script Enters Diagnosis Without Rewrite
+
+输入：用户上传完整剧本并说`调用sd`，没有允许修改。
+
+PASS：登记`Existing Script / Material + Class A/B`，先输出Optimization Opportunity Report并等待决定；没有改写正文或误进Creation Brief。
+
+FAIL：从零重写、静默优化、跳过诊断，或因题材像创意而误走Creation。
+
+### R22-C Explicit Direct Optimization Does Not Re-ask Authorization
+
+输入：`调用sd，直接优化这个剧本；保持世界观、人物身份和结局。`
+
+PASS：先完成诊断和Opportunity证据，再在同一轮按明确授权进入适用Optimization / Adaptation路径；不重复询问“是否优化”。Production Script Proposal输出后仍等待最终确认。
+
+FAIL：省略诊断证据、重复请求同一改写授权，或把改写授权误当最终Proposal确认。
+
+### R22-D Confirmed Screenplay Advances Without Regeneration
+
+输入：Creation或Existing分支的当前Proposal已被用户明确确认并记录`Script Status: Production-Locked`，用户随后说`下一步`。
+
+PASS：STATE-01 Completion Gate通过后进入STATE-02 Asset Discovery；不重复生成剧本，不停回Proposal Gate。
+
+FAIL：重新写剧本、重新做Opportunity Report，或跳过STATE-02进入资产制作/Shot。
+
+### R22-E Scene Revision Stays In Script Development
+
+输入：当前`Script Status: Optimized Proposal`，用户说`修改这一场：让她不要直接表白。`
+
+PASS：保持STATE-01 IN_PROGRESS，只修指定场与必要相邻因果，重跑受影响Scene Director Intent与Directable Screenplay QA，再次等待Proposal确认。
+
+FAIL：进入STATE-05/06、重写全稿、把`下一步`当确认，或保留旧Proposal为Production-Locked。
+
+### R22-F Director-first But Not Pre-shot
+
+输入：从零生成一支情感短片剧本。
+
+PASS：剧本通过Scene Purpose、Audience Experience、Character Objective / Conflict、Relationship Change、Visual Action、Performance Opportunity、Spatial Dramaturgy、Information Strategy、Rhythm Curve与AIGC Directability十项内部QA；最终文本是可独立阅读的剧本，没有35mm、特写、推镜、摇镜、机位、SHOT / CLIP或分镜表字段。
+
+FAIL：只写说明性对白和内心独白；把十项QA机械输出成剧本正文；或在STATE-01预先锁定摄影机。
+
+### R22-G Existing Diagnosis Regression
+
+输入：Class B初稿，无明确改写授权。
+
+PASS：原有A/B/C分级、十二项Optimization Opportunity Report、User Decision Gate、No Revision、Optimization Rejected、Adaptation Draft与第二次Proposal确认全部仍可用。
+
+FAIL：因新增Creation route而自动改写Existing Script，或取消既有保护Gate。
+
+### R22-H Downstream Isolation Regression
+
+输入：运行Skill静态与定向回归。
+
+PASS：主Pipeline仍只有STATE-00至STATE-09；Storyboard仍Optional/Auxiliary；Voice仍Explicit-only；视频Prompt仍永久禁配乐；REF-SKETCH、Prompt Compiler、STATE-02至09及四种Script Status保持原合同。Scene Director Intent只经STATE-05投影并在STATE-06具体化为Director Decision Notes，不成为最终Prompt字段。
+
+FAIL：新增主STATE、让Storyboard进入主路由、自动触发Voice/Music、改变STATE-08 Schema，或让内部Director Intent污染剧本/Prompt。
+
+---
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -631,3 +727,5 @@ FAIL：因为版式与Blocking正确就忽略人物外观泄漏；用“只是�
 - R18-A至R18-D验证Scene Spatial Snapshot与合法越轴、PL1克制表演、A3动作动力因果和A1简洁降级；四类均不得新增主STATE、Template字段或Prompt内部标签。
 - R19-A至R19-D验证每Clip必检查但不必出草图、首次Required Clip先草图后Prompt、Pose Hierarchy / Relationship Topology漂移、Confirmed Anchor持久复用、Blocking重构四种Reassessment结果、简单单人NONE与A3综合草图；草图不得覆盖Canonical资产或污染最终Prompt。
 - R20-A至R20-F验证母版只拥有Sketch Presentation Authority、Current Clip独占Blocking内容、钢琴双人 / 三人围桌 / A3统一使用无性别技术人偶、任何Character Appearance Leakage硬失败、简单单人NONE不受母版可用性影响、Prompt Rewrite复用当前草图且母版不进入最终视频参考资产或图片预算。
+- R21-A至R21-C验证逐角色Performance Arc、Pre-action / In-action / Post-action Residue、Intentional Hold、多人相对表演层级和Clip Performance / Emotion Check；固定剧情、SHOT / Clip结构与STATE-08字段保持不变。
+- R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。

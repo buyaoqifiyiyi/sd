@@ -16,7 +16,7 @@
 
 # 2. Trigger Condition
 
-执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`与适用的`knowledge/quality/`，确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
+执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`、当前有效Director Intent / Director Decision Notes、Confirmed Clip Plan、实际素材与适用的`knowledge/quality/`，确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
 
 
 当用户要求：
@@ -50,6 +50,22 @@
 避免：
 
 重新生成完全不同内容。
+
+Editing不是重新导演。它优先保护Editorial POV、信息时序、人物关系、关键反应与情绪余韵；只在现有素材能够支持时改变镜头顺序、切点、Hold长度、声音连接和局部视觉处理。素材不足以恢复导演意图时，必须返回STATE-08重生成或相应设计owner。
+
+## Editorial Decision Pass
+
+每个受影响Scene / Clip先判断并记录到现有修改目标与编辑Prompt语义：
+
+- **Editorial POV**：观众此刻跟谁知道、看谁的反应、何时切换认同
+- **Cut / Hold Motivation**：切在动作前、动作点、反应点还是余韵后；继续Hold保护什么
+- **Information Timing**：Reveal / Withhold / Delay / Confirm / Recontextualize是否按导演意图发生
+- **Reaction Priority**：重大事件后谁的反应比事件本身更重要；反应可在同镜Hold或通过切换呈现
+- **Emotional Rhythm**：BUILD / HOLD / PEAK / RELEASE如何落实为镜头时长、停顿、动作密度和呼吸空间
+- **Ellipsis / Match / Contrast**：省略什么、用何种动作/构图/声音匹配或对比，以及省略后观众仍能理解什么
+- **J-cut / L-cut / Sound Bridge**：剧情内声音如何先行、延续或结束，不能自动引入配乐
+- **Transition Logic**：每个边界只有一种主要视觉转场，并服从Outgoing / Cut / Incoming锚点
+- **Shot-duration Pressure / Release**：哪些镜头缩短增加压力，哪些镜头延长让反应、确认或余韵成立
 
 
 

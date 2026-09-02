@@ -23,16 +23,22 @@
 
 ## Routing Order
 
-1. Audience Evidence：观众必须看清什么。
-2. Shot Scale：所需信息决定景别，不用情绪标签直接决定。
-3. Perspective / Angle：谁观察、权力与空间关系。
-4. Camera Position：距离、高度、侧位、轴线。
-5. Lens Tendency：与位置、景别、脸部几何、背景尺度和对焦共同决定。
-6. Composition：一个主构图原子及真实空间来源。
-7. Movement：固定或一个主要路径；只有必要时进入Movement Combination。
-8. Lighting / Color Readability：保证关键证据可见。
-9. Execution Risk：读取knowledge/quality/execution_risk.md。
-10. Stable Downgrade：保留Required Coverage，删除装饰复杂度。
+每个正式SHOT固定按以下Director-to-Camera顺序完成，不得先选焦段、机位或运镜再倒推理由：
+
+1. **Shot Purpose**：确定本镜带来的Narrative / Emotional / Relationship / Spatial-Action / Information / Atmosphere-Rhythm变化。
+2. **Audience Attention**：观众第一眼、第二眼分别需要看到什么；若删镜，观众具体损失什么。
+3. **POV / Audience Position**：观众跟谁知道、从哪里看、先于/同时/晚于人物获得信息。
+4. **Relationship & Blocking**：读取Spatial Blocking、Pose Hierarchy、Relationship Topology、Axis与Screen Direction；不重新摆位。
+5. **Composition Strategy**：决定距离、压迫、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal中哪项承担主要功能。
+6. **Shot Size**：由Required Evidence和表演载体决定；面部情绪不自动等于特写，身体/关系证据可能要求中景或全景。
+7. **Lens**：与摄影机距离、景别、脸部几何、背景尺度、景深与对焦共同决定。
+8. **Camera Position**：确定距离、高度、角度、侧位、安全轴线侧和观察权。
+9. **Camera Movement**：选择Static或一个主要路径；写清Camera Movement Trigger、Path、Stop和End Composition，必要时才进入Movement Combination。
+10. **Duration / Hold**：为动作、反应、信息延迟或Post-action Residue保留可见时间；不能用无理由移动填满停顿。
+11. **Cut Motivation**：说明为何此刻继续Hold、切到反应、揭示、确认、对照或进入下一边界。
+12. **Lighting / Color Readability**：保证上述关键证据可见，不以色光效果覆盖信息层级。
+13. **Execution Risk**：读取knowledge/quality/execution_risk.md。
+14. **Stable Downgrade**：保留Required Coverage与导演功能，删除装饰复杂度。
 
 ---
 
@@ -57,13 +63,12 @@
 - 精确口型、微表情、快速动作、群体、复杂FX任一为主时，摄影复杂度降一级。
 - 多景别、多视点、新刺激—反应或换侧必须拆成Coverage。
 - 导演模式只能影响选择偏好，不能覆盖资产、空间、证据和稳定性。
-- 找不到充分动机时使用固定机位或单向Push/Pull/Track。
+- 找不到充分动机时优先固定机位；只有存在明确Trigger、Stop与独特功能时才使用单向Push/Pull/Track。
 
 ---
 
 ## Internal Decision Record
 
-记录Purpose、Required Evidence、Selected Atomic Language、Rejected Alternatives、Risk Level和Stable Downgrade。
+记录Purpose、Audience Attention Hierarchy、Audience Position、Blocking Source、Composition Function、Shot Size、Lens / Distance、Camera Position、Movement Trigger / Stop、Duration / Hold、Cut Motivation、Selected Atomic Language、Rejected Alternatives、Risk Level和Stable Downgrade。
 
 这些内部栏目不得进入STATE-08最终Prompt。
-

@@ -17,6 +17,25 @@
 
 内部分析可使用“喜悦、愤怒、悲伤、恐惧”等标签帮助理解，但最终Prompt必须写过程证据。
 
+## Performance Arc Map
+
+单镜表演链不能替代跨镜情绪弧。对每个实际参与情绪、关系或对白变化的角色，在Scene / Shot Group进入正式逐镜设计前建立内部`Performance Arc Map`：
+
+| Character | Inherited Baseline | Confirmed Trigger | Pre-action State | In-action Change | Post-action Residue | Arc Endpoint | Relative Amplitude / Visual Priority | Next-shot Carryover |
+|---|---|---|---|---|---|---|---|---|
+
+- **Inherited Baseline**必须来自上一有效镜头、Scene初始事实或Motivated Discontinuity，不能按镜头重新归零。
+- **Pre-action State**记录人物在动作或台词发生前的预期、迟疑、压制、警觉、误判或主动保持；它可以极轻，但不能只写一个情绪名称。
+- **In-action Change**记录刺激到来后最先改变的注意、呼吸、局部面部、姿态或距离，以及人物如何继续、停止或改变动作。
+- **Post-action Residue**记录动作、台词或信息结束后仍留下的呼吸、视线、肌肉张力、恢复、余惊、得意、失望或控制结果；不得在结果发生后立即恢复默认脸。
+- **Arc Endpoint**必须是可被下一镜继承的状态，而不是“情绪结束”。
+
+一个短SHOT只需承载整条弧中当前可见的一段，不得为了“情绪完整”把所有阶段挤进同一镜。跨SHOT连接必须满足`Previous Settled State = Current Inherited Baseline`，任何升级、回落、反转或恢复都要有新刺激、时间经过或主动控制作为依据。
+
+如果剧情要求人物克制、冷淡、观察或暂时没有外显变化，可以使用`Intentional Hold / 主动保持`，但必须说明人物正在注意什么、压住什么、反应延迟多久或通过哪个低幅通道保持活性。没有注意目标、呼吸/姿态变化、延迟反应或行动选择的“面无表情 / 一直平静”属于静态标签，不是有效表演设计。
+
+`Performance Arc Map`是内部设计与检查记录，不创建Template字段，不授权新增剧情、台词、动作、镜头或情绪转折。需要新增未写刺激或改变剧情才能成立时，返回事实拥有者；仅缺少可执行表演证据时，修正Affected SHOT及其相邻Handoff。
+
 ## Channel Budget
 
 短镜头优先使用：

@@ -53,13 +53,30 @@ knowledge用于辅助Workflow执行。
 
 # Knowledge Stage Mapping
 
+## Persistent Director Module
+
+所有主STATE按需读取`knowledge/director_decision_layer.md`。它拥有Project / Scene / Shot / Clip四层轻量DIRECTOR INTENT PACKET与跨阶段投影合同，不创建新STATE或用户固定Schema。`knowledge/camera_language/index.md`是Director Module下Camera Language Module的唯一owner；具体空间、表演、动作、连续性和Prompt编译仍由既有专业owner执行，不在Director文件复制。
+
+STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；STATE-04建立Visual Dramaturgy；STATE-05形成Beat Map与Scene Camera Strategy；STATE-06具体化Shot与Camera；STATE-07形成Dramatic Execution Unit；STATE-08只翻译；Editing与STATE-09保护和审核意图。
+
+---
+
 
 ## STATE-01 Script Analysis
 
 
-Required routing：
+Required routing：先由`workflows/02_script_analysis_workflow.md`识别`Creation Brief / Existing Script / Material`。
 
-- 除No Revision / Final Script例外外，先由`workflows/02_script_analysis_workflow.md`固定执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`，报告后停止，不加载改写Knowledge。
+Conditional — Creation Brief且用户明确要求创作剧本：
+
+- knowledge/screenplay_development.md
+- knowledge/directorial_interpretation.md
+
+该分支直接执行Director-first Screenplay Development与Directable Screenplay QA，输出Production Script Proposal后等待确认；不对尚不存在的剧本输出Optimization Opportunity Report，也不要求用户先在普通Chat提供完整剧本。
+
+Conditional — Existing Script / Material：
+
+- 除No Revision / Final Script例外外，先执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`；没有明确改写授权时报告后停止，不加载改写Knowledge。用户当前已明确“直接优化 / 直接改写 / 按指定范围优化”时，报告后不重复询问同一授权。
 
 Conditional — Class C报告Adaptation Need且用户明确同意优化/改编时：
 
@@ -74,7 +91,7 @@ Conditional — Class A/B在报告后获得明确优化授权，或Class C已获
 - knowledge/screenwriting_optimization.md
 - knowledge/directorial_interpretation.md
 
-用户明确“不要改剧本 / 严格按这个版本制作 / 已定稿”时，跳过Opportunity Report，上述四份Knowledge全部记为Not Applicable；仍执行原有Script Analysis。用户在报告后拒绝优化/改编时同样不加载改写Knowledge，并锁定原稿。
+用户明确“不要改剧本 / 严格按这个版本制作 / 已定稿”时，Existing route跳过Opportunity Report，改写Knowledge全部记为Not Applicable；仍执行原有Script Analysis。用户在报告后拒绝优化/改编时同样不加载改写Knowledge，并锁定原稿。Creation route不适用No-Revision逻辑，除非用户实际提供了已有剧本。
 
 
 用途：
@@ -85,7 +102,8 @@ Conditional — Class A/B在报告后获得明确优化授权，或Class C已获
 - 故事结构分析
 - 人物分析
 - 叙事分析
-- 首次只形成Optimization Opportunity Report并等待用户决策
+- 从Idea / Brief直接形成可导演的原创Production Script Proposal并等待用户确认
+- Existing首次无改写授权时只形成Optimization Opportunity Report并等待用户决策
 - 明确授权后将C类Source Material改编为Adaptation Draft
 - 明确授权后形成Production Script Proposal并再次等待用户确认
 
@@ -97,7 +115,7 @@ Conditional — Class A/B在报告后获得明确优化授权，或Class C已获
 
 生成视频Prompt。
 
-在Opportunity Report后自动改写；把Adaptation Draft当作Production Script Proposal；未经用户确认把Optimized Proposal标记为Production-Locked或进入STATE-02。
+对Existing在Opportunity Report后未经授权自动改写；把Adaptation Draft当作Production Script Proposal；未经用户确认把Optimized Proposal标记为Production-Locked或进入STATE-02；在Creation剧本阶段提前写镜头、焦段、机位、运镜、SHOT或CLIP。
 
 
 

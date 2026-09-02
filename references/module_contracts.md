@@ -69,6 +69,9 @@
 
 ### Production Knowledge Rule Owners
 
+- Director-first原创故事开发、Scene Director Intent与Directable Screenplay QA：`knowledge/screenplay_development.md`
+- Project / Scene / Shot / Clip四层DIRECTOR INTENT PACKET、Director Thinking从STATE-00/01到Scene / Shot / Clip / Prompt / Editing / Review的连续性合同，以及Task Dominance Router：`knowledge/director_decision_layer.md`
+- Camera Language Module、Composition / Movement / Lens-Distance / Shot Rhythm四项核心能力和Script→Scene→Shot→Clip→Prompt→Editing→Review映射：`knowledge/camera_language/index.md`；逐Shot固定决策顺序由`knowledge/camera_language/shot_language_router.md`拥有
 - Scene Spatial Snapshot、Spatial Blocking Decision、camera safe side与合法越轴空间合同：`knowledge/spatial_blocking_layer.md`
 - Visual Blocking Risk Pre-Assessment、Before-Single-Clip-Prompt Gate、Sketch Validation、Visual Anchor State / Blocking Signature与KEEP / REPLACE / RETIRE / CREATE：`knowledge/clip_preflight_check.md`
 - Performance Progression Engine、PL1 / PL2 / PL3载体负荷与微表情基础：`knowledge/performance/micro_expression.md`；更细的刺激—评估—控制/泄漏过程由`knowledge/performance/emotion_dynamics.md`拥有
@@ -77,6 +80,16 @@
 - STATE-08 Field Ownership、State Once、Style / Delta / Negative / Prompt Compression：`knowledge/prompt_compilation/state08_projection.md`；十类Prompt Pollution定义由`rules/03_prompt_rules.md`拥有
 
 Workflow只负责触发、路由、执行顺序和Completion Gate；Quality只检查这些所有者产生的不变量；Template不复制内部算法。
+
+### Director Module Contract
+
+Module Type：persistent cross-stage decision layer；不创建新主STATE、用户问卷、Portable State字段或第二套导演系统。
+
+Owner：`knowledge/director_decision_layer.md`。Camera Language核心子能力owner：`knowledge/camera_language/index.md`。STATE-08 Director-to-Prompt Translation owner：`knowledge/prompt_compilation/state08_projection.md`。
+
+传递链：`STATE-00 Project Director Baseline → STATE-01 Scene Director Intent → STATE-04 Visual Dramaturgy → STATE-05 Scene Camera Strategy → STATE-06 Director Decision Notes / Camera Language Decision → STATE-07 Dramatic Execution Unit → STATE-08 Director Intent Preservation + Model Translation → Editing / STATE-09 Director's Cut Review`。
+
+不变量：Director Intent先于Knowledge选择；Camera choice是Shot Purpose与Audience Attention的后果；Camera Movement有Trigger / Stop；Packet保持内部；最终Seedance Schema不变；Voice仍opt-in；Spatial Blocking、Pose Hierarchy、Relationship Topology、Delta Blocking、Action PREVIS、Accepted Take Canon、Shot-State Memory、REF-SKETCH与REF-TAIL继续由原owner负责。
 
 ### Additive By Default
 
@@ -134,39 +147,39 @@ Work/Codex中的完整项目交付物必须写入Active Project Root；普通Cha
 
 ---
 
-## Script Adaptation And Optimization Gate Module Contract
+## Screenplay Development, Adaptation And Analysis Gate Module Contract
 
-Module Name：`Script Adaptation Module + Script Optimization Gate`。
+Module Name：`Director-first Screenplay Development + Script Adaptation Module + Script Optimization Gate`。
 
-Module Type：STATE-01 Script Analysis内部Workflow Gate、通用改编Knowledge、条件性短剧Adapter与两份优化Knowledge，不创建新主STATE。
+Module Type：STATE-01 Script Analysis内部双入口Workflow Gate、原创剧本开发Knowledge、通用改编Knowledge、条件性短剧Adapter与导演化/优化Knowledge，不创建新主STATE。
 
-触发：所有输入先分类。A为已是制作剧本；B为粗略剧本/初稿；C为小说、故事梗概、品牌文案、历史事件、影视桥段、长篇素材或概念。除No Revision / Final Script例外外，所有分类统一先执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`。只有C类在报告Adaptation Need且用户明确授权改编/优化后触发Script Adaptation；A/B也必须在明确授权后才进入Script Optimization。
+触发：所有输入先路由。`Creation Brief`是只有创意、题材、品牌需求、人物/世界观设定、情绪/场景或明确剧本创作请求，但没有可逐段诊断的既有剧本/来源叙事正文；它直接触发`Idea / Brief → Director-first Screenplay Development → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation`。`Existing Script / Material`再分类为A已是制作剧本、B粗略剧本/初稿、C具有既有内容但尚非制作剧本的小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材；除No Revision / Final Script例外外，先执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`。只有C类在报告Adaptation Need且用户明确授权改编/优化后触发Script Adaptation；A/B也必须在明确授权后才进入Script Optimization。
 
 不触发内容改写：用户明确说“不要改剧本”“严格按这个版本制作”“已定稿”或同义表达时，跳过Optimization Opportunity Report、Script Adaptation、短剧Adapter、Screenwriting Optimization与Directorial Interpretation，但仍完整执行原有Script Analysis并按授权锁定。用户在Opportunity Report后拒绝优化/改编时，也跳过全部内容改写，原始版本完成分析后直接Production-Lock。
 
-所属位置：`STATE-01 Script Analysis`内部。默认入口固定为`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`并停止。报告只写问题、影响与方向，至少检查开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度；结论只使用A无明显优化必要、B有轻度优化空间、C有明显结构问题。用户明确授权后，C类继续`Adaptation Target Detection → Script Adaptation → Adaptation Draft → Screenwriting Optimization → Directorial Interpretation → Production Script Proposal → User Confirmation`；A/B从Screenwriting Optimization开始。未确认提案不得进入STATE-02。
+所属位置：`STATE-01 Script Analysis`内部。Creation Brief的创作请求本身授权生成Proposal，不先输出Optimization Opportunity Report，也不要求用户先在普通Chat完成剧本；只在真正关键缺失时最小澄清。Existing Script / Material默认入口固定为`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`并在没有改写授权时停止。报告只写问题、影响与方向，至少检查开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度；结论只使用A无明显优化必要、B有轻度优化空间、C有明显结构问题。当前请求已明确“分析并优化 / 直接优化 / 直接改写 / 按指定范围优化”时，报告后不重复询问改写授权；C类继续`Adaptation Target Detection → Script Adaptation → Adaptation Draft → Screenwriting Optimization → Directorial Interpretation → Production Script Proposal → User Confirmation`，A/B从Screenwriting Optimization开始。所有未确认提案不得进入STATE-02。
 
 Adaptation Target Detection：只有目标为短剧、竖屏剧情或1—3分钟剧情视频时加载`knowledge/adaptation/short_form_drama_adapter.md`；其他类型记录Not Applicable，不强制套用短剧规则。
 
 Adaptation Intensity：只允许LEVEL 1 Light Adaptation、LEVEL 2 Structural Adaptation、LEVEL 3 Free Adaptation，并选择最低足够等级。用户明确“基本不要改剧情”时只能LEVEL 1；不可静默升级。
 
-Required Inputs及唯一来源：用户原始故事文本、Project Bible中的已确认项目事实、目标形式/时长/平台/受众、用户明确的改编/优化范围与锁定要求。世界观、角色身份、核心创意、主题、名场面、关键设定与品牌要求只由用户或已确认项目事实拥有。
+Required Inputs及唯一来源：用户Idea / Brief或原始故事文本、Project Bible中的已确认项目事实、目标形式/时长/平台/受众、用户明确的创作/改编/优化范围与锁定要求。世界观、角色身份、核心创意、主题、名场面、关键设定与品牌要求只由用户或已确认项目事实拥有。
 
-Output拥有者：`templates/02_script_analysis_prompt.md`独占STATE-01用户可见字段、顺序与排版；`workflows/02_script_analysis_workflow.md`拥有分类、目标检测、路由、确认门槛与状态转换；`knowledge/script_adaptation.md`拥有通用六层改编方法；`knowledge/adaptation/short_form_drama_adapter.md`只拥有适用短剧规则；`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`只拥有各自专业分析方法。
+Output拥有者：`templates/02_script_analysis_prompt.md`独占STATE-01用户可见字段、顺序与排版；`workflows/02_script_analysis_workflow.md`拥有入口识别、分类、目标检测、路由、确认门槛与状态转换；`knowledge/screenplay_development.md`拥有原创故事开发、Scene Director Intent与Directable Screenplay QA；`knowledge/script_adaptation.md`拥有通用六层改编方法；`knowledge/adaptation/short_form_drama_adapter.md`只拥有适用短剧规则；`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`只拥有各自专业分析方法。
 
-允许读取：Selected State Source、Active Project Root中的project_bible.md、用户剧本/Source Material/设定与已确认约束。允许写入：Active Project Root的STATE-01 Script Analysis Artifact、Optimization Opportunity Report，以及获得明确授权后的Adaptation Draft和Production Script Proposal；并写Selected State Source中的Script Status / Pending Decision / Checkpoint。不得写入Skill根目录项目兼容入口。
+允许读取：Selected State Source、Active Project Root中的project_bible.md、用户Idea / Brief、剧本/Source Material/设定与已确认约束。允许写入：Active Project Root的STATE-01 Screenplay / Script Analysis Artifact、适用的Optimization Opportunity Report、获得合法授权后的Adaptation Draft和Production Script Proposal，以及随确认版本传递的轻量Scene Director Intent source data；并写Selected State Source中的Script Status / Pending Decision / Checkpoint。不得写入Skill根目录项目兼容入口。
 
-Script Status只允许`Source Material / Adaptation Draft / Optimized Proposal / Production-Locked`。Opportunity Report与User Decision Gate期间保持Source Material；C类获准路径为`Source Material → Adaptation Draft → Optimized Proposal → Production-Locked`；A/B获准路径跳过Adaptation Draft；拒绝优化路径为`Source Material → Production-Locked`。只有Production-Locked允许STATE-01 COMPLETE。
+Script Status继续只允许`Source Material / Adaptation Draft / Optimized Proposal / Production-Locked`，不为原创分支新增状态。Creation Brief生成前为Source Material，Proposal输出后为Optimized Proposal，确认后为Production-Locked；Existing的Opportunity Report与User Decision Gate期间保持Source Material，C类获准路径为`Source Material → Adaptation Draft → Optimized Proposal → Production-Locked`，A/B获准路径跳过Adaptation Draft，拒绝优化路径为`Source Material → Production-Locked`。只有Production-Locked允许STATE-01 COMPLETE。
 
 下游消费者：STATE-02 Asset Discovery及所有后续剧情事实消费者只能读取Production-Locked Script；Adaptation Draft与Optimized Proposal都不是已确认事实。
 
 禁止修改：用户未授权范围、世界观、角色身份、品牌要求、核心创意、关键设定、主Pipeline、资产确认闭环、Spatial Blocking Layer、Director Decision Layer、Knowledge Reflection、Clip-centric逻辑与STATE-08 Seedance Schema。
 
-与Director Decision Layer边界：STATE-01 Script Adaptation与Directorial Interpretation只把来源素材转换为可视、可听、可表演的制作版叙事，不创建SCENE、SHOT、CLIP、焦段、机位或Director Decision Notes；STATE-06 Director Decision Layer只读取已确认Professional Detailed Shot Script决定Scene / Shot Group的视听执行方向，不回到STATE-01改写剧情。
+与Director Decision Layer边界：STATE-01 Screenplay Development、Script Adaptation与Directorial Interpretation只把创意/来源素材转换为可视、可听、可表演的制作版叙事，并维护轻量Scene Director Intent；不创建SCENE、SHOT、CLIP、焦段、机位或Director Decision Notes。STATE-05投影确认剧本与Scene Intent，STATE-06 Director Decision Layer再读取该投影与已确认Professional Detailed Shot Script，决定Scene / Shot Group的视听执行方向，不回到STATE-01改写剧情。
 
-冲突路由：锁定事实、目标形式、Adaptation Intensity或修改范围不明确时保持STATE-01 IN_PROGRESS并请求用户决定；单独“继续 / 下一步 / 好的”既不构成优化授权，也不构成Proposal确认；用户要求修订Proposal时只修改受影响范围；下游发现剧情事实冲突返回STATE-01，不在资产、镜头或Prompt阶段静默调和。
+冲突路由：Creation Brief只有在缺失项会实质改变架构或造成品牌/事实风险时请求最小决定；Existing的锁定事实、目标形式、Adaptation Intensity或修改范围不明确时保持STATE-01 IN_PROGRESS并请求用户决定。单独“继续 / 下一步 / 好的”既不构成Existing优化授权，也不构成Proposal确认；当前请求已明确“直接优化 / 直接改写”时不重复询问同一授权。用户要求修订Proposal时保持Script Development并只修改受影响范围；下游发现剧情事实冲突返回STATE-01，不在资产、镜头或Prompt阶段静默调和。
 
-Validator可检查的不变量：固定入口、十二项报告维度与A/B/C三档存在；报告前后没有自动改写；四种Script Status值合法；Adaptation Draft或Optimized Proposal不能与STATE-01 COMPLETE或STATE-02+并存；C类只有明确授权后经过通用改编；短剧Adapter只按Target Detection加载；B类不被强制改编；No-Revision分支跳过报告和改写但仍执行Script Analysis；拒绝优化锁定原稿；Proposal后存在第二次确认；四份Knowledge与所有显式引用存在。
+Validator可检查的不变量：Creation / Existing双入口与互斥判定存在；Creation不要求先提供完整剧本、不输出Opportunity Report、具备十项Directable Screenplay QA且不提前写Shot Design；Existing固定诊断入口、十二项报告维度与A/B/C三档存在；报告前后没有未授权改写，明确“直接优化”不重复询问授权；四种Script Status值合法；Adaptation Draft或Optimized Proposal不能与STATE-01 COMPLETE或STATE-02+并存；C类只有明确授权后经过通用改编；短剧Adapter只按Target Detection加载；B类不被强制改编；No-Revision分支跳过报告和改写但仍执行Script Analysis；拒绝优化锁定原稿；所有Proposal后存在第二次确认；五份Knowledge与所有显式引用存在。
 
 ---
 
@@ -446,7 +459,7 @@ Module Type：STATE-06至STATE-09辅助Camera Knowledge，不创建新STATE。
 
 Module Type：STATE-04、STATE-06至STATE-09辅助Knowledge。
 
-触发：镜头包含人物注意、反应、情绪变化、对白倾听、压抑/伪装、哭笑、群体反应或身体状态影响表演。
+触发：镜头包含人物注意、反应、情绪变化、对白倾听、压抑/伪装、哭笑、群体反应、身体状态影响表演，或Scene / Shot Group / Clip需要核对跨镜Performance Arc与相对表演层级。
 
 输入拥有者：Script / Scene事实、Character Asset与基线、人物关系、Shot Purpose、Action / Blocking、Dialogue / Sound、Camera / Composition、Lighting与边界状态。
 
@@ -458,6 +471,9 @@ Module Type：STATE-04、STATE-06至STATE-09辅助Knowledge。
 
 - 内部表演模式只使用PEX-01至PEX-36，最终Prompt不得输出PEX或AU编号
 - 每个情绪变化必须有已确认刺激、注意变化、至少一项可见反应、行动选择与稳定结束状态
+- 每个相关角色在Scene / Shot Group层使用内部Performance Arc Map核对Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint与Next-shot Carryover；单SHOT只投影当前可见段，不创建Template字段
+- Intentional Hold必须保留注意目标、压制/延迟、呼吸/姿态或行动证据；静态情绪标签与固定脸完成动作不构成有效表演
+- 多人场景必须明确Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序、相对幅度与视觉重点交接；除非剧情授权，不得全员同强度表演或全员同脸冻结
 - 连续镜头继承视线目标、呼吸、面部/身体张力、泪液/红肿等可见后果与控制/泄漏状态
 - 表演语义映射到现有Template字段，不创建Expression或Performance最终字段
 
@@ -572,7 +588,7 @@ Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge G
 
 触发：每个STATE-07候选Clip形成执行合同时执行Visual Blocking Risk Pre-Assessment；每个STATE-08 Confirmed Clip在正式Prompt编译与Template Mapping前执行Final Assessment，包括用户指定Clip、说“下一个 / 下一步 / 继续”及批量中的每个Clip。普通资产制作、海报、Storyboard或纯音色任务不独立触发。
 
-Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、八组`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、当前Clip Start Requirement与Clip边界由STATE-07 / 当前STATE-08 Checkpoint拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Scene Spatial Snapshot、Pose Hierarchy、Relationship Topology、Action PREVIS与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
+Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、八组`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、当前Clip Start Requirement与Clip边界由STATE-07 / 当前STATE-08 Checkpoint拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Scene Spatial Snapshot、Pose Hierarchy、Relationship Topology、Action PREVIS、Performance Goal / Performance Arc Map与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
 
 Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过结果投影到`templates/10_video_prompt.md`既有字段；`knowledge/clip_preflight_check.md`拥有分类、检查顺序、失败条件与返回路由；`templates/23_visual_blocking_sketch_prompt.md`唯一拥有Technical Visual Blocking Sketch的图像生成输入包与Candidate Evidence Record，不拥有Assessment或最终视频Prompt Schema。
 
@@ -580,13 +596,13 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。逐角色还必须通过Performance / Emotion Check：Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint、Intentional Hold证据、Next-shot Carryover与多人相对表演层级可复算；静态标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸固定FAIL。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
 冲突路由：剧情/世界事实返回事实拥有者；资产/道具形态返回STATE-03；Shot / Blocking /转场设计返回STATE-06；Clip边界、预算或执行合同返回STATE-07；仅最终文案投影错误留在STATE-08。
 
-Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录与PASS / Return Route；STATE-08 Template没有新增Preflight字段；Five Global High-Priority Rules、十三个Acceptance Scenarios、Before-Single-Clip-Prompt Gate、Blocking Signature、四种Reassessment结果、母版注册状态、两级Authority、七项Layout Validation、Template Content Leakage Check与Character Appearance Leakage Check存在；所有显式文件引用有效。`Asset Status=REGISTERED`时真实相对文件必须存在；`UNAVAILABLE`时不得出现已注册路径声明。Candidate Evidence必须由`scripts/validate_sd_film.py sketch`拒绝单幅电影插画、缺失版式项、Blocking不匹配、模板内容泄漏、人物外观 / 身份污染或Confirmed前图片不可读。
+Validator可检查的不变量：两条Workflow Resource Gate均显式引用本模块；STATE-07 Template存在Preflight记录、Performance / Emotion Check与PASS / Return Route；STATE-08 Template没有新增Preflight字段；Five Global High-Priority Rules、十三个Acceptance Scenarios、Before-Single-Clip-Prompt Gate、Blocking Signature、四种Reassessment结果、母版注册状态、两级Authority、七项Layout Validation、Template Content Leakage Check与Character Appearance Leakage Check存在；所有显式文件引用有效。`Asset Status=REGISTERED`时真实相对文件必须存在；`UNAVAILABLE`时不得出现已注册路径声明。Candidate Evidence必须由`scripts/validate_sd_film.py sketch`拒绝单幅电影插画、缺失版式项、Blocking不匹配、模板内容泄漏、人物外观 / 身份污染或Confirmed前图片不可读。
 
 ---
 

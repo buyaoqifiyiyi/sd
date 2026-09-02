@@ -36,7 +36,7 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 | STATE | Stage | Workflow | Final template owner | Core result |
 |---|---|---|---|---|
 | STATE-00 | Project Setup | `workflows/01_project_setup_workflow.md` | `templates/00_project_start_template.md` | 已建立项目身份、工作空间与状态入口 |
-| STATE-01 | Script Analysis | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Production-Locked Script及分析结果 |
+| STATE-01 | Script Analysis | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Creation Brief生成或Existing Script诊断后确认的Production-Locked Directable Screenplay及分析结果 |
 | STATE-02 | Asset Discovery | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 已分类并可路由的CHAR / ENV / PROP / FX需求 |
 | STATE-03 | Asset Development | 对应资产Workflow | 对应资产Template | 已确认并登记的Canonical视觉资产 |
 | STATE-04 | Visual Development | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 已确认的可执行Visual Direction |
@@ -56,8 +56,8 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 
 ### STATE-01 Script Analysis
 
-- Required boundary：读取项目输入和当前Script Status。
-- Authority：`workflows/02_script_analysis_workflow.md`；剧本改编、优化、授权与锁定细则不得在本地图复制。
+- Required boundary：读取项目输入、STATE-00登记的`Creation Brief / Existing Script / Material`入口和当前Script Status。
+- Authority：`workflows/02_script_analysis_workflow.md`；Creation Brief进入其Idea-to-Screenplay分支，Existing Script / Material进入Diagnosis分支。剧本创作、改编、优化、授权与锁定细则不得在本地图复制。
 - Completion boundary：只有`Script Status: Production-Locked`才可进入STATE-02。
 
 ### STATE-02 Asset Discovery

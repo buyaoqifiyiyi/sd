@@ -143,6 +143,10 @@ Asset Design
 
 Core与Support都必须执行同一双确认闭环。Support Board图片确认前，Board及其Item均不得标记confirmed；部分Item未获明确批准时，不得用对整板的含糊确认替代。
 
+## Director-led Character Presence Pass｜Internal
+
+读取STATE-02的Asset Dramatic Function、Narrative Priority与Casting Logic，只把会影响视觉资产执行的结果投影到现有角色定义、外观、服装与风格区域：Character Presence / Screen Presence、身份辨识优先级、主要表演载体与Performance Feasibility，以及剧情需要时的Costume / Silhouette Dramaturgy。服装、轮廓、姿态与动作习惯必须服务人物身份、关系或状态变化；不得为了“更有设计感”改写Canonical身份，也不新增固定Template字段。
+
 
 ## 01 Character Identity Confirmation
 
@@ -206,6 +210,8 @@ Core与Support都必须执行同一双确认闭环。Support Board图片确认�
 
 气质。
 
+Screen Presence与主要表演可读性；例如面部、身体轮廓、手部或姿态中哪一类必须在既定媒介和景别中保持可读。
+
 
 
 要求：
@@ -238,6 +244,8 @@ Core与Support都必须执行同一双确认闭环。Support Board图片确认�
 
 
 身份体现。
+
+剧情适用时的服装/轮廓功能与状态变化；不适用时不机械增加换装或象征设计。
 
 
 

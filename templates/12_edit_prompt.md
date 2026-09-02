@@ -19,6 +19,8 @@
 
 修改目标：
 
+Director Intent To Preserve：
+
 
 
 ---
@@ -43,6 +45,21 @@
 镜头。
 
 细节。
+
+
+## Editorial Direction
+
+Editorial POV：
+
+Cut / Hold Motivation：
+
+Information Timing / Reaction Priority：
+
+Emotional Rhythm / Shot-duration Pressure-Release：
+
+Ellipsis / Match-Contrast / Transition Logic：
+
+J-cut / L-cut / Sound Bridge（剧情内声音；配乐仅引用已Confirmed Music Package）：
 
 
 

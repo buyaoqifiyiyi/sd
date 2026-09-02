@@ -63,6 +63,19 @@ FX资产或Inline Effect：
 # Output
 
 
+## Scene Directing Brief
+
+Dramatic / Relationship / Information / Performance Beat Map：
+
+Audience Start → End State：
+
+Dramatic Geography / Spatial Evolution：
+
+Reveal / Withhold Timing：
+
+Scene Camera Strategy（观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放；不写具体镜头参数）：
+
+
 ## Scene Visual Brief
 
 

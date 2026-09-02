@@ -82,6 +82,22 @@ Asset Development。
 
 # Scene Breakdown Logic
 
+## Upstream Director Intent Projection
+
+先读取Production-Locked Directable Screenplay及STATE-01随确认版本保留的轻量Scene Director Intent source data。按`knowledge/director_decision_layer.md`的连续性合同，将每场的Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Change / Reveal Strategy、Performance Opportunity / Peak、Spatial Evolution、Rhythm Intent与Transition Intent投影到正式SCENE边界、剧情作用、空间关系和节奏阶段。
+
+这些source data只帮助发现Scene边界和保持导演意图，不新增用户可见固定字段，不允许改写Production-Locked剧情，也不创建SHOT / CLIP。若Intent与锁定剧本冲突，返回STATE-01最小修订Intent；若原项目没有独立Intent Artifact，则从锁定剧本已明确的行动、信息与关系变化提取最小可验证投影，不补造新剧情。
+
+## Director Beat Map And Dramatic Geography
+
+每个Scene按已确认剧情拆出最小充分Beat Map：Dramatic Beat、Relationship Beat、Information Beat、Performance Beat，以及Beat之间的因果与节奏。同步建立Dramatic Geography：固定空间、人物起始关系、可行动区域、信息来源、遮挡/揭示位置、距离或权力变化、Spatial Evolution和场景结束的稳定空间结果。
+
+Scene Breakdown决定Reveal / Withhold / Delay / Confirm / Recontextualize在何个Beat发生，以及观众先于、同时或晚于人物知道；不提前决定具体镜头数量。
+
+## Scene Camera Strategy
+
+每个Scene形成一句到数句轻量策略，使用“观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放”等功能语言，说明Audience Position、注意力如何移动、何处Hold、何处允许靠近或离开、关系空间如何演化。禁止在此写35mm、85mm、特写、低机位、浅景深、Push In或正式SHOT参数；具体选择留给STATE-06固定决策顺序。
+
 ## Source Label Normalization
 
 先把用户原文中的“镜头1 / 镜头2 / Scene 1 / 段落A / Clip A”等标题登记为`Source Script Label`，只用于原文追溯。它们不是正式Scene、Shot或Clip，不得决定下游数量与边界。
@@ -241,6 +257,12 @@ FX-001（如适用）
 
 □ Source Script Labels已与正式SCENE命名空间分离，没有创建SHOT或CLIP ID
 
+□ 每个Scene已读取并投影适用的Scene Director Intent；与锁定剧本冲突时已返回STATE-01，没有在本阶段静默改写
+
+□ 每个Scene已形成Dramatic / Relationship / Information / Performance Beat Map、Dramatic Geography、Spatial Evolution与Reveal / Withhold timing
+
+□ 每个Scene已形成轻量Scene Camera Strategy，且没有提前创建SHOT或具体摄影参数
+
 
 
 ---
@@ -308,6 +330,6 @@ STATE-06 Detailed Shot Design，或先执行条件性Sequence Planning
 
 templates/07_scene_design_prompt.md
 
-Workflow负责Scene拆解、资产绑定与Sequence Eligibility判断；Template独占Scene输出字段、顺序和排版。
+Workflow负责Scene拆解、导演Beat Map、Dramatic Geography、Scene Camera Strategy、资产绑定与Sequence Eligibility判断；Template独占Scene输出字段、顺序和排版。
 
 下一阶段仍由project_status.md中的Next Workflow决定：触发时进入Sequence Planning，否则进入Shot Design。

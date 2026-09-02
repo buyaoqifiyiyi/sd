@@ -6,7 +6,7 @@
 - Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge Gate；同时唯一拥有Visual Blocking Anchor Assessment、Sketch Validation与Persistence判断；不创建新主STATE，不拥有最终Prompt Schema。
 - Trigger：每个候选Clip在STATE-07形成执行合同时执行前置版；每个Confirmed Clip在STATE-08正式Prompt编译与Template Mapping之前执行最终版；用户以“下一个 / 下一步 / 继续”逐Clip请求时自动执行，无需另行提醒。
 - Not Triggered As：不得把它当成新的制作阶段、资产生成Workflow、转场特效生成器或STATE-08新增栏目。
-- Required Inputs：上一Clip End State与尾帧用途、当前Clip Start Requirement、逐分镜世界状态、Confirmed Assets及其Active Version、角色数量事实、Spatial Blocking / Relational Screen Geometry、Pose Hierarchy、Relationship Topology、关键道具状态链、适用Transition事实、Action PREVIS、Confirmed Clip Production Plan，以及生成草图时必须读取的`references/ref_sketch_master.md`注册状态与Sketch Presentation Authority合同；实际生图输入包由`templates/23_visual_blocking_sketch_prompt.md`唯一拥有。
+- Required Inputs：上一Clip End State与尾帧用途、当前Clip Start Requirement、逐分镜世界状态、Confirmed Assets及其Active Version、角色数量事实、Spatial Blocking / Relational Screen Geometry、Pose Hierarchy、Relationship Topology、STATE-06 Performance Goal / Performance Arc Map、上一有效Performance State、关键道具状态链、适用Transition事实、Action PREVIS、Confirmed Clip Production Plan，以及生成草图时必须读取的`references/ref_sketch_master.md`注册状态与Sketch Presentation Authority合同；实际生图输入包由`templates/23_visual_blocking_sketch_prompt.md`唯一拥有。
 - Input Owners：剧情与时空事实由Script / Scene拥有；资产身份与版本由Asset Registry拥有；镜头与Blocking由STATE-06拥有；Clip边界与组织由STATE-07拥有。
 - Output Owner：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过后的语义映射到`templates/10_video_prompt.md`现有字段，本模块不新增、删除或改名最终字段。
 - Allowed Writes：STATE-07 Clip Plan中的Preflight记录、`Spatial State / Continuity Risks / Reference Budget`既有栏目，以及STATE-08当前Clip Checkpoint / Projection / QA记录；可在这些既有位置保存Visual Anchor State与Blocking Signature，不新增主STATE、平行Registry或Seedance字段。Work/Codex把Confirmed Visual Blocking Sketch作为当前Clip受控参考写入Active Project Root既有`clips/`交付目录并登记文件 / 受控ID与Revision；普通Chat保留可回查的当前对话媒体引用和Checkpoint摘要。它计入图片预算，但不得登记为Canonical Character / Environment / Prop / FX Asset。
@@ -27,7 +27,7 @@
 
 每个Clip固定按以下顺序执行，不得把Reference Budget提前到世界状态和连续性分类之前：
 
-`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Visual Blocking Anchor Assessment → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget → PASS或Return Route`
+`Continuity Classification（含Tail Frame Required判定）→ World-State Check → Character Count Lock → Spatial Composition Lock → Performance / Emotion Check → Visual Blocking Anchor Assessment → Prop State Check → Transition Check（适用时）→ Reference Asset Eligibility / Check / Budget → PASS或Return Route`
 
 - STATE-07执行前置版：检查设计是否可生成，并对每个Clip记录`Visual Blocking Risk Pre-Assessment = NONE / POSSIBLE / REQUIRED`及理由；只标风险，不生成草图。任何失败先修Clip设计，禁止确认Clip Plan。
 - STATE-08执行最终版：按实际资产、实际首尾帧和当前Blocking Signature复核；在撰写任何最终Prompt句子前执行Before-Single-Clip-Prompt Gate。任何失败不得Template Mapping、不得输出Prompt；先回到对应拥有者做最小必要修正。
@@ -230,7 +230,21 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 - 默认禁止双方并排、同一景深横向站立、同时完整正脸面向摄影机、海报式合影、群像站桩或追逃关系反转。
 - 只有用户或已确认Shot Design明确要求其他构图时才可例外，并必须重新锁定关系轴与可读追逃方向。
 
-## G. Prop State Check
+## G. Performance / Emotion Check
+
+逐Clip、逐角色读取STATE-06已有Performance Goal、Performance Arc Map、相邻Shot Handoff与八组`Clip End-State Record / Next-Clip Carryover`中的Performance State，检查：
+
+1. **Inherited Baseline**：当前首个可见状态是否来自上一镜Settled State、Scene初始事实或有依据的Motivated Discontinuity；不得在Clip或Shot边界自动恢复默认脸。
+2. **Trigger And Attention**：情绪、关系或认知变化是否有已确认刺激，人物是否通过视线目标、注意转移或动作停止/继续实际接收到它。
+3. **Action-phase Evidence**：动作、台词或信息接收是否在`Pre-action / In-action / Post-action`中拥有当前Clip可见的最小充分阶段，尤其保留动作/台词后的确认、延迟反应、控制/泄漏或余韵。不是每个SHOT都要完整三阶段，但Clip不能只剩“固定表情完成动作”。
+4. **Executable Carriers**：每个需要变化的角色至少有一项主要视线/局部面部变化和一项适用的呼吸、手部、肩颈、重心、距离或反应停顿；如果采用`Intentional Hold / 主动保持`，必须写注意目标、压制对象、延迟或低幅身体证据。只写“紧张 / 从容 / 平静 / 愤怒 / 悲伤 / 面无表情”固定FAIL。
+5. **Cross-shot Arc**：`Previous Settled State = Current Inherited Baseline`；升级、回落、反转、恢复和重新控制都有触发，Post-action Residue、Arc Endpoint与Next-shot / Next-Clip Carryover可复算。
+6. **Relative Performance Hierarchy**：两人以上时明确Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序、相对`Restrained / Open / Heightened`幅度与视觉重点交接。除非剧情授权，不得所有角色同一时点同强度表演，也不得全员同脸冻结。
+7. **Capacity And Readability**：关键微表情、眼神、停顿和余韵在时长、景别、遮挡、对白口型、动作/FX与Camera路径下可读；表演密度超限时按PL1 / PL2 / PL3稳定降级，不删刺激、行动选择和Arc Endpoint。
+
+本Check不授权改剧情、补刺激、增加台词或新增镜头。若STATE-06已经具有完整弧而只是在最终文字投影中缺证据，STATE-08只修现有字段映射；若Performance Goal / Arc本身缺失、镜头容量或可读性不成立，返回STATE-06修Affected SHOT与相邻Handoff；若Clip合并让反应次序、弧线或容量不可执行，返回STATE-07调整Clip组织。通过语义只进入现有`人物动作 / 连续动作 / Performance State / Next-Clip Carryover / 人物动作与情绪 / 镜头结尾状态`，不得新增Template字段。
+
+## H. Prop State Check
 
 每个关键道具逐分镜检查：
 
@@ -248,12 +262,12 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 
 每个Clip的检查结果只能为：
 
-- `PASS`：七项检查全部适用项通过，允许确认STATE-07 Clip Plan或进入STATE-08 Template Mapping。
+- `PASS`：八项检查全部适用项通过，允许确认STATE-07 Clip Plan或进入STATE-08 Template Mapping。
 - `FAIL / Return Route`：列出Affected Clip / Shot、失败项、冲突事实与最小修正路由。先修正Clip设计或返回事实拥有者，再从A开始重跑全部Preflight；不得边失败边生成最终Prompt。
 
 STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后的语义必须映射到`templates/10_video_prompt.md`既有字段。
 
-## Acceptance Scenarios
+## Acceptance Scenarios（十三个Acceptance Scenarios）
 
 | 场景 | 必须得到的结果 |
 |---|---|
@@ -266,7 +280,7 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 | G. B新镜头参考型但无实际尾帧图 | `Tail Frame Required = YES`；`参考资产`直接列`REF-TAIL`、空间/站位/景别参考用途与“待用户提供/待上传、未确认”；`首帧参考`说明另起新镜头重新构图且不使用Direct固定句 |
 | H. C新镜头且无需尾帧 | `Tail Frame Required = NO`；不列`REF-TAIL`、不要求截图；依靠Canonical基础资产、Confirmed Spatial Blocking、文字空间规则与当前Scene / World-State / Start Boundary建立新首帧 |
 | I. `板凳参考说明｜用途：锁定两人共坐同一张板凳……`混入参考资产 | Visual Input Eligibility为`NOT ELIGIBLE`；从【参考资产】删除并迁移到`空间关系`或`道具状态`。原清单1—5号真实视觉资产保持不动；若确有双人钢琴凳参考图，则改用真实`PROP-BENCH-01｜双人钢琴凳`及其文件/受控ID |
-| J. 简单单人原地转头 | Visual Blocking Final Assessment=`NONE`；不生成草图，直接编译Prompt |
+| J. 简单单人原地转头，剧情要求警觉确认 | Visual Blocking Final Assessment=`NONE`且不生成草图；Performance / Emotion Check仍要求“眼睛先定向 → 短暂停顿/屏息 → 头部跟随 → 视线稳定并留下警觉余韵”等最小可执行链。若只写“紧张地转头 / 保持平静表情”，固定FAIL并返回STATE-06补足Affected SHOT，不新增镜头 |
 | K. CLIP-04：林夏左 / 许栀右，共坐同一长琴凳并共同朝向钢琴 / 窗外；许栀只允许Gaze + LIMITED Head，其他上层姿态与距离锁定 | 首次单Clip Prompt前判为HIGH / REQUIRED，先生成并验证S+P综合草图；两人使用同一套无性别技术人偶，只由蓝 / 红角色标签、姓名与左右位置区分，不用长短发、裙装或身体曲线区分；注册`REF-SKETCH-04`并加入参考资产，本轮不输出Prompt；Side-by-side漂成Face-to-face即使左右未换仍判Blocking Drift；后续普通Prompt重写复用原图；若重构为许栀起身走到林夏面前，触发Reassessment并REPLACE或RETIRE / CREATE |
 | L. A3武打 / 复杂动作 | 可判ACTION HIGH / REQUIRED，使用中性技术人偶的A-SKETCH或S+P+A综合草图锁定起点、路径、接触 / 受力、终点与Next-action Carryover；必要身体比例只表达物理约束，不恢复性别、脸、发型、服装或角色体型身份；草图不得覆盖角色 / 环境 / 道具身份 |
 | M. 三人围桌且母版示例为两女 + 钢琴 | 继承Technical Director Blocking Sheet的信息层级并重排为三人Topology；三人使用同一套无性别人偶语言，只靠角色标签、技术颜色与位置区分；不得复制两女外观、钢琴、琴凳、窗户、乐谱、雨景或示例文字；Template Content Leakage或Character Appearance Leakage命中即FAILED / REVISE |
@@ -276,5 +290,6 @@ STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后
 - 本文件被STATE-07与STATE-08 Resource Gate显式引用。
 - `templates/20_clip_plan.md`具有逐Clip Preflight记录与PASS / Return Route。
 - `templates/10_video_prompt.md`不新增Preflight字段，只在既有字段内容合同中承载世界状态、数量、空间、转场与道具语义。
+- `Performance / Emotion Check`被STATE-07、STATE-08与既有Template语义显式消费；它不创建新STATE或最终字段，并能拒绝静态情绪标签、无依据情绪重置与全员同强度表演。
 - Reference Budget在Continuity Classification与World-State过滤之后执行。
 - 十三个Acceptance Scenarios与Five Global High-Priority Rules可被静态检索；Sketch Validation同时包含`Character Appearance Leakage Check`与固定失败码。

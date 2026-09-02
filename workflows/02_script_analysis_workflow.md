@@ -1,4 +1,4 @@
-# Script Analysis Workflow
+# Screenplay Development And Script Analysis Workflow
 
 # 剧本分析流程
 
@@ -6,14 +6,15 @@
 ## Workflow Purpose
 
 
-本Workflow负责：
+本Workflow负责STATE-01内部两条正式入口：
 
-对输入剧本进行系统分析。
+- `Creation Brief`：从创意、题材、品牌需求、角色/世界观设定或情绪/场景开始创作可导演的制作版剧本提案。
+- `Existing Script / Material`：对用户已有剧本或来源叙事材料进行导演向诊断，并在授权边界内改编/优化。
 
 
 目标：
 
-理解故事内容。
+从零创作或理解既有故事内容。
 
 提取人物关系。
 
@@ -22,7 +23,7 @@
 发现后续制作所需的视觉信息。
 
 
-本阶段属于前期分析阶段。
+本阶段属于剧本开发与前期分析阶段。
 
 不进行正式资产制作。
 
@@ -62,9 +63,10 @@ STATE-02 Asset Discovery
 输入：
 
 
+- Idea / Brief / Concept、题材、品牌需求、人物设定、情绪/场景、已有世界观或明确的“帮我写剧本 / 先从剧本开始”请求
 - 已是制作剧本
 - 粗略剧本或初稿
-- 小说、故事梗概、品牌文案、历史事件、影视桥段、长篇素材或概念
+- 小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材
 - 用户明确的改写许可、禁止改写要求或局部优化范围
 
 
@@ -81,21 +83,53 @@ project_status.md
 
 ---
 
-# Script Adaptation And Optimization Gate
+# Screenplay Entry Routing, Creation, Adaptation And Optimization Gate
 
-本Gate是STATE-01内部子流程，不创建新STATE。除No Revision / Final Script例外外，所有新输入的固定入口为：
+本Gate是STATE-01内部子流程，不创建新STATE。先判断`Input Route`，再进入两条互斥入口：
 
-`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`
+```text
+Creation Brief
+→ Minimum Project Intent Gate
+→ Director-first Screenplay Development
+→ Directorial Interpretation
+→ Directable Screenplay QA
+→ Production Script Proposal
+→ User Review / Revision
+→ Production-Locked
 
-首次调用只完成诊断、报告与询问。任何Adaptation Draft、改写后的剧本正文、替换台词、Screenwriting Optimization、Directorial Interpretation或Production Script Proposal都必须位于用户明确授权之后。
+Existing Script / Material
+→ Script Diagnosis
+→ Optimization Opportunity Report
+→ User Decision Gate
+→ 保留原稿或经授权的改编/优化Proposal
+→ Production-Locked
+```
 
-## 00 Input Classification
+`Creation Brief`中，用户明确“写剧本 / 从剧本开始 / 根据这个需求创作”的请求本身就是生成剧本提案的授权，不需要先对尚不存在的剧本做Optimization Opportunity Report，也不得要求用户先去普通Chat写完整剧本。Existing Script / Material仍保持“先诊断、报告、授权后才改写”的保护逻辑；只有用户当前指令已经明确授权“直接优化 / 直接改写”时，才可在同一轮完成诊断后继续，不重复询问是否优化。
+
+## 00 Input Route And Classification
+
+先记录：
+
+- **Input Route**：`Creation Brief / Existing Script / Material`
+- **Creation Authorization**：`Explicit / Not Applicable`
+- **Existing Revision Authorization**：`Pending / Explicit Optimization / Explicit No Revision / Local Optimization / Rejected`
+
+### Creation Brief
+
+只有创意、题材、品牌需求、角色设定、情绪/场景、世界观，或用户明确要求创作剧本，但没有可供逐段诊断的既有剧本或来源叙事正文。不得把“信息很少”本身当作拒绝创作的理由；只在关键缺失会实质改变架构或造成品牌/事实风险时询问最小必要问题。
+
+### Existing Script / Material
+
+用户提供了完整/粗略剧本、初稿，或具有既有叙事内容且需要保留、转换、分析的小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材。上传完整剧本并说“调用sd”时必须进入此路由，不得误判为Creation Brief。
+
+Existing Script / Material继续使用以下Input Class：
 
 Input Class只使用：
 
 - **A — Production Script**：已经具备可供制作分析的场景、行动、对白和叙事结构。
 - **B — Rough Script / First Draft**：以剧本为目标，但结构、因果、节奏、台词或可视化可能仍需优化。
-- **C — Source Material**：小说、故事梗概、品牌文案、历史事件、影视桥段、长篇素材或概念，尚不是可直接制作的剧本。
+- **C — Source Material**：小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材等已有叙事内容，尚不是可直接制作的剧本。
 
 同时记录：
 
@@ -109,7 +143,48 @@ Input Class只使用：
 - Adapter Load：`short_form_drama_adapter / Not Applicable / Pending`
 - Current Script Status：`Source Material / Adaptation Draft / Optimized Proposal / Production-Locked`
 
-Input Class与Optimization Opportunity Grade是两个独立维度。分类必须以用户明确语言和当前可读项目事实为依据；报告档位必须以制作适配程度和问题影响为依据。冲突指令按用户最新、最具体且修改范围最小的明确要求执行。不得把用户原文仅因完整、可分析或被诊断为A档就静默标记为Production-Locked。
+Creation Brief不强行套用A/B/C Input Class和Optimization Opportunity Grade；对应字段写`Not Applicable — Creation Brief`。Existing Script / Material的Input Class与Optimization Opportunity Grade是两个独立维度。分类必须以用户明确语言和当前可读项目事实为依据；报告档位必须以制作适配程度和问题影响为依据。冲突指令按用户最新、最具体且修改范围最小的明确要求执行。不得把用户原文仅因完整、可分析或被诊断为A档就静默标记为Production-Locked。
+
+## Director Module Continuity
+
+Creation与Existing两条入口都读取`knowledge/director_decision_layer.md`，并继承STATE-00最小Project Director Baseline。STATE-01负责把已确认项目意图具体化为Dramatic / Emotional Core、Character & Relationship Arc、Information、Performance、Spatial、Visual、Rhythm、Sound与AIGC Directability策略，并维护Scene-level source data；不是只在STATE-06才开始导演判断。
+
+剧本阶段的Camera Language只识别可镜头化机会：观众先看什么、哪些反应需要时间、什么信息应被遮挡/延迟/确认、人物关系可通过何种空间变化被看见。不得把机会提前写成Shot List、特写、35mm、低机位、浅景深或推拉摇移。
+
+## 00A Creation Brief Route — Idea-to-Screenplay
+
+触发：Input Route为Creation Brief，且用户明确请求创作剧本或从剧本开始。
+
+必须读取：
+
+- `knowledge/screenplay_development.md`
+- `knowledge/directorial_interpretation.md`
+- `knowledge/director_decision_layer.md`
+
+固定执行：
+
+`Idea / Brief / Concept → Minimum Project Intent Gate → Director-first Story Development → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Review / Revision → Production-Locked`
+
+1. 从当前输入和Project Bible提取目标形式/容量、受众、核心人物、世界/场景、主情绪或品牌目标、保护项与禁止项。
+2. 只有缺失项会实质改变架构或造成品牌/事实风险时才询问；其他可安全项采用明确、可修订的Assumption继续。
+3. 按`knowledge/screenplay_development.md`建立Dramatic Intent、Audience Experience、Dramatic Question / Core Conflict、Character Objective / Relationship Arc、Information Strategy、Visual Action、Spatial / Blocking Potential、Performance Opportunity、Rhythm Architecture与AIGC Directability。
+4. 执行`knowledge/directorial_interpretation.md`，让信息和情绪通过动作、视线、停顿、空间、调度、剧情内声音与节奏被观众体验；不得提前写机位、焦段、运镜、SHOT、CLIP或分镜表。
+5. 为每个候选场景内部维护轻量Scene Director Intent source data：Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Change / Reveal Strategy、Performance Opportunity / Peak、Spatial Evolution、Rhythm Intent、Transition Intent，并完成十项Directable Screenplay QA；这些内部字段不机械输出进最终剧本。
+6. 使用`templates/02_script_analysis_prompt.md`输出可独立阅读的完整Production Script Proposal；写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`并停止。
+7. 用户要求“修改这一场 / 改台词 / 调整人物线 / 改结局”等时，保持Script Development，只修订明确范围与必要相邻因果，重跑受影响QA后再次等待确认；不得跳到STATE-05/06。
+8. 用户明确确认当前Proposal后，将确认版本登记为`Production-Locked Directable Screenplay`（状态值仍为`Production-Locked`），完成下方Script Analysis并进入STATE-02。
+
+Creation Brief不得输出Optimization Opportunity Report、Adaptation Draft或既有剧本修改授权问题。用户只说“下一步”且当前Proposal已经输出但未明确确认时，仍停在Proposal Confirmation Gate；若已明确确认并完成STATE-01，则“下一步”按状态合同进入STATE-02，不得重新生成剧本。
+
+## 00B Existing Script / Material Route — Diagnosis Before Rewrite
+
+以下`01—06`分支只适用于Existing Script / Material。Route LOCK优先；其他输入固定从：
+
+`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`
+
+首次没有改写授权时只完成诊断、报告与询问。任何Adaptation Draft、改写后的剧本正文、替换台词、Screenwriting Optimization、Directorial Interpretation或Production Script Proposal都必须位于用户明确授权之后。
+
+如果用户当前请求已经无歧义地明确“直接优化剧本 / 分析并优化 / 直接改写 / 按指定范围优化”并提供了足够范围，该请求同时构成Existing Revision Authorization。仍先执行诊断并建立Opportunity Report证据，但不在User Decision Gate重复询问；直接进入对应Class A/B Optimization或Class C Adaptation路径。模糊的“看看 / 处理一下 / 继续”不构成授权。
 
 ## 01 Route LOCK — No Revision / Final Script
 
@@ -127,7 +202,7 @@ Input Class与Optimization Opportunity Grade是两个独立维度。分类必须
 
 ## 02 Default Entry — Diagnosis Before Authorization
 
-Route LOCK未触发时，对Class A、B、C统一执行本入口。登记`Script Status: Source Material`、`State Status: IN_PROGRESS`并锁定Protected Creative Locks。
+Existing Script / Material中Route LOCK未触发时，对Class A、B、C统一执行本入口。登记`Script Status: Source Material`、`State Status: IN_PROGRESS`并锁定Protected Creative Locks。若当前请求已经包含明确Existing Revision Authorization，报告完成后不停止询问，按Class与授权范围继续对应改编/优化路径。
 
 ### Required Diagnosis Dimensions
 
@@ -162,13 +237,15 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 - **B 有轻度优化空间**：问题可通过局部删减、合并、提前、台词压缩、动作化或节奏微调解决，不需重构核心因果。列出具体轻度优化点，并询问是否执行轻度优化。
 - **C 有明显结构问题**：核心目标、冲突、因果、高潮、情绪兑现、形式转换或时长容量存在跨段落问题，需要结构重排或Class C Adaptation。列出结构问题、影响与建议方向，并询问是否进入结构优化。
 
-报告输出后必须停止：
+没有明确Existing Revision Authorization时，报告输出后必须停止：
 
 - A档：`Pending Decision: 是否直接锁定当前剧本并进入STATE-02`
 - B档：`Pending Decision: 是否执行轻度优化`
 - C档：`Pending Decision: 是否进入结构优化`
 
 此时统一保持`Script Status: Source Material`、STATE-01 `IN_PROGRESS`、`Next Workflow: 02_script_analysis_workflow.md`。
+
+当前请求已明确“直接优化 / 分析并优化 / 直接改写 / 按指定范围优化”时，不把相同授权重复问一次；报告仍作为改写证据保留，随后进入`04`或`05`对应分支。明确局部授权必须继续服从Local Optimization Scope Lock。
 
 ## 03 User Decision Gate
 
@@ -179,6 +256,8 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 ### B/C档优化授权
 
 只有用户明确表示“优化”“继续优化”“进入优化”“执行轻度优化”“进入结构优化”或无歧义同义表达，才写`User Revision Intent: Optimization Approved`并进入内容改写。单独的“继续”“下一步”“好的”或沉默不得推定为优化授权，仍停在Decision Gate。
+
+同一轮初始请求中的“直接优化剧本 / 直接改写 / 只优化第X场”等无歧义指令已经满足本授权，不得在报告后重复要求确认是否优化；仍须在Production Script Proposal之后等待用户确认最终制作版。
 
 ### 拒绝优化或改编
 
@@ -251,7 +330,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 ## 06 Production Script Proposal Confirmation Gate
 
-- Production Script Proposal输出后必须再次停止，保持`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`与`Next Workflow: 02_script_analysis_workflow.md`。
+- Creation Brief或Existing Script / Material的Production Script Proposal输出后必须再次停止，保持`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`与`Next Workflow: 02_script_analysis_workflow.md`。
 - 用户明确确认当前Proposal：把唯一确认版本写为`Script Status: Production-Locked`，清除Pending Decision，再执行STATE-01 Completion Gate并进入STATE-02。
 - 用户要求修改Proposal：保持`Optimized Proposal + IN_PROGRESS`，只修订用户指出范围，输出新Proposal Revision并再次等待确认。
 - 用户只说“继续”“下一步”“好的”但没有明确确认提案：不得推定同意；仍停在Proposal Confirmation Gate。
@@ -465,7 +544,7 @@ templates/02_script_analysis_prompt.md
 
 本Workflow负责分析与边界控制；Template独占字段名称、顺序与排版。
 
-默认首次入口只包含Script Control、Optimization Opportunity Report与User Decision Gate，并在询问后停止，不得输出改写正文、Adaptation Draft或Production Script Proposal。Class C在明确授权后的Adaptation分支必须包含Script Control、Source Essence、Adaptation Decision、Adaptation Draft、Adaptation Fidelity Check、Screenwriting Optimization Summary、Directorial Interpretation Summary、Production Script Proposal与Proposal Confirmation Checkpoint；Class A/B明确授权后的Optimization分支不输出改编栏目。Optimization Rejected与Route LOCK不输出改写Proposal，但必须包含Script Control、原有Script Analysis与Lock / Handoff结论。
+Creation Brief入口直接输出Script Control、完整Production Script Proposal与Proposal Confirmation Checkpoint；内部Scene Director Intent与Directable Screenplay QA不得机械变成最终剧本栏目。Existing Script / Material默认首次入口只包含Script Control、Optimization Opportunity Report与User Decision Gate，并在未有明确改写授权时询问后停止，不得输出改写正文、Adaptation Draft或Production Script Proposal。Class C在明确授权后的Adaptation分支必须包含Script Control、Source Essence、Adaptation Decision、Adaptation Draft、Adaptation Fidelity Check、Screenwriting Optimization Summary、Directorial Interpretation Summary、Production Script Proposal与Proposal Confirmation Checkpoint；Class A/B明确授权后的Optimization分支不输出改编栏目。Optimization Rejected与Route LOCK不输出改写Proposal，但必须包含Script Control、原有Script Analysis与Lock / Handoff结论。
 
 
 输出：
@@ -557,7 +636,7 @@ templates/02_script_analysis_prompt.md
 
 未完成情况：
 
-- `Script Status: Source Material`：STATE-01保持IN_PROGRESS，等待Optimization Opportunity Report对应的锁定、优化、改编或拒绝决定。
+- `Script Status: Source Material`：STATE-01保持IN_PROGRESS；Creation Brief等待关键创作输入或执行Screenplay Development，Existing Script / Material等待Optimization Opportunity Report对应的锁定、优化、改编或拒绝决定。
 - `Script Status: Adaptation Draft`：STATE-01保持IN_PROGRESS，继续编剧优化与导演化处理，不得进入STATE-02。
 - `Script Status: Optimized Proposal`：STATE-01保持IN_PROGRESS，等待用户明确确认Production Script Proposal。
 - 任一未完成情况都不得把STATE-01写为COMPLETE，不得进入STATE-02。
@@ -606,8 +685,7 @@ STATE-01 Complete
 
 Script Analysis解决：
 
-
-“这个故事讲什么？”
+“从当前创意生成怎样的可导演剧本，或这个已有故事讲什么？”
 
 
 “故事中有哪些人物、地点和重要元素？”

@@ -336,6 +336,65 @@ Next Workflow: Project Setup Workflow
             path.write_text(locked_state, encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_portable_status, path, True), 0)
 
+    def test_creation_brief_routes_to_director_first_screenplay_generation(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        setup = (skill_root / "workflows" / "01_project_setup_workflow.md").read_text(encoding="utf-8")
+        workflow = (skill_root / "workflows" / "02_script_analysis_workflow.md").read_text(encoding="utf-8")
+        knowledge = (skill_root / "knowledge" / "screenplay_development.md").read_text(encoding="utf-8")
+        template = (skill_root / "templates" / "02_script_analysis_prompt.md").read_text(encoding="utf-8")
+
+        self.assertIn("Creation Brief", setup)
+        self.assertIn("Existing Script / Material", setup)
+        self.assertIn("同时上传剧本并说“调用sd”", setup)
+        self.assertIn("Idea / Brief / Concept → Minimum Project Intent Gate", workflow)
+        self.assertIn("不得要求用户先去普通Chat写完整剧本", workflow)
+        self.assertIn("Creation Brief不得输出Optimization Opportunity Report", workflow)
+        self.assertIn("Director-first Story Development", knowledge)
+        self.assertIn("Directable Screenplay QA", knowledge)
+        self.assertIn("Creation Brief Route", template)
+        self.assertIn("不得提前加入SHOT", template)
+
+    def test_directable_screenplay_qa_is_script_level_not_shot_design(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        knowledge = (skill_root / "knowledge" / "screenplay_development.md").read_text(encoding="utf-8")
+        for marker in (
+            "Scene Purpose",
+            "Audience Experience",
+            "Character Objective / Conflict",
+            "Relationship Change",
+            "Visual Action",
+            "Performance Opportunity",
+            "Spatial Dramaturgy / Blocking Potential",
+            "Information Strategy",
+            "Rhythm Curve",
+            "AIGC Directability",
+        ):
+            self.assertIn(marker, knowledge)
+        self.assertIn("不全局要求少对白", knowledge)
+        self.assertIn("35mm、特写、推镜、摇镜", knowledge)
+        self.assertIn("最终剧本必须仍是可独立阅读的剧本", knowledge)
+
+    def test_explicit_direct_optimization_and_script_revision_gates(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        workflow = (skill_root / "workflows" / "02_script_analysis_workflow.md").read_text(encoding="utf-8")
+        self.assertIn("直接优化剧本 / 分析并优化 / 直接改写 / 按指定范围优化", workflow)
+        self.assertIn("不在User Decision Gate重复询问", workflow)
+        self.assertIn("修改这一场 / 改台词 / 调整人物线 / 改结局", workflow)
+        self.assertIn("保持Script Development", workflow)
+        self.assertIn("若已明确确认并完成STATE-01，则“下一步”按状态合同进入STATE-02", workflow)
+
+    def test_director_thinking_continuity_reaches_scene_and_shot_without_schema_pollution(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        director = (skill_root / "knowledge" / "director_decision_layer.md").read_text(encoding="utf-8")
+        scene = (skill_root / "workflows" / "08_scene_breakdown_workflow.md").read_text(encoding="utf-8")
+        shot = (skill_root / "workflows" / "09_shot_design_workflow.md").read_text(encoding="utf-8")
+        self.assertIn("STATE-01 Scene Director Intent → STATE-05 Scene Projection → STATE-06 Director Decision Notes", director)
+        self.assertIn("不要求把相同规则复制进每个Workflow", director)
+        self.assertIn("Upstream Director Intent Projection", scene)
+        self.assertIn("不新增用户可见固定字段", scene)
+        self.assertIn("Production-Locked Directable Screenplay", shot)
+        self.assertIn("不得原样复制为Template字段", shot)
+
     def test_installed_chat_work_routing_passes(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         self.assertEqual(run_quiet(validator.validate_state_routing, skill_root, True), 0)

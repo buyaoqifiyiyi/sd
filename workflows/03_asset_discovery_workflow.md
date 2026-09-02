@@ -102,6 +102,18 @@ Visual Requirement。
 
 # Asset Discovery Process
 
+## Director-led Asset Function Pass｜Internal
+
+在CHAR / ENV / PROP / FX清单与Tiering之前，读取当前有效Director Intent，只对当前候选执行最小判断：
+
+- Asset Dramatic Function与Narrative Priority
+- Casting Logic / Screen Presence需求（角色）
+- identity-critical、state-critical或supporting
+- 道具/环境是否承载信息、关系、状态变化、重复视觉母题或关键动作可读性
+- 如果删除或降级该资产，观众是否会损失剧情理解、关系阅读或连续性
+
+结论投影到现有Asset Tier、Priority、Tier Decision Basis、制作方式与下游引用依据，不新增用户固定字段，不因“剧本里出现”就一律制作Core Asset，也不因出场少就降级承担关键揭示/状态变化的资产。
+
 
 ## 01 Character Asset Discovery
 

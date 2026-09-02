@@ -1,12 +1,18 @@
-# Camera Language Knowledge Base
+# Camera Language Module / Knowledge Base
 
 ## Purpose
 
-Camera Language用于将剧情情绪和视觉风格转换为具体电影镜头设计。
+本文件是Director Module下`Camera Language Module`的唯一owner。Camera Language用于把Director Intent转换为具体、可执行、可验证的电影镜头行为；它不是“电影感”装饰词库。
+
+核心原则：`Camera Language is the execution language of Director Intent.` 镜头选择必须改变或控制观众知道什么、感受到什么、期待什么或理解什么。
 
 它连接：
 
-Visual Style
+Script Camera-language Opportunity
+
+↓
+
+Scene Camera Strategy
 
 ↓
 
@@ -14,7 +20,15 @@ Shot Design
 
 ↓
 
+Clip Camera Continuity / Visual Rhythm
+
+↓
+
 Video Prompt
+
+↓
+
+Editing / Review
 
 
 ---
@@ -35,6 +49,41 @@ Video Prompt
 - 动作需求
 - 导演视觉风格
 
+
+---
+
+## Module Contract
+
+- **Module Type**：Director Module核心外化能力；STATE-01、04至09与Editing按阶段调用的Camera Knowledge，不是新STATE
+- **Decision Owner**：`knowledge/director_decision_layer.md`决定为什么这样拍；本模块决定如何用镜头语言执行
+- **Execution Owners**：STATE-06负责具体Shot Camera Language Decision，STATE-07负责Clip Camera Continuity / Visual Rhythm，STATE-08 Prompt Compiler负责模型翻译，Editing与STATE-09负责成片判断
+- **Existing System Reuse**：180°轴线、人物拓扑、Pose与Delta全部调用Spatial Blocking / Relationship Topology / Relational Screen Geometry；不在本模块重建
+- **Protected Boundaries**：不改剧情、资产、Scene / Shot / Clip顺序、Visual Direction或最终Prompt Schema
+- **Four Core Capabilities**：Composition Direction、Camera Movement Direction、Lens / Distance Direction、Shot Rhythm Direction
+
+## Cross-stage Mapping
+
+- **Script**：只识别可镜头化机会、观众信息顺序、反应空间、遮挡/揭示和空间潜力；不写死景别、焦段、机位或运镜
+- **Scene**：形成观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放等`Scene Camera Strategy`，不提前创建SHOT
+- **Shot**：按`shot_language_router.md`把Shot Purpose具体化为构图、景别、POV、机位、焦段、运镜、Hold与Cut动机
+- **Clip**：检查相邻镜头的Camera Continuity / Visual Rhythm、视觉高潮、最克制镜头、动作/信息积累和稳定降级
+- **Prompt**：把已确认结果翻译成动作顺序、第一/第二注意目标、前中后景、遮挡/Reveal、焦点、摄影机Trigger与Stop，不输出理论标签
+- **Editing / Review**：检查Editorial POV、反应优先级、Hold / Cut、信息时机、镜头必要性和视觉节奏是否保持导演意图
+
+## Camera Movement Trigger
+
+摄影机运动必须由可定位的戏剧Beat触发，例如人物进入/退出、动作启动/停止、视线捕捉、信息确认、关系距离改变、声音先行或节奏释放。每个运动写清`Start Condition → Path → Stop Condition → End Composition`。
+
+- 人物压抑或信息尚需保留时，Static / Locked-Off可以是主动导演选择；镜头不应比人物更激动。
+- 推进、跟随或横移可以在关键表演/信息Beat完成后才启动，不能从第一帧无条件漂移。
+- 演员与摄影机的运动既可以同步，也可以故意形成对照，但两者关系必须可解释、可执行，并服从空间轴线。
+- 只写“镜头缓慢推进”“轻微横移”没有Trigger、Stop和功能时固定不合格。
+
+## Functional Coverage
+
+Camera Language必须按适用性覆盖：景别功能、构图功能、机位功能、POV / Audience Position、焦段与画面距离感、前中后景调度、遮挡 / Reveal、人物关系构图、运镜触发点、Hold / Pause / Cut节奏，以及180°轴线与空间关系。
+
+特写、浅景深、手持与慢推都不是情绪的自动同义词。特写必须由关键反应、信息确认或距离坍缩等时机“赚到”；情绪可能主要通过身体姿态或共享空间表达，此时中景/全景比自动特写更有效。重大事件后优先判断是否需要反应空间，反应可以在同一镜头中完成，也可以通过切换实现。
 
 ---
 

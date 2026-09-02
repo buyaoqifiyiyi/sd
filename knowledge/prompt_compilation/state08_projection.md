@@ -23,6 +23,26 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 
 所有适用且已确认的上游知识必须在最终Prompt中留下可见、可执行、可连续检查的语义证据。知识模块名称、内部表格、模式ID、Ledger标题与分析栏目不得原样输出。
 
+STATE-08不重新“导演”，只执行`Director Intent Preservation + Model Translation`。Director Module拥有为什么这样拍；本Prompt Compiler只把当前Clip的已确认意图转成模型可以执行的顺序、可见证据和稳定边界。
+
+## Director-to-Prompt Translation Pass
+
+在Prompt Attention / Control Allocation之前，先从Clip-level Director Intent提取1—3项Dramatic Priority，并按下列内部顺序投影；全部结果只能进入`templates/10_video_prompt.md`现有字段：
+
+1. **Dramatic Priority Extraction**：锁定唯一Primary dramatic delta及最多两个支持目标；其余导演背景留在Source。
+2. **Audience Attention Hierarchy**：规定First Look、Second Look与Delayed / Withheld信息，使用动作顺序、构图、焦点、遮挡、景深和人物活动层级控制。
+3. **Performance Beat Translation**：把情绪词变为最小充分的gaze、breath、pause、jaw / mouth / swallow、hand / fingertip tension、shoulder / weight、delayed reaction、suppression / leakage和post-action residue；使用现有PL1/PL2/PL3负荷逻辑，不另建强度Schema。
+4. **Composition Function Translation**：让距离、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal承担当前功能；“电影构图”不是合格结果。
+5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；理论解释留在内部。
+6. **Information Timing Translation**：以action order、delayed gaze、delayed rack focus、temporary occlusion、hold before reveal或适用的sound-before-image实现Reveal / Withhold / Delay / Confirm / Recontextualize。
+7. **Spatial & Relationship Translation**：继承Spatial Snapshot、Relationship Topology、Pose Hierarchy、Delta Blocking、Confirmed REF-SKETCH与REF-TAIL的授权维度；不重新设计空间。
+8. **Rhythm Translation**：把BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部；标签不输出。
+9. **Sound Function Translation**：把声音注意力与连接功能投影到现有台词/音效/镜头结尾状态；Sound Strategy不触发Voice Profile，Voice仍服从当前明确opt-in。
+10. **Prompt Compression**：执行`Source Carries State, Prompt Carries Delta`，只保留当前Clip的dramatic、performance、blocking、camera、timing与information delta。
+11. **Director Intent Preservation QA**：最终Prompt必须保住核心变化、注意力顺序、可见表演、关系、构图功能、Camera Trigger / Stop、信息时序与余韵，同时不出现Director Packet、dominance、理论句或冗余参数。
+
+当前双人/钢琴等克制关系场景中，如果上游确认“共同朝前、只有gaze泄漏、延迟确认”，Prompt必须让共同朝向先成为稳定关系基线，再让单一视线变化获得注意力；镜头在该Beat前Hold，只有导演意图需要时才在Beat后启动或继续保持静止。不得自动改成互看、同时转头、每镜慢推或Voice Profile。
+
 ## Prompt Attention / Control Allocation Gate
 
 本Gate只管理最终输入信息的优先级、冲突、重复与控制价值，不声称能够直接或精准设置模型内部的交叉注意力数值。提示词不是越长越好；固定Template必须完整，但每个字段只保留对当前Clip真实有控制价值的最小充分语义。
@@ -252,7 +272,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 | Camera Movement / Combination | 镜头/机位；画面描述；空间关系；镜头结尾状态 | 起点、路径、速度、触发、终点、轴线与稳定落点；每镜一个主要路径；边界语义进入镜头结尾状态；不输出CMG编号 |
 | Composition / Director Patterns | 镜头/机位；画面描述；空间关系；镜头结尾状态 | 主体位置、前中后景、负空间、内框/遮挡/反射/引导线来源、焦点主次、变化过程与最终几何 |
 | Lighting / Color | 起始状态；画面描述；空间关系；道具状态；镜头结尾状态；主风格；环境一致性；反向提示词 | 光源、方向、光质、曝光、介质、颜色来源与层级、材质响应、起止光色状态及连续性；不新增光线或Color字段 |
-| Character Action / Performance | 起始状态；画面描述；人物动作与情绪；台词；音效；镜头结尾状态；人物一致性 | 刺激、注意/视线、主要面部与身体动作、呼吸、公开状态与泄漏、行动选择、强度、Settled State与连续性 |
+| Character Action / Performance | 起始状态；画面描述；人物动作与情绪；台词；音效；镜头结尾状态；人物一致性 | Inherited Baseline、刺激、注意/视线、当前可见的Pre-action / In-action / Post-action阶段、主要面部与身体动作、呼吸、公开状态与泄漏、行动选择、Post-action Residue、Arc Endpoint、Settled State与连续性；Intentional Hold仍有可见证据；多人包含相对表演层级、反应顺序与视觉重点交接 |
 | Dialogue Performance | 人物动作与情绪；台词；音效 | 准确台词、当前情绪/力度/停顿/节奏/韵律、口型与空间声；不得把当前表演写成稳定Voice Identity，也不得因缺少Voice Profile而临时推导 |
 | Character Count | 画面描述；空间关系；反向提示词 | 每镜实际角色精确数量；唯一角色的正向唯一性和前中后景无第二个同类；复制、分身、镜像重复、背景第二个与相似替身的合并风险类别；人物一致性不重复逐镜数量 |
 | Spatial / Blocking | 起始状态；空间关系；画面描述；镜头结尾状态；反向提示词 | A/B左右、前后景、朝向、视线、距离、路线、遮挡顺序、关系轴线、正脸/侧背许可、同景深许可及最终位置；追逐默认后追前逃并禁止并排合影 |
@@ -322,6 +342,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - `参考资产：`、`首帧参考：`、`尾帧限制：`是否无条件存在且非空。
 - `参考资产：`是否通过Reference Budget Check：Projected Final Count与已提交图片数≤9、无当前Clip无关项、无重复占位；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。
 - 是否通过Clip Preflight：连续性三选一且尾帧引用正确；逐分镜World-State与资产一致；角色精确数量、追逐/多人空间构图、关键道具状态和适用转场五要素均有现有字段证据；失败设计没有被反向提示词兜底。
+- 是否通过Performance / Emotion Check：逐角色Baseline、Trigger、动作前/中/后当前可见段、Post-action Residue、Arc Endpoint与Carryover可复算；Intentional Hold仍有注意、压制/延迟、呼吸/姿态或行动证据；多人相对幅度、反应顺序和视觉重点交接清楚；没有静态情绪标签、固定脸完成动作、无刺激重置、全员同强度或全员同脸。
 - 是否明确A/B/C并据此标记`Tail Frame Required = YES / NO`；A/B无图时是否在`参考资产`直接列统一`REF-TAIL`、对应用途与“待用户提供/待上传、未确认”，且未冒充已提交图片；A是否使用固定直接承接句，B是否明确另起新镜头且未使用该句，C是否完全未列`REF-TAIL`；本Clip新尾帧限制是否完整。
 - 每个分镜是否完整重复十个固定字段；下一镜语义是否已进入“镜头结尾状态”。
 - `反向提示词：`首句是否无例外使用固定禁BGM句。

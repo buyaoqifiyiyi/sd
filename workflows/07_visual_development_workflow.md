@@ -6,7 +6,7 @@
 ## Purpose
 
 
-Visual Development负责将剧本信息、已确认资产与用户视觉需求转换为统一的项目视觉方向。
+Visual Development负责将剧本信息、已确认资产、Director Intent与用户视觉需求转换为统一且会随戏剧推进的`Visual Dramaturgy / Mise-en-scène Direction`。
 
 
 主要任务：
@@ -19,6 +19,7 @@ Visual Development负责将剧本信息、已确认资产与用户视觉需求�
 - 建立摄影语言
 - 确定基础电影摄影参数
 - 服务后续Scene Breakdown与Shot Design
+- 建立Visual Arc与Audience Attention Hierarchy，而不是只写全片Style Consistency
 
 
 本阶段负责：
@@ -183,6 +184,10 @@ Style Translation
 
 ↓
 
+Visual Dramaturgy / Mise-en-scène Direction
+
+↓
+
 Visual Direction Development
 
 ↓
@@ -201,6 +206,21 @@ Output Visual Guide
 
 Update Project Status
 
+
+---
+
+# Visual Dramaturgy / Mise-en-scène Gate
+
+在风格检索和参数定义前读取Project / Scene Director Intent，建立一条项目级Visual Arc：
+
+- 各主要戏剧阶段的Audience Attention、关系距离、空间压力和情绪可读性如何变化
+- Color / Light / Contrast / Depth / Negative Space在何处保持、累积、转折或释放，并写明真实来源与触发
+- Environment何时作为narrative force压迫、隔离、连接、隐藏或接管画面
+- 前景 / 中景 / 背景如何分配人物、障碍、线索与视觉权重；哪些遮挡用于Withhold，何时解除形成Reveal
+- Visual Motif如何首次出现、变化、反转或留下Residue，而不是每场机械重复
+- 关系从疏远→靠近→再次克制时，画面距离、共享空间、负空间、对比与光色层级必须出现可追踪的视觉变化，不得只给全片统一色调说明
+
+上述语义分配到`templates/01_project_bible_template.md`现有Overall Visual Style、Color System、Lighting Style、Camera Style、Composition Rules、Environment Style与Continuity区域，不新增竞争Schema。Camera Style只确定项目倾向，不写具体SHOT焦段、机位和运镜。
 
 ---
 
@@ -1833,11 +1853,15 @@ STATE-04禁止输出：
 
 □ Overall Visual Concept已经建立
 
+□ Visual Dramaturgy / Mise-en-scène与Visual Arc已经建立；色光、对比、深度、负空间、环境、视觉层级和母题的保持/变化均有戏剧依据
+
 
 □ Cinematography Direction已经建立
 
 
 □ Camera Language Direction已经建立
+
+□ Camera Language Direction能够支持Audience Attention与关系推进，但没有提前写逐Shot参数
 
 
 □ Lighting Direction已经建立

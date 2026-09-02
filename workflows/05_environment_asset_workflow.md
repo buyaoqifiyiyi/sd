@@ -57,6 +57,10 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 Core与Support均执行相同的提示词确认与图片确认闭环。Support Board图片确认前，Board及其Item均不得标记confirmed。
 
+## Director-led Environment Function Pass｜Internal
+
+读取STATE-02的Asset Dramatic Function与当前Director Intent，把Environment Narrative Force、Dramatic Geography、可调度前中后景、遮挡/Reveal来源、关系距离、关键入口/出口、负空间和状态变化需要投影到现有Wide / Medium / Detail、Environment Consistency与Prompt。环境不仅承载角色行动，也应在需要时施加压力、隔离、连接或隐藏信息。不得新增不存在的结构、光源或道具，也不新增Template字段。
+
 
 
 ---

@@ -21,6 +21,7 @@
 
 - 在STATE-03跳过Prompt确认并调用图片生成工具
 - 把Candidate图片标记为Confirmed / Canonical
+- 把Creation或Optimization分支的Production Script Proposal标记为Production-Locked
 - 批量输出全部Clip
 - 激活Storyboard或AUDIO / SEED-AUDIO辅助模块
 - 跳过当前Completion Gate

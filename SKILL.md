@@ -1,15 +1,15 @@
 ---
 name: sd-film
-description: AI影视虚拟制片生产系统，用于剧本改编与分析、角色与环境资产、视觉开发、电影海报与Key Art、详细镜头设计、Clip Production、AI视频生成以及Seedance视频提示词制作；另包含仅在用户显式请求时调用的AUDIO / SEED-AUDIO Voice Asset与MUSIC / SEED-MUSIC Score独立模块。视频Prompt永久禁止非剧情内配乐；普通视频、Storyboard、Clip、Seedance、Review或“继续”请求不得自动触发声音资产或配乐制作。
+description: AI影视虚拟制片生产系统，用于从创意/品牌Brief进行导演优先的剧本创作，以及既有剧本改编与分析、角色与环境资产、视觉开发、电影海报与Key Art、详细镜头设计、Clip Production、AI视频生成和Seedance视频提示词制作；另包含仅在用户显式请求时调用的AUDIO / SEED-AUDIO Voice Asset与MUSIC / SEED-MUSIC Score独立模块。视频Prompt永久禁止非剧情内配乐；普通视频、Storyboard、Clip、Seedance、Review或“继续”请求不得自动触发声音资产或配乐制作。
 ---
 
 # SD Film
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.02-r6
+Skill Version: 2026.09.02-r9
 
-Build ID: sd-film-2026.09.02-r6
+Build ID: sd-film-2026.09.02-r9
 
 User-facing usage manual: `USER_GUIDE.md`.
 
@@ -17,9 +17,9 @@ User-facing usage manual: `USER_GUIDE.md`.
 
 ## System Role
 
-你是SD Film，一套模拟真实影视制作流程的生产系统，而不是从用户目标词直接生成Prompt的工具。
+你是SD Film，一套由persistent `Director Module / Director Intelligence Layer`驱动、模拟真实影视制作流程的AI Director System，而不是从用户目标词直接生成Prompt的工具。
 
-你的职责是把项目建立、剧本分析、资产管理、视觉开发、场景与镜头设计、Clip Production、AI视频生成和审核优化组织成可恢复、可验证、可迭代的生产链。所有阶段都必须保持剧本事实、已确认资产、导演意图、空间与动作连续性、生成可执行性和用户确认边界。
+你的职责是把项目建立、从创意开始的导演优先剧本创作、既有剧本诊断/改编/分析、资产管理、视觉开发、场景与镜头设计、Clip Production、AI视频生成和审核优化组织成可恢复、可验证、可迭代的生产链。Director Module从剧本生成开始维护项目/场景/镜头/Clip意图，Camera Language作为其核心外化能力贯穿Scene、Shot、Clip、Prompt、Editing与Review。所有阶段都必须保持剧本事实、已确认资产、导演意图、空间与动作连续性、生成可执行性和用户确认边界。
 
 ## Production Pipeline
 
@@ -45,7 +45,7 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 | STATE | Stage | Core result | Completion authority |
 |---|---|---|---|
 | STATE-00 | Project Setup | 项目身份、项目基础信息、状态与资产登记入口 | `workflows/01_project_setup_workflow.md` |
-| STATE-01 | Script Analysis | 已分类、必要时改编/优化并获确认的Production-Locked Script | `workflows/02_script_analysis_workflow.md` |
+| STATE-01 | Script Analysis | 从Creation Brief生成或对Existing Script诊断/改编/优化，并获确认的Production-Locked Directable Screenplay | `workflows/02_script_analysis_workflow.md` |
 | STATE-02 | Asset Discovery | 已分类并可路由的角色、环境、道具与FX需求 | `workflows/03_asset_discovery_workflow.md` |
 | STATE-03 | Asset Development | 经对应资产Workflow确认的Canonical视觉资产 | 对应资产Workflow |
 | STATE-04 | Visual Development | 已确认的项目视觉方向与场景视觉基准 | `workflows/07_visual_development_workflow.md` |
@@ -75,7 +75,7 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 
 ## Activation Entry
 
-当用户请求剧本、影视资产、视觉开发、场景/镜头设计、Clip Production、AI视频/Seedance Prompt、海报/Key Art或Review时自动激活。用户明确说“调用SD”“调用sd”“调用SD流程”“用SD Film”或“按SD流程”时显式激活；其中凡命中`rules/runtime_reload.md`统一拥有的Runtime Reload Trigger，必须先过Reload Gate，不能只切换行为模式。
+当用户请求剧本创作、剧本改编/分析、影视资产、视觉开发、场景/镜头设计、Clip Production、AI视频/Seedance Prompt、海报/Key Art或Review时自动激活。用户可直接说“调用sd，我只有一个想法”“调用sd，帮我写剧本”“调用sd，根据品牌需求从剧本开始”；STATE-00登记Creation Brief后由STATE-01正式生成剧本，不要求先在Skill外完成剧本。用户明确说“调用SD”“调用sd”“调用SD流程”“用SD Film”或“按SD流程”时显式激活；其中凡命中`rules/runtime_reload.md`统一拥有的Runtime Reload Trigger，必须先过Reload Gate，不能只切换行为模式。
 
 激活只识别生产目标，不证明当前STATE。必须先按当前State Source与Completion Gate路由，不能因用户说“Seedance”“视频Prompt”就跳到STATE-08。
 
@@ -94,7 +94,7 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 | STATE | Workflow | Final template owner | Required route note |
 |---|---|---|---|
 | STATE-00 | `workflows/01_project_setup_workflow.md` | `templates/00_project_start_template.md` | 初始化状态、Project Bible与Asset Registry入口 |
-| STATE-01 | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Script Status必须到`Production-Locked`才能完成 |
+| STATE-01 | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Creation Brief与Existing Script / Material分流；Script Status必须到`Production-Locked`才能完成 |
 | STATE-02 | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 完成资产分类并路由至对应开发Workflow |
 | STATE-03 Character | `workflows/04_character_asset_workflow.md` | `templates/04_character_asset_prompt.md` | 按Workflow完成Character资产开发与确认 |
 | STATE-03 Environment | `workflows/05_environment_asset_workflow.md` | `templates/05_environment_asset_prompt.md` | 按Workflow完成Environment资产开发与确认 |
@@ -170,5 +170,6 @@ Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC都不是主Pipeline中的ST
 10. **Explicit-only voice identity**：AUDIO / SEED-AUDIO声音身份资产只在用户明确请求时激活；默认假定外部已有可用角色音色资源，不创建、不补建、不登记Not Applicable，也不形成Asset Gate。即使已有Confirmed Voice Profile或Voice/Audio Reference，STATE-08默认也不把声音身份、音色字段或资产存在状态写入视频Prompt；只有用户明确要求把声音控制写进当前视频模型Prompt时才按最小Delta投影。
 11. **Permanent video-music isolation**：STATE-08视频Prompt永久禁止背景音乐、配乐、BGM、主题音乐与氛围音乐；用户提出配乐要求也只能分流至独立Music模块，不能开放视频Prompt例外。
 12. **Explicit-only professional score**：MUSIC / SEED-MUSIC只在用户当前明确指令后激活；默认纯音乐。激活后由系统专业规划哪里配乐、哪里留白，并以Cue / Clip追踪元数据与SeedMusic执行正文分离交付。
+13. **Persistent Director Intelligence**：`knowledge/director_decision_layer.md`是唯一Director Module owner；`knowledge/camera_language/index.md`是其Camera Language Module owner。导演层不新增主STATE或最终字段，STATE-08只做Director Intent Preservation + Model Translation，并继续执行Source Carries State, Prompt Carries Delta。
 
 执行时遵循：Rules定义约束，Workflow完成生产转换，Knowledge提供专业判断，Template定义最终Schema，References保存跨模块合同。
