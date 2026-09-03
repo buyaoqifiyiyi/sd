@@ -82,17 +82,19 @@ Asset Development。
 
 # Scene Breakdown Logic
 
-## Upstream Director Intent Projection
+## Upstream Writer Intent And Director Intent Projection
 
-先读取Production-Locked Directable Screenplay及STATE-01随确认版本保留的轻量Scene Director Intent source data。按`knowledge/director_decision_layer.md`的连续性合同，将每场的Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Change / Reveal Strategy、Performance Opportunity / Peak、Spatial Evolution、Rhythm Intent与Transition Intent投影到正式SCENE边界、剧情作用、空间关系和节奏阶段。
+先读取Production-Locked Directable Screenplay、与其Revision绑定的Writer Intent Packet及STATE-01轻量Scene Director Intent。按`knowledge/screenplay_development.md`与`knowledge/director_decision_layer.md`的Handoff，将每场的Scene Purpose、Character Objective / Obstacle / Tactic、Value / Relationship / Information Change、Decision / Consequence、Setup / Payoff Function、Writer Beat Map、Scene Exit State及Audience Start / End、Performance / Spatial / Rhythm呈现意图投影到正式SCENE边界、剧情作用、空间关系和节奏阶段。
 
-这些source data只帮助发现Scene边界和保持导演意图，不新增用户可见固定字段，不允许改写Production-Locked剧情，也不创建SHOT / CLIP。若Intent与锁定剧本冲突，返回STATE-01最小修订Intent；若原项目没有独立Intent Artifact，则从锁定剧本已明确的行动、信息与关系变化提取最小可验证投影，不补造新剧情。
+这些source data只帮助发现Scene边界并保持Writer / Director意图，不新增用户可见固定字段，不允许改写Production-Locked剧情，也不创建SHOT / CLIP。若Intent与锁定剧本冲突，返回STATE-01最小修订Intent；若原项目没有独立Intent Artifact，则从锁定剧本已明确的行动、信息与关系变化提取最小可验证投影，不补造新剧情。
 
-## Director Beat Map And Dramatic Geography
+## Writer Beat Map And Director Dramatic Geography
 
-每个Scene按已确认剧情拆出最小充分Beat Map：Dramatic Beat、Relationship Beat、Information Beat、Performance Beat，以及Beat之间的因果与节奏。同步建立Dramatic Geography：固定空间、人物起始关系、可行动区域、信息来源、遮挡/揭示位置、距离或权力变化、Spatial Evolution和场景结束的稳定空间结果。
+每个Scene先投影Writer Beat Map：Dramatic / Relationship / Information Beat及`Trigger → Interpretation → Desire → Decision → Action → Consequence → New State`所需的最小因果。Writer Beat是人物、关系、信息或价值发生变化的单位，明确`Writer Beat ≠ Shot`；本阶段不得按Beat数量预定Shot数量。
 
-Scene Breakdown决定Reveal / Withhold / Delay / Confirm / Recontextualize在何个Beat发生，以及观众先于、同时或晚于人物知道；不提前决定具体镜头数量。
+Director在不改变Writer Beat的前提下补充Performance Beat与Dramatic Geography：固定空间、人物起始关系、可行动区域、信息来源、遮挡/揭示位置、距离或权力变化、Spatial Evolution和场景结束的稳定空间结果。
+
+Writer Intent决定Reveal / Withhold / Delay / Confirm / Recontextualize在何个Beat进入故事；Scene Breakdown保持该Information Architecture。Director只决定Audience Position与呈现机会，不提前决定具体镜头数量。
 
 ## Scene Camera Strategy
 

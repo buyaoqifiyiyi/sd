@@ -703,9 +703,185 @@ FAIL：因新增Creation route而自动改写Existing Script，或取消既有�
 
 输入：运行Skill静态与定向回归。
 
-PASS：主Pipeline仍只有STATE-00至STATE-09；Storyboard仍Optional/Auxiliary；Voice仍Explicit-only；视频Prompt仍永久禁配乐；REF-SKETCH、Prompt Compiler、STATE-02至09及四种Script Status保持原合同。Scene Director Intent只经STATE-05投影并在STATE-06具体化为Director Decision Notes，不成为最终Prompt字段。
+PASS：主Pipeline仍只有STATE-00至STATE-09；Storyboard仍Optional/Auxiliary；Voice仍Explicit-only；视频Prompt仍永久禁配乐；REF-SKETCH、Prompt Compiler、STATE-02至09及四种Script Status保持原合同。Director Intent从STATE-00/01开始，Scene Director Intent经STATE-05投影、在STATE-06具体化为Director Decision Notes、在STATE-07/08消费，但不成为最终Prompt字段。
 
 FAIL：新增主STATE、让Storyboard进入主路由、自动触发Voice/Music、改变STATE-08 Schema，或让内部Director Intent污染剧本/Prompt。
+
+---
+
+## R23 Director Module / Camera Language End-to-End
+
+### R23-A Script — Rainy-night Two-woman Reunion
+
+输入：`调用sd，写一个雨夜双女主重逢短片。`
+
+PASS：STATE-00建立最小Project Director Baseline；STATE-01仍走Creation Brief → Idea-to-Screenplay，形成Audience Experience、Information Strategy、Visual Action、Performance Opportunity、Spatial Potential、Rhythm与camera-language opportunity。剧本可以写“先让观众看到她没有回头，随后才意识到另一人一直看她”等可镜头化信息顺序，但最终仍是可独立阅读的剧本，不出现Shot List、35mm、特写、低机位、推拉摇移、SHOT或CLIP字段。
+
+FAIL：只记录平台/画幅；没有观众体验或信息策略；或在剧本阶段直接生成镜头表和摄影参数。
+
+### R23-B Visual Development — Distance, Approach, Restraint
+
+输入：同一双人关系弧为“疏远→靠近→再次克制”。
+
+PASS：STATE-04形成Visual Dramaturgy / Mise-en-scène与Visual Arc：负空间、共享空间、前中后景、人物距离、对比/色光和环境压力先分离、再接近、最后重新保留克制边界；各变化有剧情/空间/真实光源依据。输出投影到现有Project Bible字段。
+
+FAIL：只写“全片低饱和冷色电影感”、每场相同色调，或提前锁定每个Shot的焦段和运镜。
+
+### R23-C Scene Breakdown — 40-second Two-person Scene
+
+输入：40秒双人场景，含重逢、回避、怀疑、确认与再次克制。
+
+PASS：STATE-05按Dramatic / Relationship / Information / Performance Beat拆解，建立Dramatic Geography、Spatial Evolution、Reveal / Withhold timing与Beat-to-beat rhythm；形成“先观察并隐藏反应→信息泄漏时保持→确认后才允许靠近→结尾压住”的Scene Camera Strategy。没有创建SHOT / CLIP或具体镜头参数。
+
+FAIL：按台词句数机械拆段；只列地点和人物；或把Scene Camera Strategy写成85mm、特写、慢推清单。
+
+### R23-D Shot Design — Glance Beat Is Derived, Not Decorated
+
+输入：同一个“偷看”Beat；人物A保持向前，人物B只以一次视线偏移泄漏在意，A尚未确认。
+
+PASS：STATE-06按`Shot Purpose → Audience Attention → POV / Audience Position → Relationship & Blocking → Composition Strategy → Shot Size → Lens → Camera Position → Camera Movement → Duration / Hold → Cut Motivation`推导。构图先保护共同朝前与A未察觉，B的眼神成为第二注意目标；Camera在泄漏前保持固定，是否在Beat后运动取决于确认/压力功能，并具有Trigger / Stop。可回答删除本Shot后观众会失去“B先泄漏而A未知”的信息差。
+
+FAIL：无论Blocking与信息时序都默认“85mm特写+慢推+浅景深”，或先选技术再补理由。
+
+### R23-E Clip Production — Suspicion To Confirmation Stays Intact
+
+输入：两个相邻Shots共同完成“怀疑→证据→确认”，单独生成会破坏反应积累，合计时长与复杂度仍在4—15秒内。
+
+PASS：STATE-07把它们作为一个Dramatic Execution Unit，保留Start→End dramatic delta、critical performance / blocking、information timing、Camera Continuity / Visual Rhythm与稳定Endpoint；不因技术便利拆开。若合并导致互斥时空、状态重置或模型过载，则返回拆分而不是强行合并。
+
+FAIL：一Shot一Clip机械拆分，或为了情绪连续把超时/过载/跨世界内容强塞进同一Clip。
+
+### R23-F Prompt — Piano Pair Director Intent Preservation
+
+输入：现有双女主钢琴类Clip；两人同坐一张长琴凳、共同朝前，只有一人短暂gaze-only泄漏，另一人延迟反应，信息不能提前确认。
+
+PASS：最终Prompt继续严格使用`templates/10_video_prompt.md`原Schema；先锁共同朝前和关系距离，再以动作顺序、活动幅度、焦点/遮挡建立First Look / Second Look；包含gaze-only leakage、Hold / Pause / Delayed Reaction、Composition Function、Camera Movement Trigger或有理由Static、Information Delay与稳定余韵。遵守Source Carries State, Prompt Carries Delta，不显著变长，不输出Director理论、Packet、dominance、BUILD/HOLD/PEAK/RELEASE、PL等级或未调用Voice Profile。
+
+FAIL：两人同时转头互看、每镜慢推+浅景深、提前确认关系、长篇解释“为什么这样拍”、改变模板字段，或出现`音色特征：`/Voice资产状态。
+
+### R23-G Action Case — Action-dominant Wuxia Clip
+
+输入：武侠格挡—转身—反制Clip，双方起点、Action Axis、武器路径、接触/受力和恢复状态已确认。
+
+PASS：选择Action-dominant + Action PREVIS A3；Camera Language优先脚下支撑、武器/身体轨迹、接触点、力线、受力结果、屏幕方向与空间可读性，复杂运镜在动作负荷前降级。表演只保留影响动作选择或结果的最小信息，不用青春微表演逻辑压制动作。
+
+FAIL：为了情绪特写切碎动作因果，遮挡接触点、越轴、双方并排合影，或把完整微表情链与复杂Camera同时拉满。
+
+### R23-H Review — Technically Correct, Dramatically Early
+
+输入：实际结果身份、道具、Blocking和技术连续性全部正确，但人物在设计的延迟揭示前已经看向对方并暴露确认情绪。
+
+PASS：Technical Review通过相应项，Director's Cut Review判Information Timing / Performance Truth失败；绝不Disposition=`KEEP`。现有素材能通过切点、顺序、Reaction Priority或声音连接恢复时选择`RE-EDIT`；模型没有生成合法延迟表演且上游设计正确时`REGENERATE`；上游导演/Prompt意图本身提前暴露时`REDIRECT`。同时标记Failure Origin，不把所有情况都当生成瑕疵。
+
+FAIL：因技术连续性正确而PASS / KEEP，或不区分generation failure与directing failure。
+
+### R23-I Runtime — Continue Is Not Reload
+
+输入：当前Workflow与Project Context已验证，用户只说`下一步`或`继续`。
+
+PASS：沿当前Checkpoint继续一个合法步骤，按需读取当前Workflow与Director Intent投影；不触发全量Runtime Reload，不清空Packet、Confirmed Assets、Accepted Take Canon或Shot-State Memory。明确`重新调用sd / 按当前Skill继续`时才按既有Reload / Re-entry合同重读当前版本。
+
+FAIL：普通继续每次全量reload、重建导演Packet、重新生成剧本/分镜，或跳过当前确认Gate。
+
+### R23-J Camera Language — Three Shots Have Three Functions
+
+输入：同一场戏需要三个Shot依次完成空间建立、信息隐藏/泄漏、关系确认后的压住/释放。
+
+PASS：三个Camera Language Decision分别承担建立、隐藏/泄漏、确认后的压住或释放；景别、构图、机位、距离、运镜/Static和Hold / Cut由功能差异推导。可刻意重复同一摄影逻辑，但必须说明如何累积信息/关系；不得为了多样随机堆运动。
+
+FAIL：三镜都无理由“慢推+浅景深”，或三镜为了不同而随机环绕、升降、甩镜并破坏轴线/表演。
+
+---
+
+## R24 Screenwriter Module / Writer Intelligence End-to-End
+
+### R24-A Idea — Rainy-night Two-woman Reunion
+
+输入：`调用sd，写一个雨夜双女主重逢短片。`
+
+PASS：Creation Brief进入Screenwriter Module，先以最小充分方式建立双方Want / Objective / Hidden Objective、阻力、关系弧、Dramatic Question、Information Architecture和Setup / Payoff，再生成Production Script Proposal与Writer → Director Handoff；剧本不出现焦段、机位、运镜、SHOT / CLIP或Shot Count。
+
+FAIL：只按氛围生成对白；先写35mm / 特写 / 慢推；或强制用户填写完整WRITER INTENT PACKET。
+
+### R24-B Existing Script — Diagnose Before Rewrite
+
+输入：用户上传完整剧本，没有授权改写。
+
+PASS：先诊断causality、motivation、scene necessity / value change、Writer Beat progression、conflict / stakes、subtext、setup / payoff、information architecture、character / relationship arc与ending payoff，并映射到现有Opportunity Report；停在User Decision Gate，不改正文。
+
+FAIL：自动重写、只做导演镜头分析、跳过Writer Diagnosis或把`下一步`当改写授权。
+
+### R24-C Motivation — Convenience Action Rejected
+
+输入：人物没有前因地“突然坐到对方身边”。
+
+PASS：追溯并要求`Trigger → Character Interpretation → Desire / Intention → Decision → Action → Consequence → New State`；缺任一使动作不成立的核心环节时标记motivation / causality问题，不直接接受剧情便利动作。
+
+FAIL：因为后续剧情需要就保留，或用Camera / 表情装饰掩盖缺失动机。
+
+### R24-D Dialogue — Subtext Opportunity, Not Mechanical Deletion
+
+输入：角色说`我一直很想你`，但既定性格与当场目标不支持直说。
+
+PASS：检查`Dialogue → Surface Meaning → Subtext → Hidden Objective`，指出可通过试探、回避、动作、沉默或道具承载的机会；只在角色与场景逻辑要求时改写，并保留对白可能性。
+
+FAIL：机械删掉所有直白对白，或不检查角色目标就把台词当合格信息说明。
+
+### R24-E Scene — No State Change
+
+输入：一场戏从头到尾没有Information / Relationship / Decision / Power / Emotional / Expectation变化，也无不可替代Setup / Hold / Transition功能。
+
+PASS：标记`weak / replaceable scene`，说明缺失的Value Change并路由到Writer Diagnosis；不靠增加漂亮镜头伪装场景价值。
+
+FAIL：只因场景有气氛或对白就保留，或强制每场必须正负价值翻转而不允许必要Breath / Setup。
+
+### R24-F Setup / Payoff — Timing Survives Production
+
+输入：前场Planted Detail在后场形成Payoff。
+
+PASS：Writer Packet记录Setup / Payoff obligation与信息时机；Scene / Clip / Prompt / Editing保持它，既不遗漏也不提前暴露；Review可追溯到具体义务。
+
+FAIL：Clip边界切断回收、Prompt提前展示真相、Editing交换顺序，或后场重新发明无来源Payoff。
+
+### R24-G Writer Beat Is Not Shot
+
+输入：一个“认出旋律”的Writer Beat。
+
+PASS：Writer只定义Trigger、Interpretation、Decision / Response与New State；Director可用一个Shot、多个Shot或与相邻Beat同处一个长镜头表达，依据观众体验、表演、空间与可执行性决定。
+
+FAIL：Writer强制Shot Count / 特写，或Shot Design无法追溯到Writer Beat / 合法Director Purpose。
+
+### R24-H Prompt — Preserve Both Authorities
+
+输入：已确认Writer Intent与Director Decision的关系场景进入STATE-08。
+
+PASS：最终Prompt保留角色意图、潜台词、Beat order、Setup / Payoff、Information timing与Relationship Delta；Camera仍只来自Director Decision。固定STATE-08 Schema不变，Writer Packet及内部标签不输出。
+
+FAIL：潜台词被压扁成直白台词/表情，Beat顺序改变，Writer越权生成镜头参数，或Director Camera被Writer规则覆盖。
+
+### R24-I Review — Unmotivated Behavior Is Writing Failure
+
+输入：技术画面正确、导演呈现合理，但人物行为没有动机。
+
+PASS：Story Review判`WRITING FAILURE`并返回STATE-01 Screenwriter Module；不判Prompt / Generation failure，不要求只重写Prompt。
+
+FAIL：因画面和导演层通过而KEEP，或把缺失动机路由到STATE-08。
+
+### R24-J Genre — No Universal Conflict Formula
+
+输入：分别运行动作片、商业短剧与青春文艺片案例。
+
+PASS：动作片优先物理目标/阻力与动作因果；商业短剧可按已识别目标加载可选hook / escalation adapter；青春文艺片允许克制、信息不对称与关系压力。三者不共享强制冲突密度、对白密度、固定Beat数或三幕百分比。
+
+FAIL：全局套用短剧爽点、固定15 Beat、强制每场反转，或用青春微表演规则压制动作可读性。
+
+### R24-K Runtime — Continue / Reload / Re-entry Preserved
+
+输入：已验证Project Context后分别说`下一步`、`继续`与`重新调用sd / 按当前Skill继续`。
+
+PASS：普通继续沿合法Checkpoint推进且保留Writer / Director Packet、Confirmed Assets、Accepted Take Canon与Shot-State Memory；显式Reload按现有合同重读Skill Version / Build ID和owner，不重建已确认剧本。
+
+FAIL：新增STATE、普通继续触发全量重载、丢失Writer Packet、跳过确认Gate，或显式Reload沿用旧owner定义。
 
 ---
 
@@ -729,3 +905,5 @@ FAIL：新增主STATE、让Storyboard进入主路由、自动触发Voice/Music�
 - R20-A至R20-F验证母版只拥有Sketch Presentation Authority、Current Clip独占Blocking内容、钢琴双人 / 三人围桌 / A3统一使用无性别技术人偶、任何Character Appearance Leakage硬失败、简单单人NONE不受母版可用性影响、Prompt Rewrite复用当前草图且母版不进入最终视频参考资产或图片预算。
 - R21-A至R21-C验证逐角色Performance Arc、Pre-action / In-action / Post-action Residue、Intentional Hold、多人相对表演层级和Clip Performance / Emotion Check；固定剧情、SHOT / Clip结构与STATE-08字段保持不变。
 - R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。
+- R23-A至R23-J验证Director Module从Project / Script到Scene / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离及三镜功能差异；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
+- R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。

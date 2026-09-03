@@ -30,7 +30,9 @@ Result：PASS / REVISE / REBUILD
 
 Disposition：KEEP / RE-EDIT / REGENERATE / REDIRECT
 
-Failure Origin：None / Generation / Editing / Directing / Upstream Fact
+Failure Class：NONE / WRITING FAILURE / DIRECTING FAILURE / GENERATION FAILURE / EDITING FAILURE / UPSTREAM FACT FAILURE
+
+Failure Origin：None / Writing / Generation / Editing / Directing / Upstream Fact
 
 Hard Gate Result：PASS / FAIL
 
@@ -38,9 +40,20 @@ Prompt Quality Score（如适用）：/100
 
 Summary：
 
+Story Review Summary（Causality / Motivation / Scene Value / Writer Beat / Conflict-Stakes / Subtext / Setup-Payoff / Arc / Ending Payoff / Information Architecture）：
+
 Technical Review Summary：
 
 Director's Cut Review Summary（Intent vs Result / Audience Attention / Performance Truth / Relationship Readability / Information Timing / Shot Necessity / Rhythm / Emotional Residue）：
+
+---
+
+## Story Review
+
+| Scene / Writer Beat | Causality / Motivation | Scene Value Change | Conflict / Stakes | Dialogue / Subtext | Setup / Payoff | Character / Relationship Arc | Information Architecture | Ending Payoff | Result / Return Route |
+|---|---|---|---|---|---|---|---|---|---|
+
+Writer Beat不是Shot；本表不得规定Shot Count或Camera Language。无有意义State Change且无不可替代Setup / Hold / Transition功能的场景标记为weak / replaceable。
 
 ---
 
@@ -88,7 +101,7 @@ Boundaries：
 
 Severity：P0 Blocker / P1 Major / P2 Minor。
 
-技术连续性正确但情绪/信息提前暴露属于Director-level failure；现有素材可通过剪辑恢复时选择RE-EDIT，否则按根因选择REGENERATE或REDIRECT，不得选择KEEP。
+技术连续性正确但人物行为无动机属于WRITING FAILURE；Writer事实正确而情绪/信息呈现提前属于DIRECTING FAILURE；现有素材可通过剪辑恢复时选择EDITING FAILURE + RE-EDIT，否则按根因选择REGENERATE或REDIRECT，不得选择KEEP。
 
 ---
 

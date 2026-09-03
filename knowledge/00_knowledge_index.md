@@ -53,9 +53,9 @@ knowledge用于辅助Workflow执行。
 
 # Knowledge Stage Mapping
 
-## Persistent Director Module
+## Persistent Screenwriter + Director Modules
 
-所有主STATE按需读取`knowledge/director_decision_layer.md`。它拥有Project / Scene / Shot / Clip四层轻量DIRECTOR INTENT PACKET与跨阶段投影合同，不创建新STATE或用户固定Schema。`knowledge/camera_language/index.md`是Director Module下Camera Language Module的唯一owner；具体空间、表演、动作、连续性和Prompt编译仍由既有专业owner执行，不在Director文件复制。
+所有主STATE按需读取`knowledge/screenplay_development.md`与`knowledge/director_decision_layer.md`。前者是唯一Screenwriter Module / Writer Intelligence Layer owner，维护内部WRITER INTENT PACKET、故事/人物逻辑与Writer → Director Handoff；后者拥有Project / Scene / Shot / Clip四层轻量DIRECTOR INTENT PACKET与跨阶段投影合同。两者均不创建新STATE或用户固定Schema。`knowledge/camera_language/index.md`仍是Director Module下Camera Language Module的唯一owner；具体空间、表演、动作、连续性和Prompt编译继续由既有专业owner执行。
 
 STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；STATE-04建立Visual Dramaturgy；STATE-05形成Beat Map与Scene Camera Strategy；STATE-06具体化Shot与Camera；STATE-07形成Dramatic Execution Unit；STATE-08只翻译；Editing与STATE-09保护和审核意图。
 
@@ -72,7 +72,7 @@ Conditional — Creation Brief且用户明确要求创作剧本：
 - knowledge/screenplay_development.md
 - knowledge/directorial_interpretation.md
 
-该分支直接执行Director-first Screenplay Development与Directable Screenplay QA，输出Production Script Proposal后等待确认；不对尚不存在的剧本输出Optimization Opportunity Report，也不要求用户先在普通Chat提供完整剧本。
+该分支直接执行Screenwriter-led Story Development、Writer → Director Handoff与Directable Screenplay QA，输出Production Script Proposal后等待确认；不对尚不存在的剧本输出Optimization Opportunity Report，也不要求用户先在普通Chat提供完整剧本。
 
 Conditional — Existing Script / Material：
 

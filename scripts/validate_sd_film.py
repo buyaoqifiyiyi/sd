@@ -1953,28 +1953,29 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
     integration_checks = {
         "rules/02_asset_rules.md": ("FX-001", "FX Asset", "Visual Asset Production Gate", "Prompt Draft", "Image Generated", "Reference Asset Eligibility Strengthening", "Reference Selection / Routing", "参考资产按需路由，不是越多越好", "板凳参考说明"),
         "rules/03_prompt_rules.md": ("Prompt Attention / Control Allocation", "不声称能够直接或精准设置模型内部的交叉注意力数值", "提示词不是越长越好", "Style Label Expansion", "首次出现", "具象化后不得默认删除标签", "Source Carries State, Prompt Carries Delta", "Blender / Unreal式严格物理仿真器", "高价值视觉关系", "低价值工程精度", "Negative Prompt Boundary Rule", "最后一个字段、最后一个段落", "唯一局部例外", "同类项合并压缩", "Field Ownership Assignment / State Once Gate", "历史事故物"),
-        "workflows/03_asset_discovery_workflow.md": ("FX Asset Discovery", "15_fx_asset_workflow.md"),
-        "workflows/07_visual_development_workflow.md": ("Performance Direction", "facial_action_language.md", "emotion_dynamics.md", "Sound Direction", "knowledge/lighting/index.md", "光源空间锚点", "focal_length_and_perspective.md", "全画幅等效倾向", "knowledge/color/index.md", "绿色—品红偏色", "肤色、眼白", "17_poster_design_workflow.md"),
-        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Production Knowledge Rule Owners", "knowledge/screenplay_development.md", "knowledge/director_decision_layer.md", "knowledge/action_previs.md", "Visual Blocking Risk Pre-Assessment", "Before-Single-Clip-Prompt Gate", "Blocking Signature", "references/ref_sketch_master.md", "Sketch Presentation Authority", "Neutral Mannequin Representation Rule", "Template Content Leakage Check", "Character Appearance Leakage Check", "Screenplay Development, Adaptation And Analysis Gate Module Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Performance Arc Map", "Performance / Emotion Check", "Intentional Hold", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Style Label Expansion Rule", "具象化本身不是默认删除标签的理由", "Field Ownership Assignment / State Once Gate", "Negative Compression", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
-        "knowledge/screenplay_development.md": ("Creation Brief / Idea-to-Screenplay", "Minimum Project Intent Gate", "Director-first Story Development", "Dramatic Intent", "Audience Experience", "Dramatic Question / Core Conflict", "Character Objective / Relationship Arc", "Information Strategy", "Visual Action Design", "Spatial / Blocking Potential", "Performance Opportunity", "Rhythm Architecture", "AIGC Directability", "Scene Director Intent Source Data", "Directable Screenplay QA", "不全局要求少对白", "35mm", "Production Script Proposal", "Production-Locked Directable Screenplay"),
-        "knowledge/director_decision_layer.md": ("贯穿式Director Thinking", "STATE-01 Scene Director Intent", "STATE-05 Scene Projection", "STATE-06 Director Decision Notes", "STATE-07 Clip Production", "STATE-08 Knowledge Application Reflection / Prompt", "From STATE-01 / Through STATE-05", "Production-Locked Directable Screenplay", "不要求把相同规则复制进每个Workflow"),
+        "workflows/01_project_setup_workflow.md": ("Project Writer Foundation", "Project Director Baseline", "Directorial Thesis", "Audience Contract", "Non-negotiable Dramatic Presentation Core"),
+        "workflows/03_asset_discovery_workflow.md": ("FX Asset Discovery", "15_fx_asset_workflow.md", "Director-led Asset Function Pass", "Asset Dramatic Function", "Casting Logic"),
+        "workflows/07_visual_development_workflow.md": ("Visual Dramaturgy / Mise-en-scène", "Visual Arc", "narrative force", "Performance Direction", "facial_action_language.md", "emotion_dynamics.md", "Sound Direction", "knowledge/lighting/index.md", "光源空间锚点", "focal_length_and_perspective.md", "全画幅等效倾向", "knowledge/color/index.md", "绿色—品红偏色", "肤色、眼白", "17_poster_design_workflow.md"),
+        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Production Knowledge Rule Owners", "Screenwriter Module Contract", "knowledge/screenplay_development.md", "knowledge/director_decision_layer.md", "knowledge/action_previs.md", "Visual Blocking Risk Pre-Assessment", "Before-Single-Clip-Prompt Gate", "Blocking Signature", "references/ref_sketch_master.md", "Sketch Presentation Authority", "Neutral Mannequin Representation Rule", "Template Content Leakage Check", "Character Appearance Leakage Check", "Screenwriter Module, Adaptation And Analysis Gate Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Performance Arc Map", "Performance / Emotion Check", "Intentional Hold", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Style Label Expansion Rule", "具象化本身不是默认删除标签的理由", "Field Ownership Assignment / State Once Gate", "Negative Compression", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
+        "knowledge/screenplay_development.md": ("Screenwriter Module / Writer Intelligence Layer", "Creation Brief", "Minimum Project Intent Gate", "WRITER INTENT PACKET", "Story Logic / Causality", "Character Engine", "Scene Value Change", "Writer Beat Is Not A Shot", "Dialogue / Subtext", "Setup / Payoff", "Information Architecture", "Writer → Director Handoff", "Directable Screenplay QA", "不全局要求少对白", "35mm", "Production Script Proposal", "Production-Locked Directable Screenplay"),
+        "knowledge/director_decision_layer.md": ("Director Module / Director Intelligence Layer", "贯穿式Director Thinking", "DIRECTOR INTENT PACKET", "Project-level", "Scene-level", "Shot-level", "Clip-level", "Task Dominance Router", "Camera Language Is The Execution Language Of Director Intent", "Camera Movement Trigger", "如果删掉这个Shot，观众会损失什么", "Dramatic Execution Unit", "Director-to-Prompt Boundary", "Director's Cut Review", "STATE-01 Writer → Director Handoff / Scene Presentation Intent", "STATE-05 Scene Projection", "STATE-06 Director Decision Notes", "STATE-07 Clip Production", "STATE-08 Knowledge Application Reflection / Prompt", "From STATE-01 / Through STATE-05", "Production-Locked Directable Screenplay", "不要求把相同规则复制进每个Workflow"),
         "knowledge/script_adaptation.md": ("Optimization Opportunity Report", "User Decision Gate", "Source Essence Extraction", "Adaptation Objective", "Preserve / Compress / Rewrite / Remove Decision", "Screen Translation", "Duration & Dramatic Restructuring", "Adaptation Fidelity Check", "LEVEL 1", "LEVEL 2", "LEVEL 3", "基本不要改剧情", "short_form_drama_adapter.md"),
         "knowledge/adaptation/short_form_drama_adapter.md": ("前3秒", "前30秒", "1个核心事件", "角色功能", "核心欲望", "性格标签", "标志动作", "语言特征", "视觉记忆点", "通常控制在7字左右", "1个主情绪", "爽 / 虐 / 甜 / 惊 / 燃 / 笑 / 悬", "Hook → Setup → Escalation → Payoff → Next Hook", "不是死时间码"),
-        "workflows/02_script_analysis_workflow.md": ("Creation Brief", "Existing Script / Material", "Minimum Project Intent Gate", "Director-first Story Development", "Directable Screenplay QA", "knowledge/screenplay_development.md", "Production-Locked Directable Screenplay", "不得要求用户先去普通Chat写完整剧本", "直接优化剧本 / 分析并优化", "Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate", "开场钩子", "核心冲突进入时机", "信息重复", "台词效率", "动作可视化", "人物记忆点", "节奏", "高潮力度", "情绪价值", "结尾Hook", "时长适配", "场景/人物复杂度", "A 无明显优化必要", "B 有轻度优化空间", "C 有明显结构问题", "拒绝优化或改编", "Production Script Proposal输出后必须再次停止", "A — Production Script", "B — Rough Script / First Draft", "C — Source Material", "Adaptation Target Detection", "Script Adaptation", "Adaptation Draft", "short_form_drama_adapter.md", "No Revision / Final Script"),
+        "workflows/02_script_analysis_workflow.md": ("Creation Brief", "Existing Script / Material", "Screenwriter Module Continuity", "Writer → Director Handoff", "Minimum Project Intent Gate", "Screenwriter-led Story Development", "Directable Screenplay QA", "knowledge/screenplay_development.md", "Production-Locked Directable Screenplay", "不得要求用户先去普通Chat写完整剧本", "直接优化剧本 / 分析并优化", "Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate", "开场钩子", "核心冲突进入时机", "信息重复", "台词效率", "动作可视化", "人物记忆点", "节奏", "高潮力度", "情绪价值", "结尾Hook", "时长适配", "场景/人物复杂度", "A 无明显优化必要", "B 有轻度优化空间", "C 有明显结构问题", "拒绝优化或改编", "Production Script Proposal输出后必须再次停止", "A — Production Script", "B — Rough Script / First Draft", "C — Source Material", "Adaptation Target Detection", "Script Adaptation", "Adaptation Draft", "short_form_drama_adapter.md", "No Revision / Final Script"),
         "templates/02_script_analysis_prompt.md": ("Creation Brief Route", "Existing Script / Material", "Creation Authorization", "Directable Screenplay QA", "不得提前加入SHOT", "Optimization Opportunity Report", "问题或已成立依据", "影响", "可优化方向", "是否执行轻度优化？", "是否进入结构优化？", "Input Class", "Adaptation Target", "Adaptation Intensity", "Adapter Load", "Source Essence", "Adaptation Decision", "Adaptation Draft", "Adaptation Fidelity Check", "Production Script Proposal"),
-        "workflows/04_character_asset_workflow.md": ("Image Prompt Generation", "Prompt Confirmation Gate", "Image Confirmation Gate", "Visual Production Status: Asset Confirmed"),
-        "workflows/05_environment_asset_workflow.md": ("Main Reference Image Prompt", "Required Multi-View Prompts", "Image Generated", "Visual Production Status: Asset Confirmed"),
-        "workflows/06_prop_asset_workflow.md": ("Main Reference Image Prompt", "Required State Variant Prompts", "Image Generated", "Visual Production Status: Asset Confirmed"),
+        "workflows/04_character_asset_workflow.md": ("Director-led Character Presence Pass", "Screen Presence", "Performance Feasibility", "Image Prompt Generation", "Prompt Confirmation Gate", "Image Confirmation Gate", "Visual Production Status: Asset Confirmed"),
+        "workflows/05_environment_asset_workflow.md": ("Director-led Environment Function Pass", "Environment Narrative Force", "Dramatic Geography", "Main Reference Image Prompt", "Required Multi-View Prompts", "Image Generated", "Visual Production Status: Asset Confirmed"),
+        "workflows/06_prop_asset_workflow.md": ("Director-led Prop Function Pass", "Asset Dramatic Function", "Prop State Evolution", "Main Reference Image Prompt", "Required State Variant Prompts", "Image Generated", "Visual Production Status: Asset Confirmed"),
         "templates/04_character_asset_prompt.md": ("Three-View Character Sheet Prompt", "Face Close-Up Prompt", "Required State Variant Prompts", "Awaiting User Confirmation", "Asset Confirmed"),
         "templates/05_environment_asset_prompt.md": ("Main Reference Image Prompt", "Required Multi-View Prompts", "Key Area / Detail Prompts", "Awaiting User Confirmation", "Asset Confirmed"),
         "templates/06_prop_asset_prompt.md": ("Main Reference Image Prompt", "Required State Variant Prompts", "Required Detail Prompts", "Awaiting User Confirmation", "Asset Confirmed"),
-        "workflows/08_scene_breakdown_workflow.md": ("Upstream Director Intent Projection", "Scene Director Intent", "Audience Start / End State", "Production-Locked Directable Screenplay", "Sequence Eligibility", "16_sequence_planning_workflow.md", "Source Script Label", "不得创建或预留"),
+        "workflows/08_scene_breakdown_workflow.md": ("Upstream Writer Intent And Director Intent Projection", "Writer Intent Packet", "Scene Director Intent", "Writer Beat Map And Director Dramatic Geography", "Writer Beat ≠ Shot", "Relationship / Information Beat", "Value / Relationship / Information Change", "Scene Camera Strategy", "Audience Position", "Production-Locked Directable Screenplay", "Sequence Eligibility", "16_sequence_planning_workflow.md", "Source Script Label", "不得创建或预留"),
         "workflows/16_sequence_planning_workflow.md": ("Trigger Gate", "Coverage Matrix", "State Ledger", "不得创建SHOT ID", "UNIT是", "不得创建CLIP ID"),
-        "workflows/09_shot_design_workflow.md": ("Professional Detailed Shot Script", "TC IN", "TC OUT", "时长(s)", "画面内容 / 构图", "镜头调度", "摄影机运动 + 人物调度", "光线 / 色彩", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "Shot Purpose Gate", "Scene / Shot Mode Routing", "Performance-dominant", "Action-dominant", "Mixed", "knowledge/action_previs.md", "Action Execution Goal", "A1 / A2 / A3", "PL1 / PL2 / PL3", "Performance Goal", "Performance / Emotion Check", "Performance Arc Map", "Intentional Hold", "group_reaction.md", "facial_action_language.md", "公开状态与内部泄漏", "Sound Purpose", "FX Behavior", "Coverage Mapping", "Coverage Completion", "Composition Intent", "Camera Language Integrity", "Camera Language Decision Gate", "selection_matrix.md", "实际读取的主运镜原子知识文件", "Focal Length Design", "focal_length_and_perspective.md", "knowledge/color/index.md", "CLR-01至CLR-09", "肤色漂移", "director_patterns/index.md", "knowledge/lighting/index.md", "起始光态", "高风险模式的基础镜头降级方案", "movement_combinations/index.md", "Low-Complexity Compound Path", "knowledge/transitions/", "Outgoing Anchor", "Direct Cut降级", "Source Script Label", "Artifact Revision"),
+        "workflows/09_shot_design_workflow.md": ("Professional Detailed Shot Script", "TC IN", "TC OUT", "时长(s)", "画面内容 / 构图", "镜头调度", "摄影机运动 + 人物调度", "光线 / 色彩", "台词 / 旁白 / 口播", "同期声音设计", "AI制作备注", "素材 / 资产", "Shot Purpose Gate", "如果删掉这个SHOT，观众会损失什么", "Audience Attention", "Camera Movement Trigger", "Cut Motivation", "Scene / Shot Mode Routing", "Performance-dominant", "Spatial-Blocking-dominant", "Action-dominant", "Information-dominant", "Atmosphere-Rhythm-dominant", "Mixed", "knowledge/action_previs.md", "Action Execution Goal", "A1 / A2 / A3", "PL1 / PL2 / PL3", "Performance Goal", "Performance / Emotion Check", "Performance Arc Map", "Intentional Hold", "group_reaction.md", "facial_action_language.md", "公开状态与内部泄漏", "Sound Purpose", "FX Behavior", "Coverage Mapping", "Coverage Completion", "Composition Intent", "Camera Language Integrity", "Camera Language Decision Gate", "selection_matrix.md", "实际读取的主运镜原子知识文件", "Focal Length Design", "focal_length_and_perspective.md", "knowledge/color/index.md", "CLR-01至CLR-09", "肤色漂移", "director_patterns/index.md", "knowledge/lighting/index.md", "起始光态", "高风险模式的基础镜头降级方案", "movement_combinations/index.md", "Low-Complexity Compound Path", "knowledge/transitions/", "Outgoing Anchor", "Direct Cut降级", "Source Script Label", "Artifact Revision"),
         "knowledge/spatial_blocking_layer.md": ("Scene Spatial Snapshot", "Fixed Environment Anchors", "Camera Safe Side", "中性镜头", "角色在镜内明确换位", "Pose Hierarchy", "Relationship Topology", "Position → Torso Orientation → Shoulder Orientation → Head Orientation → Gaze Direction", "Previous Blocking State + Current Shot Delta = Current Blocking State", "Blocking Drift", "Shot-State Memory", "Accepted Canon State", "REF-TAIL", "Confirmed Visual Blocking Anchor"),
         "knowledge/action_previs.md": ("Module Contract", "Action Execution Level", "A1 Simple Physical Action", "A2 Coordinated Action", "A3 Choreographed Action", "Style Intensity Is A Separate Axis", "Kinetic Chain Compiler", "Next-action Carryover", "Shot-State Memory", "Accepted Canon State", "Source Carries State, Prompt Carries Delta"),
         "knowledge/quality/continuity_pair_qa.md": ("camera safe side", "Scene Spatial Snapshot", "Start Position → Visible Movement Path → End Position", "插入隔离后以建立镜重建新轴线"),
-        "workflows/10_clip_production_workflow.md": ("STATE-07 Clip Production", "Professional Detailed Shot Script", "TC OUT - TC IN = 时长(s)", "画面内容/构图", "镜头调度", "光线/色彩", "Shot", "Clip", "Prompt", "Build Clip Candidates", "Author Clip Execution Contract", "Performance / Emotion Check", "Performance Arc Map", "Intentional Hold", "Visual Blocking Risk Pre-Assessment", "Visual Anchor State / Blocking Signature", "Clip Movement Plan", "主导镜头语言", "超过4个Shot", "连续出现3次", "Duration And Continuity Ledger", "Shot-State Memory", "Clip End-State Record / Next-Clip Carryover", "Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "templates/20_clip_plan.md", "每个 Clip", "Source Script Label", "--project-status", "--shot-design"),
+        "workflows/10_clip_production_workflow.md": ("STATE-07 Clip Production", "Dramatic Execution Unit", "Dramatic Integrity", "Generation Capacity", "Clip Camera Continuity / Visual Rhythm", "Professional Detailed Shot Script", "TC OUT - TC IN = 时长(s)", "画面内容/构图", "镜头调度", "光线/色彩", "Shot", "Clip", "Prompt", "Build Clip Candidates", "Author Clip Execution Contract", "Performance / Emotion Check", "Performance Arc Map", "Intentional Hold", "Visual Blocking Risk Pre-Assessment", "Visual Anchor State / Blocking Signature", "Clip Movement Plan", "主导镜头语言", "超过4个Shot", "连续出现3次", "Duration And Continuity Ledger", "Shot-State Memory", "Clip End-State Record / Next-Clip Carryover", "Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "templates/20_clip_plan.md", "每个 Clip", "Source Script Label", "--project-status", "--shot-design"),
         "workflows/10_storyboard_workflow.md": ("Optional / Auxiliary", "不绑定任何固定 STATE", "用户明确要求", "templates/09_storyboard_prompt.md", "不得进入 STATE-08"),
         "workflows/11_video_generation_workflow.md": ("knowledge/performance/", "Attention Shift", "Control / Leakage", "Performance / Emotion Check", "Performance Arc Map", "Intentional Hold", "Primary Performer", "瞳孔地震", "knowledge/sound_language/", "knowledge/fx/", "knowledge/lighting/", "knowledge/color/", "Color Execution", "综合色彩闪变", "focal_length_and_perspective.md", "全画幅等效倾向", "movement_combinations/", "Low-Complexity Compound Path", "Camera Language Decision Hard Gate", "Clip Movement Plan Hard Gate", "selection_matrix.md", "禁止把“缓慢推进”", "Sequence Plan", "Sequence And Unit Continuity", "Sequence Coverage Check", "state08_projection.md", "Semantic Projection Check", "Projection Ledger", "结束光态", "knowledge/transitions/", "禁止生成背景音乐", "Outgoing Anchor", "Clip End-State Record / Next-Clip Carryover", "Visual Anchor State", "Before-Single-Clip-Prompt Gate", "Final Visual Blocking Anchor Assessment", "KEEP / REPLACE / RETIRE / CREATE", "references/ref_sketch_master.md", "Technical Director Blocking Sheet", "Template Content Leakage Check", "Character Appearance Leakage Check", "Text Contract Fallback", "Reference Selection / Routing", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "板凳参考说明", "Single-Clip Checkpoint", "First-Frame Check", "End-Frame Interface Check", "Cross-Clip Continuity Check", "Five-Dimensional Prompt Control Matrix", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "首次出现同段解释", "后续已锁定Style Source只补当前delta", "3—5个（或更少）style carriers", "Prompt Compression Pass", "Prompt Attention / Compression Check", "Field Ownership Assignment", "Negative Compression", "--allow-voice-control", "通用负向项末尾唯一收束", "必须贴近具体动作、空间关系或物理连续性"),
         "workflows/13_review_workflow.md": ("FX Review", "Performance Review", "表情符合角色基线", "公开状态、短暂泄漏", "Pre-action / In-action / Post-action", "Performance Arc", "Intentional Hold", "全员同强度", "Sound Review", "Sequence Coverage Review", "Camera Language QA", "Clip End-State Record / Next-Clip Carryover", "Reference Selection / Routing", "Character Appearance Leakage Check", "人物/道具重置", "相机轴线跳变", "连续慢推", "超过4个Shot", "连续3次", "焦段倾向、摄影机距离", "背景尺度抽动", "主色、辅助色、强调色", "白平衡抽动", "Prompt Attention / Control Allocation", "重要风格标签若保留", "同一标签是否重复解释", "Blender / Unreal式严格物理仿真器"),
@@ -2013,7 +2014,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/knowledge_application_reflection.md": ("Director / Literary Intent Translation", "保留情绪功能", "至少落到一种可见或可听执行项", "3—5个（或更少）高价值style carriers", "五维未锁定项检查"),
         "knowledge/visual_styles/director_metadata_contract.md": ("高层创作锚点", "首次出现", "项目中的具体含义", "不得在完成具象化后默认强制删除"),
         "knowledge/visual_styles/index.md": ("Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "首次出现", "后续连续Clip"),
-        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "Performance / Emotion Check", "Inherited Baseline", "Post-action Residue", "Intentional Hold", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Confirmed Visual Blocking Anchor", "Blocking Signature", "Prompt Attention / Control Allocation Gate", "Field Ownership Assignment / State Once Gate", "Source / Asset State Resolution → Field Ownership Assignment", "Field Ownership QA", "Five-Dimensional Prompt Control Matrix", "Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "Executable Style Carrier Rule", "Style State And Delta Compression", "默认选择3—5个", "Positive Specification And Negative Prompt Placement", "Negative Placement Pass", "Negative Compression Pass", "历史事故", "每个Clip只允许一个`反向提示词：`", "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
+        "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Writer Intent Preservation Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "Performance / Emotion Check", "Inherited Baseline", "Post-action Residue", "Intentional Hold", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Confirmed Visual Blocking Anchor", "Blocking Signature", "Prompt Attention / Control Allocation Gate", "Field Ownership Assignment / State Once Gate", "Source / Asset State Resolution → Field Ownership Assignment", "Field Ownership QA", "Five-Dimensional Prompt Control Matrix", "Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "Executable Style Carrier Rule", "Style State And Delta Compression", "默认选择3—5个", "Positive Specification And Negative Prompt Placement", "Negative Placement Pass", "Negative Compression Pass", "历史事故", "每个Clip只允许一个`反向提示词：`", "Writer Intent → Director Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
         "knowledge/11_seedance_adapter.md": ("state08_projection.md", "主体画面位置", "构图主原子与支持层", "knowledge/color/index.md", "不得输出CLR编号", "focal_length_and_perspective.md", "焦段不自动提高画面质感", "knowledge/lighting/index.md", "LGT模式ID", "knowledge/performance/index.md", "Attention Shift", "PEX/AU编号", "knowledge/camera_language/movement_combinations/", "knowledge/transitions/", "背景音乐", "Delivery Mode Gate", "Four-Part Boundary Gate", "Physical Data Value Rule", "0.137m/s", "Blender / Unreal式物理仿真"),
         "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "字段职责与 Single Ownership", "Field Ownership Assignment / State Once Gate", "Clip End-State Record / Next-Clip Carryover", "Confirmed Visual Blocking Anchor", "REF-SKETCH-MASTER", "REF-SKETCH-XX", "Character Appearance Leakage Check", "草图人物为无性别调度人偶", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "Performance / Emotion", "Pre-action / In-action / Post-action", "Intentional Hold", "Primary Performer", "全员同强度", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "条件声音身份控制", "必须进入各分镜`音效：`", "禁止生成背景音乐", "Prompt Attention / Compression", "Project-specific Style Meaning", "首次出现", "具象化后不默认删除标签", "后续连续Clip", "3—5个（或更少）", "Semantic Trigger Pollution", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器", "必须且只能出现一次", "最后一个字段、最后一个段落", "历史事故项", "不得散布通用负向清单"),
         "knowledge/clip_preflight_check.md": ("Five Global High-Priority Rules", "Before-Single-Clip-Prompt Gate", "Performance / Emotion Check", "Inherited Baseline", "Action-phase Evidence", "Intentional Hold", "Relative Performance Hierarchy", "Dual Trigger, Single Execution", "Risk Assessment Dimensions", "S-SKETCH / Spatial Sketch", "P-SKETCH / Pose Sketch", "A-SKETCH / Action Sketch", "TECHNICAL_VISUAL_BLOCKING_SKETCH", "templates/23_visual_blocking_sketch_prompt.md", "Sketch Validation Gate And Reference Authority", "Artistic Storyboard Drift", "Character Appearance Leakage Check", "FAIL = Character Appearance Leakage / Identity Contamination", "Sketch Persistence / Blocking Canon", "Visual Anchor State / Blocking Signature", "REF-SKETCH-MASTER", "Sketch Presentation Authority", "Master Template carries sketch language; Current Clip data carries blocking content.", "Technical Director Blocking Sheet", "Template Content Leakage Check", "Text Contract Fallback", "KEEP existing sketch", "REPLACE with REF-SKETCH-XX-v2", "RETIRE sketch", "CREATE new sketch", "Visual Input Eligibility Test", "Reference Selection / Routing", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "NOT ELIGIBLE", "板凳参考说明", "十三个Acceptance Scenarios"),
@@ -2069,6 +2070,160 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         for term in required_terms:
             if term not in text:
                 errors.append(f"{relative} is missing module integration marker: {term}")
+
+    # Persistent Director Module / Camera Language integration regression.
+    # These markers stay in their existing owners; this validator must not require
+    # a parallel workflow, a new main STATE, or extra final-Prompt fields.
+    director_integration_checks = {
+        "references/module_contracts.md": (
+            "Director Module Contract", "DIRECTOR INTENT PACKET",
+            "Camera Language核心子能力owner", "Director-to-Prompt Translation owner",
+            "Dramatic Execution Unit", "Director's Cut Review",
+        ),
+        "knowledge/camera_language/index.md": (
+            "Camera Language Module", "Four Core Capabilities",
+            "Cross-stage Mapping", "Camera Movement Trigger",
+        ),
+        "knowledge/camera_language/shot_language_router.md": (
+            "Shot Purpose", "Audience Attention", "POV / Audience Position",
+            "Relationship & Blocking", "Composition Strategy", "Shot Size",
+            "Lens", "Camera Position", "Camera Movement", "Duration / Hold",
+            "Cut Motivation",
+        ),
+        "workflows/11_video_generation_workflow.md": (
+            "Director-to-Prompt Translation Pass", "Dramatic Priority Extraction",
+            "Audience Attention Hierarchy", "Performance Beat Translation",
+            "Composition Function Translation", "Camera Motivation Translation",
+            "Information Timing Translation", "Spatial & Relationship Translation",
+            "Rhythm Translation", "Sound Direction", "Prompt Compression",
+            "Writer + Director Intent Preservation QA",
+        ),
+        "knowledge/prompt_compilation/state08_projection.md": (
+            "Director-to-Prompt Translation Pass", "Dramatic Priority Extraction",
+            "Audience Attention Hierarchy", "Performance Beat Translation",
+            "Composition Function Translation", "Camera Motivation Translation",
+            "Information Timing Translation", "Spatial & Relationship Translation",
+            "Rhythm Translation", "Sound Function Translation", "Prompt Compression",
+            "Writer + Director Intent Preservation QA", "共同朝前", "gaze泄漏",
+        ),
+        "workflows/12_editing_workflow.md": (
+            "Editorial Decision Pass", "Editorial POV", "Cut / Hold Motivation",
+            "Information Timing", "Reaction Priority", "Emotional Rhythm",
+            "Ellipsis", "J-cut / L-cut", "Sound Bridge",
+        ),
+        "workflows/13_review_workflow.md": (
+            "Technical Review", "Director's Cut Review", "Failure Origin And Disposition",
+            "KEEP", "RE-EDIT", "REGENERATE", "REDIRECT",
+            "Generation failure", "Directing failure",
+        ),
+        "templates/07_scene_design_prompt.md": (
+            "Scene Directing Brief", "Scene Camera Strategy",
+        ),
+        "templates/12_edit_prompt.md": (
+            "Director Intent To Preserve", "Editorial Direction",
+        ),
+        "templates/16_review_report.md": (
+            "Disposition", "Failure Class", "Failure Origin", "Story Review Summary", "Technical Review Summary",
+            "Director's Cut Review Summary",
+        ),
+        "templates/20_clip_plan.md": (
+            "Dramatic Execution Unit", "Camera Continuity / Visual Rhythm",
+        ),
+        "references/regression_scenarios.md": tuple(
+            f"R23-{letter}" for letter in "ABCDEFGHIJ"
+        ),
+        "USER_GUIDE.md": (
+            "默认导演系统", "显示当前Scene的导演意图", "为什么这样拍",
+            "显示这个Clip的镜头语言策略",
+        ),
+    }
+    for relative, required_terms in director_integration_checks.items():
+        path = root / relative
+        if not path.is_file():
+            errors.append(f"Director integration owner missing: {relative}")
+            continue
+        owner_text = read_text(path)
+        for term in required_terms:
+            if term not in owner_text:
+                errors.append(f"{relative} is missing Director integration marker: {term}")
+
+    # Persistent Screenwriter Module integration regression. This verifies the
+    # single existing owner and cross-stage handoff without introducing a new STATE
+    # or exposing the internal Writer packet as a final Template schema.
+    writer_integration_checks = {
+        "references/module_contracts.md": (
+            "Screenwriter Module Contract", "WRITER INTENT PACKET",
+            "Writer → Director Handoff", "Writer Beat不等于Shot",
+        ),
+        "knowledge/screenplay_development.md": (
+            "Screenwriter Module / Writer Intelligence Layer", "WRITER INTENT PACKET",
+            "Project-level", "Scene-level", "Beat-level",
+            "Story Logic / Causality", "Character Engine", "Scene Value Change",
+            "Writer Beat Is Not A Shot", "Dialogue / Subtext", "Setup / Payoff",
+            "Information Architecture", "Writer → Director Handoff",
+        ),
+        "workflows/08_scene_breakdown_workflow.md": (
+            "Writer Intent Packet", "Writer Beat Map And Director Dramatic Geography",
+            "Writer Beat ≠ Shot", "Value / Relationship / Information Change",
+        ),
+        "workflows/09_shot_design_workflow.md": (
+            "Writer Beat / Writer obligation", "Writer Beat ≠ Shot",
+            "合法的`Director Purpose`",
+        ),
+        "workflows/10_clip_production_workflow.md": (
+            "Writer Beat Map", "Setup / Payoff obligations",
+            "Clip Boundary不得错误切断Writer Beat", "Dialogue / Subtext continuity",
+        ),
+        "knowledge/prompt_compilation/state08_projection.md": (
+            "Writer Intent Preservation Gate", "Writer + Director Intent Preservation QA",
+            "Writer Intent → Director Intent", "Writer Intent只约束",
+        ),
+        "workflows/12_editing_workflow.md": (
+            "Writer Rhythm", "Writer Rhythm Protection", "Setup / Payoff timing",
+        ),
+        "workflows/13_review_workflow.md": (
+            "Story Review", "WRITING FAILURE", "DIRECTING FAILURE",
+            "GENERATION FAILURE", "EDITING FAILURE", "weak / replaceable scene",
+        ),
+        "templates/16_review_report.md": (
+            "Failure Class", "Story Review Summary", "## Story Review",
+            "Writer Beat不是Shot",
+        ),
+        "references/regression_scenarios.md": tuple(
+            f"R24-{letter}" for letter in "ABCDEFGHIJK"
+        ),
+        "USER_GUIDE.md": (
+            "Screenwriter Module", "Writer → Director Handoff", "Writer Beat ≠ Shot",
+            "显示编剧意图", "检查潜台词",
+        ),
+        "SKILL.md": (
+            "Persistent Screenwriter Intelligence", "Persistent Director Intelligence",
+            "Writer + Director Intent Preservation",
+        ),
+    }
+    for relative, required_terms in writer_integration_checks.items():
+        path = root / relative
+        if not path.is_file():
+            errors.append(f"Screenwriter integration owner missing: {relative}")
+            continue
+        owner_text = read_text(path)
+        for term in required_terms:
+            if term not in owner_text:
+                errors.append(f"{relative} is missing Screenwriter integration marker: {term}")
+
+    final_prompt_template = root / "templates/10_video_prompt.md"
+    if final_prompt_template.is_file():
+        final_prompt_text = read_text(final_prompt_template)
+        for forbidden_internal_field in (
+            "DIRECTOR INTENT PACKET：", "Task Dominance：",
+            "Director-to-Prompt Translation Pass：", "Scene Camera Strategy：",
+            "WRITER INTENT PACKET：", "Writer Intent Preservation Gate：",
+        ):
+            if forbidden_internal_field in final_prompt_text:
+                errors.append(
+                    "templates/10_video_prompt.md leaks internal Director state into the final schema: "
+                    f"{forbidden_internal_field}"
+                )
     forbidden_style_policy_phrases = (
         "carriers足够时省略导演名",
         "具体carriers已足够时名称是否已删除",

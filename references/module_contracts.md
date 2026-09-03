@@ -69,7 +69,7 @@
 
 ### Production Knowledge Rule Owners
 
-- Director-first原创故事开发、Scene Director Intent与Directable Screenplay QA：`knowledge/screenplay_development.md`
+- Screenwriter Module / Writer Intelligence Layer、WRITER INTENT PACKET、原创故事开发、Writer Diagnosis、Writer → Director Handoff与Directable Screenplay QA：`knowledge/screenplay_development.md`
 - Project / Scene / Shot / Clip四层DIRECTOR INTENT PACKET、Director Thinking从STATE-00/01到Scene / Shot / Clip / Prompt / Editing / Review的连续性合同，以及Task Dominance Router：`knowledge/director_decision_layer.md`
 - Camera Language Module、Composition / Movement / Lens-Distance / Shot Rhythm四项核心能力和Script→Scene→Shot→Clip→Prompt→Editing→Review映射：`knowledge/camera_language/index.md`；逐Shot固定决策顺序由`knowledge/camera_language/shot_language_router.md`拥有
 - Scene Spatial Snapshot、Spatial Blocking Decision、camera safe side与合法越轴空间合同：`knowledge/spatial_blocking_layer.md`
@@ -81,13 +81,25 @@
 
 Workflow只负责触发、路由、执行顺序和Completion Gate；Quality只检查这些所有者产生的不变量；Template不复制内部算法。
 
+### Screenwriter Module Contract
+
+Module Type：persistent cross-stage Writer Intelligence Layer；不创建新主STATE、用户问卷、Portable State字段或第二套编剧系统。
+
+Owner：`knowledge/screenplay_development.md`。`knowledge/screenwriting_optimization.md`、`knowledge/script_adaptation.md`与适用genre adapter仅为受控子模块，不得竞争owner。
+
+传递链：`STATE-00 Writer Foundation → STATE-01 Production-Locked Directable Screenplay + WRITER INTENT PACKET → STATE-02/03 Narrative Function → STATE-04 Story / Motif Obligations → STATE-05 Writer Beat / Scene Value Projection → STATE-06 Shot Traceability → STATE-07 Writer Beat Integrity → STATE-08 Writer Intent Preservation → Editing Writer Rhythm Protection → STATE-09 Story Review`。
+
+Authority：Information Architecture、Character Intent / Subtext、关键因果、Writer Beat、Setup / Payoff与Character / Relationship Arc属于Writer；Information Presentation、Performance Direction、Blocking、Mise-en-scène、Composition、Camera Language与Rhythm Presentation属于Director。Writer Beat不等于Shot，Writer不得规定焦段、机位、运镜或Shot Count。
+
+Packet只作内部Source data，按复杂度最小充分维护，不整体展示给用户，也不新增Template字段。下游发现Writer事实冲突返回STATE-01/05；Director如需改变已锁定因果、动机、信息时机或Setup / Payoff义务，必须进入REDIRECT / rewrite反馈链。
+
 ### Director Module Contract
 
 Module Type：persistent cross-stage decision layer；不创建新主STATE、用户问卷、Portable State字段或第二套导演系统。
 
 Owner：`knowledge/director_decision_layer.md`。Camera Language核心子能力owner：`knowledge/camera_language/index.md`。STATE-08 Director-to-Prompt Translation owner：`knowledge/prompt_compilation/state08_projection.md`。
 
-传递链：`STATE-00 Project Director Baseline → STATE-01 Scene Director Intent → STATE-04 Visual Dramaturgy → STATE-05 Scene Camera Strategy → STATE-06 Director Decision Notes / Camera Language Decision → STATE-07 Dramatic Execution Unit → STATE-08 Director Intent Preservation + Model Translation → Editing / STATE-09 Director's Cut Review`。
+传递链：`Writer → Director Handoff → STATE-00/01 Director Baseline / Scene Director Intent → STATE-04 Visual Dramaturgy → STATE-05 Scene Camera Strategy → STATE-06 Director Decision Notes / Camera Language Decision → STATE-07 Dramatic Execution Unit → STATE-08 Director Intent Preservation + Model Translation → Editing / STATE-09 Director's Cut Review`。
 
 不变量：Director Intent先于Knowledge选择；Camera choice是Shot Purpose与Audience Attention的后果；Camera Movement有Trigger / Stop；Packet保持内部；最终Seedance Schema不变；Voice仍opt-in；Spatial Blocking、Pose Hierarchy、Relationship Topology、Delta Blocking、Action PREVIS、Accepted Take Canon、Shot-State Memory、REF-SKETCH与REF-TAIL继续由原owner负责。
 
@@ -147,13 +159,13 @@ Work/Codex中的完整项目交付物必须写入Active Project Root；普通Cha
 
 ---
 
-## Screenplay Development, Adaptation And Analysis Gate Module Contract
+## Screenwriter Module, Adaptation And Analysis Gate Contract
 
-Module Name：`Director-first Screenplay Development + Script Adaptation Module + Script Optimization Gate`。
+Module Name：`Screenwriter Module / Writer Intelligence Layer + Script Adaptation + Script Optimization Gate`。
 
 Module Type：STATE-01 Script Analysis内部双入口Workflow Gate、原创剧本开发Knowledge、通用改编Knowledge、条件性短剧Adapter与导演化/优化Knowledge，不创建新主STATE。
 
-触发：所有输入先路由。`Creation Brief`是只有创意、题材、品牌需求、人物/世界观设定、情绪/场景或明确剧本创作请求，但没有可逐段诊断的既有剧本/来源叙事正文；它直接触发`Idea / Brief → Director-first Screenplay Development → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation`。`Existing Script / Material`再分类为A已是制作剧本、B粗略剧本/初稿、C具有既有内容但尚非制作剧本的小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材；除No Revision / Final Script例外外，先执行`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`。只有C类在报告Adaptation Need且用户明确授权改编/优化后触发Script Adaptation；A/B也必须在明确授权后才进入Script Optimization。
+触发：所有输入先路由。`Creation Brief`是只有创意、题材、品牌需求、人物/世界观设定、情绪/场景或明确剧本创作请求，但没有可逐段诊断的既有剧本/来源叙事正文；它直接触发`Idea / Brief → Screenwriter-led Story Development → Writer → Director Handoff → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation`。`Existing Script / Material`再分类为A已是制作剧本、B粗略剧本/初稿、C具有既有内容但尚非制作剧本的小说、故事梗概、品牌文案、历史事件、影视桥段或长篇素材；除No Revision / Final Script例外外，先执行`Script Input → Writer Diagnosis → Optimization Opportunity Report → User Decision Gate`。只有C类在报告Adaptation Need且用户明确授权改编/优化后触发Script Adaptation；A/B也必须在明确授权后才进入Script Optimization。
 
 不触发内容改写：用户明确说“不要改剧本”“严格按这个版本制作”“已定稿”或同义表达时，跳过Optimization Opportunity Report、Script Adaptation、短剧Adapter、Screenwriting Optimization与Directorial Interpretation，但仍完整执行原有Script Analysis并按授权锁定。用户在Opportunity Report后拒绝优化/改编时，也跳过全部内容改写，原始版本完成分析后直接Production-Lock。
 
@@ -165,7 +177,7 @@ Adaptation Intensity：只允许LEVEL 1 Light Adaptation、LEVEL 2 Structural Ad
 
 Required Inputs及唯一来源：用户Idea / Brief或原始故事文本、Project Bible中的已确认项目事实、目标形式/时长/平台/受众、用户明确的创作/改编/优化范围与锁定要求。世界观、角色身份、核心创意、主题、名场面、关键设定与品牌要求只由用户或已确认项目事实拥有。
 
-Output拥有者：`templates/02_script_analysis_prompt.md`独占STATE-01用户可见字段、顺序与排版；`workflows/02_script_analysis_workflow.md`拥有入口识别、分类、目标检测、路由、确认门槛与状态转换；`knowledge/screenplay_development.md`拥有原创故事开发、Scene Director Intent与Directable Screenplay QA；`knowledge/script_adaptation.md`拥有通用六层改编方法；`knowledge/adaptation/short_form_drama_adapter.md`只拥有适用短剧规则；`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`只拥有各自专业分析方法。
+Output拥有者：`templates/02_script_analysis_prompt.md`独占STATE-01用户可见字段、顺序与排版；`workflows/02_script_analysis_workflow.md`拥有入口识别、分类、目标检测、路由、确认门槛与状态转换；`knowledge/screenplay_development.md`是唯一Screenwriter owner，拥有WRITER INTENT PACKET、原创故事开发、Writer Diagnosis、Writer → Director Handoff与Directable Screenplay QA；`knowledge/script_adaptation.md`拥有通用六层改编方法；`knowledge/adaptation/short_form_drama_adapter.md`只拥有适用短剧规则；`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`只拥有各自专业子方法。
 
 允许读取：Selected State Source、Active Project Root中的project_bible.md、用户Idea / Brief、剧本/Source Material/设定与已确认约束。允许写入：Active Project Root的STATE-01 Screenplay / Script Analysis Artifact、适用的Optimization Opportunity Report、获得合法授权后的Adaptation Draft和Production Script Proposal，以及随确认版本传递的轻量Scene Director Intent source data；并写Selected State Source中的Script Status / Pending Decision / Checkpoint。不得写入Skill根目录项目兼容入口。
 
@@ -175,7 +187,7 @@ Script Status继续只允许`Source Material / Adaptation Draft / Optimized Prop
 
 禁止修改：用户未授权范围、世界观、角色身份、品牌要求、核心创意、关键设定、主Pipeline、资产确认闭环、Spatial Blocking Layer、Director Decision Layer、Knowledge Reflection、Clip-centric逻辑与STATE-08 Seedance Schema。
 
-与Director Decision Layer边界：STATE-01 Screenplay Development、Script Adaptation与Directorial Interpretation只把创意/来源素材转换为可视、可听、可表演的制作版叙事，并维护轻量Scene Director Intent；不创建SCENE、SHOT、CLIP、焦段、机位或Director Decision Notes。STATE-05投影确认剧本与Scene Intent，STATE-06 Director Decision Layer再读取该投影与已确认Professional Detailed Shot Script，决定Scene / Shot Group的视听执行方向，不回到STATE-01改写剧情。
+与Director Decision Layer边界：Screenwriter拥有故事/人物逻辑、Information Architecture、Subtext、Writer Beat与Setup / Payoff，只把Character Performance Intent交给Director，不创建SCENE、SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。Director拥有Information Presentation、Performance Direction、Blocking、Composition、Camera Language与Rhythm Presentation，不擅自改变Writer锁定事实。STATE-05投影两层意图，STATE-06决定Scene / Shot Group的视听执行方向；需要改动故事时走REDIRECT / rewrite反馈链。
 
 冲突路由：Creation Brief只有在缺失项会实质改变架构或造成品牌/事实风险时请求最小决定；Existing的锁定事实、目标形式、Adaptation Intensity或修改范围不明确时保持STATE-01 IN_PROGRESS并请求用户决定。单独“继续 / 下一步 / 好的”既不构成Existing优化授权，也不构成Proposal确认；当前请求已明确“直接优化 / 直接改写”时不重复询问同一授权。用户要求修订Proposal时保持Script Development并只修改受影响范围；下游发现剧情事实冲突返回STATE-01，不在资产、镜头或Prompt阶段静默调和。
 

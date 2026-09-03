@@ -53,6 +53,8 @@
 
 Editing不是重新导演。它优先保护Editorial POV、信息时序、人物关系、关键反应与情绪余韵；只在现有素材能够支持时改变镜头顺序、切点、Hold长度、声音连接和局部视觉处理。素材不足以恢复导演意图时，必须返回STATE-08重生成或相应设计owner。
 
+Editing同样不是重新编剧。它必须保护Writer Rhythm：Writer Beat order、Setup / Payoff timing、Reveal timing、Trigger / Reaction logic、Scene Value Change、Relationship Delta与Scene Exit State。不能为节奏便利提前Payoff、删掉使行为成立的Trigger / Reaction或交换因果顺序。
+
 ## Editorial Decision Pass
 
 每个受影响Scene / Clip先判断并记录到现有修改目标与编辑Prompt语义：
@@ -66,6 +68,7 @@ Editing不是重新导演。它优先保护Editorial POV、信息时序、人物
 - **J-cut / L-cut / Sound Bridge**：剧情内声音如何先行、延续或结束，不能自动引入配乐
 - **Transition Logic**：每个边界只有一种主要视觉转场，并服从Outgoing / Cut / Incoming锚点
 - **Shot-duration Pressure / Release**：哪些镜头缩短增加压力，哪些镜头延长让反应、确认或余韵成立
+- **Writer Rhythm Protection**：Beat order、Setup / Payoff、Reveal timing、reaction logic、Scene Value Change与Relationship Delta在调整后是否仍成立；失败若来自故事设计返回STATE-01/05，若来自镜头/Clip呈现返回STATE-06/07，若只因现有剪辑顺序或切点则在Editing最小修正
 
 
 

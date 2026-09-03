@@ -2,7 +2,7 @@
 
 ## Purpose
 
-本Knowledge只在STATE-01已经把非制作剧本诊断为需要Adaptation、输出Optimization Opportunity Report并取得用户明确优化/改编授权后，把Source Material改编为可继续编剧优化的`Adaptation Draft`。报告与授权之前不得加载本Knowledge执行实际改编。它不创建独立STATE，不拥有用户可见Schema，不替代`workflows/02_script_analysis_workflow.md`，也不创建SCENE、SHOT、CLIP、资产或Seedance Prompt。
+本Knowledge是`knowledge/screenplay_development.md`所拥有Screenwriter Module的授权后改编子模块。它只在STATE-01已经把非制作剧本诊断为需要Adaptation、输出Optimization Opportunity Report并取得用户明确优化/改编授权后，把Source Material改编为可继续编剧优化的`Adaptation Draft`。报告与授权之前不得执行实际改编。它不创建独立STATE、不拥有平行Writer系统或用户可见Schema，也不创建SCENE、SHOT、CLIP、资产或Seedance Prompt。
 
 核心原则：改编优先忠于核心叙事价值，而不是忠于原文字面结构。
 
@@ -46,6 +46,8 @@
 - 世界观
 - 品牌诉求（适用时）
 - 用户明确不可改内容与权利/事实边界
+- 原素材中的Setup / Plant / Foreshadow / Callback / Payoff义务及当前回收状态
+- 观众与主要角色的已知 / 未知信息边界
 
 没有来源证据的内容不得写成原作事实。历史事件、品牌事实或既有影视桥段存在不确定性时保持待确认，不用常识补造关键剧情。
 
@@ -92,6 +94,7 @@
 - 关键道具、世界观、品牌诉求与用户锁定项是否被误删或改义
 - 每项Merge / Reorder / Screen Rewrite / Remove是否在所选Intensity内
 - 新增桥接是否为最小必要且未伪装成来源事实
+- Setup / Payoff是否被遗漏、提前揭露或失去回收功能，Information Architecture是否仍与来源意图一致
 
 任一保护项失败，先修正Adaptation Draft；无法在当前Intensity内解决时返回用户决定。
 

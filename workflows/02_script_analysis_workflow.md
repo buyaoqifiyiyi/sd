@@ -90,7 +90,8 @@ project_status.md
 ```text
 Creation Brief
 → Minimum Project Intent Gate
-→ Director-first Screenplay Development
+→ Screenwriter-led Story Development
+→ Writer → Director Handoff
 → Directorial Interpretation
 → Directable Screenplay QA
 → Production Script Proposal
@@ -145,11 +146,13 @@ Input Class只使用：
 
 Creation Brief不强行套用A/B/C Input Class和Optimization Opportunity Grade；对应字段写`Not Applicable — Creation Brief`。Existing Script / Material的Input Class与Optimization Opportunity Grade是两个独立维度。分类必须以用户明确语言和当前可读项目事实为依据；报告档位必须以制作适配程度和问题影响为依据。冲突指令按用户最新、最具体且修改范围最小的明确要求执行。不得把用户原文仅因完整、可分析或被诊断为A档就静默标记为Production-Locked。
 
-## Director Module Continuity
+## Screenwriter Module Continuity And Writer → Director Boundary
 
-Creation与Existing两条入口都读取`knowledge/director_decision_layer.md`，并继承STATE-00最小Project Director Baseline。STATE-01负责把已确认项目意图具体化为Dramatic / Emotional Core、Character & Relationship Arc、Information、Performance、Spatial、Visual、Rhythm、Sound与AIGC Directability策略，并维护Scene-level source data；不是只在STATE-06才开始导演判断。
+Creation与Existing两条入口都先读取唯一Writer owner `knowledge/screenplay_development.md`，建立或从现有剧本提取最小充分`WRITER INTENT PACKET`。STATE-01由Screenwriter Module拥有Premise / Theme、Dramatic Question、Character Intent、Causality、Scene Value Change、Writer Beat、Dialogue / Subtext、Setup / Payoff、Information Architecture、Character / Relationship Arc与故事层AIGC Directability。Existing Script首次无改写授权时只做Writer Diagnosis，不借Packet生成改写正文。
 
-剧本阶段的Camera Language只识别可镜头化机会：观众先看什么、哪些反应需要时间、什么信息应被遮挡/延迟/确认、人物关系可通过何种空间变化被看见。不得把机会提前写成Shot List、特写、35mm、低机位、浅景深或推拉摇移。
+随后读取`knowledge/director_decision_layer.md`和`knowledge/directorial_interpretation.md`完成Writer → Director Handoff。Writer交付Story / Character / Scene Intent、Writer Beats、关系与信息变化、Subtext、Setup / Payoff义务及Performance Intent；Director决定Audience Experience、Performance Strategy、Blocking potential、Mise-en-scène与信息呈现方式。剧本阶段只识别可导演机会，不得写Shot List、特写、35mm、低机位、浅景深或推拉摇移。
+
+`Information Architecture = Writer Authority`，`Information Presentation = Director Authority`。Director发现关键因果、动机、信息时机或Setup / Payoff无法成立时返回Writer最小修订，不在导演化处理中静默改写。
 
 ## 00A Creation Brief Route — Idea-to-Screenplay
 
@@ -163,16 +166,16 @@ Creation与Existing两条入口都读取`knowledge/director_decision_layer.md`�
 
 固定执行：
 
-`Idea / Brief / Concept → Minimum Project Intent Gate → Director-first Story Development → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Review / Revision → Production-Locked`
+`Idea / Brief / Concept → Minimum Project Intent Gate → Screenwriter-led Story Development → Writer → Director Handoff → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Review / Revision → Production-Locked`
 
 1. 从当前输入和Project Bible提取目标形式/容量、受众、核心人物、世界/场景、主情绪或品牌目标、保护项与禁止项。
 2. 只有缺失项会实质改变架构或造成品牌/事实风险时才询问；其他可安全项采用明确、可修订的Assumption继续。
-3. 按`knowledge/screenplay_development.md`建立Dramatic Intent、Audience Experience、Dramatic Question / Core Conflict、Character Objective / Relationship Arc、Information Strategy、Visual Action、Spatial / Blocking Potential、Performance Opportunity、Rhythm Architecture与AIGC Directability。
-4. 执行`knowledge/directorial_interpretation.md`，让信息和情绪通过动作、视线、停顿、空间、调度、剧情内声音与节奏被观众体验；不得提前写机位、焦段、运镜、SHOT、CLIP或分镜表。
-5. 为每个候选场景内部维护轻量Scene Director Intent source data：Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Change / Reveal Strategy、Performance Opportunity / Peak、Spatial Evolution、Rhythm Intent、Transition Intent，并完成十项Directable Screenplay QA；这些内部字段不机械输出进最终剧本。
+3. 按`knowledge/screenplay_development.md`建立项目、场景与必要Beat层Writer Intent：Dramatic Question / Core Conflict、Character Engine、因果链、Scene Purpose / Value Change、Writer Beat Map、Dialogue / Subtext、Information Architecture、Setup / Payoff、Character / Relationship Arc、Structural Rhythm与故事层AIGC Directability。按任务复杂度调用，不把Packet变成表格问卷。
+4. 执行Writer → Director Handoff，再由`knowledge/directorial_interpretation.md`决定观众如何经历已成立的信息与情绪，并把Character Performance Intent转交Performance Layer；不得让Writer提前写机位、焦段、运镜、SHOT、CLIP或分镜表。
+5. 为每个候选场景内部维护Scene-level Writer Intent与轻量Scene Director Intent source data，明确Scene Purpose、Objective / Obstacle、Value / Relationship / Information Change、Decision / Consequence、Writer Beats、Subtext、Setup / Payoff Function、Scene Exit State及Audience Start / End、Performance / Spatial / Rhythm机会，并完成Directable Screenplay QA；这些内部字段不机械输出进最终剧本。
 6. 使用`templates/02_script_analysis_prompt.md`输出可独立阅读的完整Production Script Proposal；写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`并停止。
 7. 用户要求“修改这一场 / 改台词 / 调整人物线 / 改结局”等时，保持Script Development，只修订明确范围与必要相邻因果，重跑受影响QA后再次等待确认；不得跳到STATE-05/06。
-8. 用户明确确认当前Proposal后，将确认版本登记为`Production-Locked Directable Screenplay`（状态值仍为`Production-Locked`），完成下方Script Analysis并进入STATE-02。
+8. 用户明确确认当前Proposal后，将确认版本登记为`Production-Locked Directable Screenplay + Writer Intent Packet`（状态值仍为`Production-Locked`），完成下方Script Analysis并进入STATE-02；Packet与该Revision绑定但不新增用户可见状态字段。
 
 Creation Brief不得输出Optimization Opportunity Report、Adaptation Draft或既有剧本修改授权问题。用户只说“下一步”且当前Proposal已经输出但未明确确认时，仍停在Proposal Confirmation Gate；若已明确确认并完成STATE-01，则“下一步”按状态合同进入STATE-02，不得重新生成剧本。
 
@@ -220,6 +223,8 @@ Optimization Opportunity Report至少逐项检查并给出结论：
 10. 结尾Hook
 11. 时长适配
 12. 场景/人物复杂度
+
+上述十二项用户可见结构不变，但必须以Writer Diagnosis为底层证据，至少覆盖：causality、character motivation、scene necessity、scene value change、beat progression、conflict / stakes、dialogue / subtext、setup / payoff、information architecture、pacing / escalation、character / relationship arc与ending payoff。发现人物因剧情便利突然行动时，必须沿`Trigger → Interpretation → Desire → Decision → Action → Consequence → New State`定位断点；没有任何有意义变化的场景标记`Weak / Replaceable Scene`。这些结论折叠进最相关的现有报告维度，不新增平行报告Schema。
 
 Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本的距离、需要改编的原因和方向；此时不得执行Adaptation Target Detection的改写决策、不得选择实际改编内容，也不得生成Adaptation Draft。Input Class为C通常至少为B档；只有确认输入本身已经可直接作为制作剧本时，才应重新归为Class A而不是把Class C评为A档。
 
@@ -300,7 +305,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 1. 按`knowledge/script_adaptation.md`完成Source Essence Extraction、Adaptation Objective、Preserve / Compress / Rewrite / Remove Decision、Screen Translation、Duration & Dramatic Restructuring和Adaptation Fidelity Check。
 2. 形成完整Adaptation Draft并写`Script Status: Adaptation Draft`；该状态仍是STATE-01 IN_PROGRESS，不得进入STATE-02。
 3. 对Adaptation Draft执行Screenwriting Optimization。
-4. 执行Directorial Interpretation，把优化结果转换为可视、可听、可表演的制作版叙事；不得创建SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。
+4. 先建立更新后的Writer Intent Packet并执行Writer → Director Handoff，再执行Directorial Interpretation，把优化结果转换为可视、可听、可表演的制作版叙事；不得创建SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。
 5. 使用`templates/02_script_analysis_prompt.md`输出完整Production Script Proposal及其Script Analysis。
 6. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止；不得进入STATE-02。
 
@@ -315,7 +320,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 必须读取`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`：
 
 1. 只在已授权范围内执行Screenwriting Optimization。
-2. 执行Directorial Interpretation，不提前进入后续技术层。
+2. 更新受影响Writer Intent并执行Writer → Director Handoff；随后执行Directorial Interpretation，不提前进入后续技术层。
 3. 使用Template输出Production Script Proposal与Script Analysis。
 4. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止。
 
@@ -544,7 +549,7 @@ templates/02_script_analysis_prompt.md
 
 本Workflow负责分析与边界控制；Template独占字段名称、顺序与排版。
 
-Creation Brief入口直接输出Script Control、完整Production Script Proposal与Proposal Confirmation Checkpoint；内部Scene Director Intent与Directable Screenplay QA不得机械变成最终剧本栏目。Existing Script / Material默认首次入口只包含Script Control、Optimization Opportunity Report与User Decision Gate，并在未有明确改写授权时询问后停止，不得输出改写正文、Adaptation Draft或Production Script Proposal。Class C在明确授权后的Adaptation分支必须包含Script Control、Source Essence、Adaptation Decision、Adaptation Draft、Adaptation Fidelity Check、Screenwriting Optimization Summary、Directorial Interpretation Summary、Production Script Proposal与Proposal Confirmation Checkpoint；Class A/B明确授权后的Optimization分支不输出改编栏目。Optimization Rejected与Route LOCK不输出改写Proposal，但必须包含Script Control、原有Script Analysis与Lock / Handoff结论。
+Creation Brief入口直接输出Script Control、完整Production Script Proposal与Proposal Confirmation Checkpoint；内部WRITER INTENT PACKET、Scene Director Intent与Directable Screenplay QA不得机械变成最终剧本栏目。Existing Script / Material默认首次入口只包含Script Control、Optimization Opportunity Report与User Decision Gate，并在未有明确改写授权时询问后停止，不得输出改写正文、Adaptation Draft或Production Script Proposal。Class C在明确授权后的Adaptation分支必须包含Script Control、Source Essence、Adaptation Decision、Adaptation Draft、Adaptation Fidelity Check、Screenwriting Optimization Summary、Directorial Interpretation Summary、Production Script Proposal与Proposal Confirmation Checkpoint；Class A/B明确授权后的Optimization分支不输出改编栏目。Optimization Rejected与Route LOCK不输出改写Proposal，但必须包含Script Control、原有Script Analysis与Lock / Handoff结论。
 
 
 输出：

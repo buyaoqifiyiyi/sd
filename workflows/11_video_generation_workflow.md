@@ -232,6 +232,10 @@ Template Mapping后、交付前必须逐Package检查：
 
 必须读取由`workflows/10_clip_production_workflow.md`与`templates/20_clip_plan.md`生成的Confirmed Clip Production Plan，并以CLIP-001、CLIP-002……作为Prompt编译顺序和最小生成单位。缺失、Planning或验证失败时不得继续。一个Clip即使包含多个Shot，也只编译一条连续Seedance Prompt；不得按Shot拆成多条Prompt。
 
+## Writer Intent To Preserve
+
+必须读取当前Clip可追溯的Writer Intent Packet投影：Character Intent / Hidden Objective / Subtext、Writer Beat顺序与因果链、Relationship Delta、Information Architecture、Setup / Payoff obligations、Scene Value Change与Scene Exit State。它们决定当前Clip必须保住的故事与人物逻辑，但不提供焦段、机位、运镜、构图或Shot Count。缺失或互相冲突时返回STATE-01/05；STATE-08不得补写动机、改写信息时机或把潜台词改成直白解释。
+
 
 ## Director Decision Notes
 
@@ -682,6 +686,14 @@ knowledge/transitions/
 # Responsibility Separation
 
 执行时必须保持模块职责分离。
+
+## Screenwriter Module
+
+负责已确认的故事因果、人物意图与潜台词、Writer Beat、信息时机、Setup / Payoff和Scene / Relationship变化。STATE-08只保护并转译这些义务，不让Writer越权决定Camera Language。
+
+## Director Module
+
+负责观众体验、Performance Strategy、Blocking、Mise-en-scène、Composition、Camera Language与Rhythm Presentation。不得擅自改变Writer锁定的关键因果、动机、信息时机或Setup / Payoff义务；需要改变时走REDIRECT / rewrite反馈链。
 
 
 ## Workflow
@@ -1328,6 +1340,8 @@ Reflection Record只进入内部执行上下文或既有Projection / QA记录，
 
 Knowledge Reflection之后、任何最终Prompt句子之前，逐Clip执行以下内部Pass。本Pass只保存导演意图并翻译模型执行，不重新导演，不新增Template字段：
 
+先执行`Writer Intent Preservation Gate`：核对关键人物意图、潜台词、Writer Beat顺序、因果链、Setup / Payoff timing、Information Architecture、Relationship Delta与Scene Exit State。Writer义务只限定当前事件必须成立，不注入任何Camera参数。
+
 1. **Dramatic Priority Extraction**：从Clip-level Director Intent提取当前Clip最重要的1—3个目标；Primary必须能写成Start→End dramatic delta。
 2. **Audience Attention Hierarchy**：明确第一眼、第二眼与被延迟的目标；通过动作先后、构图位置、焦点、遮挡/解除、景深和人物活动幅度分配注意力，不能让所有主体同时抢权重。
 3. **Performance Beat Translation**：把“悲伤、紧张、激动”等转成当前可见的gaze、breath、pause、jaw / mouth / swallow、hand / fingertip tension、shoulder / weight、delayed reaction、suppression / leakage与residue中的最小充分组合。强度与承载量沿用现有PL1 / PL2 / PL3逻辑，不另建P1/P2/P3系统，也不机械堆满通道。
@@ -1338,7 +1352,7 @@ Knowledge Reflection之后、任何最终Prompt句子之前，逐Clip执行以�
 8. **Rhythm Translation**：把内部BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、反应延迟、镜头保持、Cut时机与稳定余韵；最终Prompt不输出抽象标签。
 9. **Sound Direction**：如当前Clip需要声音，把前景/中景/背景声功能、声音先行、声音尾部或有理由的近静默投影到现有`台词 / 音效 / 镜头结尾状态`。Sound Strategy不等于Voice Profile；未获当前明确授权时完全省略音色字段和声音身份资产。
 10. **Prompt Compression**：严格执行`Source Carries State, Prompt Carries Delta`，优先保留dramatic delta、critical performance、critical blocking、critical camera behavior、critical timing与critical information control；已由Source锁定的信息不重复。
-11. **Director Intent Preservation QA**：只读最终Prompt时仍能辨认核心戏剧变化、第一/第二注意目标、可见关键表演、关系与Blocking、构图功能、Camera trigger / stop、Reveal timing与emotional residue；同时没有理论说明、抽象堆叠、参数堆积或明显变长。
+11. **Writer + Director Intent Preservation QA**：只读最终Prompt时仍能辨认角色为什么行动、隐藏什么、Writer Beat先后、Setup / Payoff与Reveal timing、核心戏剧变化，以及第一/第二注意目标、可见关键表演、关系与Blocking、构图功能、Camera trigger / stop与emotional residue；同时没有理论说明、抽象堆叠、参数堆积或明显变长。
 
 任何Pass发现上游意图互斥，按Owner返回STATE-06/07；只有翻译、压缩或字段落位问题留在STATE-08修正。
 
@@ -3165,6 +3179,18 @@ STATE-08。
 是否：
 
 没有改变剧情核心。
+
+是否已通过Writer Intent Preservation：
+
+- 关键人物意图、隐藏意图与改变主意的Trigger仍在；人物行为可追溯到`Trigger → Character Interpretation → Desire / Intention → Decision → Action / Response → Consequence → New State`
+- 潜台词没有被机械改成直白台词、夸张表情或解释性旁白
+- Writer Beat顺序没有被Clip压缩、技术便利或镜头组织打乱
+- Setup / Plant / Foreshadow / Callback / Payoff没有遗漏或提前暴露
+- Reveal / Withhold / Delay / Mislead / Confirm / Recontextualize仍在Writer锁定时机进入
+- Relationship Delta、Scene Value Change与Scene Exit State仍可辨认
+- 上述Writer义务没有越权生成焦段、机位、运镜、构图或Shot Count
+
+Writer事实本身不成立时返回STATE-01/05；Director呈现不成立时返回STATE-06/07；只有Prompt转译或压缩损坏意图时留在STATE-08修正。
 
 
 ---

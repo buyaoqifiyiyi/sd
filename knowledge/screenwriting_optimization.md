@@ -2,7 +2,7 @@
 
 ## Purpose
 
-本Knowledge只在STATE-01已经输出Optimization Opportunity Report、且用户明确同意优化后的分支，或Class C获准改编并已经形成Adaptation Draft之后使用。首次报告阶段只由Workflow执行只读诊断，不得借本Knowledge自动改写。它负责把已获授权的优化方向转化为更适合影视生产与目标时长的制作版叙事方案；不创建新STATE，不替代`workflows/02_script_analysis_workflow.md`，不拥有用户可见Schema。
+本Knowledge是`knowledge/screenplay_development.md`所拥有Screenwriter Module的授权后优化子模块。它只在STATE-01已经输出Optimization Opportunity Report且用户明确同意优化，或Class C获准改编并形成Adaptation Draft之后使用。首次报告阶段只执行统一Writer Diagnosis，不得借本Knowledge自动改写。它负责把已获授权的优化方向转化为更适合影视生产与目标时长的制作版叙事方案；不创建新STATE，不替代Workflow，不拥有用户可见Schema或第二套Writer Packet。
 
 ## Module Contract
 
@@ -42,7 +42,18 @@
 11. **时长适配**：目标时长内信息量、对白量、动作阶段、转折数量和情绪铺垫是否可执行；未给定时长时记录密度风险，不虚构精确秒数。
 12. **场景/人物复杂度**：场景数、角色数、世界切换、群体调度和一次性设定是否超出目标时长与AI制作容量；是否存在可删并的同功能人物、地点或Beat。
 
-剧情目标、人物动机、因果、信息铺垫与揭示作为上述十二维的底层证据持续检查，不另行取代用户要求的十二项报告结构。
+以下Writer Diagnosis作为上述十二维的底层证据持续检查，不另行取代用户要求的十二项报告结构：
+
+- causality与`Trigger → Interpretation → Desire → Decision → Action → Consequence → New State`
+- character motivation、Objective / Hidden Objective与Relationship Need
+- scene necessity与Information / Relationship / Decision / Power / Emotional / Expectation Value Change
+- Writer Beat progression；Writer Beat不得被误当Shot
+- conflict / obstacle / stakes与题材适配的escalation
+- `Dialogue → Surface Meaning → Subtext → Hidden Objective`
+- Setup / Plant / Foreshadow / Callback / Payoff / Reversal / Recontextualization
+- Information Architecture、Character / Relationship Arc与ending payoff
+
+没有任何意义变化、必要建立、呼吸或Setup功能的场景标记`Weak / Replaceable Scene`。角色设定不支持直说时，把直白对白标记为Subtext Opportunity，而不是机械删对白。强商业钩子、固定节拍密度和冲突升级只由适用genre adapter提供，不进入通用优化默认值。
 
 ## Optimization Method
 
@@ -95,6 +106,7 @@
 - 需要可视化的抽象信息
 - 目标时长与密度风险
 - 明确的修改范围和Pending Decisions
+- 更新后的Writer Beats、Scene Value Change、Subtext / Hidden Objective、Setup / Payoff obligations与Scene Exit State
 
 不包含SHOT、CLIP、机位、焦段、运镜、正式分镜表或Director Decision Notes。
 

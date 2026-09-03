@@ -91,7 +91,7 @@ Existing Script / Material首次进入STATE-01且不存在No Revision / Final Sc
 
 不输出Optimization Opportunity Report、Adaptation Draft或“是否同意优化”的问题。用户明确要求写剧本已经授权生成Proposal；只在缺失信息会实质改变架构或造成品牌/事实风险时提出最小必要问题，否则使用清楚、可修订的Assumption继续。
 
-内部执行Director-first Story Development、Directorial Interpretation、Scene Director Intent与十项Directable Screenplay QA，但最终剧本不得显示这些内部表格或问答。必须让场景目的、观众体验变化、人物目标/冲突、关系变化、信息层次、视觉动作、表演机会、空间潜力、节奏与AIGC可执行性体现在剧本本身；不得提前加入SHOT、CLIP、焦段、机位、运镜、时间码或分镜表。
+内部执行Screenwriter-led Story Development、WRITER INTENT PACKET、Writer → Director Handoff、Directorial Interpretation与Directable Screenplay QA，但最终剧本不得显示这些内部表格或问答。必须让Premise / Theme / Dramatic Question、人物Want / Need与Objective、因果、场景价值变化、Writer Beat、潜台词、Setup / Payoff、关系弧与信息架构体现在剧本本身；Director再补充观众体验、可见表演机会、空间潜力和呈现节奏。不得提前加入SHOT、CLIP、焦段、机位、运镜、时间码或分镜表。
 
 
 ### Optimization Opportunity Report（默认首次入口；No Revision / Final Script分支除外）
@@ -102,7 +102,7 @@ Existing Script / Material首次进入STATE-01且不存在No Revision / Final Sc
 - B 有轻度优化空间
 - C 有明显结构问题
 
-随后逐项输出以下十二个检查维度：开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度。
+随后逐项输出以下十二个用户可见检查维度：开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度。内部Writer Diagnosis还必须覆盖causality、character motivation、scene necessity / value change、Writer Beat progression、conflict / stakes、subtext、setup / payoff、information architecture、character / relationship arc与ending payoff；把发现归入最相关的现有十二项，不增加固定用户表格。
 
 每项字段固定为：
 
@@ -144,7 +144,7 @@ Class C额外输出`Adaptation Need`、判断依据、素材离标准制作剧�
 
 ### Script Diagnosis（用户已明确授权后的Class A/B Optimization及Class C Adaptation后续优化分支）
 
-按“已成立 / 需要优化 / 用户锁定不可改”区分诊断结论。至少覆盖剧情目标、冲突、人物动机、因果、信息铺垫与揭示、台词冗余、动作可视化、节奏、高潮、短视频时长适配及删并提前重排机会。
+按“已成立 / 需要优化 / 用户锁定不可改”区分诊断结论。至少覆盖剧情目标、冲突/阻力/风险、人物动机与`Trigger → Interpretation → Desire → Decision → Action → Consequence → New State`、Scene Value Change、Writer Beat progression、信息铺垫/揭示、台词Surface Meaning / Subtext / Hidden Objective、Setup / Payoff、人物/关系弧、Ending Payoff、动作可视化、节奏、时长适配及删并提前重排机会。
 
 
 ### Screenwriting Optimization Summary（用户已明确授权后的Class A/B Optimization及Class C Adaptation后续优化分支）

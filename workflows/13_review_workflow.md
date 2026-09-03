@@ -147,13 +147,24 @@ Sequence Plan（如适用）
 # Review Pipeline
 
 
-审核分为两层并按同一受审对象对照：
+审核分为三层并按同一受审对象对照：
 
-1. **Technical Review**：identity、continuity、blocking、props、action、camera/visual defects、sound/FX与Seedance稳定性。
-2. **Director's Cut Review**：Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Timing、Shot Necessity、Rhythm与Emotional Residue。
+1. **Story Review**：causality、motivation、scene necessity / value change、Writer Beat progression、conflict / stakes、subtext、setup / payoff、character / relationship arc、ending payoff与information architecture。
+2. **Director's Cut Review**：Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Presentation、Shot Necessity、Rhythm与Emotional Residue。
+3. **Technical Review**：identity、continuity、blocking、props、action、camera/visual defects、sound/FX与Seedance稳定性。
+
+判定Gate固定为`Story → Director's Cut → Technical`。后续编号章节可复用Technical证据，但不得让技术PASS覆盖Story或Director失败。
 
 执行顺序：
 
+
+Story Review
+
+↓
+
+Director's Cut Review
+
+↓
 
 视觉一致性
 
@@ -187,15 +198,42 @@ Spatial Continuity QA
 
 ↓
 
-Director QA
-
-↓
-
 镜头质量
 
 ↓
 
 项目风格
+
+---
+
+# 00 Story Review
+
+逐Scene / Writer Beat对照Production-Locked Screenplay与Writer Intent Packet，只审核故事与人物逻辑，不替Writer选择Camera，不因画面漂亮而放过剧作失败。
+
+检查：
+
+□ 人物行为是否可追溯到`Trigger → Character Interpretation → Desire / Intention → Decision → Action / Response → Consequence → New State`；不存在只为推动剧情而突然行动
+
+□ 每场戏是否产生Information / Relationship / Decision / Power / Emotional / Expectation中的至少一种有意义变化，或承担不可替代的Setup、Hold、Breath、Transition义务；否则标记weak / replaceable scene
+
+□ Writer Beat是否按人物/剧情状态变化推进，未被误当Shot Count；一个Beat可由多Shot呈现，多个Beat也可在一个长镜头中成立
+
+□ Character Objective遇到真实Obstacle；Conflict / Stakes / Escalation符合题材强度，没有把所有类型强制套成商业短剧冲突密度
+
+□ Dialogue的Surface Meaning、Subtext与Hidden Objective一致；角色不适合直说时，未把潜台词扁平化成“我一直很想你”式说明，也未机械删除本应存在的对白
+
+□ Setup / Plant / Foreshadow / Callback / Payoff / Reversal / Recontextualization完整，未遗漏、提前暴露或错误交换
+
+□ Character / Relationship Arc、Information Architecture与Ending Payoff一致；Reveal / Withhold / Delay / Mislead / Confirm / Recontextualize发生在Writer锁定时机
+
+## Story Review Return Route
+
+- 因果、动机、场景必要性、Writer Beat、冲突、潜台词、Setup / Payoff、人物/关系弧、结局回收或信息架构本身错误：`WRITING FAILURE`，返回STATE-01 Screenwriter Module；若仅STATE-05投影遗漏，返回STATE-05。
+- Writer事实正确，但表演、Blocking、Camera、Rhythm Presentation或Reveal Presentation错误：`DIRECTING FAILURE`，进入Director's Cut Review定位STATE-05/06/07。
+- Writer与Director都正确而模型未实现：`GENERATION FAILURE`，返回STATE-08只重试Affected Clip。
+- 素材包含正确信息但剪辑破坏Beat order、Reaction、Reveal或Payoff timing：`EDITING FAILURE`，进入Editing最小修复。
+
+技术画面完全正确、导演呈现也合理，但人物行为缺乏动机时仍判`WRITING FAILURE`；不得误判为Prompt或Generation failure。
 
 
 
@@ -668,12 +706,14 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 
 Review必须在兼容的`PASS / REVISE / REBUILD` Result之外选择一个处置，不创建新STATE：
 
-- `KEEP`：Technical Review与Director's Cut Review均通过；映射Result=`PASS`
+- `KEEP`：Story Review、Director's Cut Review与Technical Review均通过；映射Result=`PASS`
 - `RE-EDIT`：素材包含正确导演信息，可通过剪辑顺序、Cut / Hold、反应优先级、声音桥或局部后期修复；映射Result=`REVISE`并进入Editing
 - `REGENERATE`：上游Director / Shot / Clip / Prompt设计正确，但模型执行、身份、动作、相机或视觉生成失败；映射Result=`REVISE`并只重试Affected Clip
 - `REDIRECT`：导演目的、观众注意、信息时序、Shot必要性、Camera动机、关系表达或Clip编排本身错误；映射Result=`REVISE`或严重时`REBUILD`，返回实际owner
 
-同时记录`Failure Origin: Generation / Editing / Directing / Upstream Fact`。Generation failure指正确设计未被模型实现；Directing failure指结果即使技术正确，也执行了错误的注意力、关系、信息时机、表演、镜头必要性或节奏决定。不得用REGENERATE掩盖REDIRECT，也不得用REDIRECT重做本可RE-EDIT的素材。
+同时记录唯一`Failure Class: NONE / WRITING FAILURE / DIRECTING FAILURE / GENERATION FAILURE / EDITING FAILURE / UPSTREAM FACT FAILURE`，并保留兼容的`Failure Origin: None / Writing / Generation / Editing / Directing / Upstream Fact`。Writing failure指故事因果、人物动机、场景价值、Writer Beat、潜台词、Setup-Payoff、人物/关系弧、Ending Payoff或Information Architecture本身失败；Generation failure指正确设计未被模型实现；Directing failure指Writer事实正确，但结果执行了错误的注意力、关系呈现、信息呈现、表演、镜头必要性或节奏决定。不得把所有问题路由为重写Prompt，不得用REGENERATE掩盖REDIRECT，也不得用REDIRECT重做本可RE-EDIT的素材。
+
+根因路由：`WRITING → STATE-01`；`DIRECTING → STATE-05/06/07`；`GENERATION → STATE-08 Affected Clip`；`EDITING → Editing`；`UPSTREAM FACT → 对应事实owner`。同一报告选择唯一主Failure Class；次要问题记录在Corrective Actions，不并列争夺Return Route。
 
 
 ---

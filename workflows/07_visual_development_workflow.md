@@ -211,7 +211,7 @@ Update Project Status
 
 # Visual Dramaturgy / Mise-en-scène Gate
 
-在风格检索和参数定义前读取Project / Scene Director Intent，建立一条项目级Visual Arc：
+在风格检索和参数定义前先读取Writer Intent中的Theme / Story Arc、Motif / Symbol Function、Information Architecture与Setup / Payoff obligations，再读取Project / Scene Director Intent建立项目级Visual Arc。Writer决定这些元素为何存在、何时建立或回收；Director把它们转译为Visual Dramaturgy：
 
 - 各主要戏剧阶段的Audience Attention、关系距离、空间压力和情绪可读性如何变化
 - Color / Light / Contrast / Depth / Negative Space在何处保持、累积、转折或释放，并写明真实来源与触发

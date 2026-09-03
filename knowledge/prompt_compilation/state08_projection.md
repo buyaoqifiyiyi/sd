@@ -23,7 +23,20 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 
 所有适用且已确认的上游知识必须在最终Prompt中留下可见、可执行、可连续检查的语义证据。知识模块名称、内部表格、模式ID、Ledger标题与分析栏目不得原样输出。
 
-STATE-08不重新“导演”，只执行`Director Intent Preservation + Model Translation`。Director Module拥有为什么这样拍；本Prompt Compiler只把当前Clip的已确认意图转成模型可以执行的顺序、可见证据和稳定边界。
+STATE-08不重新“编剧”或“导演”，只执行`Writer Intent Preservation + Director Intent Preservation + Model Translation`。Screenwriter Module拥有故事因果、人物意图/潜台词、Writer Beat顺序、信息时机与Setup-Payoff义务；Director Module拥有观众如何经历以及表演、调度、构图、摄影与节奏如何呈现；本Prompt Compiler只把当前Clip的已确认意图转成模型可以执行的顺序、可见证据和稳定边界。
+
+## Writer Intent Preservation Gate
+
+在Director-to-Prompt Translation之前，逐Clip从Writer Intent Packet及STATE-05/06/07投影中只读核对：
+
+1. 关键人物意图、隐藏意图与改变主意的Trigger仍然存在；
+2. 潜台词没有被压扁为角色设定不支持的直白台词、单一表情或解释性旁白；
+3. Writer Beat顺序及其`Trigger → Character Interpretation → Desire / Intention → Decision → Action / Response → Consequence → New State`因果保持成立；
+4. Setup / Plant / Foreshadow / Callback / Payoff / Reversal / Recontextualization没有被提前、遗漏或互换；
+5. Reveal / Withhold / Delay / Mislead / Confirm / Recontextualize的信息时机符合Writer Authority；
+6. Relationship Delta、Scene Value Change与Scene Exit State在Clip结束时仍可辨认。
+
+Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm、推镜、特写、低机位或其他Camera Language。缺少Camera决策返回Director owner；Writer事实冲突返回STATE-01/05；只有转译、压缩或字段落位问题留在STATE-08。
 
 ## Director-to-Prompt Translation Pass
 
@@ -39,7 +52,7 @@ STATE-08不重新“导演”，只执行`Director Intent Preservation + Model T
 8. **Rhythm Translation**：把BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部；标签不输出。
 9. **Sound Function Translation**：把声音注意力与连接功能投影到现有台词/音效/镜头结尾状态；Sound Strategy不触发Voice Profile，Voice仍服从当前明确opt-in。
 10. **Prompt Compression**：执行`Source Carries State, Prompt Carries Delta`，只保留当前Clip的dramatic、performance、blocking、camera、timing与information delta。
-11. **Director Intent Preservation QA**：最终Prompt必须保住核心变化、注意力顺序、可见表演、关系、构图功能、Camera Trigger / Stop、信息时序与余韵，同时不出现Director Packet、dominance、理论句或冗余参数。
+11. **Writer + Director Intent Preservation QA**：最终Prompt必须同时保住关键人物意图、潜台词、Writer Beat顺序、Setup-Payoff / 信息时机、关系变化，以及注意力顺序、可见表演、构图功能、Camera Trigger / Stop、节奏与余韵；如果压缩后只剩“好看、电影感、慢推、情绪化”或直白情绪说明，判FAIL并回到本Pass修复。最终内容不得出现Writer / Director Packet、dominance、理论句或冗余参数。
 
 当前双人/钢琴等克制关系场景中，如果上游确认“共同朝前、只有gaze泄漏、延迟确认”，Prompt必须让共同朝向先成为稳定关系基线，再让单一视线变化获得注意力；镜头在该Beat前Hold，只有导演意图需要时才在Beat后启动或继续保持静止。不得自动改成互看、同时转头、每镜慢推或Voice Profile。
 
@@ -206,7 +219,7 @@ Negative Consolidation完成后必须执行独立的Negative Compression Pass：
 
 STATE-08内部转换链固定为：
 
-`Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt`
+`Writer Intent → Director Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt`
 
 该链嵌入现有STATE-08，不新增主STATE、Workflow或最终字段。
 

@@ -91,7 +91,7 @@ SCENE已建立。
 
 Scene Breakdown已提供足以唯一判断的场景边界、固定结构、入口 / 出口、关键家具 / 障碍、人物剧情动作和道具空间事实；缺失时返回STATE-05或相应资产拥有者，不得由Blocking Map猜测补造。
 
-Scene Breakdown已经投影Production-Locked Directable Screenplay的Scene Director Intent，包括Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Strategy、Performance Opportunity、Spatial Potential与Rhythm Intent。STATE-06必须读取这一上游意图作为Shot Purpose、Blocking与Director Decision Notes的来源；不得原样复制为Template字段，也不得用Camera技巧反向修改它。Intent与锁定剧本冲突时返回STATE-01/05，不在镜头层调和剧情。
+Scene Breakdown已经投影Production-Locked Directable Screenplay的Writer Intent Packet与Scene Director Intent。Writer侧至少包含Scene Purpose、Character Objective、Obstacle / Conflict、Subtext / Hidden Objective、Value / Relationship / Information Change、Decision / Consequence、Setup-Payoff义务、Writer Beat Map与Scene Exit State；Director侧包含Audience Start / End State、Performance Strategy、Spatial Potential、Camera Strategy与Rhythm Presentation。STATE-06必须同时读取两者：Writer事实决定镜头需要承载什么，Director决定观众如何经历；不得用Camera技巧反向修改关键因果、人物动机、信息时机或Setup-Payoff义务。冲突时返回STATE-01/05，不在镜头层调和剧情。
 
 Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / Clip A”只作为Source Script Labels追溯，不是正式SHOT或CLIP。进入本阶段时不得继承任何上游预划Clip、Clip数量或Shot-to-Clip分配。
 
@@ -105,6 +105,7 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 根据镜头内容按需读取：
 
 - knowledge/spatial_blocking_layer.md（所有Scene；在正式分镜生成前完成Spatial Blocking Decision）
+- knowledge/screenplay_development.md（所有Scene；读取Writer Intent Packet与Writer → Director Handoff，不从中提取Camera参数）
 - knowledge/director_decision_layer.md（所有Scene / Shot Group；在STATE-06结束前形成内部Director Decision Notes）
 - knowledge/action_previs.md（Action-dominant / Mixed，以及需要展开物理动作的Performance-dominant镜头）
 - knowledge/camera_language/shot_language_router.md（所有正式SHOT）
@@ -239,6 +240,8 @@ Work/Codex把结果写入`<active-project-root>/shots/spatial_blocking/SCENE-xxx
 - Spatial / Action Progression
 - Information Reveal / Withhold
 - Atmosphere / Rhythm Control
+
+每个SHOT必须可追溯到至少一个`Writer Beat / Writer obligation`或一个合法的`Director Purpose`；后者可包括必要的关系建立、观察、呼吸、空间定向、反应保留或剪辑接口，但不能凭空增加剧情事实。`Writer Beat ≠ Shot`：一个Writer Beat可以由一个或多个Shot呈现，多个相邻Writer Beat也可由一个可执行长镜头承载；Shot数量永远由Director根据观众体验、表演、空间与生成可执行性决定，Writer Module不规定Shot Count。
 
 任务必须写成该镜头产生的具体变化或建立结果，不能只写“有电影感、增加压力、好看、过渡”。创建或保留前必须回答：`如果删掉这个SHOT，观众会损失什么？` 一个镜头可以承担多项，但不得为凑任务新增剧情。若没有具体信息、情绪、关系、空间/动作、氛围/节奏或边界损失，优先与相邻兼容SHOT合并或删除；若它承担必要呼吸、观察、场景建立或剪辑接口，应归入上述对应任务并说明可见 / 可听结果。Shot Purpose Gate是内部导演决策，不新增Template字段，也不进入STATE-08 Prompt。
 

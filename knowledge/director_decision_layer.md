@@ -2,13 +2,19 @@
 
 ## Purpose
 
-本文件是SD Film贯穿式Director Thinking、唯一的`Director Module / Director Intelligence Layer`连续性owner。它从STATE-00建立项目导演基线，在STATE-01形成剧本级意图，在STATE-05投影为场景执行意图，在STATE-06具体化为Shot级Director Decision Notes，在STATE-07形成Clip级执行合同，在STATE-08由Prompt Compiler翻译，在Editing中保护剪辑观点，并在STATE-09执行Director's Cut Review。
+本文件是SD Film贯穿式Director Thinking、唯一的`Director Module / Director Intelligence Layer`连续性owner。它从STATE-00建立项目导演基线，在STATE-01接收Screenwriter Module的Story / Character / Scene Intent并形成呈现策略，在STATE-05投影为场景执行意图，在STATE-06具体化为Shot级Director Decision Notes，在STATE-07形成Clip级执行合同，在STATE-08由Prompt Compiler翻译，在Editing中保护剪辑观点，并在STATE-09执行Director's Cut Review。
 
 核心分层固定为：
 
 `Director Module = 决策层 → Workflow = 执行层 → Knowledge = 专业知识支持层 → Prompt Compiler = 模型执行翻译层`
 
 本层是persistent cross-stage decision layer，不创建新主STATE，不改变STATE-00至STATE-09，不拥有任何最终Template Schema，也不直接生成Seedance Prompt。内部使用轻量`DIRECTOR INTENT PACKET`传递方向；正式用户交付只保留当前阶段有用的摘要或可执行结果，不机械展示Packet字段、候选方案、拒绝理由或逐步推理。
+
+## Boundary With Screenwriter Module
+
+`knowledge/screenplay_development.md`是唯一Screenwriter owner。Writer负责故事发生什么以及为什么成立：Premise / Theme、人物Want / Need / Objective / Hidden Objective、关键因果、Writer Beat、Scene Value Change、Dialogue / Subtext、Information Architecture、Setup / Payoff及Character / Relationship Arc。Director负责观众如何经历这些事实：Audience Experience、Performance Strategy、Blocking、Mise-en-scène、Composition、Camera Language、Rhythm Presentation与Reveal Presentation。
+
+`Information Architecture = Writer Authority`，`Information Presentation = Director Authority`。Director可以决定用动作、沉默、声音、遮挡或镜头关系呈现一个Writer Beat，但不得改变其锁定的因果、动机、信息时机与Setup / Payoff义务。发现不可导演或执行容量冲突时，走REDIRECT / rewrite feedback返回STATE-01最小受影响范围。
 
 ## Module Contract
 
@@ -18,8 +24,8 @@
 - **Core Externalization**：Camera Language Module，owner为`knowledge/camera_language/index.md`
 - **Trigger**：所有SD Film主流程项目；按当前阶段、当前Scene / Shot / Clip和任务dominance只运行最小充分部分
 - **Not Triggered As**：独立用户步骤、固定分析报告、导演风格库、Camera Movement选择器、Knowledge Reflection替代品、最终Prompt新字段
-- **Position**：`STATE-00 Project Director Baseline → STATE-01 Scene Director Intent → STATE-05 Scene Projection → STATE-06 Director Decision Notes → STATE-07 Clip Production → STATE-08 Director-to-Prompt Translation → Editing / STATE-09 Review`
-- **Required Inputs / Owners**：剧情、项目目标、Confirmed Assets、Visual Direction、Scene / Shot / Clip事实、时长、边界和用户约束均由对应上游owner提供；本层只作导演判断，不静默新增或改写事实
+- **Position**：`STATE-00 Project Director Baseline → STATE-01 Writer → Director Handoff / Scene Presentation Intent → STATE-05 Scene Projection → STATE-06 Director Decision Notes → STATE-07 Clip Production → STATE-08 Director-to-Prompt Translation → Editing / STATE-09 Review`
+- **Required Inputs / Owners**：Story / Character Intent、Writer Beats、Information Architecture、Setup / Payoff obligations与Scene Exit State由Screenwriter owner提供；Confirmed Assets、Visual Direction、Scene / Shot / Clip事实、时长、边界和用户约束由对应上游owner提供。本层只作呈现判断，不静默新增或改写事实
 - **Internal Output Owner**：本文件定义Packet与传递合同；当前Workflow拥有本阶段投影。Work/Codex按项目现有工件保存到`project_bible.md`相关既有区、确认剧本的Scene Intent source data、Scene Breakdown、`shots/director_decision_notes.md`或既有Execution Ledger、Clip Plan内部合同；普通Chat保留在当前Checkpoint / 可恢复上下文。不得在Skill根目录创建项目状态副本
 - **Read / Write Boundary**：只读已确认项目事实；只写当前阶段内部导演数据和既有工件中的投影，不修改Canonical资产、Template字段、正式SHOT / CLIP顺序或Production-Locked剧情
 - **Downstream Consumers**：STATE-00至STATE-09对应Workflow、`workflows/12_editing_workflow.md`、Prompt Compiler与Review
@@ -42,10 +48,8 @@ Packet是按项目逐步充实、按当前任务投影的内部source data，不
 
 - Directorial Thesis
 - Audience Contract / Intended Audience Experience
-- Genre Strategy
-- Emotional / Dramatic Core
-- Character & Relationship Arc
-- Information Strategy
+- Genre Presentation Strategy（消费Writer的Genre Promise）
+- Emotional / Dramatic Presentation（消费Writer的Emotional Arc与Dramatic Core）
 - Performance Strategy
 - Spatial Dramaturgy
 - Visual Dramaturgy
@@ -57,18 +61,18 @@ STATE-00只建立可由用户输入直接确认的最小Project Director Baselin
 
 ### Scene-level
 
-- Scene Objective
+- Writer-supplied Scene Objective / Writer Beat Map
 - Audience Start State
 - Audience End State
-- Character Objective
-- Relationship Delta
-- Information Change / Reveal Strategy
+- Writer-supplied Character Intent / Relationship Change
+- Writer-supplied Information Change / Setup-Payoff obligations
+- Information Presentation / Reveal Strategy
 - Performance Opportunity / Peak
 - Spatial Evolution
 - Rhythm Intent
 - Transition Intent
 
-Scene-level Packet由STATE-01生成source data，STATE-05结合Production-Locked剧本正式投影。它描述“这场戏怎样改变观众、人物与关系”，不写35mm、特写、低机位或推镜等Shot Design参数。
+Scene-level Packet由STATE-01在Writer → Director Handoff后生成呈现source data，STATE-05结合Production-Locked剧本与Writer Intent正式投影。Writer字段仍由Writer owner控制；本Packet描述观众如何经历既定变化，不写35mm、特写、低机位或推镜等Shot Design参数。
 
 ### Shot-level
 
@@ -104,7 +108,7 @@ Clip-level Packet由STATE-07在现有Clip Contract内投影，把Clip定义为`D
 Packet遵守“source data向下传递、阶段owner只写自己的具体化结果”：
 
 1. STATE-00在Project Bible既有项目/故事/制作方向区域保存最小Project Director Baseline；不增加Portable State字段。
-2. STATE-01把项目基线具体化为Project-level剩余策略与Scene Director Intent source data，随Production-Locked Directable Screenplay版本绑定。
+2. STATE-01先把Writer Intent与Production-Locked Directable Screenplay绑定，再由Director把Handoff具体化为Project-level呈现策略与Scene Director Intent source data；两个Packet不互相覆盖。
 3. STATE-02/03只读取资产相关的Dramatic Function、Narrative Priority与Casting / Screen Presence要求，不复制完整Packet。
 4. STATE-04把项目意图翻译为Visual Dramaturgy / Mise-en-scène Direction，写入现有Visual Direction / Project Bible区域。
 5. STATE-05生成Scene-level投影与Scene Camera Strategy，不创建SHOT或具体摄影参数。
@@ -132,7 +136,7 @@ Packet遵守“source data向下传递、阶段owner只写自己的具体化结�
 
 ### STATE-01 Screenplay Development And Analysis
 
-导演层控制Dramatic Intent、Audience Experience、Character Objective、Relationship Arc、Information Strategy、Visual Action、Performance Opportunity、Spatial Potential、Rhythm与AIGC Directability。Creation Brief与Existing Script / Diagnosis双入口保持不变。剧本阶段识别可镜头化机会，例如“先看见她没有回头，随后才意识到另一个人一直看她”，但不提前写Shot List、焦段、景别、机位或运镜。
+Screenwriter Module先控制Dramatic Intent、Character Objective、Relationship Arc、Writer Beats、Information Architecture、Subtext与Setup / Payoff；导演层在Handoff后控制Audience Experience、Performance / Spatial opportunity、Reveal Presentation、呈现节奏与导演层AIGC Directability。Creation Brief与Existing Script / Diagnosis双入口保持不变。剧本阶段可以识别“先让观众看见她没有回头，随后才意识到另一个人一直看她”这样的呈现机会，但不提前写Shot List、焦段、景别、机位或运镜。
 
 ### STATE-02 Asset Discovery
 
@@ -148,7 +152,7 @@ Packet遵守“source data向下传递、阶段owner只写自己的具体化结�
 
 ### STATE-05 Scene Breakdown
 
-拆分Dramatic Beat、Relationship Beat、Information Beat、Performance Beat、Scene / Dramatic Geography、Spatial Evolution、Reveal / Withhold Timing与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
+先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是补充Performance Beat、Scene / Dramatic Geography、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
 
 ### STATE-06 Detailed Shot Design
 
@@ -166,7 +170,7 @@ Clip是Dramatic Execution Unit，不只是时长合并单元。检查Start→End
 
 ### STATE-08 Clip-based Video Prompt / Video Generation
 
-本阶段不重新导演，执行`Director Intent Preservation + Model Translation`。先提取当前Clip最重要的1—3个导演目标，再由`knowledge/prompt_compilation/state08_projection.md`完成Dramatic Priority、Audience Attention、Performance Beat、Composition Function、Camera Motivation、Information Timing、Spatial / Relationship、Rhythm与Sound Function翻译，最后压缩并做Director Intent Preservation QA。最终Schema保持不变。
+本阶段不重写故事、不重新导演，执行`Writer Intent Preservation + Director Intent Preservation + Model Translation`。先锁定当前Clip的关键Writer Beat、Character Intent / Subtext、因果、信息与Setup / Payoff义务，再提取1—3个导演目标，由`knowledge/prompt_compilation/state08_projection.md`翻译。Writer只提供必须保住的戏剧含义，Camera仍只来自Director / Shot / Clip决定。最终Schema保持不变。
 
 ### Editing
 
@@ -174,7 +178,7 @@ Editing保护Editorial POV、Cut / Hold动机、Information Timing、Reaction Pr
 
 ### STATE-09 Review
 
-并行区分Technical Review与Director's Cut Review。前者检查identity、continuity、blocking、props、camera/visual defects等；后者检查Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Timing、Shot Necessity、Rhythm与Emotional Residue。技术正确但情绪信息提前暴露仍是Director-level failure，不得判KEEP。
+并行区分Story Review、Director's Cut Review与Technical Review。Story Review检查causality、motivation、scene value、Writer Beat、Subtext、Setup / Payoff、arc与ending payoff；Director's Cut检查Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Presentation、Shot Necessity、Rhythm与Emotional Residue；Technical Review检查identity、continuity、blocking、props、camera/visual defects等。技术与导演呈现都正确但人物行为本身无动机时是Writing Failure，应返回Writer layer。
 
 ## Required Decision Dimensions
 
@@ -228,9 +232,13 @@ Knowledge Application Reflection只能选择最适合实现已确认意图的1�
 
 ## Workflow Handoff
 
+### From Screenwriter Module
+
+接收Story Intent、Character Intent、Scene Objective、Writer Beats、Relationship Change、Information Architecture、Subtext / Hidden Objective、Setup / Payoff obligations、Performance Intent与Scene Exit State。Director只增加Audience Experience与呈现选择；任何Camera参数都必须来自STATE-06固定决策链，而不是从Writer Packet推断为既定镜头。
+
 ### From STATE-01 / Through STATE-05
 
-STATE-05读取确认剧本中的Scene Director Intent source data，并投影Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Change、Performance Opportunity、Spatial Evolution、Rhythm Intent与Transition Intent。与剧本冲突时返回STATE-01；没有独立Artifact时只从锁定剧本提取可验证事实。
+STATE-05读取确认剧本中的Writer Intent和Scene Director Intent source data，并投影Scene Objective、Audience Start / End State、Character Objective、Writer Beat Map、Relationship Delta、Information Change、Setup / Payoff、Performance Opportunity、Spatial Evolution、Rhythm Intent与Transition Intent。与剧本冲突时返回STATE-01；没有独立Artifact时只从锁定剧本提取可验证事实。
 
 ### To STATE-06
 

@@ -51,7 +51,7 @@ Core与Support均执行相同的提示词确认与图片确认闭环。Support B
 
 ## Director-led Prop Function Pass｜Internal
 
-读取STATE-02的Asset Dramatic Function与当前Director Intent，确认道具在剧情中的信息、关系、动作、身份或视觉母题功能，并建立最小`Prop State Evolution`：初始状态、允许变化、关键交接/损坏/开启/消耗、最终可继承状态。结果投影到现有Overall / Detail / Usage、Consistency与Prompt，不新增字段；无状态变化时明确稳定即可，不为“戏剧性”虚构变化。
+读取STATE-02的Asset Dramatic Function、Writer Intent中的Prop Story Function / Setup-Payoff relevance / 信息时机与当前Director Intent，确认道具在剧情中的信息、关系、动作、身份或视觉母题功能，并建立最小`Prop State Evolution`：初始状态、允许变化、关键交接/损坏/开启/消耗、最终可继承状态。Writer事实不直接规定造型或材质；结果投影到现有Overall / Detail / Usage、Consistency与Prompt，不新增字段。无状态变化时明确稳定即可，不为“戏剧性”虚构变化，也不得提前暴露尚未Payoff的道具功能。
 
 
 ---

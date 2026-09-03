@@ -542,14 +542,22 @@ STATE-08 Clip-based Video Prompt / Video Generation。
 
 ---
 
+# Project Writer Foundation｜Internal
+
+STATE-00从用户已明确输入中提取最小Writer Foundation：`Premise / Theme or Thematic Question / Dramatic Question / Genre Promise / Story Engine / Core Conflict`。只记录当前可证实内容与清楚标记的Assumption；不要求用户填写完整WRITER INTENT PACKET，不在STATE-00分析完整人物心理、创建Scene、生成剧本或决定Camera。
+
+该Foundation由`knowledge/screenplay_development.md`拥有，Work/Codex只投影到`project_bible.md`既有Story Foundation / Project Intent区域，普通Chat保留在当前Checkpoint。未知项留给STATE-01，不新增Portable State字段或平行Writer文件。
+
+---
+
 # Project Director Baseline｜Internal
 
 STATE-00除Final Goal、平台、时长和画幅外，必须从用户已明确输入中建立最小`Project Director Baseline`：
 
 - Directorial Thesis：这部作品最终要让观众经历什么变化
 - Audience Contract / Intended Viewing Experience：观众被邀请以何种距离、信息位置和情绪预期观看
-- Genre Strategy：类型承诺及当前明确的偏离/限制
-- Non-negotiable Dramatic Core：后续优化、资产和生成都不能丢失的核心关系、冲突或品牌目的
+- Genre Presentation Strategy：如何让观众体验Writer已建立的类型承诺
+- Non-negotiable Dramatic Presentation Core：后续呈现、资产和生成都不能丢失的体验、关系可读性或品牌目的
 
 这四项属于`knowledge/director_decision_layer.md`定义的Project-level Director Intent source data。只记录用户直接提供或可明确标为Assumption的内容；未知项保持待后续STATE-01确认。不得在STATE-00据此创作剧情、分析完整人物关系、建立Scene、写Camera Language或预选镜头参数。
 

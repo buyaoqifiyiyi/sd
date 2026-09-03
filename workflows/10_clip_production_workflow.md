@@ -26,6 +26,7 @@
 - STATE-06 Confirmed `Professional Detailed Shot Script` 与原正式 SHOT 顺序；每个Shot已完整包含镜号、TC IN、TC OUT、时长(s)、景别、焦段、场景/美术、画面内容/构图、人物动作、摄影机/镜头、摄影参数、镜头调度、光线/色彩、画面特效/转场、台词/旁白/口播、同期声音设计、AI制作备注、素材/资产
 - 每个Scene的Confirmed `Spatial Blocking Result`：Spatial Blocking Decision、Map Mode、Structured Blocking Map、Text Spatial Rules、Clip Boundary Spatial Ledger，以及适用时已核对的Top-down Blocking Map；STATE-07只读继承，不得重新设计
 - STATE-06为每个Scene / Shot Group生成的当前有效`Director Decision Notes`
+- STATE-05/06已经投影并追溯到Production-Locked Screenplay的`Writer Beat Map`、Character Intent / Subtext、Relationship Delta、Information Architecture与Setup / Payoff obligations；STATE-07只保护这些义务，不重新编剧
 - 每个 Shot 的精确时间码与目标时长，以及`AI制作备注`中保存的Start Boundary、End-Frame Constraint、Next-Shot Handoff、执行风险与稳定降级
 - 每个 Shot 已确认的 Camera Language Decision，包括镜头目的、情绪/空间功能、人物运动、节奏阶段、主/辅助/禁止运镜、Seedance稳定等级、选择理由与原子知识证据
 - 已确认 Character / Environment / Prop / FX Asset
@@ -81,6 +82,7 @@
 - A/B画面左右与前后、各自朝向、关系轴、摄影机轴线侧，以及视线/攻击/武器/追逐路线/水流/能量的来源—路径—目标连线（适用时）
 - Start Boundary、End-Frame Constraint、Next-Shot Handoff
 - 所属Scene / Shot Group的Director Decision Notes，以及该组Narrative Objective、Audience Know / Feel / Wait、关系变化、Blocking、Camera动/停理由、功能性色光、表演尺度、声音重点/留白、节奏高潮/留白与Seedance降级
+- 所属Writer Beat、角色意图/隐藏意图、潜台词连续性、关系变化、信息进入时机、Setup / Payoff义务与Scene Exit State；这些只进入内部生成合同，不新增最终Prompt字段
 
 不得重排、遗漏、复制、跨过中间 Shot 或把多个 Shot 改写成一个新 Shot。
 
@@ -99,6 +101,8 @@ STATE-07只组织这些Detailed Shots，不得回到原剧本重新简化画面�
 - 摄影机、构图、轴线、视线与运动连续性
 - 每个 Shot 的 Camera Language Decision与主运镜叙事功能；不得以“统一风格”为由把不同决策抹平成慢推/横移模板
 - Director Decision Notes中的主叙事目标、观众等待、关系/Blocking变化、摄影机介入程度、视觉高潮与留白是否能在同一Clip内保持一个清楚方向；互相冲突时不得强行合并
+- Writer Beat的Trigger → Interpretation → Desire / Intention → Decision → Action / Response → Consequence → New State是否在候选边界内仍然成立；不得为技术便利切掉必要Trigger、反应、决定或后果
+- Setup / Payoff timing、Information Architecture、Dialogue / Subtext continuity与Relationship Delta是否被完整保留；不得提前揭示、遗漏回收或把潜台词扁平化成直白说明
 - 空间关系和道具持有/位置/状态连续性
 - 候选Clip必须保持Confirmed Spatial Blocking Result中的角色路径、摄影机位置 / 轴线侧与关键道具空间锚点；合并不得制造地图中不存在的穿越、换边或捷径
 - 镜头几何连续性：单一主轴、屏幕左右、身体朝向、眼线、摄影机轴线侧和来源—目标连线不得在合并后翻转
@@ -109,6 +113,8 @@ STATE-07只组织这些Detailed Shots，不得回到原剧本重新简化画面�
 单 Shot 可以独立成为 Clip。多个相邻 Shot 只有在同一次生成内可清楚、连续地执行且总时长不超过15秒时才可合并；不得为了减少 Clip 数量强行合并。
 
 Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相邻、兼容的 Shot 组成4—15秒 Clip。单个 Shot 超过15秒或无法在15秒内稳定执行时，返回 STATE-06 按自然动作/覆盖/机位/时空边界拆分。
+
+Clip Boundary不得错误切断Writer Beat的最小因果完整性。若平台时长迫使拆分，必须把Trigger / Response、Decision / Consequence或Setup / Payoff的承接关系写入现有Start Boundary、End-Frame Constraint、Clip End-State Record与Next-Clip Carryover；不得改写Beat顺序来迁就时长。
 
 ## Step 2A｜Run Clip Preflight Draft
 

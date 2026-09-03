@@ -113,14 +113,16 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 **进阶指令**
 
 ```text
-调用sd，把这个故事概念开发成一条3分钟竖屏剧情片的可制作剧本。必须保留核心人物、世界观和结局；从导演意图、观众体验、人物目标与关系、信息揭示、视觉动作、表演机会、空间潜力、节奏和AIGC可执行性开始，完成完整剧本提案后停下来等我确认。不要提前写分镜、焦段或运镜。
+调用sd，把这个故事概念开发成一条3分钟竖屏剧情片的可制作剧本。必须保留核心人物、世界观和结局；先建立人物目的、因果、冲突、关系弧、潜台词、Writer Beat、信息策略和Setup / Payoff，再由导演模块建立观众体验与可见表演方向。完成完整剧本提案后停下来等我确认。不要提前写分镜、焦段或运镜。
 ```
 
 **Skill 行为 / 停止点**
 
 - 只有Idea / Brief且明确要求写剧本时，会被识别为 `Creation Brief`，STATE-01直接进入Screenplay Generation，不要求你先提供完整剧本。
-- 导演思维从剧本生成开始：控制为什么这一场存在、观众前后知道/感觉什么、人物目标与关系变化、信息何时揭示、动作/停顿/空间如何承载情绪，以及AIGC是否可执行。
-- 这不等于提前写分镜；35mm、推镜、特写、摇镜、机位、SHOT / CLIP仍留给后续STATE-06/07。
+- SD Film现在默认同时包含Screenwriter Module与Director Module。Screenwriter负责故事、人物、因果、潜台词、Writer Beat、Setup / Payoff和信息架构；Director负责观众体验、表演调度、空间、镜头语言、构图、运镜与呈现节奏。
+- 两者通过内部Writer → Director Handoff衔接；用户不需要填写完整WRITER INTENT PACKET，最终交付仍是可独立阅读的剧本。
+- `Writer Beat ≠ Shot`。Writer只确定人物/剧情状态发生了什么变化；一个Beat用一个或多个Shot、或多个Beat用一个长镜头，由Director决定。
+- 这不等于提前写分镜；35mm、推镜、特写、摇镜、机位、SHOT / CLIP仍留给后续Director / STATE-06/07。
 - 剧本内部会经过Directable Screenplay QA，但最终交给你的仍是可独立阅读的剧本，不是十项分析报告。
 - Proposal 输出后会停下；只有你明确确认，才成为 `Production-Locked Directable Screenplay`并进入后续资产阶段。
 - 你说“修改这一场”时会保持在Script Development，只改该场与必要相邻因果，不会跳到Shot Design。
@@ -158,6 +160,8 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 **Skill 行为 / 停止点**
 
 - 只要求分析、没有明确允许改写时，会先评为 A（无明显优化必要）、B（轻度优化空间）或 C（明显结构问题），然后停在 User Decision Gate。
+- 已有剧本会先检查因果、人物动机、场景价值变化、Writer Beat推进、冲突/风险、潜台词、Setup / Payoff、人物/关系弧、结局回收与信息架构；不会默认改写。
+- 可直接说“显示编剧意图”“为什么人物这么做”或“检查潜台词”。这些只展开必要的Writer分析，不改变当前剧本确认边界。
 - 如果当前指令已经明确“分析并优化 / 直接优化 / 直接改写 / 只优化某一场”，这已构成改写授权；Skill仍先保留诊断依据，但不会重复问你是否要优化。最终Proposal仍必须由你确认。
 - 单独说“继续”“好的”“下一步”不等于授权改写，也不等于确认 Proposal。
 - 局部优化只改指定范围；若必须影响相邻内容，会先列为待决定项。

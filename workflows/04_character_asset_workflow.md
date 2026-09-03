@@ -145,7 +145,7 @@ Core与Support都必须执行同一双确认闭环。Support Board图片确认�
 
 ## Director-led Character Presence Pass｜Internal
 
-读取STATE-02的Asset Dramatic Function、Narrative Priority与Casting Logic，只把会影响视觉资产执行的结果投影到现有角色定义、外观、服装与风格区域：Character Presence / Screen Presence、身份辨识优先级、主要表演载体与Performance Feasibility，以及剧情需要时的Costume / Silhouette Dramaturgy。服装、轮廓、姿态与动作习惯必须服务人物身份、关系或状态变化；不得为了“更有设计感”改写Canonical身份，也不新增固定Template字段。
+读取STATE-02的Asset Dramatic Function、Narrative Priority与Casting Logic，并消费Writer Intent中的人物剧情身份、Character / Relationship Arc与必须可执行的状态变化；只把会影响视觉资产执行的结果投影到现有角色定义、外观、服装与风格区域：Character Presence / Screen Presence、身份辨识优先级、主要表演载体与Performance Feasibility，以及剧情需要时的Costume / Silhouette Dramaturgy。Writer事实不直接规定视觉细节；服装、轮廓、姿态与动作习惯必须服务人物身份、关系或状态变化，不得为了“更有设计感”改写Canonical身份，也不新增固定Template字段。
 
 
 ## 01 Character Identity Confirmation

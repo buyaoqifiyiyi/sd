@@ -388,12 +388,13 @@ Next Workflow: Project Setup Workflow
         director = (skill_root / "knowledge" / "director_decision_layer.md").read_text(encoding="utf-8")
         scene = (skill_root / "workflows" / "08_scene_breakdown_workflow.md").read_text(encoding="utf-8")
         shot = (skill_root / "workflows" / "09_shot_design_workflow.md").read_text(encoding="utf-8")
-        self.assertIn("STATE-01 Scene Director Intent → STATE-05 Scene Projection → STATE-06 Director Decision Notes", director)
+        self.assertIn("STATE-01 Writer → Director Handoff / Scene Presentation Intent → STATE-05 Scene Projection → STATE-06 Director Decision Notes", director)
         self.assertIn("不要求把相同规则复制进每个Workflow", director)
-        self.assertIn("Upstream Director Intent Projection", scene)
+        self.assertIn("Upstream Writer Intent And Director Intent Projection", scene)
         self.assertIn("不新增用户可见固定字段", scene)
         self.assertIn("Production-Locked Directable Screenplay", shot)
-        self.assertIn("不得原样复制为Template字段", shot)
+        self.assertIn("Writer事实决定镜头需要承载什么，Director决定观众如何经历", shot)
+        self.assertIn("不从中提取Camera参数", shot)
 
     def test_installed_chat_work_routing_passes(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
@@ -451,6 +452,90 @@ Next Workflow: Project Setup Workflow
         ):
             self.assertIn(repair_policy, contract)
         self.assertIn("Skill Update Self-Check / Change Safety Checklist", guide)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
+    def test_screenwriter_module_writer_intelligence_eleven_regressions(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+
+        def source(relative: str) -> str:
+            return (skill_root / relative).read_text(encoding="utf-8-sig")
+
+        owner = source("knowledge/screenplay_development.md")
+        for marker in (
+            "Screenwriter Module / Writer Intelligence Layer",
+            "WRITER INTENT PACKET", "Project-level", "Scene-level", "Beat-level",
+            "Story Logic / Causality", "Character Engine", "Scene Value Change",
+            "Writer Beat Is Not A Shot", "Dialogue / Subtext",
+            "Setup / Payoff And Information Architecture", "Writer → Director Handoff",
+        ):
+            self.assertIn(marker, owner)
+
+        contracts = source("references/module_contracts.md")
+        self.assertIn("Screenwriter Module Contract", contracts)
+        self.assertIn("Writer Beat不等于Shot", contracts)
+        self.assertIn("Information Architecture", contracts)
+        self.assertIn("Information Presentation", contracts)
+
+        cross_stage = {
+            "workflows/08_scene_breakdown_workflow.md": (
+                "Writer Beat Map", "Value / Relationship / Information Change",
+            ),
+            "workflows/09_shot_design_workflow.md": (
+                "Writer Beat / Writer obligation", "Writer Beat ≠ Shot",
+            ),
+            "workflows/10_clip_production_workflow.md": (
+                "Clip Boundary不得错误切断Writer Beat", "Setup / Payoff timing",
+            ),
+            "knowledge/prompt_compilation/state08_projection.md": (
+                "Writer Intent Preservation Gate", "Writer + Director Intent Preservation QA",
+            ),
+            "workflows/12_editing_workflow.md": (
+                "Writer Rhythm Protection", "reaction logic",
+            ),
+            "workflows/13_review_workflow.md": (
+                "Story Review", "WRITING FAILURE", "DIRECTING FAILURE",
+                "GENERATION FAILURE", "EDITING FAILURE",
+            ),
+        }
+        for relative, markers in cross_stage.items():
+            text = source(relative)
+            for marker in markers:
+                self.assertIn(marker, text, relative)
+
+        regressions = source("references/regression_scenarios.md")
+        evidence = {
+            "A": ("Rainy-night Two-woman Reunion", "不出现焦段、机位、运镜"),
+            "B": ("Diagnose Before Rewrite", "causality", "User Decision Gate"),
+            "C": ("Convenience Action Rejected", "Trigger → Character Interpretation"),
+            "D": ("Subtext Opportunity", "Surface Meaning → Subtext → Hidden Objective"),
+            "E": ("No State Change", "weak / replaceable scene"),
+            "F": ("Timing Survives Production", "提前暴露"),
+            "G": ("Writer Beat Is Not Shot", "一个Shot、多个Shot"),
+            "H": ("Preserve Both Authorities", "Camera仍只来自Director Decision"),
+            "I": ("Unmotivated Behavior Is Writing Failure", "返回STATE-01"),
+            "J": ("No Universal Conflict Formula", "不共享强制冲突密度"),
+            "K": ("Continue / Reload / Re-entry Preserved", "Accepted Take Canon"),
+        }
+        letters = "ABCDEFGHIJK"
+        starts = {letter: regressions.index(f"### R24-{letter}") for letter in letters}
+        deterministic = regressions.index("## Deterministic Expectations")
+        for index, letter in enumerate(letters):
+            end = starts[letters[index + 1]] if index + 1 < len(letters) else deterministic
+            scenario = regressions[starts[letter]:end]
+            self.assertIn("输入：", scenario, letter)
+            self.assertIn("PASS：", scenario, letter)
+            self.assertIn("FAIL：", scenario, letter)
+            for marker in evidence[letter]:
+                self.assertIn(marker, scenario, letter)
+
+        final_template = source("templates/10_video_prompt.md")
+        for leaked_writer_field in (
+            "WRITER INTENT PACKET：", "Writer Intent Preservation Gate：",
+        ):
+            self.assertNotIn(leaked_writer_field, final_template)
+        skill = source("SKILL.md")
+        self.assertNotIn("STATE-10", skill)
+        self.assertLessEqual(len(skill.encode("utf-8")), 18000)
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
     def test_skill_validator_rejects_version_build_mismatch(self) -> None:
@@ -602,7 +687,7 @@ Next Workflow: Project Setup Workflow
             "具象化后不得默认强制删除",
             "Style State And Delta Compression",
             "默认选择3—5个",
-            "Director Intent / Literary Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt",
+            "Writer Intent → Director Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt",
             "Blender / Unreal式严格物理仿真",
         ):
             self.assertIn(marker, projection)
@@ -1176,17 +1261,41 @@ REV-0001
                 "Continuous Handoff：同一Clip连续生成到分镜2，继承共坐状态。",
                 sound="雨声与风声形成环境底声；同步动作声为衣料与木质轻响；声音尾部持续承接。",
                 start_state="第一帧来源：直接继承REF-TAIL-02｜CLIP-02尾帧参考的左右、姿态、道具与轴线。",
-            ).replace("人物抬眼看向画面右侧，随后停稳。", "两人完成姿态调整，双脚落地并形成正常并排坐姿。")
+            ).replace(
+                "轴线同侧固定机位，焦点锁定人物。",
+                "轴线同侧固定中景，以同一长琴凳和两人之间的窄负空间形成克制共享构图；先Hold共同朝前，不在信息Beat前运动。",
+            ).replace(
+                "人物抬眼看向画面右侧，随后停稳。",
+                "两人完成姿态调整，双脚落地并形成正常并排坐姿；观众第一眼先确认共同朝前和未被打破的关系距离。",
+            )
             fields_2 = make_shot_fields(
                 "Continuous Handoff：同一Clip连续生成到分镜3，乐谱留在地面。",
                 sound="雨声与风声形成环境底声；同步动作声为纸张滑动与落地轻响；声音尾部持续承接。",
                 start_state="第一帧来源：继承分镜1结尾的并排坐姿、左右、道具与轴线。",
-            ).replace("人物抬眼看向画面右侧，随后停稳。", "乐谱滑落到木地板，两人同步低头后重新看向窗外，乐谱留在地面。")
+            ).replace(
+                "轴线同侧固定机位，焦点锁定人物。",
+                "泄漏前保持固定；许栀视线回收后才触发极轻微横移，沿轴线同侧移动并停止在仍保留两人窄负空间的共同朝前构图。",
+            ).replace(
+                "人物抬眼看向画面右侧，随后停稳。",
+                "乐谱滑落到木地板，两人低头后重新朝前；许栀仅以一次gaze-only leakage短暂看向林夏，头部与肩线不转，林夏尚未察觉。先看落地乐谱，第二注意目标才是许栀的视线。",
+            ).replace(
+                "呼吸平稳，视线移动后由平静转为警觉。",
+                "许栀屏住半拍呼吸，视线短暂泄漏后立即压回前方；林夏保持克制，没有同步反应或提前确认。",
+            )
             fields_3 = make_shot_fields(
                 sound="雨声形成环境底声；同步动作声为四个有明显停顿的轻短钢琴单音；声音尾部以雨声收束。",
                 start_state="第一帧来源：继承分镜2结尾的共坐状态、左右、地面乐谱与轴线。",
                 end_state="四个独立单音完成，人物与乐谱状态稳定；主体清楚可读，可作为下一Clip接口。",
-            ).replace("人物抬眼看向画面右侧，随后停稳。", "林夏与许栀交替各按两次单键，完成四个独立单音后停稳。")
+            ).replace(
+                "轴线同侧固定机位，焦点锁定人物。",
+                "横移停止后保持Static，不再靠近；共享画面压住确认，给Delayed Reaction和最后一个单音后的Pause留出时间。",
+            ).replace(
+                "人物抬眼看向画面右侧，随后停稳。",
+                "林夏停一拍后才以一次变浅的呼吸回应，仍不转头；两人交替各按两次单键，完成四个独立单音后继续共同朝前停稳。",
+            ).replace(
+                "呼吸平稳，视线移动后由平静转为警觉。",
+                "林夏的Delayed Reaction只通过呼吸和指尖停顿泄漏，许栀不追加强度；最后一个单音后共同Hold，关系被确认但不公开表演。",
+            )
             ending = (
                 f"反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}\n"
                 "座椅结构分裂或人物左右互换、人物离座或拾取乐谱、肢体异常、演奏范围自动扩展、"
@@ -1196,8 +1305,19 @@ REV-0001
             self.assertEqual(prompt.count("共同坐在唯一一张横向长琴凳"), 1)
             self.assertEqual(prompt.count("反向提示词："), 1)
             self.assertTrue(prompt.rstrip().endswith("夸张表演或炫技摄影。"))
+            for required in (
+                "共同朝前", "gaze-only leakage", "第一眼", "第二注意目标",
+                "Hold", "Delayed Reaction", "共享构图", "才触发极轻微横移",
+                "停止在", "尚未察觉", "Pause",
+            ):
+                self.assertIn(required, prompt)
             for forbidden in ("音色特征：", "Voice Profile", "Voice Reference", "Audio Reference", "猫", "吉他", "手机", "磁带"):
                 self.assertNotIn(forbidden, prompt)
+            for internal_label in (
+                "DIRECTOR INTENT PACKET", "Task Dominance", "Director-to-Prompt Translation Pass",
+                "BUILD / HOLD / PEAK / RELEASE", "PL1", "PL2", "PL3",
+            ):
+                self.assertNotIn(internal_label, prompt)
             path.write_text(prompt, encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, path, True), 0)
 
@@ -2133,6 +2253,127 @@ None
                 encoding="utf-8",
             )
             self.assertEqual(run_quiet(validator.validate_execution_ledger, path, True), 1)
+
+    def test_director_module_camera_language_end_to_end_contract(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+
+        def source(relative: str) -> str:
+            return (skill_root / relative).read_text(encoding="utf-8-sig")
+
+        director = source("knowledge/director_decision_layer.md")
+        for marker in (
+            "Director Module / Director Intelligence Layer",
+            "DIRECTOR INTENT PACKET",
+            "Project-level",
+            "Scene-level",
+            "Shot-level",
+            "Clip-level",
+            "Task Dominance Router",
+            "Camera Movement Trigger",
+            "Dramatic Execution Unit",
+            "Director-to-Prompt Boundary",
+            "Director's Cut Review",
+        ):
+            self.assertIn(marker, director)
+
+        camera = source("knowledge/camera_language/index.md")
+        for marker in (
+            "Camera Language Module",
+            "Composition Direction",
+            "Camera Movement Direction",
+            "Lens / Distance Direction",
+            "Shot Rhythm Direction",
+            "Cross-stage Mapping",
+            "Camera Movement Trigger",
+        ):
+            self.assertIn(marker, camera)
+
+        workflow_markers = {
+            "workflows/01_project_setup_workflow.md": ("Project Director Baseline",),
+            "workflows/02_script_analysis_workflow.md": (
+                "Screenwriter Module Continuity", "Writer → Director Boundary",
+            ),
+            "workflows/03_asset_discovery_workflow.md": ("Director-led Asset Function Pass",),
+            "workflows/04_character_asset_workflow.md": ("Director-led Character Presence Pass",),
+            "workflows/05_environment_asset_workflow.md": ("Director-led Environment Function Pass",),
+            "workflows/06_prop_asset_workflow.md": ("Director-led Prop Function Pass",),
+            "workflows/07_visual_development_workflow.md": (
+                "Visual Dramaturgy / Mise-en-scène", "Visual Arc",
+            ),
+            "workflows/08_scene_breakdown_workflow.md": (
+                "Writer Beat Map And Director Dramatic Geography", "Scene Camera Strategy",
+            ),
+            "workflows/09_shot_design_workflow.md": (
+                "如果删掉这个SHOT，观众会损失什么", "Camera Movement Trigger",
+            ),
+            "workflows/10_clip_production_workflow.md": (
+                "Dramatic Execution Unit", "Clip Camera Continuity / Visual Rhythm",
+            ),
+            "workflows/11_video_generation_workflow.md": (
+                "Director-to-Prompt Translation Pass", "Writer + Director Intent Preservation QA",
+            ),
+            "workflows/12_editing_workflow.md": ("Editorial Decision Pass",),
+            "workflows/13_review_workflow.md": (
+                "Technical Review", "Director's Cut Review",
+                "KEEP", "RE-EDIT", "REGENERATE", "REDIRECT",
+            ),
+        }
+        for relative, markers in workflow_markers.items():
+            workflow = source(relative)
+            for marker in markers:
+                self.assertIn(marker, workflow, relative)
+
+        translation = source("knowledge/prompt_compilation/state08_projection.md")
+        for marker in (
+            "Dramatic Priority Extraction", "Audience Attention Hierarchy",
+            "Performance Beat Translation", "Composition Function Translation",
+            "Camera Motivation Translation", "Information Timing Translation",
+            "Spatial & Relationship Translation", "Rhythm Translation",
+            "Sound Function Translation", "Prompt Compression", "Writer + Director Intent Preservation QA",
+            "共同朝前", "gaze泄漏",
+        ):
+            self.assertIn(marker, translation)
+
+        regressions = source("references/regression_scenarios.md")
+        scenario_evidence = {
+            "A": ("Rainy-night Two-woman Reunion", "Audience Experience", "不出现Shot List"),
+            "B": ("Visual Development", "Visual Dramaturgy / Mise-en-scène", "Visual Arc"),
+            "C": ("40-second Two-person Scene", "Scene Camera Strategy", "没有创建SHOT / CLIP"),
+            "D": ("Glance Beat", "Audience Attention", "Trigger / Stop"),
+            "E": ("Suspicion To Confirmation", "Dramatic Execution Unit", "Camera Continuity / Visual Rhythm"),
+            "F": ("Piano Pair", "gaze-only leakage", "不输出Director理论"),
+            "G": ("Action-dominant Wuxia Clip", "Action PREVIS A3", "空间可读性"),
+            "H": ("Technically Correct, Dramatically Early", "Director's Cut Review", "绝不Disposition=`KEEP`"),
+            "I": ("Continue Is Not Reload", "不触发全量Runtime Reload", "Shot-State Memory"),
+            "J": ("Three Shots Have Three Functions", "建立、隐藏/泄漏、确认", "慢推+浅景深"),
+        }
+        scenario_starts = {
+            letter: regressions.index(f"### R23-{letter}") for letter in "ABCDEFGHIJ"
+        }
+        for index, letter in enumerate("ABCDEFGHIJ"):
+            end = (
+                scenario_starts["ABCDEFGHIJ"[index + 1]]
+                if index + 1 < 10
+                else regressions.index("## Deterministic Expectations")
+            )
+            scenario = regressions[scenario_starts[letter]:end]
+            self.assertIn("输入：", scenario, letter)
+            self.assertIn("PASS：", scenario, letter)
+            self.assertIn("FAIL：", scenario, letter)
+            for marker in scenario_evidence[letter]:
+                self.assertIn(marker, scenario, letter)
+
+        final_template = source("templates/10_video_prompt.md")
+        self.assertIn("# CLIP-X｜标题 Seedance视频提示词", final_template)
+        self.assertIn("音色特征：", final_template)
+        self.assertIn("条件字段", final_template)
+        for leaked_internal_field in (
+            "DIRECTOR INTENT PACKET：", "Task Dominance：",
+            "Director-to-Prompt Translation Pass：", "Scene Camera Strategy：",
+        ):
+            self.assertNotIn(leaked_internal_field, final_template)
+
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
 
 if __name__ == "__main__":
