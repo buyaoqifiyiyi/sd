@@ -17,6 +17,12 @@
 7. 只读取当前阶段需要的Knowledge文件与当前最终交付对应Template；不得为“保险”加载整个知识库。
 8. 输出前执行Workflow验证、`rules/completion_gate.md`和Template完整性检查。
 
+### Current-Object Fast Path
+
+当项目已有可验证的当前对象（例如外部角色图、环境图或道具图）时，先只读取Selected State Source、当前对象记录、对应Workflow、对应Template与资产锁合同；不得先读取其他资产类别、其他篇章目录或整套Knowledge库。对已有文件执行最小来源、可读性与身份匹配检查，随后进入该对象的确认或最小补充步骤；只有发现缺失、冲突或需重新设计时才扩展读取范围。
+
+已有外部视觉文件默认登记为Candidate Reference。若用户明确要求“使用现有资产/跳过制作”，可跳过新图生成分支，直接进入Candidate Reference确认门；不得跳过用户确认、Canonical Reference登记或Active Version锁定。
+
 当前Workflow的Required Resources列表是该阶段执行资源的权威清单；`knowledge/00_knowledge_index.md`只负责分类和发现，不得维护与Workflow竞争的资源门槛。尤其STATE-08以`workflows/11_video_generation_workflow.md`的资源声明为准。
 
 ## Actual Read Gate

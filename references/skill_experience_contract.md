@@ -10,9 +10,9 @@
 
 ## Trigger Boundary
 
-触发：STATE-09 Review完成、REVISE / REBUILD返回、生成失败复盘，或用户明确要求总结/记录技能经验。
+触发：STATE-09 Review完成、REVISE / REBUILD返回、生成失败复盘，或用户明确要求总结/记录/使用技能经验。
 
-不触发：普通项目状态读取、单次Prompt润色、未完成的即时推理、项目专属事实整理、用户未要求的自动Skill写入。
+不触发：新项目启动、普通项目状态读取、项目发现或查找、单次Prompt润色、未完成的即时推理、项目专属事实整理、用户未要求的自动Skill写入或自动经验检索。
 
 ## Candidate Schema
 
@@ -49,7 +49,7 @@ Skill经验库路径为Skill根目录下的`knowledge/skill_experience/experienc
 
 ## Application To Output
 
-执行相关产出前按需筛选ACTIVE经验，并记录内部 `Experience Application`：命中的适用条件、采用的建议、未采用原因（如有）与验证结果。经验只投影为当前Template允许的语义，不新增最终输出字段，不覆盖用户当前指令、项目事实、Rules、Workflow或Template。
+仅在本合同的显式触发条件成立后，才筛选ACTIVE经验，并记录内部 `Experience Application`：命中的适用条件、采用的建议、未采用原因（如有）与验证结果。不得用项目名称、题材、素材或相似度自动检索历史项目/经验。经验只投影为当前Template允许的语义，不新增最终输出字段，不覆盖用户当前指令、项目事实、Rules、Workflow或Template。
 
 ## Application To Project Iteration
 

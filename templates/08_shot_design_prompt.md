@@ -6,6 +6,16 @@
 
 本Template是STATE-06用户可见输出Schema的唯一来源。内部Camera Language Decision、Execution Risk、Director Decision Notes与Knowledge Reflection只用于推导和QA，不得成为额外输出栏目，也不得泄漏内部逐步推理。
 
+## Default User-facing Delivery
+
+默认交付标题为“分镜表”，只输出以下表格，不添加独立的色彩设定、镜头设定、情绪/表演设定、摄影参数、风险报告或导演分析：
+
+| 镜号 | 画面与动作 | 画面表达 | 连续性 | 资源 |
+|---|---|---|---|---|
+| SHOT-001 | 可见人物、动作及必要台词/同期声 | 仅写理解画面所必需的景别、构图或运动语义 | 起始状态、结束状态及与下一镜的承接 | 已确认资产ID与必要参考 |
+
+每镜仍须完整、可独立阅读，不得使用“同上”或省略连续性。下文十八字段、时间码、摄影/光色/声音、风险和QA要求均是内部`Detailed Shot Record`，用于计算、连续性核验和STATE-07交接；任何将它们称为用户可见或要求逐项展示的文字，均由本节覆盖。用户明确要求“完整版专业分镜”时，才展示内部完整Schema。
+
 ---
 
 ## Input
@@ -26,7 +36,7 @@
 
 ---
 
-## Output Header
+## Internal Production Record Header
 
 - Project ID：
 - Scene / Sequence：
@@ -40,7 +50,7 @@
 - Timeline Range：
 - Total Duration：
 
-## Professional Detailed Shot Script
+## Internal Professional Detailed Shot Record
 
 必须严格保持以下十八个字段及顺序。每一行只对应一个唯一正式`SHOT-xxx`；不得把多个景别、机位、视点或新的刺激—反应节拍塞进同一行。
 

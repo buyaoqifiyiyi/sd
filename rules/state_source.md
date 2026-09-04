@@ -6,6 +6,16 @@
 
 ## Selection Priority
 
+## Intent Scope Gate
+
+在解析任何本地Root、Portable State或`project_registry.json`之前，先判断当前请求是否需要持久化项目资料：
+
+- 新项目、从创意/剧本开始的普通制作请求，且当前会话没有已验证项目上下文时：直接建立会话内最小STATE-00；不得扫描Registry、按项目名/素材相似度匹配历史项目，也不得为此查询Skill Experience。
+- 当前会话已有已验证项目上下文：优先继续该上下文，不重复枚举Registry。
+- 用户明确说恢复/查找/登记/保存/归档项目，提供Project ID、Project Root或明确指向某个已有项目时：才读取相应持久化来源；Registry只可用精确Project ID或用户明确选定的项目来核验，不得以名称、题材、素材或“类似项目”猜测匹配。
+
+这一步只决定是否需要持久化来源，不改变STATE-00至STATE-09、Completion Gate或项目事实优先级。
+
 每次Workflow开始、恢复、保存、推进或重载后，都必须重新按以下优先级选择State Source：
 
 ```text

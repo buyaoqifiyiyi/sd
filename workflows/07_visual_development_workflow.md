@@ -2,6 +2,10 @@
 
 # 视觉开发阶段
 
+## Default Interaction Boundary
+
+STATE-04仍须完整建立、核验并保存Visual Direction，但默认不输出Visual Guide、色彩系统、镜头语言、光线体系、情绪设定或导演阐释，也不在此阶段停下等待展示确认。它们是后续资源、分镜表、Clip表和最终提示词的内部源数据；只有用户明确要求查看或修改视觉开发成果时，才使用本Workflow的完整输出。完成内部Gate后直接进入合法下一阶段。
+
 
 ## Purpose
 

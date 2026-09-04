@@ -70,9 +70,9 @@ references/project_workspace.md
 
 references/project_state_contract.md
 
-本地文件访问确实可用时，按`references/project_workspace.md`读取`project_registry.json`并解析Active Project Root候选；随后只按`rules/state_source.md`选定唯一State Source。本Workflow不复制State Source优先级或fallback细节。
+只有`rules/state_source.md`的Intent Scope Gate明确要求恢复、保存、登记、归档或核验用户指定项目时，才读取`project_registry.json`或解析Active Project Root候选；不得为新项目、首次剧本请求或相似项目查找而扫描它们。随后只按`rules/state_source.md`选定唯一State Source。本Workflow不复制State Source优先级或fallback细节。
 
-只有`rules/state_source.md`确认当前没有任何项目证据并选择初始化分支时，才建立新项目。Work/Codex必须先确定唯一Project ID与独立Project Root；普通Chat按`rules/chat_compatibility.md`初始化Portable STATE-00并继续收集项目基础信息。
+当前没有项目证据时，在会话内建立最小STATE-00即可；Project Root、Registry和完整Portable State只在用户明确要求持久化或当前环境的恢复任务确实需要时创建/读取。无论持久化与否，STATE-00的生产边界、Project ID、事实记录与后续Gate均保持不变。
 
 继续现有项目且Selected State Source是Active Project Root时读取：
 
@@ -178,23 +178,18 @@ templates/18_artifact_revision_ledger.md
 
 收到新项目输入后：
 
-Work/Codex首先建立独立Project Root与project_manifest.json，并在project_registry.json中登记。
+先在当前会话建立最小Project ID、项目基础事实、输入类型、Script Entry Route与STATE-00 Checkpoint；不得先登记项目、创建Project Root、读取Registry、查找同名/相似项目或读取Skill Experience。
 
-普通Chat无法访问本机文件系统时，先在Portable State建立可继续的Project ID、Project Name与STATE-00状态；恢复到Work/Codex后再创建真实Project Root并核对同一Project ID。
+用户明确要求保存、登记、归档、跨会话恢复，或当前任务已经指定有效Project Root时，才在不覆盖非空目录的前提下创建或更新持久化项目资料：
 
-然后在该Project Root中：
+- project_manifest.json
+- project_bible.md
+- asset_registry.md
+- project_status.md
+- execution_ledger.md
+- artifact_registry.md
 
-初始化：
-
-project_bible.md
-
-asset_registry.md
-
-project_status.md
-
-execution_ledger.md
-
-artifact_registry.md
+持久化与否不改变本阶段的事实边界，也不得成为首次剧本交付的等待条件。
 
 
 三个文件分别负责：
@@ -213,9 +208,7 @@ Project Status：
 
 当前生产阶段与进度控制。
 
-普通Chat只初始化或刷新portable_project_status.md，不伪造本机文件已经创建。
-
-普通Chat无法读取Portable资源正文时，必须复制`references/project_state_contract.md`中的Canonical Portable State Schema。不得输出简化状态摘要，不得把State Status写成READY或INITIALIZED，不得把Next Workflow写成自然语言别名。
+普通Chat或会话内执行时仅保留必要Checkpoint；只有用户要求导出状态、保存项目或恢复项目时，才输出/刷新完整`portable_project_status.md`。不得伪造本机文件已经创建。
 
 
 ---
@@ -893,54 +886,16 @@ Next Action：
 
 # Output
 
-STATE-00最终输出：
+STATE-00默认无独立用户可见输出。`templates/00_project_start_template.md`只在用户明确要求查看/导出项目启动信息，或持久化操作需要核对时使用。
 
-必须使用：
-
-templates/00_project_start_template.md
-
-
-进行格式化。
-
-
-输出内容必须保持：
-
-STATE-00边界。
-
-
-模板中存在但当前阶段尚不能正式确认的信息：
-
-不得强行补全。
-
-
-可以：
-
-标记为待分析。
-
-待确认。
-
-将在后续阶段处理。
+完成最小启动后，本Workflow在同一响应内进入STATE-01；最终回复使用STATE-01的剧本交付Schema，而不是项目启动页。若存在会实质影响剧本架构或品牌/事实风险的缺失信息，只提出最少必要问题后停止。
 
 
 ---
 
 # Output Content
 
-STATE-00允许输出：
-
-- Project Status
-- Project Information
-- Input Material
-- Script Entry Route：Creation Brief / Existing Script / Material
-- Project Initialization
-- Initial Production Goal
-- 已明确的Story Overview
-- 已明确的Genre
-- 已明确的Era
-- 已明确的Main Location
-- 已明确的Visual Reference
-- Pipeline Lock
-- Next Workflow
+仅在用户明确要求项目启动资料时，输出Project Information、Input Material、Script Entry Route、持久化状态和Next Workflow。不得把内部Project Director Baseline、Visual Reference推导、Pipeline Lock或状态账本扩写为独立报告。
 
 
 ---
@@ -972,45 +927,9 @@ STATE-00禁止输出：
 
 新影视项目第一次进入SD Film时：
 
-第一轮只完成：
+先静默完成项目识别、输入登记、最小项目事实和制作目标；随后在同一轮进入STATE-01。Creation Brief直接交付剧本提案；Existing Script / Material按STATE-01的授权边界交付剧本诊断或剧本提案。
 
-项目确认。
-
-项目初始化。
-
-输入素材登记。
-
-最终制作目标确认。
-
-当前Pipeline状态说明。
-
-
-禁止：
-
-第一轮同时完成：
-
-STATE-01 Script Analysis。
-
-
-禁止：
-
-第一轮同时进入：
-
-Asset Discovery。
-
-
-禁止：
-
-为了快速满足用户最终目标：
-
-在第一轮输出Detailed Shot Design、Clip Production Plan或Video Prompt。
-
-
-完成STATE-00后：
-
-下一轮再进入：
-
-STATE-01 Script Analysis。
+不得因合并首轮而跳过STATE-00、STATE-01的事实边界、Script确认Gate或任一后续STATE；也不得在首轮越级输出资产、分镜表、Clip表或最终视频提示词。
 
 
 ---
@@ -1226,13 +1145,13 @@ STATE-00不得：
 
 - 项目已经识别
 - Project ID已经确定
-- Work/Codex中独立Project Root与project_manifest.json已经初始化并登记；普通Chat中Portable State已记录待本地落盘的Project ID
+- 会话Project ID已经确定；如用户明确要求持久化，独立Project Root、project_manifest.json与Registry已按合同初始化/更新
 - 输入素材已经登记
 - Script Entry Route已经登记；同时存在上传剧本时优先为Existing Script / Material
 - 项目基础信息已经记录
 - 最终制作目标已经确认
 - 最小Project Director Baseline已经建立，或所有未知项已明确留给STATE-01而未虚构
-- Work/Codex中project_bible.md、asset_registry.md、project_status.md、execution_ledger.md与artifact_registry.md已经初始化；普通Chat中Portable State已完成最小STATE-00初始化且未虚构这些本机文件
+- 已在会话Checkpoint记录最小项目事实；如用户明确要求持久化，project_bible.md、asset_registry.md、project_status.md、execution_ledger.md与artifact_registry.md已按合同初始化
 - 当前STATE已经确认
 - 下一Workflow已经确定
 
@@ -1241,9 +1160,7 @@ STATE-00不得：
 
 STATE-00 Project Setup完成。
 
-状态完成后必须同步或输出portable_project_status.md；不得因普通Chat无法访问本机Project Root而改走旧Pipeline或停止。
-
-Portable写回必须同步Project ID、Project Name、Current State、State Status、Script Status、Last Successful Checkpoint、Completed States、Confirmed Assets、Next Workflow、Last Updated与State Source，并输出完整Canonical文档。STATE-00初始化时`Script Status: Source Material`。
+状态完成后只在用户要求保存、导出或恢复时同步/输出portable_project_status.md；不得因普通Chat无法访问本机Project Root而改走旧Pipeline或停止。输出时必须使用完整Canonical文档。STATE-00初始化时`Script Status: Source Material`。
 
 
 项目状态记录：
@@ -1289,9 +1206,7 @@ STATE-01已经完成。
 再进行正式Script Analysis。
 
 
-不得：
-
-在STATE-00输出中提前包含STATE-01结果。
+默认在同一响应中从STATE-00切入STATE-01；两阶段仍使用各自Workflow与Gate，用户可见内容只呈现STATE-01的剧本交付，不把STATE-00内部账本混入剧本。
 
 
 ---

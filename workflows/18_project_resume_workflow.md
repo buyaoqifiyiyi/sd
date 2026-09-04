@@ -88,6 +88,10 @@ Legacy项目缺少新版Writer / Director intent时，调用`rules/runtime_reloa
 - Next Workflow
 - Return After Completion
 
+### Current Object First
+
+恢复时先从`Active Workflow`、`Pending Decision`与`Active Artifacts`解析唯一当前对象。若当前对象已有可验证外部资产，优先进入该对象的Existing Asset Fast Path；不得重新输出已完成阶段、扫描无关篇章或重新生成已有候选。只有当前对象确认后，才路由到下一个未完成资产子流程。
+
 ---
 
 ## Step 5: Retry Decision

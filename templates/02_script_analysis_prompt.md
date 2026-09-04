@@ -11,6 +11,12 @@
 
 从创意发展可导演的制作版剧本提案，或分析用户已有剧本/来源素材，为后续资产制作和镜头设计提供基础资料。
 
+## Default User-facing Delivery
+
+默认只交付一份可独立阅读的剧本或剧本提案。Input Classification、Optimization Opportunity、Source Essence、Adaptation Decision、Fidelity Check、Writer / Director Handoff、项目概览、人物/场景/视觉元素分析及状态字段均为内部生产数据，不另行输出。
+
+若Existing Script尚未授权改写，不能生成剧本提案时，只用一个简短问题请求用户选择“保持原稿”或“授权优化”；不得输出长篇诊断报告。确认Gate仍然有效，但只显示完成交付所必需的最小提示。
+
 
 
 ---
@@ -64,7 +70,7 @@ Existing Script / Material首次进入STATE-01且不存在No Revision / Final Sc
 
 ---
 
-## Output
+## Internal Production Record
 
 
 ### Script Control

@@ -134,6 +134,17 @@ Asset Design
 
 每个Checkpoint都写入同一CHAR Version的`Visual Production Status`。Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revision确认不得生成图片，未经图片确认不得登记Canonical References、Active Version或confirmed asset。
 
+### Existing Character Asset Fast Path
+
+若当前CHAR已有可读取且身份匹配的外部图像，且用户明确要求使用现有资产或跳过角色制作：
+
+1. 将文件登记为该CHAR的Candidate Reference，记录来源、用途、可见版本与授权依据。
+2. 跳过新三视图/面部特写生成，不重复设计外观。
+3. 只向用户请求对具体Candidate Reference的确认；确认后登记`Active Version`与`Canonical References`。
+4. 若文件不足以承担当前下游一致性需求，再只补缺失的最小资产，不回退重做整个角色。
+
+该路径不把“文件存在”视为确认，也不允许跳过资产锁定；在确认前保持STATE-03 `IN_PROGRESS`。
+
 ## Two-Tier Execution Gate
 
 进入制作前必须读取STATE-02的Asset Tiering Decision，不得在STATE-03凭方便重分层：

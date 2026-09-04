@@ -207,7 +207,7 @@ None
 
 1. 先更新Selected State Source的状态字段、任务、Checkpoint、Active Artifacts、资产锁摘要、Review控制、Revision与Version History。
 2. Work/Codex若使用Active Project Root，真实`project_status.md`成功落盘后再同步`portable_project_status.md`。Portable同步失败只写`Portable Sync Status：PENDING`，不得回滚真实状态、报错停止或改变下一Workflow。
-3. 普通Chat若使用Portable State，每次状态变化后在回复中输出更新后的完整`portable_project_status.md`，并把`Portable State Availability`设为`READY`、`Portable Sync Status`设为`PORTABLE_ONLY`。
+3. 普通Chat若使用Portable State，每次状态变化后在内部更新完整`portable_project_status.md`，并把`Portable State Availability`设为`READY`、`Portable Sync Status`设为`PORTABLE_ONLY`；仅在用户明确要求保存、导出、恢复核对或查看项目状态时输出该完整文档。
 4. Work/Codex重新获得本地访问时，重新调用`rules/state_source.md`；如果它选中身份一致的Active Project Root，再以Root状态刷新Portable。不得静默合并或覆盖不同项目的状态。
 
 ### Portable Required Field Writeback

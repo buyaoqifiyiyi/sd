@@ -1,5 +1,9 @@
 # Clip Plan
 
+## Default User-facing Delivery
+
+默认交付标题为“Clip表”。只展示Clip ID、包含镜号、核心画面/动作、时长、起止承接和必要参考资产。Preflight、Scope Firewall、Reference Routing、参考预算、风险降级、尾帧判定、执行账本和QA均在内部运行并写入生产记录，不单独展示。用户明确请求完整制作计划时才输出其完整字段。
+
 - Project ID：
 - Status：Planning / Confirmed
 - Source Detailed Shot Design Artifact / Portable Checkpoint：
@@ -13,11 +17,11 @@
 
 ## Clip Table
 
-| Clip ID | 包含 Shot（原顺序） | 目标时长 | 生成方式 | 组织依据 | 起始状态 | 结尾状态/尾帧 | 下一Clip连接 |
-|---|---|---:|---|---|---|---|---|
-| CLIP-001 | SHOT-001 / SHOT-001 + SHOT-002 | 10秒 | 单Shot Clip / 多Shot单次连续生成 | 场景、时间、动作、摄影机、空间、道具、复杂度与时长判断 |  | 定义新结束状态；实际生成并确认后登记为REF-TAIL-001｜CLIP-001尾帧参考 | A同镜头连续承接 / B新镜头参考型 / C新镜头且无需尾帧；A/B缺图时待用户补充 |
+| Clip ID | 包含镜号 | 核心画面/动作 | 时长 | 起止承接 | 资源 |
+|---|---|---|---:|---|---|
+| CLIP-001 | SHOT-001 / SHOT-001 + SHOT-002 |  | 10秒 | 起始状态 → 结尾状态 → 下一Clip连接 | 已确认资产与必要参考 |
 
-## Clip Detail Cards
+## Internal Clip Detail Cards
 
 ### CLIP-001
 

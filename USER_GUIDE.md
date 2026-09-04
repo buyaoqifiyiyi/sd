@@ -20,10 +20,14 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 调用sd + 我要做什么 + 当前输入 + 必须保持什么 + 重点优化什么 + 做到哪一步停
 ```
 
+### 已有资产快速通道
+
+如果项目目录已有角色、环境、道具或FX图片，可以直接说“使用现有资产”或“跳过制作阶段”。SD Film会只核验当前对象，将文件登记为Candidate Reference，并请求你确认；确认后才升级为Canonical Reference与Active Version。该路径不会重复生成图片，但不会省略资产确认和一致性锁定。
+
 例如：
 
 ```text
-调用sd，根据这个已定稿剧本进入完整视频制作流程。不要修改剧情和人物关系，重点保证角色、空间与道具连续性。先完成项目初始化和剧本锁定，进入资产清单后停下来给我确认。
+调用sd，根据这个已定稿剧本进入完整视频制作流程。不要修改剧情和人物关系，重点保证角色、空间与道具连续性。项目启动和状态记录在内部完成；默认只给我剧本、设定资源、分镜表、Clip表和最终提示词。
 ```
 
 ## 快速索引
@@ -60,7 +64,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 常见停止点如下：
 
-1. 新项目首次进入时，先完成项目初始化和`Creation Brief / Existing Script / Material`入口登记，不会立即越级输出分镜或视频 Prompt。
+1. 新项目首次进入时，项目初始化和`Creation Brief / Existing Script / Material`入口登记在内部完成，不会展示项目登记页、搜索类似项目或越级输出分镜、Clip或视频 Prompt。
 2. 只有创意并明确要写剧本时，STATE-01直接生成`Production Script Proposal`，不要求你先去普通Chat写完整剧本，也不先对不存在的剧本做优化机会报告。
 3. 上传已有剧本/来源材料时，默认先给 `Optimization Opportunity Report`，等你决定锁定、轻度优化或结构优化；如果当前指令已明确“直接优化 / 直接改写”，不会重复询问是否优化。
 4. 任一创作或优化分支生成 `Production Script Proposal` 后都会停下来，等你确认制作版剧本。
@@ -92,7 +96,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 - 固定主流程是 `STATE-00 Project Setup → STATE-01 Script Analysis → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Video Prompt / Generation → STATE-09 Review`。
 - “我要最终视频”只表示目标，不表示可以跳过前置阶段。
-- 新项目首次响应只做项目确认、初始化和输入分析准备。
+- 新项目首次响应静默完成项目确认、初始化和输入分析准备，并直接交付当前合法的剧本阶段成果。
 - Storyboard、角色音色和配乐都不是主流程必经步骤，只有显式请求才进入对应辅助模块。
 - STATE-08 默认一次输出一个尚未交付的 Clip；想一次拿全部，必须明确说“全部 / 批量 / 连续输出多个”。
 

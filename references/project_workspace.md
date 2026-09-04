@@ -73,9 +73,9 @@ Skill 安装目录保存通用的 `SKILL.md`、Rules、Workflows、Knowledge、T
 运行环境确实提供本地文件访问时，按以下顺序解析Active Project候选并提供Project ID、路径与可访问性证据；是否采用其`project_status.md`只由`rules/state_source.md`决定：
 
 1. 用户在当前任务中明确指定的 Project Root 或 Project ID。
-2. 当前工作目录或其父目录中可确认的 `project_manifest.json`。
-3. Skill 根目录 `project_registry.json` 中与当前项目名称、ID 或源素材唯一匹配的项目。
-4. 如果输入明确属于新项目，进入 STATE-00，在独立目录初始化新的 Project Root。
+2. 当前工作目录或其父目录中可确认的 `project_manifest.json`，且当前会话已明确指向该项目。
+3. 仅当用户明确要求查找/恢复已登记项目或提供精确Project ID时，读取 Skill 根目录 `project_registry.json` 作精确ID核验。
+4. 如果输入明确属于新项目，进入 STATE-00并建立会话内最小状态；只有用户明确要求保存、登记、归档或跨会话恢复时，才在独立目录初始化新的 Project Root。
 
 如果存在多个合理候选且当前信息无法唯一判断，不得自动选择最近项目；必须先确认用户要继续的项目。
 
@@ -117,7 +117,7 @@ project_status.md = 当前任务最新可用的 portable_project_status.md
 
 ## New Project Rule
 
-STATE-00 必须先确定 Project ID 和 Project Root，再初始化项目文件。
+STATE-00必须先确定会话Project ID。默认不创建Project Root、不登记Registry，也不展示项目初始化页；它在当前响应内完成最小启动事实后进入下一个可交付阶段。用户明确要求保存、登记、归档或跨会话恢复时，才确定Project Root并初始化项目文件。
 
 新 Project Root 必须满足：
 

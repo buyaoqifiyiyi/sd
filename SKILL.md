@@ -7,9 +7,9 @@ description: 当用户说“调用sd”“调用SD”“用SD Film”“重新�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.04-r2
+Skill Version: 2026.09.04-r4
 
-Build ID: sd-film-2026.09.04-r2
+Build ID: sd-film-2026.09.04-r4
 
 User-facing usage manual: `USER_GUIDE.md`.
 
@@ -44,7 +44,7 @@ Storyboard、AUDIO / SEED-AUDIO、MUSIC / SEED-MUSIC与Skill Experience都不是
 
 | STATE | Stage | Core result | Completion authority |
 |---|---|---|---|
-| STATE-00 | Project Setup | 项目身份、项目基础信息、状态与资产登记入口 | `workflows/01_project_setup_workflow.md` |
+| STATE-00 | Project Setup | 会话内项目身份与最小启动事实（默认静默） | `workflows/01_project_setup_workflow.md` |
 | STATE-01 | Script Analysis | 从Creation Brief生成或对Existing Script诊断/改编/优化，并获确认的Production-Locked Directable Screenplay | `workflows/02_script_analysis_workflow.md` |
 | STATE-02 | Asset Discovery | 已分类并可路由的角色、环境、道具与FX需求 | `workflows/03_asset_discovery_workflow.md` |
 | STATE-03 | Asset Development | 经对应资产Workflow确认的Canonical视觉资产 | 对应资产Workflow |

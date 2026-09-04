@@ -21,7 +21,7 @@ Skill Definition与Project Context是两类独立来源。显式“调用 / 重�
 
 - 按`rules/state_source.md`选择Portable State或把当前可验证Project Context规范化为Canonical Portable State。
 - Portable State结构与字段由`references/project_state_contract.md`唯一拥有。
-- 每次进入、完成、退回、恢复Workflow或确认资产后，在回复中输出更新后的完整Portable State；不得只给路由摘要或自创简化状态。
+- 每次进入、完成、退回、恢复Workflow或确认资产后，在内部更新完整Portable State；只有用户明确要求保存、导出、恢复核对或查看项目状态时，才在回复中输出完整Portable State。普通制作交付不得因状态镜像占用对话篇幅。
 - 普通Chat写`Portable State Availability: READY`、`Portable Sync Status: PORTABLE_ONLY`，并保留真实Project ID、Revision、Checkpoint、Completed States、Confirmed Assets和Next Workflow。
 - 用户在后续对话提供更新后的Portable State时，先校验与迁移Schema，再恢复执行。
 

@@ -400,6 +400,21 @@ Core与Support执行同一双确认闭环。未确认Prompt不得生成图；未
 
 # 10 Visual Asset Production Gate
 
+### Existing Asset Fast Path
+
+当用户提供或项目目录中存在与CHAR / ENV / PROP / FX实体明确匹配的现有视觉文件时，资产流程先执行：
+
+```text
+Existing File Check
+→ Candidate Reference Registration
+→ User Confirmation
+→ Canonical Reference / Active Version
+```
+
+该路径可以跳过新Prompt与图片生成，但不能跳过来源核验、用户对具体文件的明确确认、版本记录、Canonical Reference或Active Version登记。现有文件未确认前仍是Candidate Reference，不得标记`Confirmed Status: Yes`、`Status: Active`或作为下游锁定依据。
+
+如果现有文件与实体身份不匹配、缺少必要视角/状态或用户要求重设计，返回标准Asset Design → Prompt → Image双确认路径。只核验当前对象，禁止为确认一个资产扫描或重做其他篇章与资产类别。
+
 所有STATE-03视觉资产，包括Character、Environment、Prop与正式FX Asset，必须按以下顺序生产：
 
 ```text
