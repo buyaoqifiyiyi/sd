@@ -285,6 +285,8 @@ SD Film
 ├── workflows/
 │
 ├── knowledge/
+│   ├── skill_experience.md
+│   ├── skill_experience/   # 经用户确认的跨项目技能经验库（按需创建）
 │   ├── fx/
 │   ├── performance/
 │   ├── poster_design/

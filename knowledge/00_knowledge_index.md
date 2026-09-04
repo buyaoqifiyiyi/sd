@@ -21,6 +21,10 @@ knowledge用于辅助Workflow执行。
 
 不能改变Pipeline顺序。
 
+## Cross-Project Skill Experience
+
+`knowledge/skill_experience.md`是跨项目技能经验的唯一知识Owner。Review或失败复盘后可生成候选，但写入Skill经验库必须经过用户明确确认；确认经验可在相关产出与项目迭代前按需读取，作为只读建议参与决策，不得覆盖项目事实、硬规则、Workflow、Template或用户当前指令。存储、确认、版本化与失效规则见`references/skill_experience_contract.md`。
+
 
 
 ---

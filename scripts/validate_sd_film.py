@@ -177,6 +177,9 @@ POSTER_SECTIONS = (
     "## Quality Check",
 )
 MODULE_FILES = (
+    "knowledge/skill_experience.md",
+    "knowledge/skill_experience/experience_ledger.md",
+    "references/skill_experience_contract.md",
     "rules/runtime_reload.md",
     "rules/state_source.md",
     "rules/chat_compatibility.md",
@@ -513,14 +516,14 @@ def validate_portable_status(path: Path, as_json: bool = False) -> int:
     return report(errors, warnings, as_json)
 
 
-def validate_state_routing(root: Path, as_json: bool = False) -> int:
+def validate_state_routing(root: Path, as_json: bool = False, emit_report: bool = True) -> int:
     errors: list[str] = []
     warnings: list[str] = []
     root = root.resolve()
     routing_markers = {
         "SKILL.md": ("STATE-00", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "rules/state_source.md"),
         "config.md": ("Portable Baseline", "rules/state_source.md", "references/project_state_contract.md"),
-        "rules/runtime_reload.md": ("Skill Version", "Build ID", "rules/state_source.md"),
+        "rules/runtime_reload.md": ("Skill Version", "Build ID", "rules/state_source.md", "Legacy Project Recovery Integrity"),
         "rules/state_source.md": ("portable_project_status.md", "Active Project Root", "STATE-00"),
         "rules/chat_compatibility.md": ("portable_project_status.md", "Active Project Root", "STATE-00"),
         "rules/compatibility_mapping.md": ("STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "Storyboard"),
@@ -529,7 +532,7 @@ def validate_state_routing(root: Path, as_json: bool = False) -> int:
         "rules/01_pipeline_rules.md": ("rules/state_source.md", "references/project_workspace.md", "rules/chat_compatibility.md"),
         "workflows/01_project_setup_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
         "workflows/workflow_map.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
-        "workflows/18_project_resume_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md"),
+        "workflows/18_project_resume_workflow.md": ("rules/state_source.md", "references/project_workspace.md", "references/project_state_contract.md", "Legacy Intent Backfill"),
     }
     for relative, required_markers in routing_markers.items():
         path = root / relative
@@ -621,6 +624,16 @@ def validate_state_routing(root: Path, as_json: bool = False) -> int:
     ):
         if trigger not in skill_text or trigger not in runtime_text:
             errors.append(f"Runtime Reload trigger is not discoverable in both SKILL.md and runtime_reload.md: {trigger}")
+    for trigger in (
+        "重新调用sd，恢复当前项目",
+        "重新调用SD，恢复这个项目",
+        "恢复旧项目",
+        "继续之前的项目",
+        "按当前Skill恢复项目",
+        "重新加载sd并继续当前项目",
+    ):
+        if trigger not in runtime_text:
+            errors.append(f"Legacy Project Recovery trigger is missing from runtime owner: {trigger}")
     for marker in (
         "RELOADED",
         "UNAVAILABLE",
@@ -636,9 +649,22 @@ def validate_state_routing(root: Path, as_json: bool = False) -> int:
         "Current Object",
         "Workflow Entry Checkpoint",
         "Previous Assistant Output",
+        "Independent Source Resolution",
+        "Skill Definition Source Priority",
+        "Legacy Project Recovery Integrity",
+        "Legacy Intent Backfill",
+        "Backfill missing intent, do not remake confirmed production.",
+        "Work Escalation Final Fallback",
+        "仅因为路径是C:\\Users\\...就自动要求Work",
+        "Rule Ownership Protection",
+        "Recovery Evidence Contract",
+        "Skill Source:",
+        "Project State Source:",
+        "Canon Preserved:",
+        "Backfill Needed:",
     ):
         if marker not in runtime_text:
-            errors.append(f"runtime_reload.md missing Reload / Re-entry integrity invariant: {marker}")
+            errors.append(f"runtime_reload.md missing Reload / Re-entry / Legacy Recovery invariant: {marker}")
     if "只有实际重读权威入口并取得版本字段才可报告`RELOADED`" not in skill_text:
         errors.append("SKILL.md Runtime Reload Entry does not prevent false RELOADED status")
     if "Runtime Skill Reload + Workflow Re-entry / Re-route" not in skill_text:
@@ -654,12 +680,74 @@ def validate_state_routing(root: Path, as_json: bool = False) -> int:
     for marker in ("## 25）继续旧项目 / 重新调用最新 Skill", "不会只拿上一版Prompt继续润色", "不等于强制重新加载"):
         if marker not in guide_text:
             errors.append(f"USER_GUIDE.md missing Reload / Re-entry behavior: {marker}")
+    for marker in (
+        "重新调用sd，恢复当前项目",
+        "Work不是恢复旧项目的默认要求",
+        "只补当前Workflow确实缺少且可可靠推导的Intent",
+    ):
+        if marker not in guide_text:
+            errors.append(f"USER_GUIDE.md missing Legacy Recovery behavior: {marker}")
 
     regression_path = root / "references" / "regression_scenarios.md"
     regression_text = read_text(regression_path) if regression_path.is_file() else ""
     for marker in ("### R12-I Old Prompt Does Not Bypass STATE-08 Entry", "### R12-J Confirmed Sketch Survives Re-entry When Blocking Is Stable", "### R12-K Material Blocking Change Forces Reassessment"):
         if marker not in regression_text:
             errors.append(f"Runtime Re-entry regression is missing: {marker}")
+
+    recovery_owner_heading = re.compile(r"^##\s+Legacy Project Recovery Integrity\s*$", re.MULTILINE)
+    for path in markdown_paths:
+        relative = path.relative_to(root).as_posix()
+        if relative == "rules/runtime_reload.md":
+            continue
+        if recovery_owner_heading.search(read_text(path)):
+            errors.append(
+                f"Competing Legacy Project Recovery owner found in {relative}; "
+                "runtime authority is owned only by rules/runtime_reload.md"
+            )
+
+    module_contracts_path = root / "references" / "module_contracts.md"
+    module_contracts_text = read_text(module_contracts_path) if module_contracts_path.is_file() else ""
+    resume_path = root / "workflows" / "18_project_resume_workflow.md"
+    resume_text = read_text(resume_path) if resume_path.is_file() else ""
+    recovery_invariants = {
+        "SKILL.md": (
+            "Legacy Project Recovery Integrity",
+            "rules/runtime_reload.md",
+        ),
+        "references/module_contracts.md": (
+            "Runtime Recovery Rule Ownership Protection",
+            "Runtime Recovery Regression Protection",
+            "Unconditional Chat Runtime Startup And Recovery Guard",
+            "每次正式修改都必须运行它们",
+            "Legacy Recovery Regression Matrix (LR-R1—LR-R10)",
+            "scripts/validate_sd_film.py skill <skill-root>",
+            "scripts/test_validate_sd_film.py",
+        ),
+        "workflows/18_project_resume_workflow.md": (
+            "Legacy Project Recovery",
+            "Legacy Intent Backfill",
+            "Reference Selection / Routing → Final Visual Blocking Anchor Assessment → Writer + Director Intent Preservation → Prompt Compiler → Final QA",
+        ),
+        "references/regression_scenarios.md": tuple(
+            f"### LR-R{index} " for index in range(1, 11)
+        ),
+        "USER_GUIDE.md": (
+            "Unconditional Chat Runtime Startup And Recovery Guard",
+            "也必须运行普通Chat启动与旧项目恢复基线",
+        ),
+    }
+    recovery_texts = {
+        "SKILL.md": skill_text,
+        "references/module_contracts.md": module_contracts_text,
+        "workflows/18_project_resume_workflow.md": resume_text,
+        "references/regression_scenarios.md": regression_text,
+        "USER_GUIDE.md": guide_text,
+    }
+    for relative, markers in recovery_invariants.items():
+        content = recovery_texts[relative]
+        for marker in markers:
+            if marker not in content:
+                errors.append(f"{relative} missing Legacy Recovery regression invariant: {marker}")
 
     state_contract = root / "references" / "project_state_contract.md"
     state_contract_text = read_text(state_contract) if state_contract.is_file() else ""
@@ -731,7 +819,9 @@ def validate_state_routing(root: Path, as_json: bool = False) -> int:
                 errors.append(f"portable_project_status.md missing section: {section}")
     else:
         errors.append("Missing state-routing file: portable_project_status.md")
-    return report(errors, warnings, as_json)
+    if emit_report:
+        return report(errors, warnings, as_json)
+    return 0 if not errors else 1
 
 
 def validate_registry(path: Path, as_json: bool = False) -> int:
@@ -1795,12 +1885,32 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
     errors: list[str] = []
     warnings: list[str] = []
     root = root.resolve()
+    discovery_aliases = (
+        "调用sd",
+        "调用SD",
+        "用SD Film",
+        "重新调用sd",
+        "恢复旧项目",
+        "继续之前的项目",
+    )
+    # Unconditional Chat Runtime Startup And Recovery Guard: every full Skill
+    # validation includes routing/reload/recovery integrity, regardless of the
+    # file or module changed. Keep this call non-reporting so validate_skill
+    # remains the single user-facing report owner.
+    if validate_state_routing(root, as_json=True, emit_report=False) != 0:
+        errors.append(
+            "Unconditional Chat Runtime Startup And Recovery Guard failed; "
+            "run the routing validator for detailed findings"
+        )
     for name in ("SKILL.md", "config.md", "project_registry.json", "portable_project_status.md"):
         if not (root / name).is_file():
             errors.append(f"Missing skill file: {name}")
-    for name in ("rules", "workflows", "knowledge", "templates", "references", "scripts"):
+    for name in ("agents", "rules", "workflows", "knowledge", "templates", "references", "scripts"):
         if not (root / name).is_dir():
             errors.append(f"Missing skill directory: {name}")
+    openai_yaml_path = root / "agents" / "openai.yaml"
+    if not openai_yaml_path.is_file():
+        errors.append("Missing standalone Skill discovery metadata: agents/openai.yaml")
     scripts_root = root / "scripts"
     if scripts_root.is_dir():
         for python_path in sorted(scripts_root.glob("*.py")):
@@ -1813,6 +1923,18 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
     for relative in MODULE_FILES:
         if not (root / relative).is_file():
             errors.append(f"Missing production module file: {relative}")
+    experience_path = root / "knowledge" / "skill_experience.md"
+    experience_contract_path = root / "references" / "skill_experience_contract.md"
+    if experience_path.is_file():
+        experience_text = read_text(experience_path)
+        for marker in ("Experience Candidate", "用户确认", "只读建议", "Iteration Recommendation"):
+            if marker not in experience_text:
+                errors.append(f"knowledge/skill_experience.md is missing marker: {marker}")
+    if experience_contract_path.is_file():
+        contract_text = read_text(experience_contract_path)
+        for marker in ("Candidate Schema", "Confirmed Experience Record", "Application To Output", "Application To Project Iteration"):
+            if marker not in contract_text:
+                errors.append(f"references/skill_experience_contract.md is missing marker: {marker}")
     sketch_master_path = root / "references" / "ref_sketch_master.md"
     if sketch_master_path.is_file():
         sketch_master_text = read_text(sketch_master_path)
@@ -1876,6 +1998,10 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
                 errors.append("SKILL.md frontmatter is missing description")
             elif len(description) > 1024 or "<" in description or ">" in description or description.startswith("[TODO:"):
                 errors.append("SKILL.md frontmatter description violates length or placeholder rules")
+            else:
+                for alias in discovery_aliases:
+                    if alias not in description:
+                        errors.append(f"SKILL.md frontmatter description is missing Chat discovery alias: {alias}")
             body = text[frontmatter_match.end():]
             if re.search(r"^[ ]{0,3}\[TODO:[^\n]*\][ \t]*$", body, re.MULTILINE):
                 errors.append("SKILL.md contains an unfinished TODO placeholder")
@@ -1887,6 +2013,52 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
             errors.append("SKILL.md is missing Build ID")
         elif version_match and build_match.group(1) != f"sd-film-{version_match.group(1)}":
             errors.append("SKILL.md Build ID must equal sd-film-<Skill Version>")
+    if openai_yaml_path.is_file():
+        openai_yaml = read_text(openai_yaml_path)
+        for marker in (
+            'display_name: "SD Film"',
+            'short_description: "AI影视剧本、资产、镜头、Clip与Seedance虚拟制片"',
+            'default_prompt: "使用 $sd-film 启动或恢复当前AI影视虚拟制片流程。"',
+            "allow_implicit_invocation: true",
+        ):
+            if marker not in openai_yaml:
+                errors.append(f"agents/openai.yaml missing standalone discovery marker: {marker}")
+        if "allow_implicit_invocation: false" in openai_yaml:
+            errors.append("agents/openai.yaml must not disable implicit invocation for sd-film")
+    for relative in (
+        "USER_GUIDE.md",
+        "references/module_contracts.md",
+        "references/regression_scenarios.md",
+    ):
+        boundary_path = root / relative
+        if boundary_path.is_file() and "@SD Film" in read_text(boundary_path):
+            errors.append(
+                f"{relative} must not claim an @SD Film entry for the standalone local skill; "
+                "the current ordinary Chat @ selector is plugin-scoped"
+            )
+
+    # Installed user-level validation: temporary test copies remain portable,
+    # while a real user install must use the current canonical discovery root
+    # and must not coexist with a second user-level skill of the same name.
+    user_home = Path.home().resolve()
+    canonical_user_root = (user_home / ".agents" / "skills").resolve()
+    legacy_user_root = (user_home / ".codex" / "skills").resolve()
+    installed_in_user_scope = root.parent in {canonical_user_root, legacy_user_root}
+    if installed_in_user_scope and root.parent != canonical_user_root:
+        errors.append("User-level sd-film must be installed under $HOME/.agents/skills, not the legacy $HOME/.codex/skills location")
+    if installed_in_user_scope:
+        matching_user_skills: list[Path] = []
+        for user_skill_root in (canonical_user_root, legacy_user_root):
+            if not user_skill_root.is_dir():
+                continue
+            for candidate in user_skill_root.glob("*/SKILL.md"):
+                candidate_text = read_text(candidate)
+                candidate_name = re.search(r"^name:\s*['\"]?([^'\"\n]+)", candidate_text, re.MULTILINE)
+                if candidate_name and candidate_name.group(1).strip() == "sd-film":
+                    matching_user_skills.append(candidate.resolve())
+        if len(set(matching_user_skills)) != 1:
+            locations = ", ".join(str(path) for path in sorted(set(matching_user_skills))) or "none"
+            errors.append(f"Expected exactly one user-level sd-film authority across .agents/.codex skill roots; found: {locations}")
     config_path = root / "config.md"
     if config_path.is_file() and len(read_text(config_path).encode("utf-8")) > 6000:
         errors.append("config.md exceeds the modular configuration hard limit of 6 KB")
@@ -1956,7 +2128,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "workflows/01_project_setup_workflow.md": ("Project Writer Foundation", "Project Director Baseline", "Directorial Thesis", "Audience Contract", "Non-negotiable Dramatic Presentation Core"),
         "workflows/03_asset_discovery_workflow.md": ("FX Asset Discovery", "15_fx_asset_workflow.md", "Director-led Asset Function Pass", "Asset Dramatic Function", "Casting Logic"),
         "workflows/07_visual_development_workflow.md": ("Visual Dramaturgy / Mise-en-scène", "Visual Arc", "narrative force", "Performance Direction", "facial_action_language.md", "emotion_dynamics.md", "Sound Direction", "knowledge/lighting/index.md", "光源空间锚点", "focal_length_and_perspective.md", "全画幅等效倾向", "knowledge/color/index.md", "绿色—品红偏色", "肤色、眼白", "17_poster_design_workflow.md"),
-        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Production Knowledge Rule Owners", "Screenwriter Module Contract", "knowledge/screenplay_development.md", "knowledge/director_decision_layer.md", "knowledge/action_previs.md", "Visual Blocking Risk Pre-Assessment", "Before-Single-Clip-Prompt Gate", "Blocking Signature", "references/ref_sketch_master.md", "Sketch Presentation Authority", "Neutral Mannequin Representation Rule", "Template Content Leakage Check", "Character Appearance Leakage Check", "Screenwriter Module, Adaptation And Analysis Gate Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Performance Arc Map", "Performance / Emotion Check", "Intentional Hold", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Style Label Expansion Rule", "具象化本身不是默认删除标签的理由", "Field Ownership Assignment / State Once Gate", "Negative Compression", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
+        "references/module_contracts.md": ("Authority Matrix", "ID Namespace Isolation", "Production Knowledge Rule Owners", "Screenwriter Module Contract", "knowledge/screenplay_development.md", "knowledge/director_decision_layer.md", "knowledge/action_previs.md", "Visual Blocking Risk Pre-Assessment", "Before-Single-Clip-Prompt Gate", "Blocking Signature", "references/ref_sketch_master.md", "Sketch Presentation Authority", "Neutral Mannequin Representation Rule", "Template Content Leakage Check", "Character Appearance Leakage Check", "Screenwriter Module, Adaptation And Analysis Gate Contract", "四种Script Status值合法", "MUSIC / SEED-MUSIC Score Module Contract", "默认模式", "专业Spotting不变量", "SeedMusic不变量", "视频隔离不变量", "STATE-03 Visual Asset Production Contract", "Sequence Module Contract", "Poster Design Module Contract", "Camera Composition Knowledge Contract", "Focal Length Knowledge Contract", "FLN-01至FLN-07", "Camera Movement Combination Knowledge Contract", "CMG-01至CMG-16", "Camera Movement Selection Matrix Knowledge Contract", "Color Knowledge Contract", "CLR-01至CLR-09", "Performance Expression Knowledge Contract", "Performance Arc Map", "Performance / Emotion Check", "Intentional Hold", "Lighting Knowledge Contract", "Prompt Compilation Module Contract", "多Clip项目默认每轮只交付当前一个Clip", "Style Label Expansion Rule", "具象化本身不是默认删除标签的理由", "Field Ownership Assignment / State Once Gate", "Negative Compression", "Transition Knowledge Contract", "Skill Update Self-Check / Change Safety Checklist", "Standalone Skill Discovery Guard", "Duplicate Rule Check", "Prompt Pollution Check", "Reference Integrity Check", "Required Self-Check Summary"),
         "knowledge/screenplay_development.md": ("Screenwriter Module / Writer Intelligence Layer", "Creation Brief", "Minimum Project Intent Gate", "WRITER INTENT PACKET", "Story Logic / Causality", "Character Engine", "Scene Value Change", "Writer Beat Is Not A Shot", "Dialogue / Subtext", "Setup / Payoff", "Information Architecture", "Writer → Director Handoff", "Directable Screenplay QA", "不全局要求少对白", "35mm", "Production Script Proposal", "Production-Locked Directable Screenplay"),
         "knowledge/director_decision_layer.md": ("Director Module / Director Intelligence Layer", "贯穿式Director Thinking", "DIRECTOR INTENT PACKET", "Project-level", "Scene-level", "Shot-level", "Clip-level", "Task Dominance Router", "Camera Language Is The Execution Language Of Director Intent", "Camera Movement Trigger", "如果删掉这个Shot，观众会损失什么", "Dramatic Execution Unit", "Director-to-Prompt Boundary", "Director's Cut Review", "STATE-01 Writer → Director Handoff / Scene Presentation Intent", "STATE-05 Scene Projection", "STATE-06 Director Decision Notes", "STATE-07 Clip Production", "STATE-08 Knowledge Application Reflection / Prompt", "From STATE-01 / Through STATE-05", "Production-Locked Directable Screenplay", "不要求把相同规则复制进每个Workflow"),
         "knowledge/script_adaptation.md": ("Optimization Opportunity Report", "User Decision Gate", "Source Essence Extraction", "Adaptation Objective", "Preserve / Compress / Rewrite / Remove Decision", "Screen Translation", "Duration & Dramatic Restructuring", "Adaptation Fidelity Check", "LEVEL 1", "LEVEL 2", "LEVEL 3", "基本不要改剧情", "short_form_drama_adapter.md"),
@@ -2020,7 +2192,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/clip_preflight_check.md": ("Five Global High-Priority Rules", "Before-Single-Clip-Prompt Gate", "Performance / Emotion Check", "Inherited Baseline", "Action-phase Evidence", "Intentional Hold", "Relative Performance Hierarchy", "Dual Trigger, Single Execution", "Risk Assessment Dimensions", "S-SKETCH / Spatial Sketch", "P-SKETCH / Pose Sketch", "A-SKETCH / Action Sketch", "TECHNICAL_VISUAL_BLOCKING_SKETCH", "templates/23_visual_blocking_sketch_prompt.md", "Sketch Validation Gate And Reference Authority", "Artistic Storyboard Drift", "Character Appearance Leakage Check", "FAIL = Character Appearance Leakage / Identity Contamination", "Sketch Persistence / Blocking Canon", "Visual Anchor State / Blocking Signature", "REF-SKETCH-MASTER", "Sketch Presentation Authority", "Master Template carries sketch language; Current Clip data carries blocking content.", "Technical Director Blocking Sheet", "Template Content Leakage Check", "Text Contract Fallback", "KEEP existing sketch", "REPLACE with REF-SKETCH-XX-v2", "RETIRE sketch", "CREATE new sketch", "Visual Input Eligibility Test", "Reference Selection / Routing", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "NOT ELIGIBLE", "板凳参考说明", "十三个Acceptance Scenarios"),
         "templates/23_visual_blocking_sketch_prompt.md": ("TECHNICAL_VISUAL_BLOCKING_SKETCH", "referenced_image_paths", "Technical Director Blocking Sheet", "Neutral Mannequin Representation Rule", "Candidate Evidence Record", "main_blocking_panel", "character_role_labels", "direction_gaze_movement_annotation", "spatial_top_down_diagram", "camera_information", "blocking_movement_notes_or_permission", "usage_authority_note", "neutral_mannequin_representation", "character_appearance_leakage", "Artistic Storyboard Drift", "Character Appearance Leakage / Identity Contamination"),
         "knowledge/reference_budget.md": ("Visual Input Eligibility", "0个图片位", "板凳参考说明", "Projected Final Count", "Confirmed Visual Blocking Anchor", "REF-SKETCH-MASTER", "REF-SKETCH-04"),
-        "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention", "R15-D Director Style Label Expansion", "R15-E Cinematic Live-action Label Expansion", "R15-F Stable Project Style Delta", "R15-G Action-Heavy Clip Style Compression", "R15-L CLIP-03 State Ownership / Negative Compression", "同一张长琴凳", "音色特征：", "猫、吉他、手机、磁带", "R18-A Two-Person Dialogue And Bench Axis Continuity", "R18-B Restrained Youth Drama Uses Minimal Carriers", "R18-C A3 Choreographed Action Has Physical Causality", "R18-D A1 Simple Action Stays Simple And Prompt Stays Clean", "R19-A CLIP-04 First Prompt Requires One Confirmed S+P Anchor", "R19-B Prompt Rewrite Reuses Anchor; Blocking Reconstruction Reassesses", "R19-C Simple Single Person Is NONE", "R19-D A3 Action May Use A-SKETCH Or Combined Anchor", "R20-A Piano Pair Uses Technical Blocking Sheet Language", "R20-B Three People Around A Table Has No Template Content Leakage", "R20-C A3 Action Remains Technical Previs", "R20-D Simple Head Turn Still Returns NONE", "R20-E Prompt Rewrite Reuses Current Sketch Without Recalling Master", "R20-F Character Appearance Leakage Is A Hard Failure", "R21-A Restrained Character Changes Across Shots Without Extra Coverage", "R21-B Ensemble Uses Relative Amplitude And Reaction Order", "R21-C Intentional Hold Is Active, Not Frozen", "R22-A Idea Enters Screenplay Generation", "R22-B Uploaded Script Enters Diagnosis Without Rewrite", "R22-C Explicit Direct Optimization Does Not Re-ask Authorization", "R22-D Confirmed Screenplay Advances Without Regeneration", "R22-E Scene Revision Stays In Script Development", "R22-F Director-first But Not Pre-shot", "R22-G Existing Diagnosis Regression", "R22-H Downstream Isolation Regression"),
+        "references/regression_scenarios.md": ("R13 Cross-Clip End-State And Reference Routing", "R13-A Same-Shot Direct Continuation", "R13-B New Shot With Tail Position Reference", "R13-C New Shot Without Tail Reference", "Clip End-State Record / Next-Clip Carryover", "R14 Reference Asset Eligibility", "1—5号保持不动", "板凳参考说明", "PROP-BENCH-01", "R15-A Literary Camera Intent", "R15-B Over-Engineered Camera Data", "R15-C Canonical Assets Free Prompt Attention", "R15-D Director Style Label Expansion", "R15-E Cinematic Live-action Label Expansion", "R15-F Stable Project Style Delta", "R15-G Action-Heavy Clip Style Compression", "R15-L CLIP-03 State Ownership / Negative Compression", "同一张长琴凳", "音色特征：", "猫、吉他、手机、磁带", "R18-A Two-Person Dialogue And Bench Axis Continuity", "R18-B Restrained Youth Drama Uses Minimal Carriers", "R18-C A3 Choreographed Action Has Physical Causality", "R18-D A1 Simple Action Stays Simple And Prompt Stays Clean", "R19-A CLIP-04 First Prompt Requires One Confirmed S+P Anchor", "R19-B Prompt Rewrite Reuses Anchor; Blocking Reconstruction Reassesses", "R19-C Simple Single Person Is NONE", "R19-D A3 Action May Use A-SKETCH Or Combined Anchor", "R20-A Piano Pair Uses Technical Blocking Sheet Language", "R20-B Three People Around A Table Has No Template Content Leakage", "R20-C A3 Action Remains Technical Previs", "R20-D Simple Head Turn Still Returns NONE", "R20-E Prompt Rewrite Reuses Current Sketch Without Recalling Master", "R20-F Character Appearance Leakage Is A Hard Failure", "R21-A Restrained Character Changes Across Shots Without Extra Coverage", "R21-B Ensemble Uses Relative Amplitude And Reaction Order", "R21-C Intentional Hold Is Active, Not Frozen", "R22-A Idea Enters Screenplay Generation", "R22-B Uploaded Script Enters Diagnosis Without Rewrite", "R22-C Explicit Direct Optimization Does Not Re-ask Authorization", "R22-D Confirmed Screenplay Advances Without Regeneration", "R22-E Scene Revision Stays In Script Development", "R22-F Director-first But Not Pre-shot", "R22-G Existing Diagnosis Regression", "R22-H Downstream Isolation Regression", "R26 Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)"),
         "knowledge/camera_language/movement_combinations/index.md": ("Foundations", "Decision Engine", "Combination Patterns", "Continuity And Projection", "Image Source Coverage", "Activation Gate"),
         "knowledge/camera_language/movement_combinations/foundations.md": ("Four Execution Classes", "One-Shot Compatibility Test", "Compatibility Matrix", "Split Triggers", "Stability Budget"),
         "knowledge/camera_language/movement_combinations/decision_engine.md": ("Gate 0", "Class A", "Coverage Sequence", "Transition / FX Sequence", "Stable Downgrade", "CMG-xx"),
@@ -2044,8 +2216,8 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/color/foundations.md": ("Core Corrections", "Atomic Color Model", "Responsibility Boundary", "Skin And Neutral Rule", "Prompt Compiler", "Prompt Quality Gate"),
         "knowledge/color/tone_patterns.md": ("CLR-01", "CLR-09", "Selection Rule"),
         "knowledge/color/color_continuity.md": ("Continuity Ledger", "Lighting Interaction", "STATE-08 Projection", "Stable Downgrade"),
-        "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md", "Skill Update Self-Check / Change Safety Checklist"),
-        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "Visual Blocking Sketch", "无性别技术调度人偶", "KEEP / REPLACE / RETIRE / CREATE", "重要标签首次出现在最终 Prompt", "具象化后不会默认删除标签", "后续连续 Clip 只补当前差异", "字段归属", "历史事故物", "维护约定"),
+        "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md", "Skill Update Self-Check / Change Safety Checklist", "Standalone Skill Discovery Guard"),
+        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "Standalone Skill Discovery Guard", "@`选择器只显示Plugin", "$sd-film", ".agents\\skills\\sd", "Visual Blocking Sketch", "无性别技术调度人偶", "KEEP / REPLACE / RETIRE / CREATE", "重要标签首次出现在最终 Prompt", "具象化后不会默认删除标签", "后续连续 Clip 只补当前差异", "字段归属", "历史事故物", "维护约定"),
         "rules/runtime_reload.md": ("Reload And Re-entry Sequence", "Skill Definition", "Project Context", "Compatibility Mapping Result"),
         "rules/state_source.md": ("Selection Priority", "当前可验证的Project Context", "Project ID不一致", "Storyboard只能"),
         "rules/chat_compatibility.md": ("普通Chat不是缩减模式", "Portable Execution", "Behavior Parity"),

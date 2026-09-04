@@ -965,6 +965,12 @@ Accepted Canon使用八组Shot-State Memory语义保存实际瞬时状态，并�
 
 Project State继续只在现有`Active Artifacts`与`Continuity And Open Risks`中记录Execution Ledger / Accepted Run指针和恢复风险，不复制逐Clip完整状态、不新建Clip Registry或平行Project State Schema。
 
+## Skill Experience Candidate Pass
+
+Review完成后，按`references/skill_experience_contract.md`判断是否存在可跨项目复用的经验。若有，可自动向用户提出`Experience Candidate`；若只是当前项目事实、一次性偏好或证据不足，则不提出。
+
+候选默认`User Decision: PENDING`，不得自动写入Skill经验库。用户确认后才由`knowledge/skill_experience.md`接收，并触发Skill版本更新与完整Skill Update Self-Check。已确认经验可在后续相关产出与项目迭代中作为只读建议，但不得改变本次Review Result、Disposition、Return Route或已确认项目事实。
+
 
 
 ---

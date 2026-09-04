@@ -552,6 +552,87 @@ Next Workflow: Project Setup Workflow
             )
             self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
 
+    def test_standalone_skill_discovery_contract_is_installed(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        frontmatter = skill.split("---", 2)[1]
+        for alias in (
+            "调用sd", "调用SD", "用SD Film", "重新调用sd", "恢复旧项目", "继续之前的项目",
+        ):
+            self.assertIn(alias, frontmatter)
+        metadata = (skill_root / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        for marker in (
+            'display_name: "SD Film"',
+            '$sd-film',
+            "allow_implicit_invocation: true",
+        ):
+            self.assertIn(marker, metadata)
+        contracts = (skill_root / "references" / "module_contracts.md").read_text(encoding="utf-8")
+        regressions = (skill_root / "references" / "regression_scenarios.md").read_text(encoding="utf-8")
+        guide = (skill_root / "USER_GUIDE.md").read_text(encoding="utf-8")
+        self.assertIn("### Standalone Skill Discovery Guard", contracts)
+        discovery_matrix = regressions.split(
+            "## R26 Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)", 1
+        )[1].split("## Deterministic Expectations", 1)[0]
+        starts = {index: discovery_matrix.index(f"### SD-R{index} ") for index in range(1, 6)}
+        expected = {
+            1: ("$HOME/.agents/skills/sd", "只保留一个", "两个用户级位置"),
+            2: ("description保留六个启动别名", "allow_implicit_invocation: true", "false"),
+            3: ("$sd-film", "@`选择器只显示Plugin", "display_name`误当作`@`注册"),
+            4: ("网页端、移动端", "不擅自改做Plugin", "虚假承诺"),
+            5: ("重启桌面应用或新建Chat", "rules/runtime_reload.md", "第二套activation"),
+        }
+        for index in range(1, 6):
+            end = starts[index + 1] if index < 5 else len(discovery_matrix)
+            scenario = discovery_matrix[starts[index]:end]
+            for marker in ("输入：", "PASS：", "FAIL：", *expected[index]):
+                self.assertIn(marker, scenario, f"SD-R{index}")
+        for marker in ("@`选择器只显示Plugin", "$sd-film", ".agents\\skills\\sd"):
+            self.assertIn(marker, guide)
+        for relative in (
+            "USER_GUIDE.md",
+            "references/module_contracts.md",
+            "references/regression_scenarios.md",
+        ):
+            self.assertNotIn("@SD Film", (skill_root / relative).read_text(encoding="utf-8"), relative)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
+    def test_skill_validator_rejects_disabled_implicit_invocation(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            metadata = copied / "agents" / "openai.yaml"
+            metadata.write_text(
+                metadata.read_text(encoding="utf-8").replace(
+                    "allow_implicit_invocation: true",
+                    "allow_implicit_invocation: false",
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
+
+    def test_skill_validator_rejects_missing_chat_discovery_alias(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            skill_path = copied / "SKILL.md"
+            skill_text = skill_path.read_text(encoding="utf-8")
+            skill_path.write_text(
+                skill_text.replace("“继续之前的项目”", "“继续过往项目”", 1),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
+
+    def test_skill_validator_rejects_missing_openai_yaml(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            (copied / "agents" / "openai.yaml").unlink()
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
+
     def test_cross_clip_tail_frame_abc_contract_is_installed(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         template = (skill_root / "templates" / "10_video_prompt.md").read_text(encoding="utf-8")
@@ -777,6 +858,19 @@ Next Workflow: Project Setup Workflow
         ):
             self.assertTrue((skill_root / relative).is_file(), relative)
 
+    def test_verified_reuse_preserves_runtime_and_final_gates(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        rule = (skill_root / "rules" / "resource_loading.md").read_text(encoding="utf-8")
+        for marker in (
+            "## Verified Reuse Register",
+            "不创建新的State Source、项目缓存、Completion Gate或最终输出Schema",
+            "每次Workflow开始、恢复、保存、推进或重载仍必须按`rules/state_source.md`实际选择State Source",
+            "显式Reload仍完整遵守`rules/runtime_reload.md`",
+            "不确定是否受影响时默认废弃",
+            "Completion Checklist、`rules/completion_gate.md`和Template完整性检查",
+        ):
+            self.assertIn(marker, rule)
+
     def test_routing_validator_rejects_competing_state_source_owner(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as temp:
@@ -903,6 +997,126 @@ Next Workflow: Project Setup Workflow
         runtime = (skill_root / "rules" / "runtime_reload.md").read_text(encoding="utf-8")
         self.assertIn("普通Chat不是本地文件模式的降级版", runtime)
         self.assertIn("普通制作执行不得默认要求Work", runtime)
+
+    def test_legacy_recovery_lr_r1_to_r10_are_executable_contracts(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        regressions = (skill_root / "references" / "regression_scenarios.md").read_text(encoding="utf-8")
+        starts = {
+            index: regressions.index(f"### LR-R{index} ")
+            for index in range(1, 11)
+        }
+        dry_runs = regressions.index("### R25 Dry-run Coverage")
+        expected = {
+            1: ("Ordinary Chat Recovery Must Not Default to Work", "Current Accessible Skill + Current Verifiable Project Context", "不要求Work"),
+            2: ("Skill / Project Sources Are Independent", "Portable Project State", "source不同即失败"),
+            3: ("Historical Skill Is Never Authority", "Latest Successfully Loaded Current Skill Definition", "legacy mapping hint"),
+            4: ("Legacy State Maps Forward", "当前Pipeline", "不从STATE-00重启"),
+            5: ("Intent Backfill Is Additive", "Legacy Intent Backfill", "不自动失效"),
+            6: ("Confirmed Visual Anchors Persist", "Blocking Signature", "KEEP"),
+            7: ("STATE-08 Resume Re-enters Workflow", "Reference Selection / Routing", "Prompt Compiler → Final QA"),
+            8: ("Claim Gate Honesty", "UNAVAILABLE", "不声称"),
+            9: ("Work Escalation Only On True Need", "Portable State或Current Verifiable Project Context足够", "A继续普通Chat"),
+            10: ("Plain Next Does Not Force Full Recovery", "rules/progression_rules.md", "不重复全量reload"),
+        }
+        for index in range(1, 11):
+            end = starts[index + 1] if index < 10 else dry_runs
+            scenario = regressions[starts[index]:end]
+            for marker in ("输入：", "PASS：", "FAIL：", *expected[index]):
+                self.assertIn(marker, scenario, f"LR-R{index}")
+
+    def test_legacy_recovery_dry_run_matrix_covers_a_to_h(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        regressions = (skill_root / "references" / "regression_scenarios.md").read_text(encoding="utf-8")
+        section = regressions.split("### R25 Dry-run Coverage", 1)[1].split("## Deterministic Expectations", 1)[0]
+        for letter, marker in {
+            "A": "old conversation + current accessible Skill + context only",
+            "B": "current Skill + portable_project_status",
+            "C": "current Skill unavailable",
+            "D": "STATE-08 CLIP-04 + confirmed assets/sketch",
+            "E": "old state names",
+            "F": "Director / Screenwriter schema changed",
+            "G": "only 下一步",
+            "H": "all current / portable / context sources insufficient",
+        }.items():
+            self.assertIn(f"- {letter} `", section, letter)
+            self.assertIn(marker, section, letter)
+
+    def test_runtime_recovery_regression_protection_is_unconditional(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        contracts = (skill_root / "references" / "module_contracts.md").read_text(encoding="utf-8")
+        protection = contracts.split("### Runtime Recovery Regression Protection", 1)[1].split(
+            "### Required Self-Check Summary", 1
+        )[0]
+        for marker in (
+            "Unconditional Chat Runtime Startup And Recovery Guard",
+            "无论修改任何文件、模块、文案、Template、Knowledge、测试、Validator或仅修正拼写",
+            "每次正式修改都必须运行它们",
+            "SKILL.md` activation / routing",
+            "Runtime Reload / Workflow Re-entry",
+            "State Source / Portable State",
+            "Project Setup / project status schema",
+            "Pipeline / STATE rename",
+            "Screenwriter Module / WRITER INTENT PACKET",
+            "Director Module / DIRECTOR INTENT PACKET",
+            "STATE-07 / STATE-08 Current Object",
+            "USER_GUIDE.md` recovery commands",
+            "ordinary Chat vs Work routing",
+            "“本轮改的不是recovery文件”为由跳过",
+            "scripts/validate_sd_film.py skill <skill-root>",
+            "scripts/test_validate_sd_film.py",
+        ):
+            self.assertIn(marker, protection)
+
+        skill = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+        guide = (skill_root / "USER_GUIDE.md").read_text(encoding="utf-8")
+        regressions = (skill_root / "references" / "regression_scenarios.md").read_text(encoding="utf-8")
+        self.assertIn("无论改动是否涉及runtime", skill)
+        self.assertIn("不得以Diff范围、文件类型", skill)
+        self.assertIn("即使只修改文案、Knowledge、Template或拼写", guide)
+        self.assertIn("每次正式修改SD Film都必须完整运行LR-R1至LR-R10", regressions)
+
+    def test_routing_validator_rejects_competing_legacy_recovery_owner(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            director = copied / "knowledge" / "director_decision_layer.md"
+            director.write_text(
+                director.read_text(encoding="utf-8")
+                + "\n## Legacy Project Recovery Integrity\nDirector owns Work escalation.\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_routing_validator_rejects_missing_legacy_intent_backfill(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            runtime = copied / "rules" / "runtime_reload.md"
+            runtime.write_text(
+                runtime.read_text(encoding="utf-8").replace(
+                    "Backfill missing intent, do not remake confirmed production.",
+                    "Remake confirmed production.",
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_state_routing, copied, True), 1)
+
+    def test_skill_validator_always_runs_chat_startup_recovery_guard(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            regressions = copied / "references" / "regression_scenarios.md"
+            regressions.write_text(
+                regressions.read_text(encoding="utf-8").replace(
+                    "### LR-R1 Ordinary Chat Recovery Must Not Default to Work",
+                    "### Removed Ordinary Chat Recovery Contract",
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
 
     def test_routing_validator_rejects_completion_owner_overlap(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]

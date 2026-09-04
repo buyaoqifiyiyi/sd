@@ -15,7 +15,7 @@
 
 Skill Definition与Project Context是两类独立来源。显式“调用 / 重新调用 / 重新加载SD”先按`rules/runtime_reload.md`重新解析当前Chat runtime实际可访问的installed / exposed Skill resources；随后才按`rules/state_source.md`选择项目事实。Portable State可恢复项目，但不能证明当前Skill已经重载，也不是Skill Definition副本。
 
-不得因为无法读取`C:\Users\Lenovo\.codex\skills\sd`、本地项目Root或`project_registry.json`而停止、报错、默认要求切Work或要求用户上传整个目录。需要规则、Workflow、Knowledge或Template时，先通过当前运行时实际可用的Skill资源机制检索；只有实际检索失败且资源确属当前步骤必需时，才请求用户提供该资源。Work只用于用户要求直接编辑/检查本地Skill或项目文件，或任务确实需要本地文件操作而普通Chat没有等价访问能力的情况；普通制作执行本身不要求Work。
+不得因为无法读取`C:\Users\Lenovo\.agents\skills\sd`、本地项目Root或`project_registry.json`而停止、报错、默认要求切Work或要求用户上传整个目录。需要规则、Workflow、Knowledge或Template时，先通过当前运行时实际可用的Skill资源机制检索；只有实际检索失败且资源确属当前步骤必需时，才请求用户提供该资源。Work只用于用户要求直接编辑/检查本地Skill或项目文件，或任务确实需要本地文件操作而普通Chat没有等价访问能力的情况；普通制作执行本身不要求Work。
 
 ## Portable Execution
 

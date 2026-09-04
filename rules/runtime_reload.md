@@ -1,8 +1,8 @@
-# Runtime Skill Reload / Workflow Re-entry
+# Runtime Skill Reload / Workflow Re-entry / Legacy Project Recovery
 
 ## Purpose
 
-本规则定义SD Film在普通Chat、已安装Chat Skill与Work/Codex本地环境中的`Runtime Skill Reload Integrity / Chat Hot Reload`与`Workflow Re-entry Integrity`协议。它是显式重新调用的唯一Reload / Re-entry owner，不创建STATE，不改变项目事实，也不拥有任何阶段算法或交付格式。
+本规则定义SD Film在普通Chat、已安装Chat Skill与Work/Codex本地环境中的`Runtime Skill Reload Integrity / Chat Hot Reload`、`Workflow Re-entry Integrity`与`Legacy Project Recovery Integrity`协议。它是显式重新调用、恢复旧项目、Skill Definition Source解析、Work escalation与Legacy Intent Backfill路由的唯一runtime owner；不创建STATE，不改变项目事实，也不拥有任何阶段算法或交付格式。
 
 ## Trigger
 
@@ -17,6 +17,12 @@
 - `重新加载sd`
 - `按当前Skill继续`
 - `按当前 skill 继续`
+- `重新调用sd，恢复当前项目`
+- `重新调用SD，恢复这个项目`
+- `恢复旧项目`
+- `继续之前的项目`
+- `按当前Skill恢复项目`
+- `重新加载sd并继续当前项目`
 - 明确要求使用最新、当前可访问、本地或当前安装版SD Film规则继续
 
 普通的“继续”“下一步”不是重载触发词；它们服从`rules/progression_rules.md`。
@@ -25,6 +31,7 @@
 
 - 首次或普通显式`调用SD / 调用sd / 调用SD流程`：执行本轮Reload Gate，再做正常activation、State Source解析与Workflow routing；不存在可恢复项目时按当前Pipeline正常建立入口。
 - **Explicit Re-entry Command**：`重新调用SD / 重新调用sd / 重新加载SD / 重新加载sd / 按当前Skill继续 / 按当前 skill 继续`及无歧义等价表达。它固定表示`Runtime Skill Reload + Workflow Re-entry / Re-route`，不能降级成继续沿用上一版结论改写。
+- **Explicit Legacy Recovery Command**：`重新调用sd，恢复当前项目 / 重新调用SD，恢复这个项目 / 恢复旧项目 / 继续之前的项目 / 按当前Skill恢复项目 / 重新加载sd并继续当前项目`及无歧义等价表达。它固定表示先执行Runtime Skill Reload Integrity，再进入本文件的Legacy Project Recovery Integrity；不得只因本机路径不可读而停止，也不得跳过Reload Claim Gate。
 - 普通`继续 / 下一步 / 下一个`：不是Explicit Re-entry Command，不执行全量Reload或强制Re-entry，只按`rules/progression_rules.md`继续当前已加载Workflow及其本来要求的Gate。
 
 ## Authority
@@ -35,6 +42,18 @@
 - Skill规则冲突时固定使用：`Latest Successfully Loaded Current Skill Definition > Old Conversation Skill Description / Cached Skill Rules / historical assistant memory`。旧对话中的Skill描述只能作为历史上下文，不得覆盖或冒充当前资源。
 - Project Context与Skill Definition分别解析：重载只刷新Skill Definition，不得因版本、STATE名称、owner或文件路由更新而清空项目、强制从STATE-00重启或重新确认Accepted Unaffected Artifacts。
 - 项目状态必须按`rules/state_source.md`选择，旧Skill规则本身不是State Source。
+
+## Independent Source Resolution
+
+Skill Definition Source与Project State Source是两个独立维度，必须分别解析、分别记录、分别通过各自Claim Gate。`Skill Definition ≠ Project Context`；任何一方可用或不可用都不能自动证明另一方的状态。
+
+### Skill Definition Source Priority
+
+1. 本轮重新解析并实际读取成功的`Current Accessible / Exposed Installed SD Film Skill Definition`。
+2. 当前Skill已经明确登记、且本轮实际可访问的portable / exposed Skill fallback（仅在确实存在时使用；不得把项目Portable State或历史摘要伪装成该fallback）。
+3. 若两者均不可用，记录`Reload Status: UNAVAILABLE`、失败资源与真实`Fallback Source`；不得声称current Skill loaded。上一次成功加载的Skill Definition只能如实标成`Last Successfully Loaded Skill Definition`，旧对话里的Skill摘要、assistant旧解释或旧workflow描述只能作为legacy mapping hint，永远不是Current Skill authority。
+
+Project State Source的选择优先级只由`rules/state_source.md`拥有。本规则调用该owner并记录结果，不在此复制竞争优先级。以下组合明确合法：`Skill Source = Current Accessible Skill`，同时`Project State Source = Portable Project State`或`Current Verifiable Project Context`。来源不同不得成为恢复失败理由。
 
 ## Reload And Re-entry Sequence
 
@@ -53,6 +72,44 @@
 普通Chat不是本地文件模式的降级版。只要当前runtime能实际读取Skill入口和必需owner，就直接Reload、Route并执行；Windows本机路径不可读不构成切Work理由。只有用户要求直接编辑/检查本地Skill或项目文件，或当前任务确实必须操作本地文件且Chat runtime没有等价资源访问时，才进入Work。普通制作执行不得默认要求Work。
 
 未命中显式Trigger的“继续 / 下一步”复用当前runtime中最近一次成功加载且仍可用的Skill Definition与Project Context，按需读取当前Workflow资源；不重复执行本Gate，也不得把普通推进表述成一次新Reload。
+
+## Legacy Project Recovery Integrity
+
+Legacy Project Recovery是Runtime / Project Recovery层的受控路由，不是新STATE，不替代`workflows/18_project_resume_workflow.md`的Checkpoint与Retry执行，也不复制Runtime Reload或State Source规则。它必须调用本文件前述Runtime Skill Reload Integrity与Workflow Re-entry Integrity，并按以下顺序执行：
+
+1. 执行Runtime Skill Reload Integrity，并取得真实`Reload Status`。
+2. 按本文件`Skill Definition Source Priority`解析并记录Skill Source。
+3. 调用`rules/state_source.md`解析并记录Project State Source；Root不可读时继续尝试Portable Project State，再尝试Current Verifiable Project Context。
+4. 从所选Project Source保留或仅按证据重建Confirmed Project Canon，包括Production-Locked Screenplay、Confirmed角色/环境/道具/FX资产、Active Versions、Canonical References、Accepted Take / accepted prompt、Accepted Canon State、Shot-State Memory、Blocking Canon、Spatial Snapshot、Current Scene / Shot / Clip、Confirmed `REF-SKETCH`、Checkpoint、Revision与用户明确确认的创作决定。
+5. 调用`rules/compatibility_mapping.md`，按Artifact与Completion Gate把legacy STATE / Workflow / owner / filename映射到当前Pipeline；不得从STATE-00重启已可验证项目。
+6. 只检测当前schema新增而旧项目缺失的intent或路由数据；不得把已确认production误判成缺失。
+7. 仅对缺失项运行本文件的`Legacy Intent Backfill`；现有可靠意图继续复用。
+8. 按Workflow Re-entry Integrity从映射后的当前Workflow entry gate重新执行当前对象的适用routing、gates、compiler与QA，到合法Checkpoint。
+9. 按`Recovery Evidence Contract`显示简洁恢复证据；没有实际重读Current Skill时保持诚实fallback声明。
+10. 按当前用户命令与当前Gate继续。若用户只说普通`下一步 / 继续`且项目已经恢复，不重复全量reload或recovery。
+
+### Legacy Intent Backfill
+
+`Legacy Intent Backfill`是恢复时的非STATE、内部additive compatibility pass。固定原则：`Backfill missing intent, do not remake confirmed production.` 它只补当前版本实际需要、且可以从Confirmed Canon可靠推导的缺失intent；不确定项标记Unknown / Pending，不以想象填充，也不把Packet整体写入Portable State或最终Template。
+
+- **Writer Intent Backfill**：仅按需补Premise / Dramatic Question（可靠时）、Character Objective / Hidden Objective / Subtext、Scene Value Change、Writer Beat Map、Information Architecture、Setup / Payoff obligations与Relationship Arc。字段含义与边界仍只由`knowledge/screenplay_development.md`拥有。
+- **Director Intent Backfill**：仅按需补Directorial Thesis / Audience Contract必要部分、Scene Objective / Audience Start-End State、Relationship Delta / Information Presentation、Performance Strategy、Spatial Dramaturgy、当前及后续真正需要的Shot Purpose / Camera Motivation，以及Clip Dramatic Function。字段含义与边界仍只由`knowledge/director_decision_layer.md`拥有；Camera仍只来自当前STATE-06 / Director owner。
+- **Preservation Gate**：不得重写Production-Locked Screenplay，不得重做Confirmed资产或已确认镜头，不得自动使Accepted Take / accepted prompt失效，不得因缺Packet回到STATE-01。Confirmed `REF-SKETCH`在Blocking Signature未变时继续有效；Accepted Take / accepted prompt只做current owner compatibility check。若真实上游事实冲突，按现有owner Return Route最小处理，不以Backfill掩盖。
+
+### Work Escalation Final Fallback
+
+Work escalation只能在以下至少一项真实成立时使用：
+
+- 用户明确要求检查或修改本地Skill、项目文件或本地artifact。
+- 当前Chat无法访问任何Current Skill Definition或Skill已定义的portable / exposed Skill fallback，且本次恢复行为必须依赖最新Skill规则才能安全决定。
+- 恢复所需的唯一必要Project Source是未暴露的本地文件，并且Portable Project State与Current Verifiable Project Context都不足以安全恢复。
+- 当前步骤必须直接处理普通Chat无法访问的本地artifact。
+
+硬禁止：`仅因为路径是C:\Users\...就自动要求Work`。当Skill Source或Project Source不足但仍可安全执行有限工作时，先如实使用fallback；只有缺失确实阻止当前恢复或本地操作时才escalate。
+
+### Rule Ownership Protection
+
+Runtime recovery authority只由本文件定义。任何STATE Workflow、Screenwriter Module、Director Module、Knowledge、Template或USER_GUIDE都不得覆盖、重排或重新定义Skill Source、Project State Source、Reload Claim Gate、Work escalation、Legacy Intent Backfill触发与恢复执行顺序；它们只能提供字段语义、阶段Gate或用户行为说明。`workflows/18_project_resume_workflow.md`负责消费本路由后的Checkpoint / Retry执行与记录，不是第二个runtime authority。
 
 ## Re-entry Input Boundary
 
@@ -121,3 +178,20 @@ Current Object: <CLIP-04 / SHOT-XX / asset / project checkpoint>
 - Fallback Source（仅`UNAVAILABLE`或发生fallback时）
 
 这些是轻量调用证据，不建立状态数据库、不写入项目STATE，也不自动污染production输出。用户询问重载结果或系统准备作出“严格按当前Skill”声明时披露必要证据；读取失败时指出具体资源与实际Fallback Source，仅在合法检索机制确实失败后才请求用户提供缺失资源。不得把“本机路径不可访问”本身写成项目`BLOCKED`。
+
+### Recovery Evidence Contract
+
+显式Legacy Recovery至少向用户显示以下最小证据；未知值必须如实写Unknown / Unavailable，不能补猜：
+
+```text
+Skill Source: <actual current / exposed fallback / unavailable>
+Project State Source: <root / portable / current verifiable context / unavailable>
+Mapped Current STATE: <STATE-XX / unknown>
+Current Workflow: <owner / unknown>
+Current Object: <project / scene / shot / clip / asset / unknown>
+Canon Preserved: <concise confirmed set>
+Backfill Needed: Writer / Director / Writer + Director / none / unknown
+Next Workflow: <owner / pending>
+```
+
+只有本轮actual Current Skill read / verify成功才可把Skill Source写成current并声称“已重新加载当前Skill”。Recovery Evidence是runtime trace，不进入项目主STATE、Portable Schema、Writer / Director Packet或最终Template。

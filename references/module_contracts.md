@@ -54,7 +54,7 @@
 
 ### Global Runtime Rule Owners
 
-- Runtime Reload / Workflow Re-entry：`rules/runtime_reload.md`
+- Runtime Reload / Workflow Re-entry / Legacy Project Recovery Integrity、Skill Definition Source、Work escalation与Legacy Intent Backfill路由：`rules/runtime_reload.md`
 - State Source：`rules/state_source.md`
 - Chat Compatibility：`rules/chat_compatibility.md`
 - Progression：`rules/progression_rules.md`
@@ -66,6 +66,13 @@
 - Skill Update Self-Check：本文件的`Skill Update Self-Check / Change Safety Checklist`
 
 其他模块只能引用这些所有者，不得在`SKILL.md`、`config.md`、References、Knowledge、Templates、兼容入口或各Workflow中维护竞争副本。`SKILL.md`可保留激活/重载入口和路由索引，但不得复制完整运行协议。
+
+#### Runtime Recovery Rule Ownership Protection
+
+- Runtime recovery authority只能由`rules/runtime_reload.md`定义；`workflows/18_project_resume_workflow.md`只消费其恢复决定并执行Checkpoint / Retry / Ledger记录。
+- STATE Workflow、Screenwriter Module、Director Module、Knowledge与Template不得自行覆盖或重新定义Skill Definition Source、State Source priority、Reload Claim Gate、Work escalation、Legacy Intent Backfill触发或恢复顺序。
+- `rules/state_source.md`继续独占Project State Source priority；runtime owner只能调用并记录选定结果，不得维护竞争副本。
+- `USER_GUIDE.md`只能说明用户如何调用及可见行为，不是runtime authority，也不得成为恢复、source resolution或Work routing的规范来源。
 
 ### Production Knowledge Rule Owners
 
@@ -294,6 +301,30 @@ Output拥有者：Character、Environment、Prop与FX的最终阶段字段分别
 Validator可检查的不变量：四个状态合法；Prompt Confirmed及以后具有Prompt Revision与Prompt Confirmation；Image Generated具有Candidate References但不为Active；Asset Confirmed具有Image Confirmation、Canonical References与Status Active；三个主资产Template均具有阶段化输出与双确认Checkpoint；CHAR / ENV / PROP均有Core或Support分层，Core的Board / Item为Not Applicable，Support的Board / Item映射唯一且不跨类型；三项状态投影与Visual Production Status一致。
 
 ---
+
+## Skill Experience Module Contract
+
+Module Name：`Skill Experience Module`。
+
+Module Type：跨项目持久Knowledge层，以及Review / 失败复盘后的候选确认机制；不创建新主STATE。
+
+Owner：`knowledge/skill_experience.md`；存储、确认、应用、项目迭代与失效边界由`references/skill_experience_contract.md`拥有。
+
+触发：STATE-09 Review完成、REVISE / REBUILD返回、生成失败复盘，或用户明确要求总结/记录技能经验。
+
+不触发：普通项目状态读取、单次Prompt润色、项目专属事实整理、未完成推理，以及用户未确认的自动Skill写入。
+
+输入唯一来源：实际Review结果、Generation Attempts / Failure Pattern、用户明确反馈、重复验证案例与当前Skill规则；不得把单一项目事实直接当作跨项目经验。
+
+输出：`Experience Candidate`可在Review / 复盘后自动提出，但必须保持`PENDING`直到用户明确确认；确认后写入Skill经验库并递增Skill版本。已确认经验在相关产出和项目迭代前按需读取，作为只读建议。
+
+应用边界：经验只能投影到当前Template允许的语义，不能新增最终字段、覆盖用户指令、项目事实、Rules、Workflow、Template或既有Owner。项目迭代必须通过对应事实/设计Owner和用户确认，并按项目Revision规则落盘。
+
+允许写入：Skill根目录的经验知识库；禁止写入Project Root、Project State、Portable State、项目兼容入口或任何已确认项目Artifact。
+
+冲突路由：与硬规则、用户当前指令或已确认项目事实冲突时标记`CONFLICT / REVIEW`并暂停应用，返回对应Owner；不静默改写或删除历史证据。
+
+Validator不变量：候选未确认不得入库；经验不占用现有实体ID命名空间；经验不出现在主Pipeline STATE列表；经验应用不绕过Completion Gate；每次经验入库触发完整Skill Update Self-Check。
 
 ## Sequence Module Contract
 
@@ -691,7 +722,9 @@ Module Type：项目控制Reference与辅助Workflow。
 
 输出拥有者：项目状态字段由references/project_state_contract.md拥有；恢复记录由templates/17_execution_ledger.md与templates/18_artifact_revision_ledger.md拥有。
 
-必须从可验证Checkpoint继续，保持Accepted Unaffected Artifacts，不创建新主STATE。State Source只按`rules/state_source.md`选择；本模块不得复制优先级或Chat fallback细节。禁止把历史聊天文本当作状态、选择最近项目、静默合并不同Project ID、重写成功Checkpoint之前内容，或在第三次同类失败后继续盲重试。
+必须从可验证Checkpoint继续，保持Accepted Unaffected Artifacts，不创建新主STATE。Legacy Project Recovery Integrity、Skill Definition Source、Work escalation与Legacy Intent Backfill路由只由`rules/runtime_reload.md`拥有；State Source只按`rules/state_source.md`选择；本模块不得复制优先级或Chat fallback细节。`workflows/18_project_resume_workflow.md`只消费以上owner的结果并执行Checkpoint / Retry / Ledger。禁止把历史聊天里的Skill摘要当作Current Skill或State Source、选择最近项目、静默合并不同Project ID、重写成功Checkpoint之前内容，或在第三次同类失败后继续盲重试。
+
+Legacy Intent Backfill固定是additive compatibility pass：只补当前schema缺失且可从Confirmed Canon可靠推导的Writer / Director intent，保留Production-Locked Screenplay、Confirmed Assets、Blocking Canon / Spatial Snapshot、Confirmed `REF-SKETCH`、Accepted Take / accepted prompt及已确认镜头。它不得回STATE-01重做项目，也不得把Packet变成Portable字段或最终Template Schema。
 
 ---
 
@@ -725,7 +758,7 @@ Module Type：STATE-06至STATE-08 Camera Knowledge Router。
 
 ### Trigger And Change Classification
 
-每次对Skill做用户可见或行为层更新后都必须执行，包括修改`SKILL.md`、Rules、Workflows、Knowledge、Templates、References、Validator、模块增删、Prompt结构、路由、Gate、STATE规则、资产规则、连续性规则、Review规则或`USER_GUIDE.md`。纯拼写修正可使用轻量检查，但仍必须完成Duplicate Rule、Conflict与Reference Integrity检查。
+每次对Skill作任何正式修改后都必须执行，包括修改`SKILL.md`、Rules、Workflows、Knowledge、Templates、References、Validator、测试、用户文档、模块增删、Prompt结构、路由、Gate、STATE规则、资产规则、连续性规则、Review规则以及纯拼写修正。轻量语义检查可以与改动风险匹配，但`Standalone Skill Discovery Guard`与`Unconditional Chat Runtime Startup And Recovery Guard`永远不能省略；任何修改都必须运行当前静态Skill Validator、完整测试入口、SD-R1—SD-R5与LR-R1—LR-R10，证明桌面Chat仍能发现、启动、恢复并保持诚实Claim。
 
 开始修改前先搜索当前权威来源和同类机制，完成后把本次变更标记为以下一种：
 
@@ -743,6 +776,8 @@ Read current rules
 → Classify existing coverage
 → Apply minimal change
 → Run Skill Update Self-Check
+→ Run Standalone Skill Discovery Guard
+→ Run Unconditional Chat Runtime Startup And Recovery Guard
 → Classify and resolve every finding by risk
 → Run targeted regression for the requested change and every repaired finding
 → Sync USER_GUIDE when user-facing behavior changed
@@ -763,6 +798,8 @@ Read current rules
 10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
 11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
 12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。
+13. **Runtime Claim / Legacy Recovery Check**：核对Runtime Skill Reload、Workflow Re-entry与Legacy Project Recovery仍由唯一owner定义；Skill Source / Project State Source独立；历史Skill永不成为Current authority；Claim Gate诚实；Work只在真实必要时escalate；Legacy Intent Backfill只增补不重做；STATE-08从current owner entry重进；普通`下一步`不触发全量恢复。必须运行`references/regression_scenarios.md`中的`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`及现有Validator / tests。
+14. **Standalone Skill Discovery Check**：核对用户级权威副本位于`$HOME/.agents/skills`、同名`sd-film`没有第二份用户级副本、`SKILL.md` frontmatter保留启动别名、`agents/openai.yaml`与Skill名称一致、`policy.allow_implicit_invocation`为`true`，且用户文档只把Codex `$sd-film`作为本机独立Skill的确定性显式入口。在当前用户客户端中，普通Chat的`@`选择器只显示Plugin；不得宣称本机独立Skill可通过`@`加显示名调用，也不得把网页/移动端读取本机Skill误写为受支持能力。
 
 ### Skill-Wide Detection And Risk-Based Repair
 
@@ -789,6 +826,39 @@ Read current rules
 - 所有显式内部文件引用均存在。
 - 正常样例通过Validator；缺字段、重复ID、越权ID或错误路由样例被拒绝。
 
+### Runtime Recovery Regression Protection
+
+`Unconditional Chat Runtime Startup And Recovery Guard`是每次正式Skill修改的固定基线，而不是按Diff选择的可选回归。无论修改任何文件、模块、文案、Template、Knowledge、测试、Validator或仅修正拼写，都必须运行完整`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`，验证普通Chat activation、Current Skill resource解析、双source独立、Claim Gate、Work边界、legacy mapping、intent backfill、STATE-08 re-entry与plain-next隔离；不能以改动小、未触及runtime或“本轮改的不是recovery文件”为由跳过。
+
+以下区域仍视为高风险触发面；命中时除固定基线外，还必须根据直接消费者增加定向恢复案例：
+
+- `SKILL.md` activation / routing
+- Runtime Reload / Workflow Re-entry
+- State Source / Portable State
+- Project Setup / project status schema
+- Pipeline / STATE rename、owner或filename变化
+- Screenwriter Module / WRITER INTENT PACKET
+- Director Module / DIRECTOR INTENT PACKET
+- STATE-07 / STATE-08 Current Object、Clip state、Reference / Blocking / Prompt entry
+- `USER_GUIDE.md` recovery commands
+- ordinary Chat vs Work routing
+
+执行owner固定为`scripts/validate_sd_film.py skill <skill-root>`与`scripts/test_validate_sd_film.py`。这两项验证始终检查LR-R1—LR-R10的静态合同和防篡改用例，因此每次正式修改都必须运行它们；如果未来脚本owner改名或迁移，必须在同一次变更中把本节、`SKILL.md`指针与测试入口一起迁移，不能只删掉检查。语义演练仍由维护者按Matrix逐项核对，脚本通过不替代语义判断。
+
+### Standalone Skill Discovery Guard
+
+本Guard属于现有Skill维护QA，不是Plugin机制、不是主Pipeline STATE，也不建立第二套Runtime Router。它只保护独立Skill在支持本机Skills的ChatGPT桌面应用、Codex CLI与IDE中的发现入口；不得据此声称网页端或移动端能直接读取本机目录。
+
+每次正式修改都必须运行以下固定检查，不允许因“本轮只改Writer / Director / Runtime / Template / 文案”而跳过：
+
+- `SKILL.md` frontmatter的`name`仍为`sd-film`，`description`前置保留`调用sd`、`调用SD`、`用SD Film`、`重新调用sd`、`恢复旧项目`、`继续之前的项目`等高价值启动词；隐式调用只以当前description作发现提示，不以旧对话Skill摘要补位。
+- `agents/openai.yaml`存在，`interface.display_name`为`SD Film`，`interface.default_prompt`显式提及`$sd-film`，`policy.allow_implicit_invocation`为`true`；Writer、Director、STATE Workflow和USER_GUIDE不得覆盖该调用策略。
+- 用户级权威安装采用`$HOME/.agents/skills/sd`；不得同时在`$HOME/.codex/skills`或另一用户级Skill目录保留第二份同名`sd-film`。需要兼容旧位置时执行一次迁移，不维持双写或两个独立副本。
+- Codex中的确定性显式入口是`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin或Plugin内含能力，本机独立Skill不得承诺以`@`选择显示名的入口；普通Chat只有在宿主实际暴露本机Skills时，才可能通过`description`对`调用sd`作隐式选择。`agents/openai.yaml`的`display_name`与`allow_implicit_invocation`不会把独立Skill注册成Plugin，也不证明普通Chat已有`@`入口。
+- Skill变更通常应被Codex自动检测；如果当前Codex会话未刷新元数据，要求重启桌面应用或新建Codex任务后复测。普通Chat的`@`列表没有SD Film时，不得把它误诊为Skill内容错误，也不得为迎合`@`而创建Plugin、复制Skill或弱化Runtime规则。
+
+可执行owner仍为`scripts/validate_sd_film.py skill <skill-root>`与`scripts/test_validate_sd_film.py`；它们必须检查元数据、别名、隐式调用开关、单一用户级权威副本、禁止虚假`@`显式调用声明及`Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`。安装位置、普通Chat是否暴露本机Skill以及客户端刷新属于运行环境证据，脚本之外仍需在最终报告中如实记录。
+
 ### Required Self-Check Summary
 
 每次正式修改后的最终报告必须简短列出：
@@ -807,6 +877,11 @@ Routing: PASS / FIXED / WARN
 Template Sync: PASS / FIXED / WARN
 Reference Integrity: PASS / FIXED / WARN
 State / Continuity: PASS / FIXED / WARN
+Runtime Claim Integrity: PASS / FIXED / WARN
+Legacy Recovery Regression: PASS / FAIL / WARN
+Chat Runtime Startup Guard: PASS / FAIL / WARN
+Standalone Skill Discovery: PASS / FAIL / WARN
+Writer / Director Compatibility: PASS / FIXED / WARN
 Regression: PASS / FAIL / WARN
 USER_GUIDE Sync: YES / NOT REQUIRED
 Warnings: NONE / <concise unresolved warnings>

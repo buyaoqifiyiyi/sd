@@ -10,6 +10,8 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 正常调用方式不变：继续使用`调用sd`开始或路由，使用`下一步 / 继续`从当前Checkpoint推进。普通“下一步”不会无意义全量reload。
 
+在Codex中需要确定性启动时使用`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin，本机独立SD Film没有以`@`选择显示名的入口；`agents/openai.yaml`也不会把它注册成Plugin。普通Chat只有在宿主实际暴露本机Skills时，才可能通过`调用sd`等自然语言隐式选择。Skill更新后若Codex旧会话没有刷新，先重启桌面应用或新建Codex任务再试。移动到`.agents/skills`能改善Codex本地发现，但不能突破普通Chat、网页端或移动端的宿主边界。
+
 如需查看内部方向，可以说：`显示当前Scene的导演意图`、`为什么这样拍`或`显示这个Clip的镜头语言策略`。Skill只会给简洁摘要，不会把完整内部Packet塞进最终Prompt。
 
 ## 先记住这条万能公式
@@ -48,8 +50,9 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 | Clip返修 | `调用sd，只修CLIP-003的站位错误，其他内容和字段保持不变。` | STATE-08最小修订或对应上游Return Route |
 | 连续性检查 | `调用sd，只检查CLIP-002到CLIP-003的角色、站位、道具、轴线和首尾帧连续性，不重新生成。` | STATE-07 / STATE-09连续性核验 |
 | Review | `调用sd，审核这个实际生成结果，给出PASS / REVISE / REBUILD、KEEP / RE-EDIT / REGENERATE / REDIRECT和最小返修方案。` | STATE-09 Technical + Director's Cut Review |
+| 技能经验 | `调用sd，Review后提出可跨项目复用的经验候选，等我确认后再写入Skill。` | Skill Experience候选确认机制 |
 | 电影海报 / Key Art | `调用sd，根据当前项目设计一张9:16数字竖版电影Key Art，沿用现有角色和环境资产。` | Poster Design辅助Workflow |
-| 继续旧项目 | `重新调用sd，按当前可访问的最新Skill恢复这个项目，从最后一个安全Checkpoint继续。` | Runtime Reload + Project Resume |
+| 继续旧项目 | `重新调用sd，恢复当前项目，从最后一个安全Checkpoint继续。` | Runtime Reload + Legacy Project Recovery + Project Resume |
 | 检查Skill | `调用sd，只检查当前实际安装版的Pipeline、STATE和音色规则，不执行制作。` | Runtime Reload + 只读规则检查 |
 | 修改Skill | `进入Work，读取当前实际安装的sd Skill，只修改我指定的规则，并同步版本、回归检查和USER_GUIDE.md。` | Work / Codex本地修改任务 |
 
@@ -67,6 +70,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 8. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
 9. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，本轮会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；你下次说“继续 / 下一个”时再输出该Clip Prompt。简单Clip不会为了统一流程强制出草图。
 10. Review同时区分Technical Review与Director's Cut Review，并在兼容的`PASS / REVISE / REBUILD`外给出`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。技术正确但信息或情绪提前暴露仍会返修；修复后必须重新Review。
+11. Review或失败复盘后，系统可以自动提出跨项目技能经验候选；候选不会自动写入Skill。只有你明确确认后才入库，并在适用条件满足时影响后续产出或形成项目迭代建议。经验不能直接覆盖已确认剧情、资产、镜头、Clip或Prompt，项目修改仍经过对应流程与确认。
 
 ---
 
@@ -668,7 +672,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 ### 重新读取当前实际安装版再继续
 
 ```text
-重新调用sd，按当前可访问的最新Skill恢复这个项目，从最后一个安全Checkpoint继续。
+重新调用sd，恢复当前项目，从最后一个安全Checkpoint继续。
 ```
 
 或：
@@ -681,9 +685,12 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 - 首次或普通`调用SD / 调用sd / 调用SD流程`会激活SD Film，读取当前可访问规则并按项目事实进入正确STATE / Workflow；不存在可恢复项目时可建立新项目入口。
 - 明确`重新调用SD / 重新调用sd / 重新加载SD / 重新加载sd / 按当前Skill继续 / 按当前 skill 继续`会重新读取当前可访问Skill，同时保留已确认的项目事实，从当前STATE / Workflow入口重新处理当前对象；不会只拿上一版Prompt继续润色，也不会无故清空已确认资产、草图或进度。
+- `重新调用sd，恢复当前项目`会优先使用当前Chat实际可访问的Skill资源，并依次尝试可用项目状态、Portable Project State和当前可验证的项目上下文；Skill规则来源和项目事实来源可以不同，不会因此恢复失败。
 - 普通`继续 / 下一步 / 下一个`只从当前合法Checkpoint继续，不等于强制重新加载；当前Workflow本来要求的检查仍会照常执行。
-- 普通Chat会先使用当前运行时可访问的Skill资源；本机Windows路径不可读不代表必须切Work。只有直接编辑或检查本地Skill / 项目文件时才需要Work。
+- 普通Chat会先使用当前运行时可访问的Skill资源；本机Windows路径不可读不代表必须切Work。Work不是恢复旧项目的默认要求，只有必须读取/修改普通Chat无法访问的本地文件且现有Portable State与项目上下文不足时才需要。
+- 旧项目已有的定稿剧本、角色/环境/道具资产、Blocking、Spatial Snapshot、Confirmed草图、Accepted Take / accepted prompt和已确认镜头会保留；新版Screenwriter / Director规则只补当前Workflow确实缺少且可可靠推导的Intent，不会把项目退回STATE-01重做。
 - 只有本轮真的读到当前Skill入口、版本和必需路由文件，Skill才能说“已重新加载”或“严格按当前Skill执行”；失败时会说明实际使用的是当前可访问资源、Portable State或Project Context等fallback，不会拿旧对话摘要冒充当前安装版。
+- 显式恢复会简短显示Skill来源、项目状态来源、映射后的STATE、当前Workflow / Object、保留的Canon、需要补的Writer / Director Intent和Next Workflow，方便核对实际恢复依据。
 - 会核验 Project ID、State Source、Revision、Checkpoint和 Artifact；不能唯一识别项目时会停下确认，不会猜“最近项目”。
 - 生成失败第一次最小修正，第二次稳定降级，第三次返回事实 / 设计拥有者。
 
@@ -721,13 +728,13 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 **最简指令**
 
 ```text
-进入Work，读取当前实际安装的C:\Users\Lenovo\.codex\skills\sd，只修改我指定的规则。
+进入Work，读取当前实际安装的C:\Users\Lenovo\.agents\skills\sd，只修改我指定的规则。
 ```
 
 **推荐完整指令**
 
 ```text
-进入Work，修改用户当前实际使用的C:\Users\Lenovo\.codex\skills\sd。
+进入Work，修改用户当前实际使用的C:\Users\Lenovo\.agents\skills\sd。
 
 先完整读取SKILL.md，并读取config、workflow map、相关rules/workflows/templates/references；先搜索是否已有同类规则，优先修改权威原文件，不平行新增重复Schema。
 
@@ -814,7 +821,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 ## 维护约定
 
-每次Skill正式修改完成后都必须执行`references/module_contracts.md`中的`Skill Update Self-Check / Change Safety Checklist`。该文件是维护QA的唯一权威来源；本说明书只说明用户可见的调用和报告方式，不复制完整检查细则。
+每次Skill正式修改完成后都必须执行`references/module_contracts.md`中的`Skill Update Self-Check / Change Safety Checklist`、`Standalone Skill Discovery Guard`和`Unconditional Chat Runtime Startup And Recovery Guard`。即使只修改文案、Knowledge、Template或拼写，也必须运行普通Chat启动与旧项目恢复基线，以及独立Skill发现基线，避免后续优化使Chat无法正常调用、出现两份同名Skill或误要求Work。该Reference是维护QA的唯一权威来源；本说明书只说明用户可见的调用和报告方式，不复制完整检查细则。
 
 以后发生以下用户可见变化时，应同步更新本说明书：
 

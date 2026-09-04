@@ -1,0 +1,7 @@
+interface:
+  display_name: "SD Film"
+  short_description: "AI影视剧本、资产、镜头、Clip与Seedance虚拟制片"
+  default_prompt: "使用 $sd-film 启动或恢复当前AI影视虚拟制片流程。"
+
+policy:
+  allow_implicit_invocation: true

@@ -18,6 +18,7 @@
 - SHOT或UNIT需要重试。
 - Active Artifact与project_status.md记录不一致。
 - 用户在旧对话中继续项目，并命中`rules/runtime_reload.md`定义的Runtime Reload Trigger。
+- 用户命中`rules/runtime_reload.md`定义的Explicit Legacy Recovery Command。
 
 正常连续执行且状态清楚时不触发。
 
@@ -32,6 +33,7 @@
 - references/artifact_revision_contract.md
 - references/asset_lock_contract.md
 - knowledge/quality/execution_risk.md（生成重试时）
+- references/skill_experience_contract.md与knowledge/skill_experience.md（生成失败复盘形成跨项目经验候选时）
 - project_manifest.json（可访问时）
 - 按优先级选定的project_status.md或portable_project_status.md
 - asset_registry.md
@@ -44,7 +46,7 @@
 
 ## Step 1: Resolve Project
 
-如当前输入触发Runtime Skill Reload，先完整执行`rules/runtime_reload.md`并取得合法Reload Status，再进入项目解析。本Workflow不维护触发词、加载顺序或成功判定。
+如当前输入触发Runtime Skill Reload或Legacy Project Recovery，先完整执行`rules/runtime_reload.md`对应的Integrity协议并取得合法Reload Status，再进入项目解析。本Workflow不维护触发词、Skill Definition Source优先级、加载顺序、Work escalation、Legacy Intent Backfill字段表或成功判定。
 
 先由`references/project_workspace.md`解析Active Project候选，再按`rules/state_source.md`选择唯一State Source。本Workflow只消费选择结果并验证恢复证据，不复制优先级、fallback、Project ID冲突或Chat运行差异的全局规则。
 
@@ -58,7 +60,9 @@ Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或
 
 如发现 STATE-06 / STATE-08 使用非标准短名、STATE-07 被标成 Storyboard，或待办表仍按 Shot Design、Storyboard、Video Generation 三项连续排列，先按`rules/compatibility_mapping.md`迁移。映射以可验证Artifact和Completion Gate为准；Storyboard只保留为Optional/Auxiliary Artifact，不得据旧状态直接选择Storyboard Workflow。
 
-迁移与Reload必须保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、Accepted Take Canon / Accepted Canon State、Shot-State Memory、已完成Checkpoint、Accepted Unaffected Artifacts与用户明确约束。只更新旧路由标签和必要状态摘要，不得因Skill升级、STATE名称或owner/file routing变化强制重开或重做。
+迁移与Reload必须保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、Accepted Take Canon / Accepted Canon State、accepted prompt、Shot-State Memory、Blocking Canon / Spatial Snapshot、Confirmed `REF-SKETCH`、已完成Checkpoint、Accepted Unaffected Artifacts与用户明确约束。只更新旧路由标签和必要状态摘要，不得因Skill升级、STATE名称、owner/file routing或Writer / Director schema变化强制重开或重做。
+
+Legacy项目缺少新版Writer / Director intent时，调用`rules/runtime_reload.md`唯一拥有的`Legacy Intent Backfill`，只消费`knowledge/screenplay_development.md`与`knowledge/director_decision_layer.md`定义的字段语义，并把结果作为当前Workflow所需的内部source data。不得在本Workflow重定义Packet、回STATE-01重写已锁定剧本、重做资产/已确认镜头，或自动失效Accepted Take / accepted prompt。Confirmed `REF-SKETCH`在Blocking Signature未变时继续有效。
 
 不一致时不合并猜测；记录Recovery Item并返回事实拥有者。
 
@@ -96,6 +100,8 @@ Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或
 
 重试不得改变已接受前序UNIT或无关镜头。
 
+完成失败归因后，可按`references/skill_experience_contract.md`自动提出跨项目`Experience Candidate`，但不得自动写入Skill。用户确认后，该经验才可作用于后续产出与项目迭代；当前项目的实际修改仍须通过对应Owner与Revision流程。
+
 ---
 
 ## Step 6: Record And Resume
@@ -115,3 +121,4 @@ Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或
 - 重试次数与降级策略已记录。
 - Next Workflow合法且没有跳过前置阶段。
 - 如本次触发Reload，已内部确认Reload Status、Loaded Source、Loaded Skill Version、Loaded Build ID、Owner Files Resolved、Last Routed State、State Source、Last Routed Workflow、Current Object与Workflow Entry Checkpoint；显式Re-entry已从该Workflow入口执行到合法Checkpoint后才声称完成重进；如为`UNAVAILABLE`，另有具体失败资源与Fallback Source，且没有作出“严格按当前Skill”声明。
+- 如本次为Legacy Project Recovery，已记录Skill Source、Project State Source、Mapped Current STATE、Current Workflow、Current Object、Canon Preserved、Backfill Needed与Next Workflow；STATE-08恢复已从current owner entry执行Reference Selection / Routing → Final Visual Blocking Anchor Assessment → Writer + Director Intent Preservation → Prompt Compiler → Final QA，而不是直接润色旧Prompt。
