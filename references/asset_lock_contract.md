@@ -149,6 +149,19 @@ ENV-002@v003
 
 图像工具新生成或用户外部回传的图片，在用户确认之前也只能作为Candidate Reference。`Image Generated`不等于`Asset Confirmed`；Prompt确认不等于图片确认。只有Image Confirmation记录了明确批准的Candidate Reference与当前Version后，才可把该图片升级为Canonical Reference。
 
+### Reference Authority Map
+
+STATE-07 / STATE-08选择实际视觉输入时，除现有Canonical Purpose外，为每张入选图指定一个当前Clip的**Primary Responsibility**；这是内部路由记录，不新增Registry字段、资产类型或最终Prompt字段。一个输入在同一Clip只承担一个主要责任，避免用故事板、尾帧或合成图越权覆盖身份、产品结构或空间事实：
+
+- 当前Active Character Canonical Reference：身份、外观或服装；不得由故事板、尾帧或Blocking Sketch改写。
+- 当前Active Prop Canonical Reference：产品/道具的结构、材质或已确认状态；SKU、价格、Logo、可读文字与法务事实仍以用户确认资料为准。
+- 当前Active Environment Canonical Reference：空间结构、布局与已确认视觉状态；临时人物、价签、水印或无关文字不是可继承事实。
+- Storyboard / 画面草图：只在其合法上游阶段承担镜头顺序、构图或动作意图；除非已按现有资产流程确认，不得作为STATE-08身份、产品或环境的视觉输入。
+- `REF-TAIL`：只承担当前时刻的姿态、站位、构图、光线或状态承接，仍服从A/B/C规则；不替代Canonical资产。
+- Confirmed `REF-SKETCH`：只承担Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；不承担身份、环境结构、道具造型或画风。
+
+图像像素与用户标签、SKU/产品事实或资产记录明显冲突时，标记冲突并要求替换、澄清或走Candidate / Change Protocol；不得声称文字标签能覆盖明显冲突的视觉输入。未入选的附件仍可保留为Candidate或Planning资料，但不得因“可能有用”占用当前Clip参考位。
+
 ---
 
 ## Canonical Character Appearance And Form Lock

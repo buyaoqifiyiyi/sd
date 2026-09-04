@@ -368,6 +368,8 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 ### Reference Selection / Routing Within Eligible Assets
 
+在筛选前读取`references/asset_lock_contract.md`的`Reference Authority Map`：每张入选图在当前Clip必须有一个Primary Responsibility。该映射只决定当前输入解决哪类风险，不改变Canonical Purpose、资产版本或最终Prompt Schema。
+
 视觉输入资格只是准入门槛，不表示所有合格资产都必须进入当前Clip。STATE-07 / STATE-08必须在World-State、当前Clip目标、`Continuity Risks`与下一Clip起始要求明确后，按实际风险选择最小充分参考集合；参考资产按需路由，不是越多越好，也不得把整个Asset Registry机械复制到`参考资产：`。
 
 - 身份、脸型、服装、物种或基础外观漂移风险 → 当前Active Character Version的适用Canonical References。

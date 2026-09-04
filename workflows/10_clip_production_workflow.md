@@ -129,6 +129,7 @@ Clip Boundary不得错误切断Writer Beat的最小因果完整性。若平台�
 - **Character Count Lock**：逐分镜列出`角色 × 精确数量`。剧情唯一角色必须正向锁定唯一数量与前中后景无第二个同类，并预置反向复制/分身/镜像/背景重复限制。
 - **Spatial Composition Lock**：对追逐、战斗、对峙、对话和多人镜头锁定前后景、左右、朝向、关系轴、摄影机轴线侧、追逃/攻击/视线路线、可见面部与同景深许可。追逐默认后追前逃，禁止并排正对镜头和海报式合影。
 - **Performance / Emotion Check**：逐角色读取STATE-06 Performance Goal / Performance Arc Map与上一有效Performance State，核对Inherited Baseline、已确认Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint、Next-shot Carryover与动作后余韵；Intentional Hold仍须有注意、呼吸/姿态、延迟或行动证据。多人镜头锁定Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序、相对幅度与视觉重点交接；静态情绪标签、无刺激重置、全员同强度或全员同脸固定FAIL。
+- **Dialogue / Action Capacity Ledger**：对对白、关键接触、产品/关键道具展示、进食或反应链，按已确认Shot / Clip时长核对发声、换气、触发延迟、物理过程、可读展示与结尾稳定窗口。超限时先删除重复信息、缩短非关键台词、降低Camera / FX负荷；仍不成立则拆Clip或返回STATE-06，禁止以压缩口型、反应、接触、吞咽或稳定收尾通过。
 - **Visual Blocking Risk Pre-Assessment**：每个Clip都按`knowledge/clip_preflight_check.md`检查人物数量、固定左右/前后、共享座椅/桌面/车辆/床/门口、Facing / Eyeline / Axis、局部Pose权限、换位/进出画、前中后景、复杂道具、Relationship Topology、A2/A3动作与复杂机位，记录`NONE / POSSIBLE / REQUIRED`、建议`S / P / A / Combined`与轻量Blocking Signature。此处只标风险，不生成草图；STATE-08最终Gate可因实际Reference、Accepted Canon或修订变化调整结果。
 - **Prop State Check**：逐关键道具写当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换是否完成与结束状态；不同世界形态不得无过程混用。
 - **Transition Five Elements**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态转换时，必须先锁定起点状态、转换媒介、运动方向/过程、终点状态、转场后首个稳定构图。缺一不得用“金光一闪 / 突然切换”代替。

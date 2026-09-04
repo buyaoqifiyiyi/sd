@@ -242,6 +242,17 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 6. **Relative Performance Hierarchy**：两人以上时明确Primary Performer、Secondary Reactor / Listener / Background Holder、反应顺序、相对`Restrained / Open / Heightened`幅度与视觉重点交接。除非剧情授权，不得所有角色同一时点同强度表演，也不得全员同脸冻结。
 7. **Capacity And Readability**：关键微表情、眼神、停顿和余韵在时长、景别、遮挡、对白口型、动作/FX与Camera路径下可读；表演密度超限时按PL1 / PL2 / PL3稳定降级，不删刺激、行动选择和Arc Endpoint。
 
+### Dialogue / Action Capacity Ledger
+
+对含对白、关键接触、产品/道具展示、进食或明确反应链的Clip，在进入Prompt编译前按已确认Shot / Clip时长建立内部容量账本：
+
+- 分别核对实际发声、换气、触发后的理解/反应延迟、走位或接触过程、产品/关键道具可读展示、结尾稳定窗口；不得用单一固定语速替代语言、情绪、动作和景别的实际负荷。
+- 对白必须绑定合法说话者与口型窗口；说话、吞咽、遮脸、快速转头、大幅运动或复杂接触发生冲突时，先拆开其顺序或降低其中一个负荷。
+- 任何关键动作都必须具有起点、接触/变化过程和结束状态；商业产品或关键道具只在存在足够可见时长时承担识别、状态变化或叙事证明。
+- 容量不足时，优先删除重复信息、让可见动作承担文字信息、缩短非关键台词、降低Camera / FX负荷；仍不成立则返回STATE-07拆Clip或STATE-06调整Shot。不得压缩反应、物理接触、吞咽、口型或稳定收尾来伪造通过。
+
+账本只影响现有`连续动作 / 人物动作 / 道具状态 / 音效 / 结尾状态`等语义和Return Route；不得向最终Prompt增加时间码、逐秒区间、固定语速或新的字段。
+
 本Check不授权改剧情、补刺激、增加台词或新增镜头。若STATE-06已经具有完整弧而只是在最终文字投影中缺证据，STATE-08只修现有字段映射；若Performance Goal / Arc本身缺失、镜头容量或可读性不成立，返回STATE-06修Affected SHOT与相邻Handoff；若Clip合并让反应次序、弧线或容量不可执行，返回STATE-07调整Clip组织。通过语义只进入现有`人物动作 / 连续动作 / Performance State / Next-Clip Carryover / 人物动作与情绪 / 镜头结尾状态`，不得新增Template字段。
 
 ## H. Prop State Check
