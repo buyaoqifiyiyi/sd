@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import argparse
 import json
+import re
 import shutil
 import tempfile
 import unittest
@@ -97,10 +98,12 @@ def make_shot_fields(
 
 
 def make_clip_detail_fields(source: str, duration: str, accounting: str, tail: str = "保存为[G01尾帧]") -> str:
+    organization_type = "单Shot" if len(re.findall(r"SHOT-\d{3}", source)) == 1 else "多Shot连续生成"
     values = {
         "包含 Shot：": source,
         "目标时长：": duration,
         "时长核算：": accounting,
+        "组织类型：": organization_type,
         "声音连续：": VALID_SOUND,
         "结尾帧限制：": tail,
         "尾帧用途判定：": "最终收束",
@@ -576,7 +579,7 @@ Next Workflow: Project Setup Workflow
         )[1].split("## Deterministic Expectations", 1)[0]
         starts = {index: discovery_matrix.index(f"### SD-R{index} ") for index in range(1, 6)}
         expected = {
-            1: ("$HOME/.agents/skills/sd", "只保留一个", "两个用户级位置"),
+            1: ("$HOME/.codex/skills/sd-film", "只保留一个", "两个用户级位置"),
             2: ("description保留六个启动别名", "allow_implicit_invocation: true", "false"),
             3: ("$sd-film", "@`选择器只显示Plugin", "display_name`误当作`@`注册"),
             4: ("网页端、移动端", "不擅自改做Plugin", "虚假承诺"),
@@ -587,7 +590,7 @@ Next Workflow: Project Setup Workflow
             scenario = discovery_matrix[starts[index]:end]
             for marker in ("输入：", "PASS：", "FAIL：", *expected[index]):
                 self.assertIn(marker, scenario, f"SD-R{index}")
-        for marker in ("@`选择器只显示Plugin", "$sd-film", ".agents\\skills\\sd"):
+        for marker in ("@`选择器只显示Plugin", "$sd-film", ".codex/skills/sd-film"):
             self.assertIn(marker, guide)
         for relative in (
             "USER_GUIDE.md",
@@ -2354,6 +2357,58 @@ MUS-CUE-001
 
             shutil.copy2(skill_root / "assets" / "ref_sketch_master.png", asset_path)
             self.assertEqual(run_quiet(validator.validate_skill, copied, True), 0)
+
+    def test_ref_sketch_master_integrity_mismatch_is_rejected(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            copied = Path(temp) / "sd"
+            shutil.copytree(skill_root, copied)
+            asset_path = copied / "assets" / "ref_sketch_master.png"
+            asset_path.write_bytes(asset_path.read_bytes() + b"integrity-test")
+            self.assertEqual(run_quiet(validator.validate_skill, copied, True), 1)
+
+    def test_clip_execution_mode_acceptance_a_to_e(self) -> None:
+        valid_motivated = "\n".join(
+            (
+                "- 切镜叙事功能：通过耳镜反光揭示玉境。",
+                "- 切点与视觉媒介：耳镜玉光占满画面，Match Cut进入玉境。",
+                "- 切镜前结束状态：现实中角色举起耳镜，反光覆盖画面。",
+                "- 切镜后重建状态：玉境世界中角色、环境、道具和摄影机在稳定构图内重新建立。",
+                "- 连续性锚点：保留耳镜玉光与角色抬手；改变世界与机位。",
+                "- 容量不足安全降级：返回STATE-07 / 拆分Clip。",
+            )
+        )
+        errors: list[str] = []
+        validator.validate_clip_execution_mode("多Shot有动机剪辑", [1, 2], valid_motivated, errors, "CLIP-001")
+        self.assertEqual(errors, [])  # C：耳镜反光触发的现实→玉境Match Cut通过。
+
+        errors = []
+        validator.validate_clip_execution_mode("多Shot有动机剪辑", [1, 2], "", errors, "CLIP-001")
+        self.assertTrue(errors)  # A：无动机机位跳变不能冒充导演剪辑。
+
+        errors = []
+        validator.validate_clip_execution_mode("多Shot连续生成", [1, 2], "中途换轴", errors, "CLIP-001")
+        self.assertTrue(errors)  # B：连续长镜头中途换轴失败。
+
+        errors = []
+        validator.validate_clip_execution_mode(
+            "多Shot有动机剪辑",
+            [1, 2],
+            valid_motivated.replace("切点与视觉媒介：耳镜玉光占满画面，Match Cut进入玉境。", "切点与视觉媒介："),
+            errors,
+            "CLIP-001",
+        )
+        self.assertTrue(errors)  # D：缺少切点失败。
+
+        errors = []
+        validator.validate_clip_execution_mode(
+            "多Shot有动机剪辑",
+            [1, 2],
+            valid_motivated.replace("返回STATE-07 / 拆分Clip。", "继续合并。"),
+            errors,
+            "CLIP-001",
+        )
+        self.assertTrue(errors)  # E：容量不足却不返回STATE-07拆分失败。
 
     def test_visual_blocking_layout_gate_passes_technical_sheet_and_rejects_storyboard_drift(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]

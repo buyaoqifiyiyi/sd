@@ -7,11 +7,11 @@
 - Presentation Intent Status：`CONFIRMED`；用户已确认以技术型导演Blocking Sheet作为默认草图表达参考。
 - Asset Status：`REGISTERED`。
 - Persistent Asset Path：`assets/ref_sketch_master.png`。
-- Verified Dimensions：`1914 × 822`。
-- SHA-256：`fadbcf14cff479361453ab6fda280c9d4b4818a834ac204d67852495ec601286`。
-- Recovered Session Source：引用会话附件`已生成图像 1.png`；2026-09-02已从可访问的会话附件缓存复制到上述持久位置，并验证PNG签名、尺寸与SHA-256。
+- Verified Dimensions：`1308 × 1202`。
+- SHA-256：`4d086fcd7b58a43cd3e920277375bd8232ce43f81c9d370fff43c331f6ef97ac`。
+- Recovered Session Source：引用会话附件`已生成图像 1.png`；2026-09-04已对上述持久文件重新验证PNG签名、尺寸与SHA-256。视觉检查确认其仍符合Technical Director Blocking Sheet、无性别技术人偶及Sketch Presentation Authority合同，因此保留为REF-SKETCH-MASTER。
 
-运行时必须先从当前Skill根解析上述相对路径并验证文件可读；验证通过后，草图生成调用必须把该绝对路径作为真实视觉参考输入传递。只在实际工具不支持图像参考、文件读取失败或调用失败时才允许明确降级为`Text Contract Fallback`，并记录失败来源；不得把“已读取本Markdown”误报为“已使用母版图像”。
+运行时必须先从当前Skill根解析上述相对路径并验证文件可读、PNG签名、登记尺寸与SHA-256；验证通过后，草图生成调用必须把该绝对路径作为真实视觉参考输入传递。尺寸或SHA-256不一致固定判定为`Integrity Mismatch`：不得声称已使用注册母版，也不得仅为通过校验覆盖登记信息；先记录具体不一致原因，再且仅再可进入`TEXT_CONTRACT_FALLBACK`。只在实际工具不支持图像参考、文件读取失败、Integrity Mismatch或调用失败时才允许明确降级为`Text Contract Fallback`，并记录失败来源；不得把“已读取本Markdown”误报为“已使用母版图像”。
 
 ## Authority Boundary
 
@@ -57,8 +57,8 @@ S-SKETCH / P-SKETCH / A-SKETCH / Combined只有在`knowledge/clip_preflight_chec
 生成当前草图时：
 
 1. 先从Current Clip的Scene Spatial Snapshot、Shot-State Memory、Visual Anchor State / Blocking Signature、Pose Hierarchy、Relationship Topology、Camera / Axis与Action Path取得内容语义权威。
-2. 若本记录为`REGISTERED`且`Persistent Asset Path`真实可读，将母版作为草图生成的视觉参考输入，只继承技术图表达语言与信息组织。
-3. 若本记录为`UNAVAILABLE`、路径缺失或文件不可读，明确使用`Text Contract Fallback`，不得声称参考了母版图片；仍按本文件的Authority Boundary与默认版式生成Technical Director Blocking Sheet，而不是艺术型Storyboard Illustration。
+2. 若本记录为`REGISTERED`且`Persistent Asset Path`真实可读并通过尺寸/SHA-256完整性核验，将母版作为草图生成的视觉参考输入，只继承技术图表达语言与信息组织。
+3. 若本记录为`UNAVAILABLE`、路径缺失、文件不可读或发生`Integrity Mismatch`，明确使用`Text Contract Fallback`并记录具体原因，不得声称参考了母版图片；仍按本文件的Authority Boundary与默认版式生成Technical Director Blocking Sheet，而不是艺术型Storyboard Illustration。
 4. Current Clip事实与母版示例冲突时，始终以Current Clip语义权威为准；不得修改正式Blocking来迁就母版图。
 
 实际生图输入、参数传递和候选图证据记录唯一使用`templates/23_visual_blocking_sketch_prompt.md`；不得调用`templates/09_storyboard_prompt.md`。

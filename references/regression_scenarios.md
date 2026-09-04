@@ -988,9 +988,9 @@ FAIL：每次`下一步`都重新执行Legacy Project Recovery、生成新Reload
 
 ### SD-R1 User-level Canonical Location And Single Authority
 
-输入：用户级SD Film安装在`$HOME/.agents/skills/sd`，旧`$HOME/.codex/skills/sd`可能仍存在或已迁移。
+输入：当前运行时用户级SD Film安装在`$HOME/.codex/skills/sd-film`，旧`.agents`位置可能仍存在或已迁移。
 
-PASS：只保留一个`name: sd-film`用户级权威副本；实际安装位置为`$HOME/.agents/skills/sd`，所有相对引用、Git历史和维护脚本保持可用。
+PASS：只保留一个`name: sd-film`用户级权威副本；实际安装位置为`$HOME/.codex/skills/sd-film`，所有相对引用、Git历史和维护脚本保持可用。
 
 FAIL：两个用户级位置同时存在独立`sd-film`副本、后续修改需要双写，或选择器可能同时显示两份同名Skill。
 
@@ -1028,6 +1028,50 @@ FAIL：为解决缓存另建第二套activation、第二个同名Skill、平行R
 
 ---
 
+## R27 Clip Execution Mode Acceptance
+
+### R27-A Unmotivated Camera Jump Fails
+
+输入：两个相邻Shot被标记为`多Shot有动机剪辑`，但只有“切到近景”或无动机机位跳变，没有叙事功能、切点、视觉媒介或切后重建。
+
+PASS：STATE-07 Clip Preflight判`FAIL`，不得把随机跳变包装成导演剪辑；返回拆分或补齐上游Director Decision。
+
+FAIL：仅因总时长合格就把两个Shot合进同一Clip。
+
+### R27-B Mid-Take Axis Change Fails
+
+输入：`多Shot连续生成`在无可感知越轴过程、角色换位或隔离镜头的情况下中途换轴。
+
+PASS：连续生成判`FAIL`；维持同一轴线，或改为已确认的有动机剪辑并在新机位稳定重建。
+
+FAIL：把“连续长镜头”当作可任意跳转摄影机的许可。
+
+### R27-C Ear-Mirror Match Cut Passes
+
+输入：现实中角色举起耳镜；耳镜玉光占满画面，作为明确切点与视觉媒介；切后在玉境中重新建立角色、环境、道具、摄影机与稳定构图。耳镜玉光和抬手是保留锚点，世界与机位是允许改变锚点。
+
+PASS：Director确认“揭示耳中玉境”的叙事功能后，可标为`多Shot有动机剪辑`；既有`起始状态 / 画面描述 / 镜头结尾状态`承载切前、切点和切后信息，不新增STATE或STATE-08字段。
+
+FAIL：没有玉光遮幅、切前结束或切后稳定构图就直接换到玉境。
+
+### R27-D Incomplete Motivated Cut Fails
+
+输入：Clip声明`多Shot有动机剪辑`，但缺少切点/视觉媒介，或切后没有新世界、角色、环境、道具、摄影机与稳定构图的重建状态。
+
+PASS：Validator与Clip Preflight失败，并要求补齐既有生成合同内的切镜合同。
+
+FAIL：以“导演意图”或“有电影感”代替可执行切镜信息。
+
+### R27-E Capacity Downgrade Returns STATE-07
+
+输入：一个已具备有动机切镜合同的Clip同时要求高身份保真、复杂多角色动作、口型、FX、世界切换和摄影机重建，模型容量不支持。
+
+PASS：不编译STATE-08，`Return Route = STATE-07 / 拆分Clip`；保留已确认剧情与导演意图，在多个Clip中重建边界。
+
+FAIL：继续生成、删除必要故事信息，或用无原因跳变掩盖容量不足。
+
+---
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1050,4 +1094,5 @@ FAIL：为解决缓存另建第二套activation、第二个同名Skill、平行R
 - R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。
 - R23-A至R23-J验证Director Module从Project / Script到Scene / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离及三镜功能差异；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
 - R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。
+- R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

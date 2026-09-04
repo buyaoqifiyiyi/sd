@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -95,6 +96,7 @@ CLIP_DETAIL_FIELDS = (
     "包含 Shot：",
     "目标时长：",
     "时长核算：",
+    "组织类型：",
     "组织理由：",
     "生成合同：",
     "起始状态：",
@@ -110,6 +112,15 @@ CLIP_DETAIL_FIELDS = (
     "下一Clip Handoff：",
     "模型执行风险与安全降级：",
     "知识投影摘要：",
+)
+CLIP_EXECUTION_MODES = ("单Shot", "多Shot连续生成", "多Shot有动机剪辑")
+MOTIVATED_CUT_FIELDS = (
+    "切镜叙事功能：",
+    "切点与视觉媒介：",
+    "切镜前结束状态：",
+    "切镜后重建状态：",
+    "连续性锚点：",
+    "容量不足安全降级：",
 )
 
 MUSIC_PATTERN = re.compile(
@@ -308,6 +319,68 @@ MODULE_FILES = (
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
+
+
+def registered_master_integrity(root: Path) -> tuple[bool, str]:
+    """Verify the registered REF-SKETCH-MASTER bytes against its registration record."""
+    contract = root / "references" / "ref_sketch_master.md"
+    if not contract.is_file():
+        return False, "REF-SKETCH-MASTER registration record is missing"
+    text = read_text(contract)
+    path_match = re.search(r"^- Persistent Asset Path[：:]\s*`?([^`\n]+)`?[。.]*\s*$", text, re.MULTILINE)
+    dimension_match = re.search(r"^- Verified Dimensions[：:]\s*`?(\d+)\s*[×xX]\s*(\d+)`?[。.]*\s*$", text, re.MULTILINE)
+    hash_match = re.search(r"^- SHA-256[：:]\s*`?([0-9a-fA-F]{64})`?[。.]*\s*$", text, re.MULTILINE)
+    if not path_match or not dimension_match or not hash_match:
+        return False, "Integrity Mismatch: REF-SKETCH-MASTER registration lacks path, dimensions, or SHA-256"
+    relative = Path(path_match.group(1).strip())
+    asset = root / relative
+    if not asset.is_file():
+        return False, f"REF-SKETCH-MASTER registered asset is missing: {relative.as_posix()}"
+    data = asset.read_bytes()
+    if len(data) < 24 or data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
+        return False, "Integrity Mismatch: REF-SKETCH-MASTER registered asset is not a readable PNG"
+    actual_width = int.from_bytes(data[16:20], "big")
+    actual_height = int.from_bytes(data[20:24], "big")
+    expected_width, expected_height = int(dimension_match.group(1)), int(dimension_match.group(2))
+    actual_hash = hashlib.sha256(data).hexdigest()
+    expected_hash = hash_match.group(1).lower()
+    mismatches: list[str] = []
+    if (actual_width, actual_height) != (expected_width, expected_height):
+        mismatches.append(f"dimensions registered={expected_width}x{expected_height}, actual={actual_width}x{actual_height}")
+    if actual_hash != expected_hash:
+        mismatches.append(f"SHA-256 registered={expected_hash}, actual={actual_hash}")
+    if mismatches:
+        return False, "Integrity Mismatch: " + "; ".join(mismatches)
+    return True, ""
+
+
+def validate_clip_execution_mode(mode: str, source_shots: list[int], segment: str, errors: list[str], clip_id: str) -> None:
+    """Validate the STATE-07-only organization contract without changing STATE-08 fields."""
+    if mode not in CLIP_EXECUTION_MODES:
+        errors.append(f"{clip_id} 组织类型 must be one of: {' / '.join(CLIP_EXECUTION_MODES)}")
+        return
+    if mode == "单Shot" and len(source_shots) != 1:
+        errors.append(f"{clip_id} 单Shot must contain exactly one source Shot")
+    if mode != "单Shot" and len(source_shots) < 2:
+        errors.append(f"{clip_id} {mode} must contain two or more source Shots")
+    if mode == "多Shot连续生成":
+        if re.search(r"(?<!禁止)(?<!不得)(?<!不允许)无动机机位跳变|(?<!禁止)(?<!不得)(?<!不允许)中途换轴", segment):
+            errors.append(f"{clip_id} Continuous Multi-Shot rejects unmotivated camera jumps or mid-take axis changes")
+        return
+    if mode != "多Shot有动机剪辑":
+        return
+    for field in MOTIVATED_CUT_FIELDS:
+        match = re.search(rf"^-\s*{re.escape(field)}[ \t]*([^\r\n]*)$", segment, re.MULTILINE)
+        if not match or not match.group(1).strip():
+            errors.append(f"{clip_id} Motivated Multi-Shot missing: {field}")
+    rebuild_match = re.search(r"^-\s*切镜后重建状态：[ \t]*([^\r\n]*)$", segment, re.MULTILINE)
+    if rebuild_match:
+        rebuild = rebuild_match.group(1)
+        if any(marker not in rebuild for marker in ("世界", "角色", "环境", "道具", "摄影机", "稳定构图")):
+            errors.append(f"{clip_id} Motivated Multi-Shot rebuild must cover world, character, environment, prop, camera, and stable composition")
+    downgrade_match = re.search(r"^-\s*容量不足安全降级：[ \t]*([^\r\n]*)$", segment, re.MULTILINE)
+    if downgrade_match and ("STATE-07" not in downgrade_match.group(1) or "拆分Clip" not in downgrade_match.group(1)):
+        errors.append(f"{clip_id} Motivated Multi-Shot capacity downgrade must return STATE-07 / 拆分Clip")
 
 
 def load_json(path: Path) -> dict:
@@ -1338,6 +1411,11 @@ def validate_clip(
         detail_source_shots = [int(value) for value in re.findall(r"SHOT-(\d{3})", source_match.group(1), re.IGNORECASE)] if source_match else []
         if clip_id in table_shots and detail_source_shots != table_shots[clip_id]:
             errors.append(f"{clip_id} detail source shots do not match Clip Table")
+        organization_match = re.search(r"^-\s*组织类型[：:]\s*(.*)$", segment, re.MULTILINE)
+        if organization_match:
+            validate_clip_execution_mode(
+                organization_match.group(1).strip(), detail_source_shots, segment, errors, clip_id
+            )
         accounting_match = re.search(r"^-\s*时长核算[：:]\s*(.*)$", segment, re.MULTILINE)
         if accounting_match:
             accounting_text = accounting_match.group(1)
@@ -1814,17 +1892,25 @@ def validate_ref_sketch_evidence(path: Path, skill_root: Path, as_json: bool = F
     path_match = re.search(r"^- Persistent Asset Path[：:]\s*`?([^`\n]+)`?[。.]*\s*$", master_text, re.MULTILINE)
     registered_relative = path_match.group(1).strip() if path_match else ""
     registered_asset = root / registered_relative if registered_relative else None
-    registered_readable = bool(
+    registered_declared_readable = bool(
         status_match
         and status_match.group(1) == "REGISTERED"
         and registered_asset
         and registered_asset.is_file()
     )
+    integrity_ok, integrity_reason = registered_master_integrity(root)
+    registered_readable = registered_declared_readable and integrity_ok
     if master_mode == "VISUAL_REFERENCE":
         if evidence.get("master_asset_path") != registered_relative:
             errors.append("VISUAL_REFERENCE master_asset_path must match the registered Persistent Asset Path")
         if not registered_readable:
-            errors.append("VISUAL_REFERENCE requires a readable registered REF-SKETCH-MASTER")
+            errors.append(
+                f"VISUAL_REFERENCE requires an integrity-verified registered REF-SKETCH-MASTER; {integrity_reason or 'registered master is unreadable'}"
+            )
+    elif integrity_reason.startswith("Integrity Mismatch:"):
+        fallback_reason = evidence.get("fallback_reason")
+        if not isinstance(fallback_reason, str) or "Integrity Mismatch" not in fallback_reason:
+            errors.append("TEXT_CONTRACT_FALLBACK after Integrity Mismatch must record the concrete Integrity Mismatch reason")
     elif registered_readable:
         fallback_reason = evidence.get("fallback_reason")
         if not isinstance(fallback_reason, str) or not fallback_reason.strip():
@@ -1969,6 +2055,10 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
                         errors.append("REGISTERED REF-SKETCH-MASTER must be a non-empty PNG image")
                     elif registered_asset.read_bytes()[:8] != b"\x89PNG\r\n\x1a\n":
                         errors.append("REGISTERED REF-SKETCH-MASTER has an invalid PNG signature")
+                    else:
+                        integrity_ok, integrity_reason = registered_master_integrity(root)
+                        if not integrity_ok:
+                            errors.append(integrity_reason)
         elif not path_match or path_match.group(1).strip() != "NOT REGISTERED":
             errors.append("UNAVAILABLE REF-SKETCH-MASTER must keep Persistent Asset Path as NOT REGISTERED")
     skill_path = root / "SKILL.md"
@@ -2041,14 +2131,14 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
     # while a real user install must use the current canonical discovery root
     # and must not coexist with a second user-level skill of the same name.
     user_home = Path.home().resolve()
-    canonical_user_root = (user_home / ".agents" / "skills").resolve()
-    legacy_user_root = (user_home / ".codex" / "skills").resolve()
-    installed_in_user_scope = root.parent in {canonical_user_root, legacy_user_root}
+    canonical_user_root = (user_home / ".codex" / "skills").resolve()
+    alternate_user_root = (user_home / ".agents" / "skills").resolve()
+    installed_in_user_scope = root.parent in {canonical_user_root, alternate_user_root}
     if installed_in_user_scope and root.parent != canonical_user_root:
-        errors.append("User-level sd-film must be installed under $HOME/.agents/skills, not the legacy $HOME/.codex/skills location")
+        errors.append("User-level sd-film must be installed under $HOME/.codex/skills, the current runtime discovery location")
     if installed_in_user_scope:
         matching_user_skills: list[Path] = []
-        for user_skill_root in (canonical_user_root, legacy_user_root):
+        for user_skill_root in (canonical_user_root, alternate_user_root):
             if not user_skill_root.is_dir():
                 continue
             for candidate in user_skill_root.glob("*/SKILL.md"):
@@ -2058,7 +2148,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
                     matching_user_skills.append(candidate.resolve())
         if len(set(matching_user_skills)) != 1:
             locations = ", ".join(str(path) for path in sorted(set(matching_user_skills))) or "none"
-            errors.append(f"Expected exactly one user-level sd-film authority across .agents/.codex skill roots; found: {locations}")
+            errors.append(f"Expected exactly one user-level sd-film authority across .codex/.agents skill roots; found: {locations}")
     config_path = root / "config.md"
     if config_path.is_file() and len(read_text(config_path).encode("utf-8")) > 6000:
         errors.append("config.md exceeds the modular configuration hard limit of 6 KB")
@@ -2217,7 +2307,7 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/color/tone_patterns.md": ("CLR-01", "CLR-09", "Selection Rule"),
         "knowledge/color/color_continuity.md": ("Continuity Ledger", "Lighting Interaction", "STATE-08 Projection", "Stable Downgrade"),
         "SKILL.md": ("Skill Version", "Build ID", "## System Role", "## Production Pipeline", "## STATE Overview", "## Global Priority", "## Activation Entry", "## Runtime Reload Entry", "## Main Workflow Routing", "## Auxiliary Workflow Routing", "## External Rules Index", "## Essential Invariants", "STATE-07 Clip Production", "STATE-08 Clip-based Video Prompt / Video Generation", "templates/10_video_prompt.md", "Skill Update Self-Check / Change Safety Checklist", "Standalone Skill Discovery Guard"),
-        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "Standalone Skill Discovery Guard", "@`选择器只显示Plugin", "$sd-film", ".agents\\skills\\sd", "Visual Blocking Sketch", "无性别技术调度人偶", "KEEP / REPLACE / RETIRE / CREATE", "重要标签首次出现在最终 Prompt", "具象化后不会默认删除标签", "后续连续 Clip 只补当前差异", "字段归属", "历史事故物", "维护约定"),
+        "USER_GUIDE.md": ("进入 Work 修改 Skill 的推荐指令", "Skill Update Self-Check / Change Safety Checklist", "Standalone Skill Discovery Guard", "@`选择器只显示Plugin", "$sd-film", ".codex/skills/sd-film", "Visual Blocking Sketch", "无性别技术调度人偶", "KEEP / REPLACE / RETIRE / CREATE", "重要标签首次出现在最终 Prompt", "具象化后不会默认删除标签", "后续连续 Clip 只补当前差异", "字段归属", "历史事故物", "维护约定"),
         "rules/runtime_reload.md": ("Reload And Re-entry Sequence", "Skill Definition", "Project Context", "Compatibility Mapping Result"),
         "rules/state_source.md": ("Selection Priority", "当前可验证的Project Context", "Project ID不一致", "Storyboard只能"),
         "rules/chat_compatibility.md": ("普通Chat不是缩减模式", "Portable Execution", "Behavior Parity"),

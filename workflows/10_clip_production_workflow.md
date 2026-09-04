@@ -110,7 +110,7 @@ STATE-07只组织这些Detailed Shots，不得回到原剧本重新简化画面�
 - 模型执行复杂度、动作/口型/FX容量和稳定性
 - 目标模型单次生成适宜时长；每个 Confirmed Clip 必须为 4—15 秒
 
-单 Shot 可以独立成为 Clip。多个相邻 Shot 只有在同一次生成内可清楚、连续地执行且总时长不超过15秒时才可合并；不得为了减少 Clip 数量强行合并。
+单Shot可以独立成为Clip。多个相邻Shot只有在总时长不超过15秒并通过三种执行模式之一时才可合并：`单Shot`、`多Shot连续生成`或`多Shot有动机剪辑`。连续生成要求连续动作/运镜且不中断、不硬切；有动机剪辑要求Director确认叙事功能、切点、视觉媒介、切前结束、切后稳定重建、连续性锚点和容量不足时的STATE-07拆分Clip。不得为了减少Clip数量强行合并。
 
 Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相邻、兼容的 Shot 组成4—15秒 Clip。单个 Shot 超过15秒或无法在15秒内稳定执行时，返回 STATE-06 按自然动作/覆盖/机位/时空边界拆分。
 
@@ -139,7 +139,7 @@ Clip Boundary不得错误切断Writer Beat的最小因果完整性。若平台�
 
 ## Step 3｜Author Clip Execution Contract
 
-STATE-07把Clip定义为`Dramatic Execution Unit`，不是仅按时长或技术便利合并的容器。每个Clip先在现有生成合同 / Clip Director Direction中记录：Clip Dramatic Function、Start Dramatic State、End Dramatic State、Critical Performance Beat、Critical Blocking / Spatial State、Continuity Requirement、Rhythm Requirement、Information Timing Requirement、Generation Risk / Simplification Boundary。
+STATE-07把Clip定义为`Dramatic Execution Unit`，不是仅按时长或技术便利合并的容器。每个Clip先在现有生成合同 / Clip Director Direction中记录：Clip Dramatic Function、Start Dramatic State、End Dramatic State、Critical Performance Beat、Critical Blocking / Spatial State、Continuity Requirement、Rhythm Requirement、Information Timing Requirement、Generation Risk / Simplification Boundary；并先确定组织类型。多Shot有动机剪辑额外在既有生成合同内记录唯一切镜合同：叙事功能、切点与视觉媒介、切前结束状态、切后世界/角色/环境/道具/摄影机稳定重建状态、保留/改变锚点、容量不足时返回STATE-07拆分Clip。不得新增STATE或STATE-08字段。
 
 合并/拆分必须同时通过两类判断：
 
@@ -164,7 +164,7 @@ Packet语义只投影到现有Clip字段，不新增顶级Template字段或新ID
 - 结尾状态、稳定尾帧限制及下一 Clip Handoff
 - 模型执行风险与安全降级
 - `Clip End-State Record / Next-Clip Carryover`：把上述已有Entry、内部Shot状态链、Exit、Spatial Blocking、道具连续性、摄影机路径、环境/表演状态和Handoff合并为STATE-07内部连续性记录，作为Shot-State Memory所需语义的既有合同内实现。固定使用`Character State / Spatial State / Prop State / Camera State / Environment State / Performance State / Continuity Risks / Next-Clip Carryover`八组简洁语义；不新增STATE、ID、资产类型或STATE-08字段，不复制Professional Detailed Shot Script全部字段。下一Clip必须以此记录而不是凭记忆重建起始状态；若上一Clip已有用户接受Take及`Accepted Canon State`，以该Take的Observed State覆盖同维度Planned State，再组织本Clip首帧。未接受Take不得改变记录
-- Clip Preflight Check：连续性主分类、逐分镜World-State、角色精确数量、空间构图锁、Performance / Emotion Check、关键道具状态、适用Transition五要素、Reference Asset Check与`PASS / Return Route`
+- Clip Preflight Check：组织类型、连续性主分类、逐分镜World-State、角色精确数量、空间构图锁、Performance / Emotion Check、关键道具状态、适用Transition五要素、Reference Asset Check与`PASS / Return Route`；无动机机位跳变、连续长镜头中途换轴、有动机剪辑缺切点或切后稳定重建一律FAIL，容量不支持则`Return Route = STATE-07 / 拆分Clip`
 - Reference Selection / Routing + Reference Budget Audit：先从当前Clip目标、八组End-State Record、Visual Anchor State、`Continuity Risks`与下一Clip起始要求选择最小充分视觉参考，再执行预算；不是把全部Eligible或Registry资产机械塞入。每个入选Reference必须声明唯一`Primary Role / Purpose`并遵守`rules/04_consistency_rules.md`的Reference Authority Hierarchy：身份/外观风险路由到Active Character Canonical References；空间结构风险路由到Active Environment Canonical References并消费Confirmed Spatial Blocking文字语义；道具造型风险路由到Active Prop Canonical References；已有Confirmed `REF-SKETCH`且Blocking Signature未变时仅路由其Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path Authority；STATE-07新判`POSSIBLE / REQUIRED`只记录预判，不虚构或预先生成草图；A/B状态锚定路由到对应Accepted Canon State / `REF-TAIL`并声明用途，C不路由旧尾帧；Motion / Camera / Audio Reference只控制其授权维度。草图与临时状态参考不得覆盖正式角色身份、环境结构或道具造型；尾帧或草图脸部漂移时只消费合法Authority。光线/天气/场景状态漂移只有在实际存在已确认的场景视觉基准或合法参考帧时才选图，否则写入现有文字字段。每个入选条目记录所解决的具体风险/目标，合格但无关项记录不选理由。随后只列通过Visual Input Eligibility、当前Clip实际需要且通过World-State的候选图片资产；真实资产须存在/已确认并可回查文件或受控ID。明确需要用户实际补入的视觉参考图占位须写具体图像对象、投喂用途与“待用户补充/待上传、未确认”，只计Projected位、不计已提交图片；它不得绕过应返回STATE-03的正式Canonical资产流程。A/B `REF-TAIL`继续以统一名称、用途类型和专用状态声明预留1个Projected连续性图片位；C不加入或预留旧尾帧。再计算Projected Final Count，并按`knowledge/reference_budget.md`记录文字伪资产迁移、是否触发整合、替代关系、裁剪与最终≤9张提交清单
 
 参考资产默认保持原始独立结构。Projected Final Count≤7时不得整合；8张且无额外帧需求时原则上不整合；9张只有在确认没有未计入连续性需求时才允许；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张时才执行同类非角色信息的去重/整合/裁剪。当前Clip每个核心角色始终保留各自独立三视图/角色锁定图，多个核心角色不得合并成角色总表，动作图不得替代外貌基准。

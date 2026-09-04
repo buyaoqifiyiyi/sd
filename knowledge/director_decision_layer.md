@@ -166,7 +166,7 @@ Camera Movement必须有`Camera Movement Trigger`：人物进入/退出、动作
 
 ### STATE-07 Clip Production
 
-Clip是Dramatic Execution Unit，不只是时长合并单元。检查Start→End dramatic delta、performance buildup、blocking continuity、Camera Continuity / Visual Rhythm、information timing和generation boundary。必须同Clip完成的情绪/信息链不得因技术便利拆开；超过容量或跨越互斥导演方向时仍须拆分或返回STATE-06。
+Clip是Dramatic Execution Unit，不只是时长合并单元。先判断观众需要看到什么、何时揭示信息、是否需要切镜，再检查Start→End dramatic delta、performance buildup、blocking continuity、Camera Continuity / Visual Rhythm、information timing和generation boundary。执行模式只可为单Shot、多Shot连续生成或多Shot有动机剪辑；后者必须由Director确认叙事功能、切点、视觉媒介、切前结束、切后世界/角色/环境/道具/摄影机稳定重建和连续性锚点。必须同Clip完成的情绪/信息链不得因技术便利拆开；超过容量或跨越互斥导演方向时仍须返回STATE-07拆分Clip或STATE-06，不得用无原因跳变伪装导演剪辑。
 
 ### STATE-08 Clip-based Video Prompt / Video Generation
 
@@ -196,6 +196,7 @@ STATE-06的当前有效Director Decision Notes继续按Scene / Shot Group覆盖�
 6. 哪项信息应Reveal / Withhold / Delay / Confirm / Recontextualize？
 7. 声音在哪里成为前景、在哪里退后或留白；剪辑为何Hold或Cut？
 8. 删除这一Scene / Shot / Clip后，观众具体损失什么？
+9. 若要在同一生成Clip内切镜：观众因此会看见或理解什么，切点由何种视觉媒介触发，切后如何在稳定构图中重建世界与关系？
 
 只能用风格标签、技巧名称、器材参数或“为了电影感”回答时，决策不合格。
 

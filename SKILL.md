@@ -7,9 +7,9 @@ description: 当用户说“调用sd”“调用SD”“用SD Film”“重新�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.04-r5
+Skill Version: 2026.09.04-r6
 
-Build ID: sd-film-2026.09.04-r5
+Build ID: sd-film-2026.09.04-r6
 
 User-facing usage manual: `USER_GUIDE.md`.
 

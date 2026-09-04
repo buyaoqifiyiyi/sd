@@ -13,8 +13,8 @@
 
 先读取`references/ref_sketch_master.md`并从当前Skill根解析`Persistent Asset Path`。
 
-- 母版状态为`REGISTERED`且PNG真实可读：图像生成调用必须把解析后的绝对路径放入真实图像参考参数，例如支持`referenced_image_paths`的工具必须传`referenced_image_paths: [<absolute master path>]`。记录`Master Input Mode = VISUAL_REFERENCE`与实际路径；不得只在文字Prompt中提到母版。
-- 母版状态为`UNAVAILABLE`、文件不可读或工具不支持图像参考：记录`Master Input Mode = TEXT_CONTRACT_FALLBACK`和具体失败来源；不得声称使用了视觉母版。
+- 母版状态为`REGISTERED`、PNG真实可读且登记尺寸/SHA-256均通过Integrity Check：图像生成调用必须把解析后的绝对路径放入真实图像参考参数，例如支持`referenced_image_paths`的工具必须传`referenced_image_paths: [<absolute master path>]`。记录`Master Input Mode = VISUAL_REFERENCE`与实际路径；不得只在文字Prompt中提到母版。
+- 母版状态为`UNAVAILABLE`、文件不可读、发生`Integrity Mismatch`或工具不支持图像参考：记录`Master Input Mode = TEXT_CONTRACT_FALLBACK`和具体失败来源；Integrity Mismatch必须逐项记录尺寸或SHA-256差异。不得声称使用了视觉母版，也不得仅更新登记信息来掩盖不一致。
 - 使用本地文件路径时不得同时用会话最近图片参数替代或混入未知图片。
 
 ## Current Clip Input Package

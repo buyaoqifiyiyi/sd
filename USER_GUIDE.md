@@ -10,7 +10,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 正常调用方式不变：继续使用`调用sd`开始或路由，使用`下一步 / 继续`从当前Checkpoint推进。普通“下一步”不会无意义全量reload。
 
-在Codex中需要确定性启动时使用`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin，本机独立SD Film没有以`@`选择显示名的入口；`agents/openai.yaml`也不会把它注册成Plugin。普通Chat只有在宿主实际暴露本机Skills时，才可能通过`调用sd`等自然语言隐式选择。Skill更新后若Codex旧会话没有刷新，先重启桌面应用或新建Codex任务再试。移动到`.agents/skills`能改善Codex本地发现，但不能突破普通Chat、网页端或移动端的宿主边界。
+在Codex中需要确定性启动时使用`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin，本机独立SD Film没有以`@`选择显示名的入口；`agents/openai.yaml`也不会把它注册成Plugin。普通Chat只有在宿主实际暴露本机Skills时，才可能通过`调用sd`等自然语言隐式选择。Skill更新后若Codex旧会话没有刷新，先重启桌面应用或新建Codex任务再试。当前运行时安装位置为`.codex/skills/sd-film`；不要为了普通Chat、网页端或移动端边界复制为第二份本机Skill。
 
 如需查看内部方向，可以说：`显示当前Scene的导演意图`、`为什么这样拍`或`显示这个Clip的镜头语言策略`。Skill只会给简洁摘要，不会把完整内部Packet塞进最终Prompt。
 

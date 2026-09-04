@@ -402,6 +402,8 @@ CHAR-001@v002
 
 进入STATE-08后，边界信息不得因“一个Clip包含多个分镜”而被隐式处理。同一Clip内每个分镜都必须保留起始、结尾和下一镜衔接；每个Confirmed Clip成为独立G生成段，在【主风格】之前输出【首帧参考】与定义自己新结束状态的【尾帧限制】，并输出独立反向提示词。跨Clip必须先根据当前Clip Start Requirement判定A/B/C：A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；C标记`NO`且不列`REF-TAIL`。资产是否已存在不得反向改变分类。
 
+同一Clip执行模式只可为`单Shot`、`多Shot连续生成`或`多Shot有动机剪辑`。Director Decision Layer先判断观众应看到什么、何时揭示信息、是否需要切镜；Continuity只负责让切前/切后可读，不能把所有连续性解释成一镜到底。多Shot连续生成禁止无动机机位跳变和中途换轴。多Shot有动机剪辑必须有明确叙事功能、切点、视觉媒介、切前结束状态、切后世界/角色/环境/道具/摄影机稳定重建状态、保留/改变锚点及`STATE-07 / 拆分Clip`安全降级。无原因跳变或缺任一合同项均FAIL；不得新增STATE或STATE-08字段。
+
 ## Cross-Clip End-State Record
 
 STATE-07必须把已经散布在Entry、内部Shot状态链、Exit、Spatial Blocking、道具连续性、摄影机路径、稳定尾帧与Handoff中的事实，合并为每个Clip一份简洁的内部`Clip End-State Record / Next-Clip Carryover`。这是Shot-State Memory所需语义在现有Shot Boundary Contract内的实现，不新增STATE、ID命名空间、资产类型或STATE-08最终字段，也不得复制Professional Detailed Shot Script的全部专业字段。
@@ -583,7 +585,7 @@ STATE-08每个Clip还必须先通过四项不可缺省的交付门槛：
 - 内部动作容量是否能够容纳结尾稳定限制且不会截断必要动作；该判断不得转写为最终Prompt时间轴
 - 是否提前执行下一镜头动作
 - Continuous Handoff是否自动判定为：上一尾帧直接作为下一G段起始帧，或仅作为第一顺位连续性参考并重建兼容边界；Motivated Discontinuity是否显式声明不继承及重建原因
-- 是否每个G段只对应一个Confirmed Clip、包含1个或多个相邻正式分镜；单镜独立执行、多镜作为同一次连续长镜头执行，且各自拥有结尾帧要求、尾帧用途判定与反向提示词
+- 是否每个G段只对应一个Confirmed Clip、包含1个或多个相邻正式分镜；单Shot独立执行、多Shot连续生成作为同一次连续长镜头执行、多Shot有动机剪辑具备完整切镜合同，且各自拥有结尾帧要求、尾帧用途判定与反向提示词
 - 是否Total Clips不大于Total Formal Shots，且所有单分镜Clip均为4—15秒并具有独立生成理由
 - 战斗、双主体、对峙、对话、追逐或相向运动是否已经锁定左右、朝向、关系轴、摄影机轴线侧和来源—目标空间连线，而非只写抽象人物朝向
 - 上一尾帧与下一首帧的镜头几何是否兼容；是否出现无授权跨轴、左右交换、双正脸或攻击/视线/水流方向反转

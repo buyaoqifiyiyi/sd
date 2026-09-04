@@ -28,8 +28,16 @@
 - 包含 Shot：按 SHOT ID 原顺序逐项列出
 - 目标时长：N秒（必须4—15秒）
 - 时长核算：SHOT-001=N秒 + SHOT-002=N秒；合计=N秒；平台生成时长=N秒
+- 组织类型：`单Shot` / `多Shot连续生成` / `多Shot有动机剪辑`
 - 组织理由：逐项说明场景连续性、时间连续性、人物动作连续性、摄影机连续性、模型执行复杂度与单次生成时长判断
-- 生成合同：本 Clip 对应一次生成；即使包含多个 Shot，STATE-08 也只输出一条连续 Prompt，不按 Shot 拆分。内部同时锁定Dramatic Execution Unit：Clip Dramatic Function、Start → End Dramatic State、Critical Performance Beat、Critical Blocking / Spatial State、Continuity / Rhythm / Information Timing Requirement、Generation Risk / Simplification Boundary；不新增顶级字段
+- 生成合同：本Clip对应一次生成；即使包含多个Shot，STATE-08也只输出一条完整Prompt，不按Shot拆分。单Shot为单一镜头连续生成；多Shot连续生成不中断、不硬切；多Shot有动机剪辑只在Director确认的切镜合同完整时执行。内部同时锁定Dramatic Execution Unit：Clip Dramatic Function、Start → End Dramatic State、Critical Performance Beat、Critical Blocking / Spatial State、Continuity / Rhythm / Information Timing Requirement、Generation Risk / Simplification Boundary；不新增顶级字段
+- 有动机切镜合同（仅`多Shot有动机剪辑`）：
+  - 切镜叙事功能：
+  - 切点与视觉媒介：
+  - 切镜前结束状态：
+  - 切镜后重建状态（世界、角色、环境、道具、摄影机、稳定构图）：
+  - 连续性锚点（保留 / 改变）：
+  - 容量不足安全降级（必须返回`STATE-07 / 拆分Clip`）：
 - 起始状态：人物、环境、空间、道具、FX、情绪、摄影机及来源边界
 - Clip Preflight Check（STATE-07前置版；必须先于Reference Budget）：
   - Temporal / Spatial Continuity Classification：视觉连续 / 剧情连续 / 主动切场或切世界（三选一）；判定证据；在同一判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并记录`REF-TAIL-XX｜CLIP-XX尾帧参考`、对应“同镜头连续承接用途”或“空间/站位/景别参考用途”及真实状态；未上传时仍列名并标记“待用户提供/待上传、未确认”，不计入已提交图片。C标记`NO`、不列尾帧，并记录Canonical资产、Spatial Blocking与文字重建依据
@@ -71,7 +79,7 @@
   - Performance State（情绪/公开状态与泄漏/呼吸或体力/动作结果）：
   - Continuity Risks（状态断裂/人物或道具重置/左右或轴线翻转/身份、环境、道具、光态漂移/执行风险）：
   - Next-Clip Carryover（必须保持/允许改变/不继承/待确认；A/B/C、Tail Frame Requirement、参考用途或重建依据）：
-- 模型执行风险与安全降级：
+- 模型执行风险与安全降级：单Shot / 多Shot连续生成 / 多Shot有动机剪辑的容量结论；多Shot有动机剪辑不支持时必须返回`STATE-07 / 拆分Clip`
 - Reference Budget Audit：
   - Reference Selection / Routing（当前Clip目标与风险 → 选择的角色/环境/道具Canonical资产、Spatial Blocking文字语义、已有Confirmed且Signature未变的`REF-SKETCH`、A/B `REF-TAIL`或合格场景状态参考；逐项写用途与Authority；STATE-07的草图风险预判不等于已存在视觉资产；Eligible但未选项与理由；明确“参考资产按需路由，不是越多越好”）：
   - 原始候选图片资产（逐项写实际资产ID/名称、Active/Confirmed状态、真实文件/受控ID、当前Clip用途、图片位数）：
@@ -124,7 +132,7 @@
 
 - 所有正式 Shot 是否按原顺序出现且只分配到一个 Clip：
 - 每个 Clip 是否包含一个或多个相邻 Shot，且总时长为4—15秒：
-- 所有多 Shot Clip 是否通过场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查：
+- 所有多Shot Clip是否通过组织类型、场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查；有动机剪辑是否含叙事功能、切点/媒介、切前结束、切后稳定重建、保留/改变锚点和STATE-07拆分降级：
 - 短于4秒的 Shot 是否只在兼容的4—15秒 Clip中执行；超过15秒的 Shot 是否已返回 STATE-06 拆分：
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：
 - 每个Clip是否把已有Entry / Exit / Handoff归并为八组`Clip End-State Record / Next-Clip Carryover`，且下一Clip首帧能逐项消费、没有人物/道具/相机/环境状态重置：

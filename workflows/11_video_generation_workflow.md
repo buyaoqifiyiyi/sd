@@ -716,7 +716,7 @@ knowledge/transitions/
 
 怎样使用镜头语言。
 
-当候选设计包含两种以上运动、镜头顺序、多个景别/视点或一镜到底时，读取`knowledge/camera_language/movement_combinations/`，负责判断一镜路径、Coverage拆分、Transition / FX边界与稳定降级；不新增最终字段。
+当候选设计包含两种以上运动、镜头顺序、多个景别/视点或一镜到底时，读取`knowledge/camera_language/movement_combinations/`，负责判断单Shot、多Shot连续生成、多Shot有动机剪辑、Coverage拆分、Transition / FX边界与稳定降级；不新增最终字段。多Shot有动机剪辑只消费STATE-07已确认的切镜合同，不在STATE-08临时发明切点或新世界。
 
 内部分类统一为Single-Move、Low-Complexity Compound Path、Coverage Sequence或Transition / FX Sequence，最终Prompt只保留执行语义。
 
@@ -2762,13 +2762,13 @@ Coverage遗漏返回Sequence Planning或Shot Design，不在STATE-08临时创造
 硬性Package Gate：
 
 - 为Confirmed Clip按顺序使用CLIP-001、CLIP-002、CLIP-003……
-- 每个`# CLIP-X｜标题 Seedance视频提示词`区块只对应一个CLIP-xxx，并包含该Clip列出的1个或多个`分镜X`；单镜Clip独立执行，多镜Clip作为同一次连续长镜头的执行阶段且不在Clip内部硬切
+- 每个`# CLIP-X｜标题 Seedance视频提示词`区块只对应一个CLIP-xxx，并包含该Clip列出的1个或多个`分镜X`；单Shot独立执行，多Shot连续生成作为同一次连续长镜头的执行阶段且不在Clip内部硬切；多Shot有动机剪辑只按已确认的切点、视觉媒介、切前结束、切后稳定重建与锚点执行。模型容量不足时停止编译并返回STATE-07拆分Clip
 - Clip区块总数不得大于正式分镜总数，允许相等；单分镜Clip是合法输入，不得为了减少Clip区块数量强行合并
 - 每个区块在Markdown标题中写明正式CLIP-xxx与人类可读标题，在`时长：`写明4—15秒平台生成时长；不得输出独立“CLIP标题”字段或方头括号章节
 - 该时长必须逐字取自Confirmed Clip Production Plan的目标时长，并与Clip Detail中的逐镜求和、合计和平台生成时长一致；禁止重新估算
 - 每个Clip区块重复完整全局锁定字段，并拥有自己的前置`首帧参考：`、`尾帧限制：`与末尾`反向提示词：`
 - 禁止跨Clip合并、遗漏、重排或重复分镜
-- 同一Clip内非末分镜通过“同一Clip连续生成”逐项继承；末分镜负责跨Clip衔接与尾帧
+- 同一Clip内非末分镜按已确认组织类型通过现有`起始状态`、`画面描述`、`镜头/机位`、`空间关系`与`镜头结尾状态`承载连续或有动机切镜语义；末分镜负责跨Clip衔接与尾帧。不得新增STATE-08字段或把无原因跳变包装为导演剪辑
 - A Direct Start-Frame Handoff的G02及以后标记`Tail Frame Required = YES`；【参考资产】列统一`REF-TAIL`名称与“同镜头连续承接用途”，【首帧参考】逐字写固定直接承接句并从该帧逐项继续；未提供时同一条目写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图
 - B Reference-Only Handoff的G02及以后同样标记`Tail Frame Required = YES`；【参考资产】列统一`REF-TAIL`名称与“空间/站位/景别参考用途”，【首帧参考】说明延续空间逻辑但另起新镜头重新构图，禁止使用A的固定直接承接句；未提供时同样列待补充状态
 - C新镜头且无需尾帧标记`Tail Frame Required = NO`，不要求用户截图、不把上一尾帧列入【参考资产】；在【首帧参考】明确Canonical资产、Spatial Blocking、文字核对/重建原因与保留锚点
