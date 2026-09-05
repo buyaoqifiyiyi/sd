@@ -242,7 +242,7 @@ STATE-08内部转换链固定为：
 
 当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
-最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。Confirmed `REF-SKETCH`是经Gate验证的单Clip Visual Blocking Anchor，不属于上述未确认总图；它必须写明仅控制Blocking / Pose / Axis / Camera / Action Path并明确不控制身份、材质、色彩、灯光或最终画风。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
+最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。Confirmed `REF-SKETCH`在Seedance 2.5可作为Clay Render/白模空间调度参考，但仍是经Gate验证的单Clip Visual Blocking Anchor：仅控制Blocking / Pose / Axis / Camera / Action Path，不控制身份、服装、年龄、材质、色彩、灯光或最终画风。Video Extension的实际`REF-VIDEO`只作为受控延展输入，叠加而不取代Canonical、首尾帧与End-State。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
 
 每个Clip投影前必须通过四项硬门槛：
 
@@ -261,7 +261,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 - Dialogue Performance仍投影到`人物动作与情绪 / 台词 / 音效`中的适用位置，只说明当前一句/当前场景怎么说，不得重定义稳定Voice Identity。
 - 雨声、风声、纸张、脚步、道具、钢琴或其他环境声/动作声属于Sound Design，只进入逐镜`音效`及其声音尾部；它们不得被路由成`音色特征：`，也不得作为启用该条件字段的证据。
 
-`时长：`的4—15秒平台生成时长只复制Confirmed Clip Production Plan的目标时长，不得重新估算；最终Prompt不写逐镜时长、时间码、按秒动作区间、帧率或帧数。
+`时长：`只复制Confirmed Clip Production Plan的目标时长，不得重新估算；默认/Standard Clip为4—15秒，Long-form只在已锁定Seedance 2.5 Profile且计划严格预检PASS时为16—30秒。除`Target Model = Seedance 2.5`且`Execution Mode = Targeted Edit`外，最终Prompt不写逐镜时长、时间码、按秒动作区间、帧率或帧数；该唯一例外只能把受控时间段语义写入既有分镜正文的适当字段，不新增时间轴字段。
 
 ## Global Projection Matrix
 

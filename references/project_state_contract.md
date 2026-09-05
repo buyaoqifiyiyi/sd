@@ -50,6 +50,18 @@ Revision ID
 Updated At
 ```
 
+当`Current State`为STATE-07或STATE-08，或已存在Confirmed Clip Production Plan时，还必须在`## State Control`保存唯一的批次内部执行Profile：
+
+```text
+- Target Video Model: Seedance 2.0 / Seedance 2.5 / UNLOCKED
+- Model Execution Lock Status: UNLOCKED / LOCKED
+- Execution Mode: Standard Clip / Long-form Clip / Video Extension / Targeted Edit / Not Applicable
+- Effective Gateway Limits: <confirmed gateway limits or UNKNOWN; never infer unsupported API fields>
+- Model Lock Scope: <affected CLIP IDs / current generation batch>
+```
+
+`UNLOCKED`只允许在STATE-06完成后、STATE-07 Clip整合前短暂存在；不得确认Clip Plan。锁定选择仅控制当前生成批次的执行Profile，不改变Production-Locked Script、Confirmed Assets、Scene Breakdown或Detailed Shot Design。Clip Plan确认前用户切换模型时，只将受影响STATE-07/08执行产物标为需重跑，保留上述上游Accepted Artifacts。
+
 允许的 `Current State`：`STATE-00` 至 `STATE-09`。
 
 允许的 `State Status`：

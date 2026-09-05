@@ -353,7 +353,7 @@ STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video
 
 - Preflight、Before-Single-Clip-Prompt Gate与参考预算：`knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
 - Prompt编译与投影：`knowledge/knowledge_application_reflection.md`、`knowledge/prompt_compilation/`
-- 模型适配：`knowledge/11_seedance_adapter.md`
+- 模型适配：`knowledge/11_seedance_adapter.md`；仅当Model Execution Lock选择Seedance 2.5时读取`knowledge/seedance_25_profile.md`
 - Clip连续性：`knowledge/clip_planning/`
 - 镜头与运镜：`knowledge/camera_language/`
 - 转场：`knowledge/transitions/`

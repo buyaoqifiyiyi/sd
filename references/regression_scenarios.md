@@ -1072,6 +1072,70 @@ FAIL：继续生成、删除必要故事信息，或用无原因跳变掩盖容�
 
 ---
 
+## R28 Seedance 2.5 Compatibility Regression
+
+Compatibility marker: R20-D A3 Action Remains Technical Previs is not a distinct execution rule; its technical-previs coverage belongs to R20-C, while R20-D remains the simple-head-turn case.
+
+### R28-1 Seedance 2.0 Default Short Clip
+
+输入：当前批次锁定`Seedance 2.0`，未选择其他模式。
+
+PASS：仅一次Lock后使用4—15秒Standard Clip、≤9图片预算、既有A/B/C `REF-TAIL`和固定STATE-08模板；不出现2.5字段、时间码或额外Prompt栏目。
+
+### R28-2 Seedance 2.5 Standard Clip
+
+输入：Lock=`Seedance 2.5`，未明确选择Long-form。
+
+PASS：默认仍使用4—15秒Standard Clip、最小充分参考与既有连续性风险降级；30秒不是默认时长。
+
+### R28-3 Seedance 2.5 Long-form Clip
+
+输入：Lock=`Seedance 2.5`，用户明确请求16—30秒Long-form，镜头链、空间关系、表演和动作密度均通过严格预检。
+
+PASS：计划可使用16—30秒；任一严格预检失败即只重跑STATE-07拆分为短Clip，不回退已确认Detailed Shot Design。
+
+### R28-4 Seedance 2.5 Video Extension
+
+输入：Lock=`Seedance 2.5`，用户选择Video Extension并提供实际上一段成片。
+
+PASS：将该成片登记为受控`REF-VIDEO`，同时保留Canonical资产、首/尾帧、End-State与A/B/C规则；不得以视频输入替代它们。
+
+### R28-5 Seedance 2.5 Targeted Edit
+
+输入：Lock=`Seedance 2.5`，用户明确要求修改既有视频的一段内容。
+
+PASS：只在既有分镜正文的适当字段写受控时间段语义；不新增时间轴/目标模型字段。非Targeted Edit仍拒绝时间码、逐秒分段和帧率描述。
+
+### R28-6 Clay Render Authority Isolation
+
+输入：一个已验证、无性别`REF-SKETCH`作为2.5 Clay Render / 白模空间调度参考。
+
+PASS：只消费位置、朝向、距离、拓扑、机位、姿态、视线和动作路径；Character外观/服装/年龄、Environment材质、灯光、色彩和最终画风仍由Canonical Authority控制。
+
+### R28-7 High Reference Capability Uses Minimal Sufficiency
+
+输入：2.5网关可确认支持高于9张图片、视频或音频参考。
+
+PASS：先按当前Clip风险筛选最小充分集合，只有超过实际有效上限才整合/裁剪；不机械填满30图、10视频或10音频；音频仍须当前用户明确opt-in。
+
+### R28-8 Lock Before Clip Integration
+
+输入：STATE-06已完成，Project State没有Target Video Model。
+
+PASS：在任何STATE-07 Clip整合之前询问一次2.0/2.5；不得等到STATE-08最终Prompt才问。
+
+### R28-9 Locked Model Does Not Re-prompt
+
+输入：Project State和Confirmed Clip Plan均为同一LOCKED模型与执行Profile。
+
+PASS：STATE-07/08直接消费该Profile，不重复询问。
+
+### R28-10 Pre-confirmation Model Switch Scope
+
+输入：Clip Plan确认前用户从2.0切换到2.5或反向切换。
+
+PASS：只使受影响STATE-07/08执行产物重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown和Detailed Shot Design保持Accepted。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。

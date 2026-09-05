@@ -4,13 +4,23 @@
 
 - Module Type：主流程 Workflow
 - Current State：STATE-07 Clip Production
-- Entry：STATE-06 Detailed Shot Design Complete
+- Entry：STATE-06 Detailed Shot Design Complete，随后通过唯一`Model Execution Lock`（内部Gate，非主STATE）
 - Required Input Owner：STATE-06 Detailed Shot Design、Confirmed Assets、Visual Direction、Scene / Sequence资料
 - Output Owner：`templates/20_clip_plan.md`
-- Output：Confirmed Clip Production Plan
+- Output：写入已锁定执行Profile的Confirmed Clip Production Plan
 - Next：STATE-08 Clip-based Video Prompt / Video Generation
 
 本 Workflow 把导演层的正式 Shot 组织为 AI 视频模型的一次生成执行单元。它不改写剧情、资产身份、Shot ID、Shot顺序或镜头目的，也不拥有 STATE-08 最终 Seedance 字段。
+
+## Step 0｜Model Execution Lock（STATE-06 → STATE-07之间）
+
+先读取`references/project_state_contract.md`中的当前批次执行Profile。若`Model Execution Lock Status = UNLOCKED`或没有合法Target Video Model，必须在任何Clip候选整合、时长分配、Reference Budget或Clip Plan确认之前只询问一次：`Seedance 2.0`或`Seedance 2.5`。
+
+选定后，读取`knowledge/11_seedance_adapter.md`；选择2.5时再读取`knowledge/seedance_25_profile.md`。将Target Video Model、Execution Mode、Effective Gateway Limits与Model Lock Scope写入Project State和`templates/20_clip_plan.md`的内部执行Profile。实际API/网关公开限制小于模型能力上限时，取更严格值；未知时不得声称全部能力可用。
+
+默认模式为`Standard Clip`。`Long-form Clip`仅Seedance 2.5可用且必须在Step 2A通过更严格预检；`Video Extension`必须有实际上一段成片`REF-VIDEO`；`Targeted Edit`仅在用户明确要求修改既有视频时可用。未明确选择Long-form时，即使2.5已锁定也沿用4—15秒稳定短Clip。
+
+Clip Plan确认前用户切换模型时，只重新执行本Workflow与STATE-08中受影响的Clip；保留已确认剧本、资产、场景、Visual Development和Detailed Shot Design。不得在最终Prompt输出阶段再次询问模型，也不得为Lock新增主STATE或STATE-08字段。
 
 任何来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / Clip A”都只属于Source Script Label，不是正式Shot或Clip来源。不得按Source Script Label数量、标题或段落边界创建Clip。
 
@@ -108,11 +118,11 @@ STATE-07只组织这些Detailed Shots，不得回到原剧本重新简化画面�
 - 镜头几何连续性：单一主轴、屏幕左右、身体朝向、眼线、摄影机轴线侧和来源—目标连线不得在合并后翻转
 - 角色、环境、道具与 FX 资产版本一致性
 - 模型执行复杂度、动作/口型/FX容量和稳定性
-- 目标模型单次生成适宜时长；每个 Confirmed Clip 必须为 4—15 秒
+- 已锁定执行Profile的适宜时长：Seedance 2.0及2.5 Standard Clip为4—15秒；Seedance 2.5 Long-form为16—30秒且仅在严格预检PASS后可用；实际网关限制优先
 
 单Shot可以独立成为Clip。多个相邻Shot只有在总时长不超过15秒并通过三种执行模式之一时才可合并：`单Shot`、`多Shot连续生成`或`多Shot有动机剪辑`。连续生成要求连续动作/运镜且不中断、不硬切；有动机剪辑要求Director确认叙事功能、切点、视觉媒介、切前结束、切后稳定重建、连续性锚点和容量不足时的STATE-07拆分Clip。不得为了减少Clip数量强行合并。
 
-Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相邻、兼容的 Shot 组成4—15秒 Clip。单个 Shot 超过15秒或无法在15秒内稳定执行时，返回 STATE-06 按自然动作/覆盖/机位/时空边界拆分。
+Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相邻、兼容的 Shot 组成已锁定Profile允许的Clip。未获Long-form授权时维持4—15秒。Long-form若镜头链、空间关系、表演或动作密度任一严格预检失败，返回STATE-07拆分为稳定短Clip；不得以2.5的30秒上限强行合并，也不得回滚STATE-06已确认镜头设计。
 
 Clip Boundary不得错误切断Writer Beat的最小因果完整性。若平台时长迫使拆分，必须把Trigger / Response、Decision / Consequence或Setup / Payoff的承接关系写入现有Start Boundary、End-Frame Constraint、Clip End-State Record与Next-Clip Carryover；不得改写Beat顺序来迁就时长。
 
@@ -144,7 +154,7 @@ STATE-07把Clip定义为`Dramatic Execution Unit`，不是仅按时长或技术�
 合并/拆分必须同时通过两类判断：
 
 - **Dramatic Integrity**：怀疑→证据→确认、压制→泄漏→余韵或进入→关系改变等必须连续积累才能成立的相邻Shots，不能因技术方便错误拆开。
-- **Generation Capacity**：若同一Clip跨越互斥时空/方向、需要状态重置、动作/口型/FX/Camera负荷过高，或超过4—15秒，必须拆分或返回STATE-06；不能以“情绪连续”为由强行过载。
+- **Generation Capacity**：若同一Clip跨越互斥时空/方向、需要状态重置、复杂多人交互、物理/动作、口型/FX/Camera负荷过高，或超过已锁定Profile时长，必须拆分或返回STATE-06；不能以“情绪连续”或2.5多镜头能力为由强行过载。
 
 Packet语义只投影到现有Clip字段，不新增顶级Template字段或新ID。
 

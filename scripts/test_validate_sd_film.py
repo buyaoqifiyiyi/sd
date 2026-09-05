@@ -2644,6 +2644,38 @@ None
 
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
 
+    def test_seedance_25_execution_lock_and_regressions(self) -> None:
+        skill_root = Path(__file__).resolve().parents[1]
+        sources = {
+            relative: (skill_root / relative).read_text(encoding="utf-8")
+            for relative in (
+                "workflows/10_clip_production_workflow.md",
+                "workflows/11_video_generation_workflow.md",
+                "knowledge/11_seedance_adapter.md",
+                "knowledge/seedance_25_profile.md",
+                "references/project_state_contract.md",
+                "templates/20_clip_plan.md",
+                "templates/10_video_prompt.md",
+                "knowledge/reference_budget.md",
+                "references/regression_scenarios.md",
+            )
+        }
+        self.assertIn("Model Execution Lock", sources["workflows/10_clip_production_workflow.md"])
+        self.assertIn("任何Clip候选整合、时长分配、Reference Budget或Clip Plan确认之前只询问一次", sources["workflows/10_clip_production_workflow.md"])
+        self.assertIn("不得在此处首次询问或改变模型", sources["workflows/11_video_generation_workflow.md"])
+        self.assertIn("Model Profile Routing", sources["knowledge/11_seedance_adapter.md"])
+        profile = sources["knowledge/seedance_25_profile.md"]
+        for marker in ("Standard Clip", "Long-form Clip", "Video Extension", "Targeted Edit", "REF-VIDEO", "Clay Render", "30张图", "10段视频", "10段音频"):
+            self.assertIn(marker, profile)
+        self.assertIn("Target Video Model", sources["references/project_state_contract.md"])
+        self.assertIn("Model Execution Lock Status", sources["templates/20_clip_plan.md"])
+        self.assertIn("不得新增时间轴、目标模型或执行模式字段", sources["templates/10_video_prompt.md"])
+        self.assertIn("min(30, 实际网关图片上限)", sources["knowledge/reference_budget.md"])
+        regression = sources["references/regression_scenarios.md"]
+        for scenario in range(1, 11):
+            self.assertIn(f"R28-{scenario}", regression)
+        self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

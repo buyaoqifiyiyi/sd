@@ -9,7 +9,10 @@
 - Source Detailed Shot Design Artifact / Portable Checkpoint：
 - Source Detailed Shot Design Status：Confirmed
 - Source Detailed Shot Design Revision：
-- Model Duration Window：4—15秒
+- Target Video Model：Seedance 2.0 / Seedance 2.5
+- Model Execution Lock Status：LOCKED（未锁定不得进入Clip整合）
+- Execution Profile：目标模型、Execution Mode、Effective Gateway Limits、锁定范围；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
+- Model Duration Window：按已锁定Profile；Seedance 2.0 / Seedance 2.5 Standard Clip为4—15秒，Seedance 2.5 Long-form为16—30秒，受实际网关限制时从严
 - Total Formal Shots：
 - Total Clips：
 - Unit Rule：Shot = 导演镜头设计单位；Clip = AI视频生成执行单位；每个Shot且仅进入一个Clip；Total Clips ≤ Total Formal Shots；STATE-08每个Clip只生成一条连续Prompt
@@ -26,7 +29,9 @@
 ### CLIP-001
 
 - 包含 Shot：按 SHOT ID 原顺序逐项列出
-- 目标时长：N秒（必须4—15秒）
+- Execution Mode：`Standard Clip` / `Long-form Clip` / `Video Extension` / `Targeted Edit`
+- 目标时长：N秒（按已锁定Profile；Long-form仅16—30秒且通过严格预检）
+- Model Profile Preflight：Standard Clip沿用稳定短Clip；Long-form必须通过镜头链、空间关系、表演和动作密度严格预检；Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Targeted Edit仅在用户明确要求修改既有视频时可用，时间段控制仅可写入既有分镜正文
 - 时长核算：SHOT-001=N秒 + SHOT-002=N秒；合计=N秒；平台生成时长=N秒
 - 组织类型：`单Shot` / `多Shot连续生成` / `多Shot有动机剪辑`
 - 组织理由：逐项说明场景连续性、时间连续性、人物动作连续性、摄影机连续性、模型执行复杂度与单次生成时长判断
@@ -58,7 +63,7 @@
   - 视觉高潮镜头及理由；无独立高潮时写“保持克制”：
   - 最克制镜头及理由：
   - 重复规避（连续同类主运镜扫描；3次以上逐镜理由；超过4个Shot时的运镜逻辑数量与例外理由）：
-  - Seedance复杂度控制（逐镜稳定等级、Clip峰值、同时负荷、删辅助 / 降速 / 缩短路径 / 固定机位 / 拆分降级）：
+  - Seedance复杂度控制（逐镜稳定等级、Clip峰值、同时负荷、删辅助 / 降速 / 缩短路径 / 固定机位 / 拆分降级；2.5多镜头能力不放宽复杂多人互动、物理或动作风险降级）：
   - Clip Camera Continuity / Visual Rhythm（建立 / 隐藏 / 泄漏 / 确认 / 压住 / 释放的功能差异；Movement Trigger / Stop；景别与距离层级；禁止无理由每镜慢推+浅景深）：
 - 空间关系：人物A/B左右/前后/高低、分别朝左/朝右与侧身程度、视线目标、距离、行进方向、环境锚点和180度轴线；战斗/双主体/对峙/对话/追逐/相向运动必须写唯一关系轴或主攻击/运动轴
 - 空间连线（适用时）：视线 / 武器 / 攻击 / 追逐路线 / 水流 / 能量 / 抛射物的来源 → 路径 → 目标；必须与人物朝向、喷口/武器方向、屏幕方向和受击位置一致
@@ -81,7 +86,7 @@
   - Next-Clip Carryover（必须保持/允许改变/不继承/待确认；A/B/C、Tail Frame Requirement、参考用途或重建依据）：
 - 模型执行风险与安全降级：单Shot / 多Shot连续生成 / 多Shot有动机剪辑的容量结论；多Shot有动机剪辑不支持时必须返回`STATE-07 / 拆分Clip`
 - Reference Budget Audit：
-  - Reference Selection / Routing（当前Clip目标与风险 → 选择的角色/环境/道具Canonical资产、Spatial Blocking文字语义、已有Confirmed且Signature未变的`REF-SKETCH`、A/B `REF-TAIL`或合格场景状态参考；逐项写用途与Authority；STATE-07的草图风险预判不等于已存在视觉资产；Eligible但未选项与理由；明确“参考资产按需路由，不是越多越好”）：
+  - Reference Selection / Routing（当前Clip目标与风险 → 选择的角色/环境/道具Canonical资产、Spatial Blocking文字语义、已有Confirmed且Signature未变的`REF-SKETCH`、A/B `REF-TAIL`、2.5 Video Extension的受控`REF-VIDEO`或合格场景状态参考；逐项写用途与Authority；Clay Render / 白模只拥有位置、朝向、距离、拓扑、机位、姿态、视线和动作路径Authority，绝不覆盖Canonical身份/材质/灯光/画风；STATE-07的草图风险预判不等于已存在视觉资产；Eligible但未选项与理由；明确“参考资产按需路由，不是越多越好”）：
   - 原始候选图片资产（逐项写实际资产ID/名称、Active/Confirmed状态、真实文件/受控ID、当前Clip用途、图片位数）：
   - Visual Input Eligibility（逐项回答是否为实际会投喂/引用的视觉资产；列出移除的文字伪资产、0图片位及迁移字段；待补视觉图列具体图像、实际投喂用途与未确认状态）：
   - 删除的当前Clip无关项（未出场角色 / 未使用环境 / 未使用道具 / 未使用动作图 / 其他）及理由：
@@ -131,7 +136,7 @@
 ## Coverage And Validation
 
 - 所有正式 Shot 是否按原顺序出现且只分配到一个 Clip：
-- 每个 Clip 是否包含一个或多个相邻 Shot，且总时长为4—15秒：
+- 每个 Clip 是否包含一个或多个相邻 Shot，且总时长符合已锁定Profile（默认/2.0为4—15秒；2.5 Long-form为16—30秒）：
 - 所有多Shot Clip是否通过组织类型、场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查；有动机剪辑是否含叙事功能、切点/媒介、切前结束、切后稳定重建、保留/改变锚点和STATE-07拆分降级：
 - 短于4秒的 Shot 是否只在兼容的4—15秒 Clip中执行；超过15秒的 Shot 是否已返回 STATE-06 拆分：
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：

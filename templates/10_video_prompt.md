@@ -103,7 +103,7 @@
 
 ### 时长：
 
-只写 Confirmed Clip Production Plan 中当前 Clip 的平台生成时长，且必须为 4—15 秒。不得写总片时长、逐镜时间码、按秒动作区间、帧率、帧数或帧区间。
+只写 Confirmed Clip Production Plan 中当前 Clip 的平台生成时长：默认/Standard Clip为4—15秒，已锁定Seedance 2.5且严格预检PASS的Long-form为16—30秒。不得写总片时长、逐镜时间码、按秒动作区间、帧率、帧数或帧区间。唯一例外是已锁定Seedance 2.5的`Targeted Edit`，可在既有分镜正文的合适字段写受控时间段语义；不得新增时间轴、目标模型或执行模式字段。
 
 ### 画幅：
 
@@ -113,7 +113,7 @@
 
 逐项列出当前 Clip 实际使用的 Canonical 角色、环境、道具、FX、经Before-Single-Clip-Prompt Gate确认的当前Confirmed Visual Blocking Anchor、合法首尾帧与其他确定需要实际投喂的视觉参考图；每项写明资产名称或 ID、用途、锁定对象、真实可用状态和不得改变的特征。`REF-SKETCH-MASTER`无论注册状态如何都默认不列入：它只向当前`REF-SKETCH-XX`的草图生成提供Sketch Presentation Authority，不是视频模型输入。真实图片资产必须实际存在、可回查且已确认。已经明确需要用户实际补入的视觉参考图可以作受控占位，但必须写出具体图像对象、实际投喂用途和`待用户补充/待上传、未确认`状态，不得伪造路径、受控ID、上传或确认状态；若缺的是应成为Canonical的正式CHAR / ENV / PROP / FX资产，必须返回STATE-03完成双确认，不得以占位绕过Asset System。Voice/Audio Reference默认不列入本字段；只有用户明确要求当前视频模型使用该Reference进行声音控制时，才可作为非视觉输入按最小必要信息列出。
 
-列清单前必须通过`knowledge/clip_preflight_check.md`：先把当前Clip分类为视觉连续、剧情连续或主动切场/切世界，再逐分镜确认现实、幻想、耳中玉境或其他已确认World-State。只有当前阶段实际存在、实际出场且状态适用的资产才可列入；完全位于转换后世界的Clip不得保留转换前环境/道具形态，只有当前Clip正在执行合法转换时才可按Pre/Post阶段同时列出两种状态。
+列清单前必须通过`knowledge/clip_preflight_check.md`：先把当前Clip分类为视觉连续、剧情连续或主动切场/切世界，再逐分镜确认现实、幻想、耳中玉境或其他已确认World-State。只有当前阶段实际存在、实际出场且状态适用的资产才可列入；完全位于转换后世界的Clip不得保留转换前环境/道具形态，只有当前Clip正在执行合法转换时才可按Pre/Post阶段同时列出两种状态。Seedance 2.5 Video Extension的实际`REF-VIDEO`可作为受控输入，但不取代首尾帧、Canonical资产或End-State。
 
 随后对每个视觉候选逐项执行最终Visual Input Eligibility QA：`这是不是一张实际会被投喂/引用的视觉资产？`。答案为“否”时必须从本字段移出并按语义归类，不得为了强调而保留。站位说明、不可换边、人物距离、同坐一张板凳、道具数量限制、空间关系说明、行为约束、禁止项与镜头规则分别进入适用的`空间关系`、`起始状态`、`道具状态`、`首帧参考`、`尾帧限制`、`反向提示词`或Spatial Blocking Rules。若对象本身有真实视觉资产，使用正式资产ID与真实引用，例如`PROP-BENCH-01｜双人钢琴凳`；不得使用`板凳参考说明`这类纯文字伪资产。当前`REF-SKETCH-XX`只有在Final Assessment=`REQUIRED`、实际图像通过Sketch Validation与Template Content Leakage Check且Blocking Signature匹配时才是Eligible；预判标签、草图Prompt、`REF-SKETCH-MASTER`或未验证草图不是当前视频视觉资产。
 

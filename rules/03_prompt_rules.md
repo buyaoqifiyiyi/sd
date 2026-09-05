@@ -1045,7 +1045,7 @@ award winning。
 生成模型消费的是数字对应的视觉关系与运动效果，不是逐项执行精密摄影测量或刚体仿真。不得为了显得专业保留无实际生成价值的小数精度。
 
 
-STATE-08最终Prompt只允许在固定字段`时长：`中写一次来自Confirmed Clip Production Plan的“平台生成时长：N秒”，且N必须为4—15秒。禁止写分镜时间码、单分镜时长、按秒动作区间、帧率或帧数；帧率和帧数仍只能作为Prompt外部平台参数。
+STATE-08最终Prompt只允许在固定字段`时长：`中写一次来自Confirmed Clip Production Plan的“平台生成时长：N秒”：默认/Standard Clip为4—15秒，Long-form只在已锁定Seedance 2.5 Profile且严格预检PASS时为16—30秒。只有`Target Model = Seedance 2.5`且`Execution Mode = Targeted Edit`时，才可在既有分镜正文的合适字段写受控时间段语义；不得新增时间轴字段。其他模式禁止写分镜时间码、单分镜时长、按秒动作区间、帧率或帧数；帧率和帧数仍只能作为Prompt外部平台参数。
 
 STATE-08格式必须逐Clip严格服从`templates/10_video_prompt.md`固定契约：每个Clip结构完全相同，Template当前定义的无条件字段按顺序完整保留；条件字段只在Template的显式条件成立时出现，不得为了结构齐全输出空字段或状态占位。不得因批量或篇幅压缩、合并、共享、删减或改名无条件字段。内容过长时只在完整Clip之间自动分批。每个分镜的全部无条件字段必须按Template完整输出，不得增加竞争字段。任何旧格式冲突以Template为最高优先级，输出前必须逐Clip执行字段完整性检查。
 
@@ -1410,7 +1410,7 @@ templates/10_video_prompt.md。
 ## Timeline
 
 
-除【时长】中来自Confirmed Clip Production Plan的单一“平台生成时长：N秒”（4—15秒）外，最终Prompt是否完全不包含：
+除【时长】中来自Confirmed Clip Production Plan的单一“平台生成时长：N秒”（默认4—15秒；已锁定2.5 Long-form为16—30秒）外，且不属于已锁定Seedance 2.5 Targeted Edit在既有分镜正文中的受控时间段语义时，最终Prompt是否完全不包含：
 
 - 时间码或起止时间戳
 - 总片时长、单分镜时长或Clip内部逐镜时长

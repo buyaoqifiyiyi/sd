@@ -1575,6 +1575,12 @@ Seedance Adapter负责：
 
 把电影语言调整为视频模型更容易执行的描述。
 
+## Model Profile Routing
+
+本Adapter是所有Seedance目标的共通层，不替代Model Execution Lock。STATE-07只在`Target Video Model`已锁定后选择Profile：`Seedance 2.0`继续执行现有稳定4—15秒短Clip与≤9图片预算；`Seedance 2.5`额外读取`knowledge/seedance_25_profile.md`。Profile能力上限不等于已接入网关限制：所有执行时长、图片/视频/音频输入数和输入格式先受实际API/网关可确认限制约束。
+
+Profile只能改变STATE-07/08的执行路由与编译策略，不能改变Production-Locked Script、Canonical Character / Environment / Prop Authority、资产双确认、REF-TAIL A/B/C、End-State合同、Voice opt-in、视频Prompt无BGM和`templates/10_video_prompt.md`固定Schema。
+
 
 重点优化：
 

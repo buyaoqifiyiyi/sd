@@ -2,9 +2,9 @@
 
 ## Contract
 
-本规则是 STATE-07 Clip Production 与 STATE-08 Clip-based Video Prompt / Video Generation 共享的全局参考资产预算合同。单个视频 Clip 最终提交给模型的图片参考硬上限为 9 张。它必须在`knowledge/clip_preflight_check.md`完成Continuity Classification与World-State Check之后执行；预算不得反向决定连续性分类，也不得让不属于当前世界状态的资产因为“已有参考位”进入清单。
+本规则是 STATE-07 Clip Production 与 STATE-08 Clip-based Video Prompt / Video Generation 共享的全局参考资产预算合同。Seedance 2.0与未明确更高网关可用性的默认有效图片上限为9张。Seedance 2.5的模型能力上限可达30图，但`Effective Gateway Limits`未明确确认可用时仍按9张；确认可用时只可使用`min(30, 实际网关图片上限)`。它必须在`knowledge/clip_preflight_check.md`完成Continuity Classification与World-State Check之后执行；预算不得反向决定连续性分类，也不得让不属于当前世界状态的资产因为“已有参考位”进入清单。
 
-目标不是把参考图压到越少越好，而是在不超过 9 张的前提下，优先保留表达更清晰、更准确的原始独立资产。资产整合是参考位不足时的条件性补救，不是默认预处理。
+目标不是把参考图压到越少越好，而是在不超过当前有效上限的前提下，优先保留表达更清晰、更准确的原始独立资产。资产整合是参考位不足时的条件性补救，不是默认预处理。2.5支持更多参考不构成填满30图、10视频或10音频的理由；继续最小充分路由。
 
 预算只对已经通过`knowledge/clip_preflight_check.md` Visual Input Eligibility Test的视觉条目计数。预算不能把纯文字约束变成资产，也不能因为一个说明写得很重要就给它分配图片位。
 
@@ -23,6 +23,8 @@
 - Storyboard、多格分镜板、拼图、接触表、Scene Top-down Blocking Map与设计表截图继续服从既有禁用规则，不因预算紧张而获得引用资格。唯一例外是按`knowledge/clip_preflight_check.md`为单一Clip生成 / 接收、通过Sketch Validation与Template Content Leakage Check、已注册Confirmed且只承担Clip Blocking / Visual Blocking Authority的`REF-SKETCH-XX`；它不是Storyboard、Planning Map或Canonical Asset，并按实际图片数计位。`REF-SKETCH-MASTER`不属于这个例外的最终视频输入层。
 
 ## Conditional Trigger Thresholds
+
+本节的7/8/9阈值是默认9图Effective Limit的稳定工作法；若Seedance 2.5的实际网关明确允许更高图片上限，先以当前Clip具体风险和最小充分原则选取参考，再只在超过该有效上限时去重、整合和裁剪。任何情况下核心角色独立图、A/B `REF-TAIL`、Canonical Authority与实际输入资格不变；Video Extension的`REF-VIDEO`是受控视频输入，不替代既有视觉参考或End-State合同。
 
 先按World-State删除不适用资产，再统计当前真实候选数；加入已经由A/B确定的上一Clip尾帧预留位，以及其他合法连续性图片需求，得到`Projected Final Count`。Projected预留不等于真实资产已存在。【参考资产】可以包含A/B的待补充`REF-TAIL`声明，但“已提交图片清单”仍只计已上传、可访问且确认可用的图片：
 

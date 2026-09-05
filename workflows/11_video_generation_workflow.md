@@ -17,6 +17,8 @@
 
 转换为适合Seedance执行的视频生成信息。
 
+进入本Workflow前必须读取Confirmed Clip Production Plan中的LOCKED Target Video Model、Execution Mode与Effective Gateway Limits；不得在此处首次询问或改变模型。若无Lock，返回`workflows/10_clip_production_workflow.md` Step 0。STATE-08只按已锁定Profile编译，仍由`templates/10_video_prompt.md`独占最终字段；模型、模式和内部预算不得新增到最终Schema。
+
 
 本Workflow只负责：
 

@@ -47,7 +47,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 | 配乐 | `调用sd，为整条片子规划配乐与留白，并输出需要的SeedMusic纯音乐提示词。` | MUSIC / SEED-MUSIC 可选模块 |
 | 专业分镜 | `调用sd，根据已确认场景和资产制作Professional Detailed Shot Script。` | STATE-06 Detailed Shot Design |
 | Storyboard | `调用sd，根据已确认Detailed Shot Design制作Storyboard。` | Optional Storyboard |
-| Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为4—15秒Clip。` | STATE-07 Clip Production |
+| Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为Clip；如未锁定模型，在整合前询问我选Seedance 2.0或Seedance 2.5。` | STATE-07 Clip Production |
 | 单个Clip Prompt | `调用sd，只输出CLIP-003的Seedance视频提示词。` | STATE-08 单Clip交付 |
 | 全部Clip Prompt | `调用sd，按顺序输出全部Confirmed Clip的完整Seedance视频提示词；过长就按完整Clip自动分批。` | STATE-08 批量交付 |
 | 下一个Clip | `调用sd，下一个Clip。` | STATE-08 下一个未交付Clip |
@@ -70,7 +70,9 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 4. 任一创作或优化分支生成 `Production Script Proposal` 后都会停下来，等你确认制作版剧本。
 5. 每类视觉资产先给生图 Prompt，等你确认；生成候选图后再停一次，等你确认图片。
 6. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
-7. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
+7. STATE-06完成后、Clip整合前，如当前批次尚未锁定目标模型，系统只询问一次选择`Seedance 2.0`或`Seedance 2.5`；选择写入内部执行Profile与Clip Plan，不进入最终视频Prompt。已锁定不重复问。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
+8. Seedance 2.5默认仍用稳定的4—15秒`Standard Clip`；仅明确选择且严格预检通过时使用16—30秒`Long-form Clip`。它也支持受控`Video Extension`和用户明确请求的`Targeted Edit`；实际网关限制优先，参考仍按最小充分选择。
+9. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
 8. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
 9. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，本轮会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；你下次说“继续 / 下一个”时再输出该Clip Prompt。简单Clip不会为了统一流程强制出草图。
 10. Review同时区分Technical Review与Director's Cut Review，并在兼容的`PASS / REVISE / REBUILD`外给出`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。技术正确但信息或情绪提前暴露仍会返修；修复后必须重新Review。

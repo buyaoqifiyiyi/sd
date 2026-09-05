@@ -7,9 +7,9 @@ description: 当用户说“调用sd”“调用SD”“用SD Film”“重新�
 
 AI影视虚拟制片生产系统。
 
-Skill Version: 2026.09.04-r6
+Skill Version: 2026.09.04-r7
 
-Build ID: sd-film-2026.09.04-r6
+Build ID: sd-film-2026.09.04-r7
 
 User-facing usage manual: `USER_GUIDE.md`.
 
@@ -51,7 +51,7 @@ Storyboard、AUDIO / SEED-AUDIO、MUSIC / SEED-MUSIC与Skill Experience都不是
 | STATE-04 | Visual Development | 已确认的项目视觉方向与场景视觉基准 | `workflows/07_visual_development_workflow.md` |
 | STATE-05 | Scene Breakdown | Scene / Sequence / Unit结构和生产拆解 | `workflows/08_scene_breakdown_workflow.md` |
 | STATE-06 | Detailed Shot Design | 可执行、逐镜完整的Detailed Shot Design | `workflows/09_shot_design_workflow.md` |
-| STATE-07 | Clip Production | 4—15秒Clip边界、来源Shot、连续性与参考预算计划 | `workflows/10_clip_production_workflow.md` |
+| STATE-07 | Clip Production | `Lock`后的Clip边界、来源Shot、连续性与参考预算 | `workflows/10_clip_production_workflow.md` |
 | STATE-08 | Clip-based Video Prompt / Video Generation | 按Confirmed Clip逐段编译的最终视频执行Prompt | `workflows/11_video_generation_workflow.md` |
 | STATE-09 | Review | PASS或带最小Return Route的REVISE / REBUILD | `workflows/13_review_workflow.md` |
 
@@ -158,7 +158,7 @@ Runtime Skill Reload Integrity、Workflow Re-entry Integrity与Legacy Project Re
 ## Essential Invariants
 
 1. **No skipped STATE**：用户目标不能覆盖生产流程；只有现有Verified Artifacts与Completion Gates能证明可从后续阶段继续。
-2. **Storyboard isolation**：Storyboard绝不成为STATE；固定路由始终是STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Clip-based Video Prompt / Video Generation。
+2. **Storyboard isolation / Model Execution Lock**：Storyboard绝不成为STATE；固定路由为STATE-06 → 内部Lock（非STATE）→ STATE-07 → STATE-08。Lock在Clip整合前选择2.0/2.5并写入State与Plan，不进最终Prompt、不重做上游。
 3. **Template uniqueness**：最终字段、顺序、排版和必填性只由当前Template拥有；其他模块只提供语义、算法或约束。
 4. **State evidence**：状态来自实际可读且Project ID一致的Root、有效Portable State或规范化后的可验证Project Context，不来自猜测或旧Skill描述。
 5. **Confirmed asset priority**：已有Active Version与Canonical References高于临时文字、风格参考和新生成结果；改变外观必须走Change Protocol。

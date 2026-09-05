@@ -285,7 +285,7 @@ Reference Selection / Routing除决定“是否使用”外，还必须为每个
 - **Environment Authority**：Active Environment Canonical References；负责正式环境结构、固定布局、材质与长期空间识别。
 - **Prop Authority**：Active Prop Canonical References；负责正式道具身份、造型、材质与Canonical形态。
 - **Sketch Presentation Authority**：`references/ref_sketch_master.md`登记的`REF-SKETCH-MASTER`；只负责Technical Director Blocking Sheet的表达语言、信息层级、简化人物程度、技术标注和自适应版式。它不绑定Clip、不拥有Blocking Signature，不控制人物 / 场景 / 道具身份、数量、位置、Camera、Action、光色材质或最终画风。
-- **Clip Blocking Authority / Visual Blocking Authority**：由`knowledge/clip_preflight_check.md`的Before-Single-Clip-Prompt Gate生成或接收、通过Sketch Validation并绑定当前Clip / Blocking Signature的Confirmed `REF-SKETCH-XX`；只负责Position、Facing、Distance、Relationship Topology、Axis、Camera、Pose Hierarchy、Gaze与Action Path。Scene Top-down Blocking Map、Storyboard、`REF-SKETCH-MASTER`或未验证草图不具有该Authority。
+- **Clip Blocking Authority / Visual Blocking Authority**：由`knowledge/clip_preflight_check.md`的Before-Single-Clip-Prompt Gate生成或接收、通过Sketch Validation并绑定当前Clip / Blocking Signature的Confirmed `REF-SKETCH-XX`；只负责Position、Facing、Distance、Relationship Topology、Axis、Camera、Pose Hierarchy、Gaze与Action Path。Seedance 2.5可把它作为Clay Render / 白模空间调度参考，但不得覆盖Character外观/服装/年龄、Environment材质、灯光、色彩或最终画风。Scene Top-down Blocking Map、Storyboard、`REF-SKETCH-MASTER`或未验证草图不具有该Authority。
 - **Transient State Authority**：用户已接受Take的Accepted Canon State，以及与该Take绑定的上一Clip / `REF-TAIL`；只负责姿态、站位、朝向、人物距离、动作阶段、短时道具持有、临时光态/天气/环境状态与起始构图。
 - **Motion Authority**：实际入选的已确认动作或视频参考；只负责动作路径、节奏、受力、速度感或表演阶段，不负责身份、环境结构或道具造型。
 - **Camera Authority**：实际入选的已确认镜头/机位/运动参考；只负责机位、景别、构图、轴线侧、焦点与摄影机路径，不负责角色身份或资产设计。

@@ -114,6 +114,18 @@ Owner：`knowledge/director_decision_layer.md`。Camera Language核心子能力o
 
 优先增加新的辅助信息，不删除或重新解释已有字段。
 
+### Model Execution Lock And Seedance 2.5 Profile Contract
+
+Module Name：`Model Execution Lock` + `Seedance 2.5 Model Profile`。
+
+Module Type：STATE-06完成后的唯一内部Gate与STATE-07/08共用的模型知识Profile；不创建主STATE、项目事实或STATE-08最终字段。
+
+Owner与触发：`workflows/10_clip_production_workflow.md`拥有Lock的询问、写回、切换与返回路由；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译；`knowledge/seedance_25_profile.md`拥有已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。STATE-06完成且当前生成批次未锁定目标模型时，Lock必须在Clip候选整合前只询问一次`Seedance 2.0`或`Seedance 2.5`。已锁定时不得重复询问。
+
+Writeback与变更：所选Target Model、Execution Profile、Execution Mode与Effective Gateway Limits写入Project State和Confirmed Clip Production Plan。用户在Clip Plan确认前切换模型时，只使受影响的STATE-07 / STATE-08执行产物失效并重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown与Detailed Shot Design保持已确认状态。最终STATE-08 Prompt不得新增模型、模式、预算或时间轴字段。
+
+Consumers与不变量：STATE-07按Lock选择对应Profile后完成Clip整合；STATE-08只消费已确认Plan并用既有Template编译。2.5能力上限不覆盖实际API/网关限制，Effective Limit取可确认网关限制与Profile上限中的较小值。`REF-TAIL` A/B/C、Canonical Authority、双确认、最小充分参考、Voice opt-in和视频Prompt永久无BGM不因Profile改变。Validator检查Lock/Plan/State一致性、模式合法性、2.0默认回归、2.5模式与条件性时间控制；回归场景由`references/regression_scenarios.md`拥有。
+
 如果必须修改已有Template：
 
 只修改该Template拥有的阶段输出，不把字段传播到无关Template。
