@@ -26,6 +26,10 @@ Visual Production Status:
 
 Prompt Revision:
 
+Target Image Tool / Model:
+
+Asset Image Route:
+
 FX Image Prompt:
 
 Prompt Confirmation:

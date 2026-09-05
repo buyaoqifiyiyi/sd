@@ -5,9 +5,9 @@ description: AI影视虚拟制片生产系统。处理剧本、导演转译、�
 
 # SD Film
 
-Skill Version: 2026.09.05-r12
+Skill Version: 2026.09.05-r13
 
-Build ID: sd-film-2026.09.05-r12
+Build ID: sd-film-2026.09.05-r13
 
 ## Core
 
@@ -37,6 +37,8 @@ Build ID: sd-film-2026.09.05-r12
 - `adapters/seedance-2.0.md`：4–15 秒。
 - `adapters/seedance-2.5.md`：4–30 秒；23 秒通过长时长预检保持单 Clip，34 秒才拆分；Timeline 按需使用。
 - `adapters/other-models.md`：未验证模型不继承 Seedance 能力。
+
+资产创作的图像路由不属于上述视频 Model Selection：默认由`modules/assets.md`使用内置 Image 输出；用户在STATE-03明确指定 Midjourney 时才读取`adapters/midjourney.md`，只交付 Midjourney Prompt，不调用内置图片生成。它不影响STATE-06后的模型选择、STATE-07 Clip或STATE-08视频 Prompt。
 
 ## Global invariants
 

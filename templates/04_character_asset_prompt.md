@@ -135,6 +135,7 @@ Core与Support共用上述双确认Gate。Core使用独立角色资产包；Supp
 - Confirmed Status：`No`
 - Prompt Language：
 - Target Image Tool / Model：
+- Asset Image Route：
 - Generation Parameters：画幅、分辨率、背景控制及工具必需参数；未知平台时使用平台中性的可执行规格。
 
 ### Core Asset Package

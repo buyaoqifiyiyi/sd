@@ -205,7 +205,7 @@ Core环境必须包含：
 
 # 6. Image Prompt Generation
 
-先完成环境定义，再根据Asset Tier使用`templates/05_environment_asset_prompt.md`输出完整可直接生图的Prompt Package：
+先完成环境定义，再按`modules/assets.md`的Asset Image Route和Asset Tier使用`templates/05_environment_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
 - 主参考图Prompt（Main Reference Image Prompt）：通常为Wide Shot，完整建立环境身份、空间骨架、主要动线、建筑/地形关系、材质、实用光源与综合色彩。
 - 必要多视角Prompt（Required Multi-View Prompts）：根据人物活动区和镜头需求输出Medium Shot、反向视角、入口视角或高位布局视角；不需要时写`Not Required`及依据。
@@ -233,7 +233,7 @@ Support环境参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 # 8. Image Generation And Confirmation
 
-Prompt Confirmed后才可调用图片生成工具。Core生成独立环境图片；Support生成整张Support Environment Reference Board。生成后写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
+Prompt Confirmed后按`modules/assets.md`的已记录路由执行：Built-in Image才可调用当前环境可用的内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core生成独立环境图片；Support生成整张Support Environment Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 

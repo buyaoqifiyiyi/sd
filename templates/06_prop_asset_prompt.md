@@ -90,6 +90,7 @@ Confirmed Status：No / Yes
 - Image Status：`Not Generated`
 - Confirmed Status：`No`
 - Target Image Tool / Model：
+- Asset Image Route：
 - Generation Parameters：画幅、分辨率、背景控制及工具必需参数。
 
 ### Core Asset Package

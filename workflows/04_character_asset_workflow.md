@@ -298,7 +298,7 @@ Screen Presence与主要表演可读性；例如面部、身体轮廓、手部�
 # 06 Image Prompt Generation
 
 
-先完成角色定义，再根据Asset Tier使用`templates/04_character_asset_prompt.md`输出完整可直接生图的Prompt Package。
+先完成角色定义，再按`modules/assets.md`的Asset Image Route和Asset Tier使用`templates/04_character_asset_prompt.md`输出完整可直接生图的Prompt Package。
 
 
 包括：
@@ -354,7 +354,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 
 # 08 Image Generation
 
-Prompt Confirmed后才能调用当前环境可用的图片生成工具。Core按已确认Prompt逐项生成三视图、面部特写与必要状态变体；Support按已确认Board Prompt生成整张Support Character Reference Board。
+Prompt Confirmed后按`modules/assets.md`的已记录路由执行：Built-in Image才可调用当前环境可用的内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core按已确认Prompt逐项生成三视图、面部特写与必要状态变体；Support按已确认Board Prompt生成整张Support Character Reference Board。
 
 生成后记录：
 

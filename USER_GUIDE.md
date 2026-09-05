@@ -24,6 +24,12 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 如果项目目录已有角色、环境、道具或FX图片，可以直接说“使用现有资产”或“跳过制作阶段”。SD Film会只核验当前对象，将文件登记为Candidate Reference，并请求你确认；确认后才升级为Canonical Reference与Active Version。该路径不会重复生成图片，但不会省略资产确认和一致性锁定。
 
+### 资产创作的图像模型
+
+STATE-03没有指定图像模型时，默认使用内置 Image：先交付可确认的结构化生图提示词；你确认且要求出图时，才生成候选图。若只要提示词，系统不出图。
+
+明确说“用 Midjourney 制作这个资产”时，系统只输出可直接粘贴的 Midjourney 英文提示词，不调用内置 Image，也不把提示词当作已生成图片。你在Midjourney生成后把结果回传，系统才继续候选图确认与资产锁定。这项选择只影响资产创作，不影响后续Seedance视频模型或Clip时长。
+
 例如：
 
 ```text
@@ -41,6 +47,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 | 定稿剧本直接制作 | `调用sd，这个剧本已经定稿，不要修改剧情，直接进入制作。` | STATE-01 No Revision / Final Script 路由 |
 | 资产缺失检查 | `调用sd，只检查当前项目缺少哪些角色、环境、道具和正式FX资产，不生成图片。` | STATE-02 Asset Discovery / 状态核验 |
 | 角色资产 | `调用sd，只制作CHAR-001角色视觉资产，先输出生图提示词，等我确认。` | STATE-03 Character Asset |
+| Midjourney角色资产 | `调用sd，只制作CHAR-001角色视觉资产，用Midjourney，先输出提示词。` | STATE-03 Character Asset / Midjourney Prompt Only |
 | 环境资产 | `调用sd，只制作ENV-001环境资产，先输出生图提示词，等我确认。` | STATE-03 Environment Asset |
 | 道具资产 | `调用sd，只制作PROP-001道具资产，先输出生图提示词，等我确认。` | STATE-03 Prop Asset |
 | 角色音色 | `调用sd，为CHAR-001设计角色音色，并输出独立Seed Audio兼容提示词。` | AUDIO / SEED-AUDIO 可选模块 |
