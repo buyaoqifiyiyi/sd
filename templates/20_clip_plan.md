@@ -1,5 +1,7 @@
 # Clip Plan
 
+> Refactor authority: STATE-07 records a selected-model Execution Clip Plan. First preserve each model-neutral Natural Unit, then use the already selected Adapter to apply duration, timeline and execution constraints. The model may split or retain the unit but cannot change its screenplay, Director Intent, spatial facts or Canonical Assets.
+
 ## Default User-facing Delivery
 
 默认交付标题为“Clip表”。只展示Clip ID、包含镜号、核心画面/动作、时长、起止承接和必要参考资产。Preflight、Scope Firewall、Reference Routing、参考预算、风险降级、尾帧判定、执行账本和QA均在内部运行并写入生产记录，不单独展示。用户明确请求完整制作计划时才输出其完整字段。
@@ -9,10 +11,10 @@
 - Source Detailed Shot Design Artifact / Portable Checkpoint：
 - Source Detailed Shot Design Status：Confirmed
 - Source Detailed Shot Design Revision：
-- Target Video Model：Seedance 2.0 / Seedance 2.5
-- Model Execution Lock Status：LOCKED（未锁定不得进入Clip整合）
-- Model Compilation Template：Seedance 2.0 Stable Compiler / Seedance 2.5 Native Compiler；必须与Target Video Model一一匹配，仅作内部编译路由，不投影为STATE-08 Prompt字段
-- Execution Profile：目标模型、Model Compilation Template、Execution Mode、Long-duration Route、Effective Gateway Limits、锁定范围；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
+- Selected Model：Seedance 2.0 / Seedance 2.5
+- Adapter Profile：`adapters/seedance-2.0.md` / `adapters/seedance-2.5.md`；必须与Selected Model一一匹配，仅作内部执行路由，不投影为STATE-08 Prompt字段
+- Model Selection Status：SELECTED（未选择不得进入Execution Clip整合）
+- Execution Profile：Selected Model、Adapter Profile、Execution Mode、Long-duration Route、Effective Gateway Limits、Model Selection Scope；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
 - Model Duration Window：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒；16—30秒须严格预检PASS，时长由用户在模型窗口内选择
 - Total Formal Shots：
 - Total Clips：

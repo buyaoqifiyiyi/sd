@@ -1,5 +1,7 @@
 # Seedance Adapter Knowledge
 
+> Legacy compatibility entry. Active model capability, duration, timeline and adaptation rules are exclusively `adapters/seedance-2.0.md` and `adapters/seedance-2.5.md`, reached through `modules/model-selection.md` after Natural Clip confirmation. This file must not be used as a competing rule owner.
+
 
 ## Purpose
 

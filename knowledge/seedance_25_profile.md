@@ -1,5 +1,7 @@
 # Seedance 2.5 Model Profile
 
+> Legacy compatibility entry. `adapters/seedance-2.5.md` is the active 2.5 capability owner and is read only after Natural Clip Planning. If this file differs, the adapter wins.
+
 ## Scope And Evidence Boundary
 
 本Profile只在Model Execution Lock选择`Seedance 2.5`后由STATE-07/08消费。依据用户提供的火山方舟官方《Doubao Seedance 2.5 提示词指南》（41页）与《Doubao Seedance 2.5 教程》，它记录可核验的模型能力上限：单次生成最长30秒、最多50个参考素材（其中最多30张图/10段视频/10段音频）、可多轮Video Extension、Clay Render/白模、受控时间戳级定点编辑、绿幕、镜头视角与参考驱动编辑，以及更强多镜头叙事。它不声明未证实的API字段、上传格式、网关参数或所有第三方入口均可用；但用户选择的4—30秒时长在规划阶段不因网关状态被预先压缩，平台拒绝仅作为实际生成后的反馈处理。
