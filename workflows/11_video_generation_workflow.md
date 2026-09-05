@@ -17,7 +17,7 @@
 
 转换为适合Seedance执行的视频生成信息。
 
-进入本Workflow前必须读取Confirmed Clip Production Plan中的LOCKED Target Video Model、Execution Mode与Effective Gateway Limits；不得在此处首次询问或改变模型。若无Lock，返回`workflows/10_clip_production_workflow.md` Step 0。STATE-08只按已锁定Profile编译，仍由`templates/10_video_prompt.md`独占最终字段；模型、模式和内部预算不得新增到最终Schema。
+进入本Workflow前必须读取Confirmed Clip Production Plan中的LOCKED Target Video Model、Model Compilation Template、Execution Mode与Effective Gateway Limits；不得在此处首次询问或改变模型。若无Lock或没有与锁定模型一一对应的内部Compiler，返回`workflows/10_clip_production_workflow.md` Step 0。STATE-08先经Model Template Router消费2.0 Stable Compiler或2.5 Native Compiler，再进入共享Projection；用户在模型窗口内选择的时长不得因未知网关状态被预先压缩。仍由`templates/10_video_prompt.md`独占最终字段，模型、Compiler、模式和内部预算不得新增到最终Schema。
 
 
 本Workflow只负责：
@@ -54,7 +54,7 @@ STATE-08 Clip-based Video Prompt / Video Generation。
 
 定义最终镜头编号。
 
-把时间码、逐镜时长或按秒动作区间写入最终Prompt；唯一例外是【时长】中的Confirmed Clip平台生成时长（4—15秒）。
+把时间码、逐镜时长或按秒动作区间写入最终Prompt；唯一例外是【时长】中的Confirmed Clip用户选择的平台生成时长（Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，16—30秒须严格预检PASS）。
 
 定义最终Prompt章节结构。
 
@@ -295,7 +295,7 @@ Shot Design中的字段：
 Sequence Plan用于检查覆盖完整性和跨生成单元继承。
 
 
-它不得直接成为最终Prompt栏目，不得用UNIT替代分镜编号，也不得把UNIT或逐镜时长带入最终Prompt；只允许采用Confirmed Clip Production Plan的4—15秒平台生成时长。
+它不得直接成为最终Prompt栏目，不得用UNIT替代分镜编号，也不得把UNIT或逐镜时长带入最终Prompt；只允许采用Confirmed Clip Production Plan中用户选择的单一平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）。
 
 
 ---
@@ -1465,7 +1465,7 @@ Video Execution：
 # Clip And Shot Quantity Check
 
 
-本步骤必须沿用Confirmed Clip Production Plan的4—15秒目标时长，并只把每个Clip的单一平台生成时长写入对应【时长】；不得写逐镜时长或时间码。
+本步骤必须沿用Confirmed Clip Production Plan中用户选择的模型适用目标时长，并只把每个Clip的单一平台生成时长写入对应【时长】；2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS；不得写逐镜时长或时间码。
 
 本步骤核对正式分镜数量与Clip覆盖关系，不在STATE-08重新分组。进入Template Mapping后执行：一个Confirmed Clip = 一个独立G生成段Prompt Package；每个Package包含Clip表指定的全部相邻分镜。无论剧本是一分钟还是更长，都不得绕过Clip表把整张分镜压缩成一条Prompt。
 
@@ -1537,7 +1537,7 @@ STATE-06已经确认的镜头设计。
 本步骤只进行内部检查。
 
 
-Confirmed Clip的4—15秒平台生成时长必须进入【时长】。总片时长、单分镜时长、时间码、逐秒动作区间、帧率或帧数不得进入Template Data或最终Prompt。
+Confirmed Clip中用户选择的模型适用平台生成时长必须进入【时长】（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）。总片时长、单分镜时长、时间码、逐秒动作区间、帧率或帧数不得进入Template Data或最终Prompt。
 
 如果：
 
@@ -2766,7 +2766,7 @@ Coverage遗漏返回Sequence Planning或Shot Design，不在STATE-08临时创造
 - 为Confirmed Clip按顺序使用CLIP-001、CLIP-002、CLIP-003……
 - 每个`# CLIP-X｜标题 Seedance视频提示词`区块只对应一个CLIP-xxx，并包含该Clip列出的1个或多个`分镜X`；单Shot独立执行，多Shot连续生成作为同一次连续长镜头的执行阶段且不在Clip内部硬切；多Shot有动机剪辑只按已确认的切点、视觉媒介、切前结束、切后稳定重建与锚点执行。模型容量不足时停止编译并返回STATE-07拆分Clip
 - Clip区块总数不得大于正式分镜总数，允许相等；单分镜Clip是合法输入，不得为了减少Clip区块数量强行合并
-- 每个区块在Markdown标题中写明正式CLIP-xxx与人类可读标题，在`时长：`写明4—15秒平台生成时长；不得输出独立“CLIP标题”字段或方头括号章节
+- 每个区块在Markdown标题中写明正式CLIP-xxx与人类可读标题，在`时长：`写明用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不得输出独立“CLIP标题”字段或方头括号章节
 - 该时长必须逐字取自Confirmed Clip Production Plan的目标时长，并与Clip Detail中的逐镜求和、合计和平台生成时长一致；禁止重新估算
 - 每个Clip区块重复完整全局锁定字段，并拥有自己的前置`首帧参考：`、`尾帧限制：`与末尾`反向提示词：`
 - 禁止跨Clip合并、遗漏、重排或重复分镜
@@ -2879,7 +2879,7 @@ Sequence、Coverage与UNIT信息只作为内部来源关系和执行检查。
 生成限制。
 
 
-在交给Template之前，必须按knowledge/prompt_compilation/state08_projection.md建立一次性内部Projection Ledger：
+在交给Template之前，必须先确认已锁定的Model Compilation Template完成模型语义转换，再按knowledge/prompt_compilation/state08_projection.md建立一次性内部Projection Ledger：
 
 - Applicable Source
 - Confirmed Fact / Design
@@ -2922,7 +2922,7 @@ Color Applicable时，Ledger必须确认“颜色来源 + 主辅强调色层级 
 不得准备或传递到Template的内容：
 
 - 时间码或起止时间戳
-- 总片时长、单分镜时长或Clip内部逐镜时长；保留Confirmed Clip的单一4—15秒平台生成时长
+- 总片时长、单分镜时长或Clip内部逐镜时长；保留Confirmed Clip的单一模型适用平台生成时长
 - 按秒动作区间
 - 帧率、帧数或帧区间
 
@@ -2981,7 +2981,7 @@ Template还必须执行Clip Duration / No-Timeline过滤：
 
 镜头标题只保留`分镜X`，不使用方头括号、不附加任何时间码或逐镜时长；Clip时长只在`时长：`写一次。
 
-写入前必须交叉核对Confirmed Clip Production Plan：标题中的CLIP-xxx与计划一对一、Shot列表一致、平台生成时长一致且位于4—15秒。
+写入前必须交叉核对Confirmed Clip Production Plan：标题中的CLIP-xxx与计划一对一、Shot列表一致、平台生成时长一致且位于已锁定模型窗口内；2.5的16—30秒还须有严格预检PASS。实际平台拒绝时才返回STATE-07最小调整。
 
 Template还必须执行Package完整性过滤：每个Clip按Template当前顺序完成全部无条件全局字段、Clip表列出的全部正式分镜、每镜全部字段与段末限制。`音色特征：`只按当前显式声音控制授权条件出现；不得出现旧章节、独立竞争标题字段、无授权条件字段或额外分镜字段。
 
@@ -3535,7 +3535,7 @@ templates/10_video_prompt.md
 
 同时检查最终Prompt：
 
-除【时长】单一4—15秒Clip平台生成时长外，不得出现时间码、时间戳、总片时长、单分镜时长、按秒动作区间、帧率、帧数或帧区间限制。
+除【时长】单一模型适用Clip平台生成时长外，不得出现时间码、时间戳、总片时长、单分镜时长、按秒动作区间、帧率、帧数或帧区间限制。
 
 交付前强制运行：
 
@@ -3545,7 +3545,7 @@ validate_sd_film.py state08 <video-prompt.md> --clip-plan <confirmed-clip-plan.m
 
 默认命令同时拒绝任何`音色特征：`、Voice Profile或Voice/Audio Reference序列化。只有用户当前请求明确授权把声音控制写进本次视频模型Prompt时，才追加`--allow-voice-control`；环境声、动作声、Foley、乐器声、角色有对白、既有Voice资产或历史授权均不得触发该开关。
 
-未提供Confirmed Clip Production Plan、任一G段时长与Clip表不一致、任一Clip超出4—15秒或任一“音效”缺少正向可听内容时，不得交付。
+未提供Confirmed Clip Production Plan、任一G段时长与Clip表不一致、任一Clip超出已锁定模型时长窗口、2.5的16—30秒缺严格预检PASS，或任一“音效”缺少正向可听内容时，不得交付。
 
 
 ---

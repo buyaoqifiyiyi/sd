@@ -120,11 +120,11 @@ Module Name：`Model Execution Lock` + `Seedance 2.5 Model Profile`。
 
 Module Type：STATE-06完成后的唯一内部Gate与STATE-07/08共用的模型知识Profile；不创建主STATE、项目事实或STATE-08最终字段。
 
-Owner与触发：`workflows/10_clip_production_workflow.md`拥有Lock的询问、写回、切换与返回路由；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译；`knowledge/seedance_25_profile.md`拥有已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。STATE-06完成且当前生成批次未锁定目标模型时，Lock必须在Clip候选整合前只询问一次`Seedance 2.0`或`Seedance 2.5`。已锁定时不得重复询问。
+Owner与触发：`workflows/10_clip_production_workflow.md`拥有Lock的询问、写回、切换与返回路由；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译和唯一Model Template Router；`knowledge/prompt_compilation/seedance_20_compilation.md`与`seedance_25_compilation.md`各自拥有对应模型的内部编译语义，后者连同`knowledge/seedance_25_profile.md`消费已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。STATE-06完成且当前生成批次未锁定目标模型时，Lock必须在Clip候选整合前只询问一次`Seedance 2.0`或`Seedance 2.5`。已锁定时不得重复询问。
 
-Writeback与变更：所选Target Model、Execution Profile、Execution Mode与Effective Gateway Limits写入Project State和Confirmed Clip Production Plan。用户在Clip Plan确认前切换模型时，只使受影响的STATE-07 / STATE-08执行产物失效并重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown与Detailed Shot Design保持已确认状态。最终STATE-08 Prompt不得新增模型、模式、预算或时间轴字段。
+Writeback与变更：所选Target Model、唯一匹配的Model Compilation Template、Execution Profile、Execution Mode、Long-duration Route与Effective Gateway Limits写入Project State和Confirmed Clip Production Plan。Seedance 2.5的16—30秒由用户目标时长自动触发内部严格预检，不是用户需额外选择的Execution Mode；用户可在模型窗口内选择时长，未知网关状态不得预先压缩为15秒，实际平台拒绝才作为STATE-07最小调整的触发。用户在Clip Plan确认前切换模型时，只使受影响的STATE-07 / STATE-08执行产物失效并重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown与Detailed Shot Design保持已确认状态。最终STATE-08 Prompt不得新增模型、Compiler、模式、预算或时间轴字段。
 
-Consumers与不变量：STATE-07按Lock选择对应Profile后完成Clip整合；STATE-08只消费已确认Plan并用既有Template编译。2.5能力上限不覆盖实际API/网关限制，Effective Limit取可确认网关限制与Profile上限中的较小值。`REF-TAIL` A/B/C、Canonical Authority、双确认、最小充分参考、Voice opt-in和视频Prompt永久无BGM不因Profile改变。Validator检查Lock/Plan/State一致性、模式合法性、2.0默认回归、2.5模式与条件性时间控制；回归场景由`references/regression_scenarios.md`拥有。
+Consumers与不变量：STATE-07按Lock选择对应Profile后完成Clip整合；STATE-08只消费已确认Plan并用既有Template编译。模型上限定义可选择时长窗口；外部平台观察信息不作为时长预检。`REF-TAIL` A/B/C、Canonical Authority、双确认、最小充分参考、Voice opt-in和视频Prompt永久无BGM不因Profile改变。Validator检查Lock/Plan/State一致性、模式合法性、2.0默认回归、2.5模式与条件性时间控制；回归场景由`references/regression_scenarios.md`拥有。
 
 如果必须修改已有Template：
 
@@ -160,7 +160,7 @@ templates/10_video_prompt.md
 - COV：覆盖需求
 - UNIT：生成单元
 - SHOT：正式镜头
-- CLIP：STATE-07基于Confirmed Detailed Shot Design生产、供视频模型一次生成的4—15秒执行单元
+- CLIP：STATE-07基于Confirmed Detailed Shot Design生产、供视频模型一次生成的模型适用执行单元：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，16—30秒须严格预检PASS且网关确认允许
 
 辅助模块不得占用其他模块的ID命名空间。
 
@@ -619,7 +619,7 @@ Module Type：STATE-07主流程Workflow / Knowledge。
 
 - 不修改正式SHOT编号与顺序
 - 每个正式分镜必须且仅能进入一个CLIP-xxx
-- 每个Clip确认时长必须为4—15秒；单Shot可短于4秒并进入兼容Clip，超过15秒的Shot返回STATE-06拆分
+- 每个Clip确认时长必须服从锁定模型和用户选择：2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS；单Shot可短于4秒并进入兼容Clip，超过30秒才返回STATE-06拆分
 - 只有相邻、时空/资产/边界/轴线/动作/运镜兼容且模型可稳定执行的分镜可以合并
 - 每个Clip拥有包含Shot清单、Entry、连续动作、摄影机/空间关系、道具连续性、内部逐镜状态链、稳定Exit、新尾帧限制与下一Clip Handoff；并把这些已有事实归并为`Character / Spatial / Prop / Camera / Environment / Performance / Continuity Risks / Next-Clip Carryover`八组`Clip End-State Record`，不新增STATE或STATE-08字段；实际生成、提取并确认后统一登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
 - Knowledge Projection Ledger只记录可执行语义，最终Prompt仍由`templates/10_video_prompt.md`拥有
@@ -682,7 +682,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 按Confirmed Clip Production Plan一对一创建`# CLIP-X｜标题 Seedance视频提示词`独立Package；每个Package包含该Clip的1个或多个`分镜X`，但整个Clip只生成一条连续Prompt，不按Shot拆分，并拥有完整结尾帧、尾帧用途判定与反向提示词
 - 多Clip项目默认每轮只交付当前一个Clip；“下一个 / 下一步 / 继续”只推进一个Checkpoint。只有用户在当前请求中明确要求全部、一次性、批量或连续输出多个Clip时，才允许同轮输出多个独立Package
 - 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先用Neutral Mannequin Representation Rule生成Technical Director Blocking Sheet、执行Template Content Leakage Check、Character Appearance Leakage Check与完整Sketch Validation、注册当前`REF-SKETCH-XX`、加入参考资产并停止，下一Checkpoint才输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
-- 每个Clip必须为4—15秒；Clip内分镜保持原顺序、逐镜字段和显式状态链
+- 每个Clip必须服从锁定模型的用户选择时长；2.5的16—30秒须严格预检PASS；Clip内分镜保持原顺序、逐镜字段和显式状态链
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
 - 先执行Voice Identity Omission Gate：默认不检查或投影Voice Profile / Voice Audio Reference，不输出`音色特征：`或声音资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按`Source Carries State, Prompt Carries Delta`输出当前Clip最小必要控制

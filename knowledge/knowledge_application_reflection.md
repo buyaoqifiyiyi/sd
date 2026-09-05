@@ -78,7 +78,7 @@ Director Decision Notes、剧本或用户输入中的文学化、情绪化与导
 - 对主叙事/情绪目标有可说明的增益，而不只是增加“电影感”词汇。
 - 与Director Decision Notes、Confirmed Assets、Visual Direction、Shot Purpose、Camera Language Decision、Clip Movement Plan及边界合同一致。
 - 与其他已选策略分工清楚，不重复表达同一效果，也不会彼此产生相反指令。
-- 能在当前Clip的4—15秒平台时长、动作密度、口型、FX和摄影机复杂度内稳定执行。
+- 能在当前Clip的模型适用平台时长、动作密度、口型、FX和摄影机复杂度内稳定执行；2.0为4—15秒，2.5的16—30秒另须严格预检PASS，实际秒数由用户选择。
 - 能被写成具体、可观察的Prompt语句，并映射到现有Template字段。
 
 任一条件失败即Reject。优先级为：剧情/资产/连续性正确 > 叙事与情绪增益 > Seedance稳定性 > 风格丰富度。不得为了凑足1—3项而降低门槛；克制策略也必须说明它如何保护表演可读性、连续性或模型稳定性，不能成为空洞占位。

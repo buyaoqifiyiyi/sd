@@ -884,7 +884,7 @@ Seedance适配必须把每个镜头理解为：
 
 下一镜衔接
 
-按Confirmed Clip Production Plan序列化：`一个Clip = 一个G Prompt Package = 一条连续Prompt`。一个Clip可包含一个或多个按原顺序排列、可在合计4—15秒内稳定执行的正式Shot；多Shot只作为同一条Prompt中的连续导演镜头阶段，不按Shot拆Prompt。Clip内保留起始、连续变化、空间/道具/摄影机关系、结尾和衔接，跨Clip关系通过上一G段尾帧资产与边界字段传递。禁止为了减少Clip数量强行合并。
+按Confirmed Clip Production Plan序列化：`一个Clip = 一个G Prompt Package = 一条连续Prompt`。一个Clip可包含一个或多个按原顺序排列、可在已锁定模型窗口内稳定执行的正式Shot：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，16—30秒只在严格预检PASS且实际网关确认允许时成立。多Shot只作为同一条Prompt中的连续导演镜头阶段，不按Shot拆Prompt。Clip内保留起始、连续变化、空间/道具/摄影机关系、结尾和衔接，跨Clip关系通过上一G段尾帧资产与边界字段传递。禁止为了减少Clip数量强行合并。
 
 ## Delivery Mode Gate
 
@@ -1005,7 +1005,7 @@ Seedance视频最重要的能力之一：
 是理解时间变化。
 
 
-这里的时间分析主要用于内部动作顺序与密度判断。最终Prompt只在【时长】保留Confirmed Clip的4—15秒平台生成时长，不输出时间码、总片时长、单分镜时长或按秒分段。
+这里的时间分析主要用于内部动作顺序与密度判断。最终Prompt只在【时长】保留Confirmed Clip的模型适用平台生成时长：2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS；实际秒数由用户在该模型窗口内选择，不输出时间码、总片时长、单分镜时长或按秒分段。
 
 该平台生成时长必须直接复制Confirmed Clip Production Plan，并在交付前与Clip表交叉核对；Clip Production Plan内部必须先完成来源Shot逐项求和、合计、目标时长与平台生成时长四项一致性核算。任一不一致都返回STATE-07 Clip Production，不进入生成。
 
@@ -1577,7 +1577,11 @@ Seedance Adapter负责：
 
 ## Model Profile Routing
 
-本Adapter是所有Seedance目标的共通层，不替代Model Execution Lock。STATE-07只在`Target Video Model`已锁定后选择Profile：`Seedance 2.0`继续执行现有稳定4—15秒短Clip与≤9图片预算；`Seedance 2.5`额外读取`knowledge/seedance_25_profile.md`。Profile能力上限不等于已接入网关限制：所有执行时长、图片/视频/音频输入数和输入格式先受实际API/网关可确认限制约束。
+本Adapter是所有Seedance目标的共通层，不替代Model Execution Lock。STATE-07只在`Target Video Model`已锁定后选择Profile：`Seedance 2.0`继续执行现有稳定4—15秒短Clip与≤9图片预算；`Seedance 2.5`额外读取`knowledge/seedance_25_profile.md`，允许用户选择4—30秒Clip，而16—30秒由目标时长自动触发严格预检，不要求用户选择Long-form。平台/API可用性不得在规划阶段压缩用户选择的时长；实际提交失败才进入最小Return Route。图片/视频/音频输入数和输入格式仍只使用实际可确认的入口能力。
+
+### Model Template Router
+
+Lock后、STATE-08共享Projection前，必须恰好选择一个内部`Model Compilation Template`并写入Project State和Confirmed Clip Production Plan：`Seedance 2.0 → knowledge/prompt_compilation/seedance_20_compilation.md（Seedance 2.0 Stable Compiler）`；`Seedance 2.5 → knowledge/seedance_25_profile.md + knowledge/prompt_compilation/seedance_25_compilation.md（Seedance 2.5 Native Compiler）`。这是模型语义与网关适配路由，不是用户额外选择项，也不是第二套最终Prompt Schema。缺Lock、Profile或对应Compiler时停止并返回STATE-07；不得默认2.5路径，已锁定时不得再次询问模型。
 
 Profile只能改变STATE-07/08的执行路由与编译策略，不能改变Production-Locked Script、Canonical Character / Environment / Prop Authority、资产双确认、REF-TAIL A/B/C、End-State合同、Voice opt-in、视频Prompt无BGM和`templates/10_video_prompt.md`固定Schema。
 
@@ -1615,7 +1619,7 @@ Profile只能改变STATE-07/08的执行路由与编译策略，不能改变Produ
 改变镜头叙事目的。
 
 
-适配完成后必须调用：
+选定内部Compiler并完成适配后必须调用：
 
 knowledge/prompt_compilation/state08_projection.md
 
@@ -1762,7 +1766,7 @@ Knowledge不得：
 
 Confirmed Clip与独立G生成段一对一；Clip内可含1个或多个正式分镜。单镜独立执行，多镜按原顺序作为同一次长镜头连续执行。
 
-每段时长为4—15秒，拥有可复用尾帧、独立反向提示词、完整逐镜字段和明确的前后段关系。
+每段时长服从已锁定模型和用户选择（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS），拥有可复用尾帧、独立反向提示词、完整逐镜字段和明确的前后段关系。
 
 角色一致。
 

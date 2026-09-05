@@ -276,6 +276,8 @@ MODULE_FILES = (
     "knowledge/camera_language/movement_combinations/image_source_coverage.md",
     "knowledge/prompt_compilation/index.md",
     "knowledge/prompt_compilation/state08_projection.md",
+    "knowledge/prompt_compilation/seedance_20_compilation.md",
+    "knowledge/prompt_compilation/seedance_25_compilation.md",
     "knowledge/lighting/index.md",
     "knowledge/lighting/foundations.md",
     "knowledge/lighting/source_patterns.md",
@@ -319,6 +321,17 @@ MODULE_FILES = (
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
+
+
+def locked_duration_window(plan_text: str) -> tuple[str, float]:
+    """Return the user-selectable model duration ceiling for a Clip Plan.
+
+    Platform/gateway rejection is an execution result, not a planning-time duration
+    cap. Seedance 2.0 stays 4–15 seconds; Seedance 2.5 accepts the user's 4–30
+    second choice, with the existing 16–30 creative preflight still required.
+    """
+    target_model = extract_label(plan_text, "Target Video Model") or "Seedance 2.0"
+    return target_model, 30.0 if target_model == "Seedance 2.5" else 15.0
 
 
 def registered_master_integrity(root: Path) -> tuple[bool, str]:
@@ -976,12 +989,16 @@ def validate_state08(
         errors.append("Default STATE-08 delivery is one complete Clip per checkpoint; multiple Clips require explicit batch authorization")
 
     plan_specs: dict[int, tuple[float, list[int]]] = {}
+    target_model = "Seedance 2.0"
+    duration_ceiling = 15.0
+    plan_text = ""
     if clip_plan_path is not None:
         resolved_plan = clip_plan_path.resolve()
         if not resolved_plan.is_file():
             errors.append(f"Confirmed Clip Production Plan not found: {resolved_plan}")
         else:
             plan_text = read_text(resolved_plan)
+            target_model, duration_ceiling = locked_duration_window(plan_text)
             row_pattern = re.compile(
                 r"^\|\s*CLIP-(\d{3})\s*\|\s*([^|]+)\|\s*(\d+(?:\.\d+)?)\s*秒\s*\|",
                 re.MULTILINE | re.IGNORECASE,
@@ -1073,8 +1090,21 @@ def validate_state08(
             duration_value = None
         else:
             duration_value = duration_values[0]
-            if duration_value < 4 or duration_value > 15:
-                errors.append(f"CLIP-{clip_number:03d} platform duration must be 4-15 seconds")
+            if duration_value < 4 or duration_value > duration_ceiling:
+                errors.append(
+                    f"CLIP-{clip_number:03d} platform duration must be 4-{duration_ceiling:g} seconds "
+                    f"for the locked {target_model} model"
+                )
+            if duration_value > 15 and clip_plan_path is not None:
+                detail_match = re.search(
+                    rf"^###\s+CLIP-{clip_number:03d}\s*$([\s\S]*?)(?=^###\s+CLIP-\d{{3}}\s*$|\Z)",
+                    plan_text,
+                    re.MULTILINE,
+                )
+                if not detail_match or not re.search(
+                    r"^-\s*Long-duration Preflight[：:]\s*PASS\b", detail_match.group(1), re.MULTILINE
+                ):
+                    errors.append(f"CLIP-{clip_number:03d} 16-30 second prompt requires Long-duration Preflight: PASS")
 
         reference_text = global_values.get("参考资产：", "")
         first_frame_text = global_values.get("首帧参考：", "")
@@ -1248,6 +1278,17 @@ def validate_clip(
     if not path.is_file():
         return report([f"Clip Plan not found: {path}"], warnings, as_json)
     text = read_text(path)
+    target_model, duration_ceiling = locked_duration_window(text)
+    compiler = extract_label(text, "Model Compilation Template") or ""
+    expected_compiler = {
+        "Seedance 2.0": "Seedance 2.0 Stable Compiler",
+        "Seedance 2.5": "Seedance 2.5 Native Compiler",
+    }.get(target_model)
+    if expected_compiler is None or compiler != expected_compiler:
+        errors.append(
+            "Clip Plan Model Compilation Template must match its locked Target Video Model "
+            "(2.0 Stable Compiler; 2.5 Native Compiler)"
+        )
     cursor = -1
     for section in CLIP_SECTIONS:
         position = text.find(section)
@@ -1272,8 +1313,11 @@ def validate_clip(
         re.MULTILINE | re.IGNORECASE,
     ):
         errors.append("Clip Plan source Detailed Shot Design Status must be Confirmed")
-    if not re.search(r"^- Model Duration Window[：:]\s*4\s*[—–-]\s*15\s*秒\s*$", text, re.MULTILINE):
-        errors.append("Clip Plan must declare Model Duration Window：4—15秒")
+    duration_window = extract_label(text, "Model Duration Window") or ""
+    has_short_window = bool(re.search(r"4\s*[—–-]\s*15\s*秒", duration_window))
+    has_25_window = bool(re.search(r"4\s*[—–-]\s*30\s*秒", duration_window))
+    if not has_short_window or (target_model == "Seedance 2.5" and not has_25_window):
+        errors.append("Clip Plan must declare its locked model duration window (2.0 4—15秒; 2.5 4—30秒)")
     if not re.search(r"^- Unit Rule[：:].*Shot\s*=.*Clip\s*=.*Total Clips\s*(?:≤|<=)\s*Total Formal Shots.*每个Clip只生成一条连续Prompt", text, re.MULTILINE):
         errors.append("Clip Plan must allow one-or-more source shots and declare Total Clips <= Total Formal Shots")
     if not re.search(
@@ -1298,8 +1342,10 @@ def validate_clip(
         source_text = match.group(3)
         duration = float(match.group(4))
         table_durations[clip_id] = duration
-        if duration < 4 or duration > 15:
-            errors.append(f"{clip_id} duration must be 4-15 seconds: found {duration:g}")
+        if duration < 4 or duration > duration_ceiling:
+            errors.append(
+                f"{clip_id} duration must be 4-{duration_ceiling:g} seconds for locked {target_model}: found {duration:g}"
+            )
         source_shots = [int(value) for value in re.findall(r"SHOT-(\d{3})", source_text, re.IGNORECASE)]
         table_shots[clip_id] = source_shots
         if not source_shots:
@@ -1407,6 +1453,11 @@ def validate_clip(
             errors.append(f"{clip_id} detail 目标时长 must use N秒")
         elif clip_id in table_durations and float(duration_match.group(1)) != table_durations[clip_id]:
             errors.append(f"{clip_id} detail duration does not match Clip Table")
+        if table_durations.get(clip_id, 0) > 15:
+            if target_model != "Seedance 2.5":
+                errors.append(f"{clip_id} 16-30 second duration is only available to Seedance 2.5")
+            if not re.search(r"^-\s*Long-duration Preflight[：:]\s*PASS\b", segment, re.MULTILINE):
+                errors.append(f"{clip_id} 16-30 second duration requires Long-duration Preflight: PASS")
         source_match = re.search(r"^-\s*包含 Shot[：:]\s*(.*)$", segment, re.MULTILINE)
         detail_source_shots = [int(value) for value in re.findall(r"SHOT-(\d{3})", source_match.group(1), re.IGNORECASE)] if source_match else []
         if clip_id in table_shots and detail_source_shots != table_shots[clip_id]:
@@ -2277,8 +2328,10 @@ def validate_skill(root: Path, as_json: bool = False) -> int:
         "knowledge/visual_styles/director_metadata_contract.md": ("高层创作锚点", "首次出现", "项目中的具体含义", "不得在完成具象化后默认强制删除"),
         "knowledge/visual_styles/index.md": ("Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "首次出现", "后续连续Clip"),
         "knowledge/prompt_compilation/state08_projection.md": ("Fixed-Template Projection Gate", "Writer Intent Preservation Gate", "Global Projection Matrix", "Per-Shot Projection Matrix", "Internal Projection Ledger", "Semantic And Structure Loss Check", "Performance / Emotion Check", "Inherited Baseline", "Post-action Residue", "Intentional Hold", "CMG编号", "CLR编号", "FLN编号", "四项硬门槛", "Tail Frame Required = YES / NO", "待用户提供/待上传", "禁止生成背景音乐", "完整Clip", "Voice Identity", "Source Carries State, Prompt Carries Delta", "Confirmed Visual Blocking Anchor", "Blocking Signature", "Prompt Attention / Control Allocation Gate", "Field Ownership Assignment / State Once Gate", "Source / Asset State Resolution → Field Ownership Assignment", "Field Ownership QA", "Five-Dimensional Prompt Control Matrix", "Style Label Expansion Rule", "Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression", "Executable Style Carrier Rule", "Style State And Delta Compression", "默认选择3—5个", "Positive Specification And Negative Prompt Placement", "Negative Placement Pass", "Negative Compression Pass", "历史事故", "每个Clip只允许一个`反向提示词：`", "Writer Intent → Director Intent → Visual Translation → Physical Anchoring → Prompt Compression → Final Clip Prompt", "Blender / Unreal式严格物理仿真"),
-        "knowledge/11_seedance_adapter.md": ("state08_projection.md", "Model Profile Routing", "seedance_25_profile.md", "主体画面位置", "构图主原子与支持层", "knowledge/color/index.md", "不得输出CLR编号", "focal_length_and_perspective.md", "焦段不自动提高画面质感", "knowledge/lighting/index.md", "LGT模式ID", "knowledge/performance/index.md", "Attention Shift", "PEX/AU编号", "knowledge/camera_language/movement_combinations/", "knowledge/transitions/", "背景音乐", "Delivery Mode Gate", "Four-Part Boundary Gate", "Physical Data Value Rule", "0.137m/s", "Blender / Unreal式物理仿真"),
-        "knowledge/seedance_25_profile.md": ("Seedance 2.5", "30秒", "30张图", "10段视频", "10段音频", "Standard Clip", "Long-form Clip", "Video Extension", "Targeted Edit", "REF-VIDEO", "Clay Render", "Canonical Authority", "最小充分", "背景音乐"),
+        "knowledge/11_seedance_adapter.md": ("state08_projection.md", "Model Profile Routing", "Model Template Router", "seedance_20_compilation.md", "seedance_25_compilation.md", "seedance_25_profile.md", "主体画面位置", "构图主原子与支持层", "knowledge/color/index.md", "不得输出CLR编号", "focal_length_and_perspective.md", "焦段不自动提高画面质感", "knowledge/lighting/index.md", "LGT模式ID", "knowledge/performance/index.md", "Attention Shift", "PEX/AU编号", "knowledge/camera_language/movement_combinations/", "knowledge/transitions/", "背景音乐", "Delivery Mode Gate", "Four-Part Boundary Gate", "Physical Data Value Rule", "0.137m/s", "Blender / Unreal式物理仿真"),
+        "knowledge/seedance_25_profile.md": ("Seedance 2.5", "30秒", "30张图", "10段视频", "10段音频", "Standard Clip", "Long-form Clip", "Video Extension", "Targeted Edit", "REF-VIDEO", "Clay Render", "Canonical Authority", "最小充分", "背景音乐", "seedance_25_compilation.md"),
+        "knowledge/prompt_compilation/seedance_20_compilation.md": ("Seedance 2.0 Stable Compiler", "4—15秒", "A/B/C", "REF-TAIL", "不要求2.5"),
+        "knowledge/prompt_compilation/seedance_25_compilation.md": ("Seedance 2.5 Native Compiler", "Internal Resource Mapping", "Video Extension", "Targeted Edit", "REF-VIDEO", "Clay Render", "不得输出", "API字段"),
         "templates/10_video_prompt.md": ("唯一允许的最终模板", "# CLIP-X｜标题 Seedance视频提示词", "无条件字段", "条件字段", "参考资产：", "首帧参考：", "尾帧限制：", "音色特征：", "Source Carries State, Prompt Carries Delta", "字段职责与 Single Ownership", "Field Ownership Assignment / State Once Gate", "Clip End-State Record / Next-Clip Carryover", "Confirmed Visual Blocking Anchor", "REF-SKETCH-MASTER", "REF-SKETCH-XX", "Character Appearance Leakage Check", "草图人物为无性别调度人偶", "参考资产按需路由，不是越多越好", "Tail Frame Required = YES / NO", "待用户提供/待上传", "Visual Input Eligibility", "这是不是一张实际会被投喂/引用的视觉资产", "板凳参考说明", "每个分镜必须完整重复十个固定字段", "Performance / Emotion", "Pre-action / In-action / Post-action", "Intentional Hold", "Primary Performer", "全员同强度", "任何已有旧模板", "输出前字段完整性检查", "不得另增“与下一镜衔接”字段", "条件声音身份控制", "必须进入各分镜`音效：`", "禁止生成背景音乐", "Prompt Attention / Compression", "Project-specific Style Meaning", "首次出现", "具象化后不默认删除标签", "后续连续Clip", "3—5个（或更少）", "Semantic Trigger Pollution", "Active Character Canonical References", "生成模型不被表述为严格物理仿真器", "必须且只能出现一次", "最后一个字段、最后一个段落", "历史事故项", "不得散布通用负向清单"),
         "knowledge/clip_preflight_check.md": ("Five Global High-Priority Rules", "Before-Single-Clip-Prompt Gate", "Performance / Emotion Check", "Inherited Baseline", "Action-phase Evidence", "Intentional Hold", "Relative Performance Hierarchy", "Dual Trigger, Single Execution", "Risk Assessment Dimensions", "S-SKETCH / Spatial Sketch", "P-SKETCH / Pose Sketch", "A-SKETCH / Action Sketch", "TECHNICAL_VISUAL_BLOCKING_SKETCH", "templates/23_visual_blocking_sketch_prompt.md", "Sketch Validation Gate And Reference Authority", "Artistic Storyboard Drift", "Character Appearance Leakage Check", "FAIL = Character Appearance Leakage / Identity Contamination", "Sketch Persistence / Blocking Canon", "Visual Anchor State / Blocking Signature", "REF-SKETCH-MASTER", "Sketch Presentation Authority", "Master Template carries sketch language; Current Clip data carries blocking content.", "Technical Director Blocking Sheet", "Template Content Leakage Check", "Text Contract Fallback", "KEEP existing sketch", "REPLACE with REF-SKETCH-XX-v2", "RETIRE sketch", "CREATE new sketch", "Visual Input Eligibility Test", "Reference Selection / Routing", "Clip End-State Record / Next-Clip Carryover", "参考资产按需路由，不是越多越好", "NOT ELIGIBLE", "板凳参考说明", "十三个Acceptance Scenarios"),
         "templates/23_visual_blocking_sketch_prompt.md": ("TECHNICAL_VISUAL_BLOCKING_SKETCH", "referenced_image_paths", "Technical Director Blocking Sheet", "Neutral Mannequin Representation Rule", "Candidate Evidence Record", "main_blocking_panel", "character_role_labels", "direction_gaze_movement_annotation", "spatial_top_down_diagram", "camera_information", "blocking_movement_notes_or_permission", "usage_authority_note", "neutral_mannequin_representation", "character_appearance_leakage", "Artistic Storyboard Drift", "Character Appearance Leakage / Identity Contamination"),

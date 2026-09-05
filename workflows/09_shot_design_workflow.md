@@ -489,7 +489,7 @@ Camera Language Decision至少包含：
 这不是硬性最短/最长限制。
 
 
-短插镜、闪切、蒙太奇或动作细节可以短于4秒，并在 STATE-07 与相邻兼容 Shot 组织为4—15秒 Clip。单个 Shot 超过15秒时，必须按自然动作阶段、Coverage、机位/视点或时空边界拆分，不能把不可执行的超长 Shot 留给 Clip Production。
+短插镜、闪切、蒙太奇或动作细节可以短于4秒，并在 STATE-07 与相邻兼容 Shot 组织为已锁定模型允许的Clip。STATE-06不选择目标模型：单个Shot为16—30秒时可保留给STATE-07的Seedance 2.5自动长时长预检；若锁定2.0或预检FAIL，则STATE-07按自然动作阶段、Coverage、机位/视点或时空边界拆分为4—15秒Clip。超过30秒的单个Shot必须在STATE-06拆分，不能留给Clip Production强行执行。
 
 
 时长必须容纳必要动作、情绪停顿以及结尾稳定窗口，不得为满足参考范围改变剧情或动作结果。

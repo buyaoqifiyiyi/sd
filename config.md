@@ -12,7 +12,7 @@
 - Chat State Target: complete Portable State in the response
 - Portable Baseline: `portable_project_status.md`
 - Default STATE-08 Delivery: one pending Clip per response
-- STATE-08 Clip Duration: 4—15 seconds, inherited from Confirmed Clip Production Plan
+- STATE-08 Clip Duration: inherited from the locked Target Video Model and Confirmed Clip Production Plan; duration rules are owned by the Model Execution Lock contract
 - STATE-08 Image Reference Limit: 9 per Clip after Preflight and World-State filtering
 - Storyboard Activation: explicit only
 - AUDIO / SEED-AUDIO Voice Asset Activation: explicit only

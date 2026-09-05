@@ -55,8 +55,10 @@ Updated At
 ```text
 - Target Video Model: Seedance 2.0 / Seedance 2.5 / UNLOCKED
 - Model Execution Lock Status: UNLOCKED / LOCKED
-- Execution Mode: Standard Clip / Long-form Clip / Video Extension / Targeted Edit / Not Applicable
-- Effective Gateway Limits: <confirmed gateway limits or UNKNOWN; never infer unsupported API fields>
+- Model Compilation Template: Seedance 2.0 Stable Compiler / Seedance 2.5 Native Compiler / UNLOCKED
+- Execution Mode: Standard Clip / Video Extension / Targeted Edit / Not Applicable
+- Long-duration Route: Not Applicable / AUTO-REQUIRED / PASS / FAIL（仅Seedance 2.5目标时长16—30秒；不是用户选择项）
+- Effective Gateway Limits: <observed external limits or UNKNOWN; may inform submitted inputs but never pre-cap the user-selected generation duration>
 - Model Lock Scope: <affected CLIP IDs / current generation batch>
 ```
 

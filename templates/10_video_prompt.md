@@ -103,7 +103,7 @@
 
 ### 时长：
 
-只写 Confirmed Clip Production Plan 中当前 Clip 的平台生成时长：默认/Standard Clip为4—15秒，已锁定Seedance 2.5且严格预检PASS的Long-form为16—30秒。不得写总片时长、逐镜时间码、按秒动作区间、帧率、帧数或帧区间。唯一例外是已锁定Seedance 2.5的`Targeted Edit`，可在既有分镜正文的合适字段写受控时间段语义；不得新增时间轴、目标模型或执行模式字段。
+只写 Confirmed Clip Production Plan 中当前 Clip 由用户选择的平台生成时长：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，其中16—30秒须由内部严格预检PASS。未知网关状态不得在Prompt编译前压缩该时长；实际平台拒绝时才返回Clip规划。不得写总片时长、逐镜时间码、按秒动作区间、帧率、帧数或帧区间。唯一例外是已锁定Seedance 2.5的`Targeted Edit`，可在既有分镜正文的合适字段写受控时间段语义；不得新增时间轴、目标模型或执行模式字段，也不得新增Execution Mode、Long-form或内部预检字段。
 
 ### 画幅：
 

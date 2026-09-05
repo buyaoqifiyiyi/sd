@@ -56,7 +56,7 @@ FAIL：把单独“继续 / 下一步 / 好的”当作优化授权或Proposal�
 
 ## R05A Detailed Shot Design To Clip Production
 
-输入包含连续对话、动作接力、场景断点与不同逐镜时长的Confirmed Detailed Shot Design。检查所有正式Shot按原顺序且仅进入一个CLIP-xxx；每个Clip为4—15秒；连续低复杂度Shot可合并，跨时空/资产断点和超过15秒候选被拆分或返回STATE-06；Clip内保留起始状态、连续动作、空间/道具/摄影机连续性与结尾状态。跨Clip固定执行`上一Clip生成完成 → 判断是否需要严格承接 → 若需要则请求用户截取尾帧 → 上传并命名REF-TAIL → 加入当前Clip参考资产 → 首帧明确引用 → 当前Clip生成 → 当前Clip尾帧限制 → 下一Clip承接`；STATE-08按CLIP→G一对一输出一条连续Prompt，即使Clip包含多个Shot也不拆Prompt；任何Storyboard视觉材料均不得进入参考资产。
+输入包含连续对话、动作接力、场景断点与不同逐镜时长的Confirmed Detailed Shot Design。检查所有正式Shot按原顺序且仅进入一个CLIP-xxx；Seedance 2.0每个Clip由用户选择4—15秒，Seedance 2.5由用户选择4—30秒，16—30秒只在严格预检PASS时成立；未知网关状态不得将2.5预先压缩为15秒。连续低复杂度Shot可合并，跨时空/资产断点和不满足模型窗口的候选被拆分或返回正确上游边界；Clip内保留起始状态、连续动作、空间/道具/摄影机连续性与结尾状态。跨Clip固定执行`上一Clip生成完成 → 判断是否需要严格承接 → 若需要则请求用户截取尾帧 → 上传并命名REF-TAIL → 加入当前Clip参考资产 → 首帧明确引用 → 当前Clip生成 → 当前Clip尾帧限制 → 下一Clip承接`；STATE-08按CLIP→G一对一输出一条连续Prompt，即使Clip包含多个Shot也不拆Prompt；任何Storyboard视觉材料均不得进入参考资产。
 
 ## R05B Source Script Label Namespace
 
@@ -1084,15 +1084,15 @@ PASS：仅一次Lock后使用4—15秒Standard Clip、≤9图片预算、既有A
 
 ### R28-2 Seedance 2.5 Standard Clip
 
-输入：Lock=`Seedance 2.5`，未明确选择Long-form。
+输入：Lock=`Seedance 2.5`，目标时长10秒，未作任何Long-form选择。
 
 PASS：默认仍使用4—15秒Standard Clip、最小充分参考与既有连续性风险降级；30秒不是默认时长。
 
 ### R28-3 Seedance 2.5 Long-form Clip
 
-输入：Lock=`Seedance 2.5`，用户明确请求16—30秒Long-form，镜头链、空间关系、表演和动作密度均通过严格预检。
+输入：Lock=`Seedance 2.5`，用户选择目标时长20秒；镜头链、空间关系、表演和动作密度均通过严格预检，网关状态未知。
 
-PASS：计划可使用16—30秒；任一严格预检失败即只重跑STATE-07拆分为短Clip，不回退已确认Detailed Shot Design。
+PASS：无需用户额外选择Long-form，计划自动使用16—30秒内部路由；仅严格预检失败时才重跑STATE-07拆分为短Clip，不回退已确认Detailed Shot Design。未知网关状态不触发15秒限制；实际平台拒绝才触发最小调整。
 
 ### R28-4 Seedance 2.5 Video Extension
 
@@ -1135,6 +1135,32 @@ PASS：STATE-07/08直接消费该Profile，不重复询问。
 输入：Clip Plan确认前用户从2.0切换到2.5或反向切换。
 
 PASS：只使受影响STATE-07/08执行产物重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown和Detailed Shot Design保持Accepted。
+
+## R29 Model Compilation Template Router Regression
+
+### R29-1 Seedance 2.0 Stable Compiler
+
+输入：Lock=`Seedance 2.0`，已确认一个10秒Clip。
+
+PASS：内部Profile选择且只选择`Seedance 2.0 Stable Compiler`，沿用短Clip、≤9图片和既有连续性合同；不要求2.5参考映射或任务语义，最终Template无模型/Compiler字段。
+
+### R29-2 Seedance 2.5 Native Compiler
+
+输入：Lock=`Seedance 2.5`，Clip使用已确认的参考素材。
+
+PASS：内部Profile选择且只选择`Seedance 2.5 Native Compiler`并读取2.5 Profile；素材映射只在内部记录来源、用途与Authority，最终Template字段、顺序和排版保持不变。
+
+### R29-3 Native Reference And Frame Semantics Do Not Leak
+
+输入：2.5 Clip使用合法首/尾帧、Clay Render空间草图和实际`REF-VIDEO`延展输入。
+
+PASS：内部语义分别保留首尾帧、草图Authority和延展输入，仍不取代Canonical / REF-TAIL / End-State；最终Prompt不出现上传顺序、内部角色、API字段、Target Model、Execution Mode或Compiler字段。
+
+### R29-4 Targeted Edit Is Conditional
+
+输入：2.5用户明确编辑既有视频，随后另给一个Standard Clip。
+
+PASS：前者只在既有分镜正文表达受控编辑范围与保持项，后者不含时间码或逐秒区间；两者共用固定最终Schema。
 
 ## Deterministic Expectations
 

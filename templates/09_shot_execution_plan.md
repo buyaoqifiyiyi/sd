@@ -2,7 +2,7 @@
 
 - Active Route：false
 - New Project Use：Forbidden
-- Duration Notice：本文件中的4—15秒正式Shot窗口仅为旧项目兼容；新项目服从STATE-06可短于4秒、STATE-07 Clip必须4—15秒的现行规则。
+- Duration Notice：本文件中的4—15秒正式Shot窗口仅为旧项目兼容；新项目服从STATE-06可短于4秒，并在STATE-07按Model Execution Lock的模型窗口组织Clip：2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS，实际秒数由用户选择。
 
 本模板不再绑定STATE-07，也不参与新项目主流程。仅用于读取或迁移旧项目；新项目使用`templates/08_shot_design_prompt.md`直接进入`templates/20_clip_plan.md`。
 

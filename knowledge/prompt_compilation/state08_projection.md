@@ -4,12 +4,14 @@
 
 - Module Type：STATE-08 Knowledge Adapter。
 - Trigger：所有 Video Prompt / Seedance Prompt 撰写任务。
-- Inputs：已确认项目事实、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、适用Knowledge、`knowledge/clip_planning/continuity_and_projection.md`与`knowledge/11_seedance_adapter.md`；只有用户明确要求把声音控制写进当前视频模型Prompt时，才读取适用的Confirmed Voice Profile或Voice/Audio Reference作为条件输入。
+- Inputs：已确认项目事实、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、由`knowledge/11_seedance_adapter.md`的Model Template Router选定的唯一内部Compiler、适用Knowledge与`knowledge/clip_planning/continuity_and_projection.md`；只有用户明确要求把声音控制写进当前视频模型Prompt时，才读取适用的Confirmed Voice Profile或Voice/Audio Reference作为条件输入。
 - Output Owner：`templates/10_video_prompt.md`；本文件不拥有、增加、删除或改名最终字段。
 - Consumer：`workflows/11_video_generation_workflow.md`。
 - Forbidden：新增剧情、重选资产、改变镜头目的、创建新主STATE、创建另一套最终Schema。
 
 ## Fixed-Template Projection Gate
+
+先验证Clip Plan中`Target Video Model`、`Model Compilation Template`与已读Compiler完全匹配：2.0只接受`Seedance 2.0 Stable Compiler`，2.5只接受`Seedance 2.5 Native Compiler`。不匹配、缺失或未锁定时返回STATE-07；不可在本Gate重新选择模型。内部Compiler输出只作为语义输入，模型名、任务类型、参考角色、上传顺序、API字段和预检记录不得进入最终字段。
 
 投影粒度固定为Clip。每个Confirmed Clip分别投影为一个完整的`# CLIP-X｜标题 Seedance视频提示词`区块，完整重复Template规定的全局字段；每个`分镜X`完整重复Template规定的十个分镜字段。
 
@@ -261,13 +263,13 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 - Dialogue Performance仍投影到`人物动作与情绪 / 台词 / 音效`中的适用位置，只说明当前一句/当前场景怎么说，不得重定义稳定Voice Identity。
 - 雨声、风声、纸张、脚步、道具、钢琴或其他环境声/动作声属于Sound Design，只进入逐镜`音效`及其声音尾部；它们不得被路由成`音色特征：`，也不得作为启用该条件字段的证据。
 
-`时长：`只复制Confirmed Clip Production Plan的目标时长，不得重新估算；默认/Standard Clip为4—15秒，Long-form只在已锁定Seedance 2.5 Profile且计划严格预检PASS时为16—30秒。除`Target Model = Seedance 2.5`且`Execution Mode = Targeted Edit`外，最终Prompt不写逐镜时长、时间码、按秒动作区间、帧率或帧数；该唯一例外只能把受控时间段语义写入既有分镜正文的适当字段，不新增时间轴字段。
+`时长：`只复制Confirmed Clip Production Plan中用户选择的目标时长，不得重新估算；Seedance 2.0为4—15秒，Seedance 2.5为4—30秒，16—30秒由目标时长自动触发内部严格预检且仅在PASS时成立。未知网关状态不得在投影前压缩该时长；实际平台拒绝时才走Return Route。除`Target Model = Seedance 2.5`且`Execution Mode = Targeted Edit`外，最终Prompt不写逐镜时长、时间码、按秒动作区间、帧率或帧数；该唯一例外只能把受控时间段语义写入既有分镜正文的适当字段，不新增时间轴字段。
 
 ## Global Projection Matrix
 
 | 来源知识 | 固定目标字段 | 必须保留的语义 |
 |---|---|---|
-| Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、4—15秒平台生成时长；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
+| Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
 | Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
 | Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
 | Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |

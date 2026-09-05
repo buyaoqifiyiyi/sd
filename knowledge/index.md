@@ -89,7 +89,7 @@ Poster Design是STATE-04条件性辅助模块。未请求海报时不触发；�
 
 Purpose:
 
-在STATE-06 Detailed Shot Design完成后，把相邻兼容Shot编排为4—15秒Clip，并为每个Clip建立起始状态、连续动作、摄影机/空间关系、道具连续性、结尾状态和跨Clip连接合同。
+在STATE-06 Detailed Shot Design完成后，经Model Execution Lock把相邻兼容Shot编排为模型适用Clip：2.0为4—15秒；2.5为4—30秒，16—30秒自动严格预检且仅在PASS时成立；实际秒数由用户选择；并为每个Clip建立起始状态、连续动作、摄影机/空间关系、道具连续性、结尾状态和跨Clip连接合同。
 
 Relevant knowledge:
 

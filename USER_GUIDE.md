@@ -70,8 +70,8 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 4. 任一创作或优化分支生成 `Production Script Proposal` 后都会停下来，等你确认制作版剧本。
 5. 每类视觉资产先给生图 Prompt，等你确认；生成候选图后再停一次，等你确认图片。
 6. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
-7. STATE-06完成后、Clip整合前，如当前批次尚未锁定目标模型，系统只询问一次选择`Seedance 2.0`或`Seedance 2.5`；选择写入内部执行Profile与Clip Plan，不进入最终视频Prompt。已锁定不重复问。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
-8. Seedance 2.5默认仍用稳定的4—15秒`Standard Clip`；仅明确选择且严格预检通过时使用16—30秒`Long-form Clip`。它也支持受控`Video Extension`和用户明确请求的`Targeted Edit`；实际网关限制优先，参考仍按最小充分选择。
+7. STATE-06完成后、Clip整合前，如当前批次尚未锁定目标模型，系统只询问一次选择`Seedance 2.0`或`Seedance 2.5`；选择会自动路由到对应的内部提示词编译模板，写入内部执行Profile与Clip Plan，不进入最终视频Prompt。你不需要另选模板；已锁定不重复问。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
+8. Seedance 2.0为4—15秒。Seedance 2.5为4—30秒：实际生成秒数由你在该窗口内选择；4—15秒沿用稳定`Standard Clip`，16—30秒由目标时长自动进入内部严格预检，不要求你额外选择`Long-form Clip`。未知网关状态不会自动限制为15秒；若实际提交被平台拒绝，系统才返回Clip规划做最小调整。它也支持受控`Video Extension`和用户明确请求的`Targeted Edit`；参考仍按最小充分选择。
 9. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
 8. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
 9. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，本轮会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；你下次说“继续 / 下一个”时再输出该Clip Prompt。简单Clip不会为了统一流程强制出草图。
@@ -395,13 +395,13 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 **进阶指令**
 
 ```text
-调用sd，把当前Confirmed Detailed Shot Design按正式Shot顺序组织为4—15秒Clip。不要改Shot ID、顺序、剧情或镜头目的；逐Clip完成Preflight、Scope Firewall、End-State Record、Reference Routing、尾帧A/B/C判定和不超过9张的参考预算。输出Clip Plan后停下来给我确认。
+调用sd，把当前Confirmed Detailed Shot Design按正式Shot顺序组织为Clip。锁定Seedance 2.0时由我选择4—15秒；锁定Seedance 2.5时由我选择4—30秒，16—30秒自动完成严格预检，失败才拆为4—15秒Clip。不要改Shot ID、顺序、剧情或镜头目的；逐Clip完成Preflight、Scope Firewall、End-State Record、Reference Routing、尾帧A/B/C判定和最小充分参考。输出Clip Plan后停下来给我确认。
 ```
 
 **Skill 行为 / 停止点**
 
 - 只能基于实际可读且 Confirmed 的 Professional Detailed Shot Script；原剧本中的“镜头1 / Clip A”等标题不能直接变成正式 Clip。
-- 一个 Clip 可以包含一个或多个相邻、兼容的 Shot，目标时长必须为 4—15 秒。
+- 一个 Clip 可以包含一个或多个相邻、兼容的 Shot；Seedance 2.0为4—15秒，Seedance 2.5为4—30秒，16—30秒必须通过内部严格预检；实际秒数由你在模型窗口内选择。
 - 每个正式 Shot 按原顺序且只进入一个 Clip；不能为减少数量强行合并。
 - 每个 Clip 原则上只承担一个主要可见 Beat。此前事件不重播，后续事件不提前表演。
 - Clip Plan 不输出最终 Seedance Prompt；确认后才进入 STATE-08。

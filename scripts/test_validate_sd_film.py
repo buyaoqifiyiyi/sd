@@ -111,6 +111,62 @@ def make_clip_detail_fields(source: str, duration: str, accounting: str, tail: s
     return "\n".join(f"- {field}{values.get(field, '有效内容')}" for field in validator.CLIP_DETAIL_FIELDS)
 
 
+def make_duration_clip_plan(
+    duration: int,
+    *,
+    target_model: str,
+    gateway_limit: int | None,
+    long_duration_pass: bool = True,
+) -> str:
+    gateway = "UNKNOWN" if gateway_limit is None else f"外部平台记录：{gateway_limit}秒"
+    profile = "4—15秒" if target_model == "Seedance 2.0" else "Seedance 2.0为4—15秒；Seedance 2.5为4—30秒"
+    compiler = "Seedance 2.0 Stable Compiler" if target_model == "Seedance 2.0" else "Seedance 2.5 Native Compiler"
+    preflight = "PASS" if long_duration_pass else "FAIL"
+    detail = make_clip_detail_fields(
+        "SHOT-001",
+        f"{duration}秒",
+        f"SHOT-001={duration}秒；合计={duration}秒；平台生成时长={duration}秒",
+    )
+    if duration > 15:
+        detail += f"\n- Long-duration Preflight：{preflight}"
+    return f"""# Clip Plan
+- Project ID：PROJECT-TEST
+- Status：Confirmed
+- Source Detailed Shot Design Artifact / Portable Checkpoint：shots/detailed.md
+- Source Detailed Shot Design Status：Confirmed
+- Source Detailed Shot Design Revision：REV-0001
+- Target Video Model：{target_model}
+- Model Execution Lock Status：LOCKED
+- Model Compilation Template：{compiler}
+- Effective Gateway Limits：{gateway}
+- Model Duration Window：{profile}
+- Total Formal Shots：1
+- Total Clips：1
+- Unit Rule：Shot = 导演镜头设计单位；Clip = AI视频生成执行单位；每个Shot且仅进入一个Clip；Total Clips ≤ Total Formal Shots；STATE-08每个Clip只生成一条连续Prompt
+- Namespace Rule：Source Script Label ≠ SCENE ≠ UNIT ≠ SHOT ≠ CLIP；只有Confirmed Detailed Shot Design中的正式SHOT可进入Clip
+
+## Clip Table
+| Clip ID | 来源分镜（逐项列出） | 目标时长 | 生成方式 | 合并依据 | 入口锚点 | 出口/尾帧 | 下一Clip连接 |
+|---|---|---:|---|---|---|---|---|
+| CLIP-001 | SHOT-001 | {duration}秒 | 连续生成 | 有效 | 有效 | 保存为[G01尾帧] | 收尾 |
+
+## Clip Detail Cards
+### CLIP-001
+{detail}
+
+## Cross-Clip Continuity Ledger
+None
+
+## Knowledge Projection Ledger
+| Clip ID | Camera/Composition | Movement Combination | Lens/Focus | Performance | Lighting/Color | Transition | Sound | FX | Prompt Evidence Target |
+|---|---|---|---|---|---|---|---|---|---|
+| CLIP-001 | 有效 | 有效 | 有效 | 有效 | 有效 | 有效 | 有效 | 有效 | 有效 |
+
+## Coverage And Validation
+有效
+"""
+
+
 class ValidatorRegressionTests(unittest.TestCase):
     def test_portable_initialized_alias_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -1914,6 +1970,9 @@ REV-0001
 - Source Detailed Shot Design Artifact / Portable Checkpoint：shots/detailed.md
 - Source Detailed Shot Design Status：Confirmed
 - Source Detailed Shot Design Revision：REV-0001
+- Target Video Model：Seedance 2.0
+- Model Execution Lock Status：LOCKED
+- Model Compilation Template：Seedance 2.0 Stable Compiler
 - Model Duration Window：4—15秒
 - Total Formal Shots：2
 - Total Clips：1
@@ -2003,6 +2062,9 @@ None
 - Source Detailed Shot Design Artifact / Portable Checkpoint：shots/detailed.md
 - Source Detailed Shot Design Status：Confirmed
 - Source Detailed Shot Design Revision：REV-0001
+- Target Video Model：Seedance 2.0
+- Model Execution Lock Status：LOCKED
+- Model Compilation Template：Seedance 2.0 Stable Compiler
 - Model Duration Window：4—15秒
 - Total Formal Shots：1
 - Total Clips：1
@@ -2263,6 +2325,67 @@ MUS-CUE-001
             ending = f"【结尾帧要求】\n保存为[G01尾帧]：稳定结束\n下一段用途：最终收束\n【反向提示词】\n{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
             prompt.write_text(f"{global_text}\n【分镜1】\n{make_shot_fields()}\n{ending}", encoding="utf-8")
             self.assertEqual(run_quiet(validator.validate_state08, prompt, True, clip_plan), 1)
+
+    def test_seedance_20_rejects_30_seconds(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "clip.md"
+            path.write_text(
+                make_duration_clip_plan(30, target_model="Seedance 2.0", gateway_limit=30),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_clip, path, True), 1)
+
+    def test_seedance_25_accepts_10_15_20_30_with_gateway_and_preflight(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            for duration in (10, 15, 20, 30):
+                path = Path(temp) / f"clip-{duration}.md"
+                path.write_text(
+                    make_duration_clip_plan(duration, target_model="Seedance 2.5", gateway_limit=30),
+                    encoding="utf-8",
+                )
+                self.assertEqual(run_quiet(validator.validate_clip, path, True), 0, duration)
+
+    def test_seedance_25_long_duration_requires_preflight_not_gateway_cap(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            gateway_limited = root / "gateway-15.md"
+            gateway_limited.write_text(
+                make_duration_clip_plan(20, target_model="Seedance 2.5", gateway_limit=15), encoding="utf-8"
+            )
+            self.assertEqual(run_quiet(validator.validate_clip, gateway_limited, True), 0)
+            failed_preflight = root / "preflight-fail.md"
+            failed_preflight.write_text(
+                make_duration_clip_plan(20, target_model="Seedance 2.5", gateway_limit=30, long_duration_pass=False),
+                encoding="utf-8",
+            )
+            self.assertEqual(run_quiet(validator.validate_clip, failed_preflight, True), 1)
+
+    def test_seedance_25_unknown_gateway_does_not_cap_user_duration(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "unknown-gateway.md"
+            path.write_text(
+                make_duration_clip_plan(30, target_model="Seedance 2.5", gateway_limit=None), encoding="utf-8"
+            )
+            self.assertEqual(run_quiet(validator.validate_clip, path, True), 0)
+
+    def test_seedance_25_30_second_prompt_uses_fixed_schema_without_longform_choice(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            clip_plan = root / "clip.md"
+            clip_plan.write_text(
+                make_duration_clip_plan(30, target_model="Seedance 2.5", gateway_limit=30), encoding="utf-8"
+            )
+            prompt = root / "prompt.md"
+            prompt_text = (
+                make_state08_global_sections(1, 1, "1", "30")
+                + "\n分镜1\n"
+                + make_shot_fields()
+                + f"\n反向提示词：{validator.DEFAULT_NO_BACKGROUND_MUSIC_LINE}"
+            )
+            prompt.write_text(prompt_text, encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_state08, prompt, True, clip_plan), 0)
+            for forbidden_field in ("Target Model：", "Execution Mode：", "Long-form：", "Long-duration Preflight："):
+                self.assertNotIn(forbidden_field, prompt_text)
 
     def test_visual_blocking_sketch_clip_prompt_gate_is_installed(self) -> None:
         skill_root = Path(__file__).resolve().parents[1]
@@ -2653,6 +2776,8 @@ None
                 "workflows/11_video_generation_workflow.md",
                 "knowledge/11_seedance_adapter.md",
                 "knowledge/seedance_25_profile.md",
+                "knowledge/prompt_compilation/seedance_20_compilation.md",
+                "knowledge/prompt_compilation/seedance_25_compilation.md",
                 "references/project_state_contract.md",
                 "templates/20_clip_plan.md",
                 "templates/10_video_prompt.md",
@@ -2664,6 +2789,11 @@ None
         self.assertIn("任何Clip候选整合、时长分配、Reference Budget或Clip Plan确认之前只询问一次", sources["workflows/10_clip_production_workflow.md"])
         self.assertIn("不得在此处首次询问或改变模型", sources["workflows/11_video_generation_workflow.md"])
         self.assertIn("Model Profile Routing", sources["knowledge/11_seedance_adapter.md"])
+        self.assertIn("Model Template Router", sources["knowledge/11_seedance_adapter.md"])
+        self.assertIn("Seedance 2.0 Stable Compiler", sources["knowledge/prompt_compilation/seedance_20_compilation.md"])
+        native_compiler = sources["knowledge/prompt_compilation/seedance_25_compilation.md"]
+        for marker in ("Seedance 2.5 Native Compiler", "Internal Resource Mapping", "REF-VIDEO", "Targeted Edit", "API字段"):
+            self.assertIn(marker, native_compiler)
         profile = sources["knowledge/seedance_25_profile.md"]
         for marker in ("Standard Clip", "Long-form Clip", "Video Extension", "Targeted Edit", "REF-VIDEO", "Clay Render", "30张图", "10段视频", "10段音频"):
             self.assertIn(marker, profile)
@@ -2671,10 +2801,22 @@ None
         self.assertIn("Model Execution Lock Status", sources["templates/20_clip_plan.md"])
         self.assertIn("不得新增时间轴、目标模型或执行模式字段", sources["templates/10_video_prompt.md"])
         self.assertIn("min(30, 实际网关图片上限)", sources["knowledge/reference_budget.md"])
+        self.assertIn("不是用户额外选择的Execution Mode", profile)
+        self.assertIn("4—30秒", sources["templates/10_video_prompt.md"])
+        self.assertIn("Long-duration Preflight", sources["workflows/10_clip_production_workflow.md"])
         regression = sources["references/regression_scenarios.md"]
         for scenario in range(1, 11):
             self.assertIn(f"R28-{scenario}", regression)
+        for scenario in range(1, 5):
+            self.assertIn(f"R29-{scenario}", regression)
         self.assertEqual(run_quiet(validator.validate_skill, skill_root, True), 0)
+
+    def test_model_compilation_template_must_match_locked_model(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "clip.md"
+            text = make_duration_clip_plan(10, target_model="Seedance 2.5", gateway_limit=30)
+            path.write_text(text.replace("Seedance 2.5 Native Compiler", "Seedance 2.0 Stable Compiler"), encoding="utf-8")
+            self.assertEqual(run_quiet(validator.validate_clip, path, True), 1)
 
 
 if __name__ == "__main__":

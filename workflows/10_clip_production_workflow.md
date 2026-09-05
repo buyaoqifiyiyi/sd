@@ -16,9 +16,9 @@
 
 先读取`references/project_state_contract.md`中的当前批次执行Profile。若`Model Execution Lock Status = UNLOCKED`或没有合法Target Video Model，必须在任何Clip候选整合、时长分配、Reference Budget或Clip Plan确认之前只询问一次：`Seedance 2.0`或`Seedance 2.5`。
 
-选定后，读取`knowledge/11_seedance_adapter.md`；选择2.5时再读取`knowledge/seedance_25_profile.md`。将Target Video Model、Execution Mode、Effective Gateway Limits与Model Lock Scope写入Project State和`templates/20_clip_plan.md`的内部执行Profile。实际API/网关公开限制小于模型能力上限时，取更严格值；未知时不得声称全部能力可用。
+选定后，读取`knowledge/11_seedance_adapter.md`并经Model Template Router选择唯一内部Compiler；选择2.5时再读取`knowledge/seedance_25_profile.md`与`knowledge/prompt_compilation/seedance_25_compilation.md`，选择2.0时读取`knowledge/prompt_compilation/seedance_20_compilation.md`。将Target Video Model、Model Compilation Template、Execution Mode、Effective Gateway Limits与Model Lock Scope写入Project State和`templates/20_clip_plan.md`的内部执行Profile。用户在锁定模型窗口内选择实际生成时长：2.0为4—15秒，2.5为4—30秒。外部平台限制可记录为观察信息，但不得在STATE-07预先把用户选择的2.5时长压缩为15秒；若实际提交被平台拒绝，再按生成结果回到STATE-07最小调整。
 
-默认模式为`Standard Clip`。`Long-form Clip`仅Seedance 2.5可用且必须在Step 2A通过更严格预检；`Video Extension`必须有实际上一段成片`REF-VIDEO`；`Targeted Edit`仅在用户明确要求修改既有视频时可用。未明确选择Long-form时，即使2.5已锁定也沿用4—15秒稳定短Clip。
+默认模式为`Standard Clip`。`Video Extension`必须有实际上一段成片`REF-VIDEO`；`Targeted Edit`仅在用户明确要求修改既有视频时可用。`Long-form Clip`不是用户需额外选择的Execution Mode：当已锁定Seedance 2.5且用户目标时长为16—30秒时，自动进入Step 2A的长时长严格预检；4—15秒继续稳定短Clip工作法。预检FAIL自动留在STATE-07拆分为多个4—15秒Clip。
 
 Clip Plan确认前用户切换模型时，只重新执行本Workflow与STATE-08中受影响的Clip；保留已确认剧本、资产、场景、Visual Development和Detailed Shot Design。不得在最终Prompt输出阶段再次询问模型，也不得为Lock新增主STATE或STATE-08字段。
 
@@ -118,11 +118,11 @@ STATE-07只组织这些Detailed Shots，不得回到原剧本重新简化画面�
 - 镜头几何连续性：单一主轴、屏幕左右、身体朝向、眼线、摄影机轴线侧和来源—目标连线不得在合并后翻转
 - 角色、环境、道具与 FX 资产版本一致性
 - 模型执行复杂度、动作/口型/FX容量和稳定性
-- 已锁定执行Profile的适宜时长：Seedance 2.0及2.5 Standard Clip为4—15秒；Seedance 2.5 Long-form为16—30秒且仅在严格预检PASS后可用；实际网关限制优先
+- 已锁定执行Profile的适宜时长：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，其中16—30秒自动进入严格预检且仅在PASS时可用；实际生成秒数由用户在此窗口内选择
 
-单Shot可以独立成为Clip。多个相邻Shot只有在总时长不超过15秒并通过三种执行模式之一时才可合并：`单Shot`、`多Shot连续生成`或`多Shot有动机剪辑`。连续生成要求连续动作/运镜且不中断、不硬切；有动机剪辑要求Director确认叙事功能、切点、视觉媒介、切前结束、切后稳定重建、连续性锚点和容量不足时的STATE-07拆分Clip。不得为了减少Clip数量强行合并。
+单Shot可以独立成为Clip。多个相邻Shot只有在总时长不超过已锁定Profile的有效上限并通过三种组织类型之一时才可合并：`单Shot`、`多Shot连续生成`或`多Shot有动机剪辑`。连续生成要求连续动作/运镜且不中断、不硬切；有动机剪辑要求Director确认叙事功能、切点、视觉媒介、切前结束、切后稳定重建、连续性锚点和容量不足时的STATE-07拆分Clip。16—30秒不自动等于一镜到底。不得为了减少Clip数量强行合并。
 
-Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相邻、兼容的 Shot 组成已锁定Profile允许的Clip。未获Long-form授权时维持4—15秒。Long-form若镜头链、空间关系、表演或动作密度任一严格预检失败，返回STATE-07拆分为稳定短Clip；不得以2.5的30秒上限强行合并，也不得回滚STATE-06已确认镜头设计。
+Shot 是导演设计单位，因此单个 Shot 可短于4秒；它必须与相邻、兼容的 Shot 组成已锁定Profile允许的Clip。Seedance 2.5目标时长达到16—30秒时自动触发长时长严格预检；镜头链、空间关系、表演、动作/物理密度或转场逻辑任一失败，返回STATE-07拆分为稳定4—15秒Clip；不得以2.5的30秒上限强行合并，也不得回滚STATE-06已确认镜头设计。
 
 Clip Boundary不得错误切断Writer Beat的最小因果完整性。若平台时长迫使拆分，必须把Trigger / Response、Decision / Consequence或Setup / Payoff的承接关系写入现有Start Boundary、End-Frame Constraint、Clip End-State Record与Next-Clip Carryover；不得改写Beat顺序来迁就时长。
 
@@ -144,6 +144,7 @@ Clip Boundary不得错误切断Writer Beat的最小因果完整性。若平台�
 - **Prop State Check**：逐关键道具写当前形态、尺寸、持有者/左右手、位置、方向、是否允许悬浮、转换是否完成与结束状态；不同世界形态不得无过程混用。
 - **Transition Five Elements**：现实↔幻想/耳中玉境、地点/时间跳跃、尺度或角色/道具形态转换时，必须先锁定起点状态、转换媒介、运动方向/过程、终点状态、转场后首个稳定构图。缺一不得用“金光一闪 / 突然切换”代替。
 - **Reference Asset Check**：只在上述项目通过后筛选资产。每个视觉候选先回答“这是不是一张实际会被投喂/引用的视觉资产？”；只有真实可回查的已确认视觉资产，或明确需要用户实际补入、写明具体图像对象/投喂用途/`待用户补充或待上传、未确认`状态的视觉图占位可继续。纯文字站位、换边、距离、共坐、数量、空间、行为、禁止项或镜头规则必须移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`，不得作为资产。之后再删除未出场、未使用及当前World-State不适用项并执行预算；角色独立锁定图优先，最终≤9，只有超限风险时整合非角色信息。
+- **Long-duration Preflight（仅16—30秒）**：只有当前Target Video Model为Seedance 2.5且用户目标平台生成时长为16—30秒时运行；镜头链、空间关系、表演连续性、动作/物理密度均须PASS。多场景、时间跳跃或蒙太奇还须具有已确认的转场逻辑。记录`Long-duration Preflight: PASS / FAIL`；FAIL立即返回`STATE-07 / 拆分Clip`，不改写已确认剧本、资产或Detailed Shot Design。
 
 任一项失败时记录Affected Clip / Shot与Return Route，先修设计再从Continuity Classification重跑。Preflight为FAIL时不得进入Step 3、不得生成或确认Clip Plan。
 
@@ -257,7 +258,7 @@ Portable模式没有本地Artifact路径时，必须从Portable Checkpoint交叉
 只有以下条件全部满足才能标记 Confirmed：
 
 - 每个正式 Shot 按原顺序且仅进入一个 Clip
-- 每个 Clip 包含一个或多个相邻 Shot，时长为4—15秒
+- 每个 Clip 包含一个或多个相邻 Shot，Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，16—30秒已有`Long-duration Preflight: PASS`且网关确认允许
 - 所有合并均通过场景、时间、动作、摄影机、空间、道具、资产与复杂度检查
 - 每个 Clip 具有起始状态、连续动作、空间关系、道具连续性与稳定结尾状态
 - 每个 Clip 已完成Scope Firewall：此前事件未重播，本Clip只执行一个主要可见Beat所需的动作链，后续剧情未提前表演，明确禁提前元素未出现，并以清楚改变的Endpoint结束；多动作例外仍服务同一Beat

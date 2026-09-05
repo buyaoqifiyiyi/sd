@@ -11,8 +11,9 @@
 - Source Detailed Shot Design Revision：
 - Target Video Model：Seedance 2.0 / Seedance 2.5
 - Model Execution Lock Status：LOCKED（未锁定不得进入Clip整合）
-- Execution Profile：目标模型、Execution Mode、Effective Gateway Limits、锁定范围；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
-- Model Duration Window：按已锁定Profile；Seedance 2.0 / Seedance 2.5 Standard Clip为4—15秒，Seedance 2.5 Long-form为16—30秒，受实际网关限制时从严
+- Model Compilation Template：Seedance 2.0 Stable Compiler / Seedance 2.5 Native Compiler；必须与Target Video Model一一匹配，仅作内部编译路由，不投影为STATE-08 Prompt字段
+- Execution Profile：目标模型、Model Compilation Template、Execution Mode、Long-duration Route、Effective Gateway Limits、锁定范围；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
+- Model Duration Window：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒；16—30秒须严格预检PASS，时长由用户在模型窗口内选择
 - Total Formal Shots：
 - Total Clips：
 - Unit Rule：Shot = 导演镜头设计单位；Clip = AI视频生成执行单位；每个Shot且仅进入一个Clip；Total Clips ≤ Total Formal Shots；STATE-08每个Clip只生成一条连续Prompt
@@ -29,9 +30,10 @@
 ### CLIP-001
 
 - 包含 Shot：按 SHOT ID 原顺序逐项列出
-- Execution Mode：`Standard Clip` / `Long-form Clip` / `Video Extension` / `Targeted Edit`
-- 目标时长：N秒（按已锁定Profile；Long-form仅16—30秒且通过严格预检）
-- Model Profile Preflight：Standard Clip沿用稳定短Clip；Long-form必须通过镜头链、空间关系、表演和动作密度严格预检；Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Targeted Edit仅在用户明确要求修改既有视频时可用，时间段控制仅可写入既有分镜正文
+- Execution Mode：`Standard Clip` / `Video Extension` / `Targeted Edit`
+- 目标时长：N秒（2.0为4—15秒；2.5为4—30秒；16—30秒自动触发内部严格预检）
+- Long-duration Preflight：Not Applicable（4—15秒 / 非2.5）/ PASS / FAIL；16—30秒须确认镜头链、空间关系、表演连续性、动作/物理密度及适用转场逻辑均通过；FAIL返回`STATE-07 / 拆分Clip`
+- Model Profile Preflight：Standard Clip沿用稳定短Clip；Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Targeted Edit仅在用户明确要求修改既有视频时可用，时间段控制仅可写入既有分镜正文
 - 时长核算：SHOT-001=N秒 + SHOT-002=N秒；合计=N秒；平台生成时长=N秒
 - 组织类型：`单Shot` / `多Shot连续生成` / `多Shot有动机剪辑`
 - 组织理由：逐项说明场景连续性、时间连续性、人物动作连续性、摄影机连续性、模型执行复杂度与单次生成时长判断
@@ -136,9 +138,9 @@
 ## Coverage And Validation
 
 - 所有正式 Shot 是否按原顺序出现且只分配到一个 Clip：
-- 每个 Clip 是否包含一个或多个相邻 Shot，且总时长符合已锁定Profile（默认/2.0为4—15秒；2.5 Long-form为16—30秒）：
+- 每个 Clip 是否包含一个或多个相邻 Shot，且总时长符合已锁定Profile（2.0为4—15秒；2.5为4—30秒；16—30秒有Long-duration Preflight PASS）：
 - 所有多Shot Clip是否通过组织类型、场景、时间、人物动作、摄影机、空间、道具、资产、复杂度与时长检查；有动机剪辑是否含叙事功能、切点/媒介、切前结束、切后稳定重建、保留/改变锚点和STATE-07拆分降级：
-- 短于4秒的 Shot 是否只在兼容的4—15秒 Clip中执行；超过15秒的 Shot 是否已返回 STATE-06 拆分：
+- 短于4秒的 Shot 是否只在兼容Clip中执行；超过15秒的2.5候选是否自动完成Long-duration Preflight，否则返回STATE-07拆分为4—15秒Clip（不改写STATE-06）：
 - 每个 Clip 是否具有起始状态、连续动作、空间关系、道具连续性与结尾状态：
 - 每个Clip是否把已有Entry / Exit / Handoff归并为八组`Clip End-State Record / Next-Clip Carryover`，且下一Clip首帧能逐项消费、没有人物/道具/相机/环境状态重置：
 - 每个Clip是否先通过Clip Preflight；Continuity Classification是否三选一并明确A/B/C；A/B是否标记`Tail Frame Required = YES`、在参考资产声明直接列统一`REF-TAIL`名称、对应用途与真实状态，缺图时写“待用户提供/待上传、未确认”且不冒充已提交图片；A/B首帧句式是否正确区分；C是否标记`NO`、不列`REF-TAIL`并以Canonical资产、Spatial Blocking、文字状态或当前Scene / World-State / Start Boundary重建；Performance / Emotion Check是否证明逐角色跨镜情绪弧、动作前/中/后可见阶段、Intentional Hold与多人相对表演层级，而不是静态标签或全员同强度表演：

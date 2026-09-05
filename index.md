@@ -224,7 +224,7 @@ FX生命周期与后果连续性。
 
 ## 07 Clip Production
 
-把详细Shot按场景、时间、动作、摄影机、空间、道具、模型复杂度与4—15秒窗口组织为CLIP-001……。Shot是导演设计单位，Clip是AI视频生成单位。
+把详细Shot按场景、时间、动作、摄影机、空间、道具、模型复杂度与已锁定模型窗口组织为CLIP-001……：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，其中16—30秒仅在严格预检PASS且实际网关已确认允许时成立。锁定模型同时自动选择对应内部编译模板，最终用户可见字段仍唯一由`templates/10_video_prompt.md`拥有。Shot是导演设计单位，Clip是AI视频生成单位。
 
 Storyboard只在用户明确要求时作为Optional/Auxiliary Workflow调用，不绑定STATE，也不进入STATE-08参考资产。
 

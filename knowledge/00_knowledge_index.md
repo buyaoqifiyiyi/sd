@@ -314,7 +314,7 @@ Conditional：
 适用知识：
 
 
-Clip划分、模型执行复杂度、4—15秒时长、段内/跨Clip连续性与Prompt投影规范；禁止把Storyboard视觉材料用作生产输入。
+Clip划分、模型执行复杂度、模型适用时长（2.0为4—15秒；2.5为4—30秒且16—30秒须严格预检PASS，实际秒数由用户选择）、段内/跨Clip连续性与Prompt投影规范；禁止把Storyboard视觉材料用作生产输入。
 
 读取STATE-06 Confirmed Detailed Shot Design，并按Shot适用性加载camera、lighting、color、performance与transitions连续性知识；不重新设计上游Shot。
 
@@ -335,7 +335,7 @@ knowledge/sequence/
 - workflows/10_clip_production_workflow.md
 - templates/20_clip_plan.md
 
-用于把相邻兼容Shot编排为4—15秒Confirmed Clip Production Plan，并记录包含Shot、起始状态、连续动作、摄影机/空间关系、道具连续性、结尾状态、风险与Handoff。
+用于把相邻兼容Shot编排为模型适用的Confirmed Clip Production Plan（2.0为4—15秒；2.5为4—30秒且16—30秒自动严格预检），并记录包含Shot、起始状态、连续动作、摄影机/空间关系、道具连续性、结尾状态、风险与Handoff。
 
 
 
@@ -375,7 +375,7 @@ STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video
 - 对白、环境声、动作声、呼吸、Foley、剧情内声源与同期静默；背景音乐、配乐、BGM、主题音乐与氛围音乐永久不进入STATE-08音效或其他视频Prompt字段
 - FX生命周期、物理交互与跨镜后果
 - Sequence顺序、Coverage与UNIT边界继承
-- Clip内逐镜状态链、4—15秒生成边界与跨Clip尾帧连接
+- Clip内逐镜状态链、模型适用生成边界与跨Clip尾帧连接
 
 ---
 
