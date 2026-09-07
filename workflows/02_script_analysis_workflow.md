@@ -335,6 +335,8 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 ## 06 Production Script Proposal Confirmation Gate
 
+`Automation Policy: FAST`不得覆盖本Gate。Creation、Adaptation或Optimization生成的Production Script Proposal仍需要用户明确锁定；自动模式只能继续其后的已锁定制作设计，不能替代用户对剧情、人物关系、改写范围或制作版文本的确认。
+
 - Creation Brief或Existing Script / Material的Production Script Proposal输出后必须再次停止，保持`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`与`Next Workflow: 02_script_analysis_workflow.md`。
 - 用户明确确认当前Proposal：把唯一确认版本写为`Script Status: Production-Locked`，清除Pending Decision，再执行STATE-01 Completion Gate并进入STATE-02。
 - 用户要求修改Proposal：保持`Optimized Proposal + IN_PROGRESS`，只修订用户指出范围，输出新Proposal Revision并再次等待确认。

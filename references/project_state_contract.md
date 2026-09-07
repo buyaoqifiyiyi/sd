@@ -27,6 +27,8 @@
 - 从Project Context重建的候选必须先补齐Canonical Portable Schema，只迁移有证据的事实，并在Version History记录`Project Context normalized`。
 - Portable模式不授权虚构缺失资产、剧情事实、确认或Completion；真正缺少当前Workflow必需输入时仍记录Pending Decision。
 
+`## State Control`还保存`Automation Policy: STANDARD / FAST`。其值只由`rules/automation_mode.md`解释和变更；它不替代任何Artifact确认字段、用户授权、Hard Stop或Completion证据。缺失的旧状态规范化为`STANDARD`。
+
 ---
 
 ## Required Status Header
@@ -159,6 +161,7 @@ Portable Sync Status: PORTABLE_ONLY
 - Source Selection Reason: Active Project Root unavailable
 - Portable State Availability: READY
 - Portable Sync Status: PORTABLE_ONLY
+- Automation Policy: STANDARD
 
 ## Completed Tasks
 None
@@ -226,7 +229,7 @@ None
 
 ### Portable Required Field Writeback
 
-每次写回Portable State都必须同步`Project ID`、`Project Name`、`Current State`、`State Status`、`Script Status`、`Last Successful Checkpoint`、`Completed States`、`Confirmed Assets`、`Next Workflow`、`Last Updated`与`State Source`。`Completed States`只列出已通过Completion Gate的主STATE；进入但未完成的阶段不得加入。
+每次写回Portable State都必须同步`Project ID`、`Project Name`、`Current State`、`State Status`、`Script Status`、`Automation Policy`、`Last Successful Checkpoint`、`Completed States`、`Confirmed Assets`、`Next Workflow`、`Last Updated`与`State Source`。`Completed States`只列出已通过Completion Gate的主STATE；进入但未完成的阶段不得加入。
 
 普通Chat写`State Source: portable_project_status.md`；Work/Codex从真实Root同步镜像时写`State Source: <active-project-root>/project_status.md (synced)`。`Last Updated`与现有`Updated At`使用同一时间值，保留后者用于旧状态兼容。
 

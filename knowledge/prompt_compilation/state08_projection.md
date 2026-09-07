@@ -4,7 +4,7 @@
 
 - Module Type：STATE-08 Knowledge Adapter。
 - Trigger：所有 Video Prompt / Seedance Prompt 撰写任务。
-- Inputs：已确认项目事实、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、由`knowledge/11_seedance_adapter.md`的Model Template Router选定的唯一内部Compiler、适用Knowledge与`knowledge/clip_planning/continuity_and_projection.md`；只有用户明确要求把声音控制写进当前视频模型Prompt时，才读取适用的Confirmed Voice Profile或Voice/Audio Reference作为条件输入。
+- Inputs：已确认项目事实、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、由`knowledge/11_seedance_adapter.md`的Model Template Router选定的唯一内部Compiler、适用Knowledge与`knowledge/clip_planning/continuity_and_projection.md`；当前Clip使用Spatial Lock环境时还读取其Active Environment View Set与STATE-07选择记录；只有用户明确要求把声音控制写进当前视频模型Prompt时，才读取适用的Confirmed Voice Profile或Voice/Audio Reference作为条件输入。
 - Output Owner：`templates/10_video_prompt.md`；本文件不拥有、增加、删除或改名最终字段。
 - Consumer：`workflows/11_video_generation_workflow.md`。
 - Forbidden：新增剧情、重选资产、改变镜头目的、创建新主STATE、创建另一套最终Schema。
@@ -24,6 +24,12 @@ Template Mapping后与交付前各执行一次字段完整性检查。标题、�
 ## Core Rule
 
 所有适用且已确认的上游知识必须在最终Prompt中留下可见、可执行、可连续检查的语义证据。知识模块名称、内部表格、模式ID、Ledger标题与分析栏目不得原样输出。
+
+### Locked Environment View Projection
+
+当前Clip使用`Spatial Lock: Locked`环境时，`参考资产`只接受STATE-07按`knowledge/environment_multi_view_reconstruction.md`预选的2–4张真实、已确认且仍Active的环境Canonical Views。`ENV-01`承担整体空间/美术母参考；只在当前风险需要时加入ENV-02的反向背景、ENV-03的布局/距离、ENV-04的顶视结构或有明确用途的Extension。每图只承担一个Primary Responsibility，不能机械填满四图或以Storyboard、STATE-06 Planning Map、文字Spatial Truth替代图片。
+
+空间固定事实投影到现有`环境一致性`；本镜Camera Zone / Direction、人物位置和局部关系投影到现有逐镜字段、首帧/尾帧与空间关系语义。Shot Composition只能改变构图，不得改变锁定的Spatial Truth；发生冲突返回STATE-03 Spatial Revision，不在Prompt内折中。
 
 STATE-08不重新“编剧”或“导演”，只执行`Writer Intent Preservation + Director Intent Preservation + Model Translation`。Screenwriter Module拥有故事因果、人物意图/潜台词、Writer Beat顺序、信息时机与Setup-Payoff义务；Director Module拥有观众如何经历以及表演、调度、构图、摄影与节奏如何呈现；本Prompt Compiler只把当前Clip的已确认意图转成模型可以执行的顺序、可见证据和稳定边界。
 
@@ -53,8 +59,9 @@ Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm
 7. **Spatial & Relationship Translation**：继承Spatial Snapshot、Relationship Topology、Pose Hierarchy、Delta Blocking、Confirmed REF-SKETCH与REF-TAIL的授权维度；不重新设计空间。
 8. **Rhythm Translation**：把BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部；标签不输出。
 9. **Sound Function Translation**：把声音注意力与连接功能投影到现有台词/音效/镜头结尾状态；Sound Strategy不触发Voice Profile，Voice仍服从当前明确opt-in。
-10. **Prompt Compression**：执行`Source Carries State, Prompt Carries Delta`，只保留当前Clip的dramatic、performance、blocking、camera、timing与information delta。
-11. **Writer + Director Intent Preservation QA**：最终Prompt必须同时保住关键人物意图、潜台词、Writer Beat顺序、Setup-Payoff / 信息时机、关系变化，以及注意力顺序、可见表演、构图功能、Camera Trigger / Stop、节奏与余韵；如果压缩后只剩“好看、电影感、慢推、情绪化”或直白情绪说明，判FAIL并回到本Pass修复。最终内容不得出现Writer / Director Packet、dominance、理论句或冗余参数。
+10. **Risk-driven Execution Locks**：只对当前Clip真实存在的生成风险补充最小、正向、可观察的执行语义。多人首次入画或空间建立时，确认首帧主体、左右/前后关系、朝向、视线与必要地标锚点；反打或道具交接时，确认摄影机侧、视线、持有者与左右手；高负荷动作、液体、布料、车辆或颗粒物时，确认因果、接触、重量、方向与残留。风险不存在时不添加通用锁，不把内部QA、精确工程参数或负向清单写入Prompt；所有空间、资产、物理和镜头事实继续只继承对应owner。
+11. **Prompt Compression**：执行`Source Carries State, Prompt Carries Delta`，只保留当前Clip的dramatic、performance、blocking、camera、timing与information delta。
+12. **Writer + Director Intent Preservation QA**：最终Prompt必须同时保住关键人物意图、潜台词、Writer Beat顺序、Setup-Payoff / 信息时机、关系变化，以及注意力顺序、可见表演、构图功能、Camera Trigger / Stop、节奏与余韵；如果压缩后只剩“好看、电影感、慢推、情绪化”或直白情绪说明，判FAIL并回到本Pass修复。最终内容不得出现Writer / Director Packet、dominance、理论句或冗余参数。
 
 当前双人/钢琴等克制关系场景中，如果上游确认“共同朝前、只有gaze泄漏、延迟确认”，Prompt必须让共同朝向先成为稳定关系基线，再让单一视线变化获得注意力；镜头在该Beat前Hold，只有导演意图需要时才在Beat后启动或继续保持静止。不得自动改成互看、同时转头、每镜慢推或Voice Profile。
 

@@ -77,7 +77,7 @@ Image Generated
 Asset Confirmed
 ```
 
-固定迁移顺序为`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。Prompt Draft必须等待用户确认当前Prompt Revision；Prompt Confirmed才允许调用图片生成；Image Generated只允许登记Candidate References；Asset Confirmed必须有用户对图片的确认依据，才可写入Canonical References并切换Active Version。
+固定迁移顺序为`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。Prompt Draft必须等待用户确认当前Prompt Revision；只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Prompt Confirmed才允许调用图片生成；Image Generated只允许登记Candidate References；Asset Confirmed必须有用户对图片的确认依据，才可写入Canonical References并切换Active Version。
 
 ### Two-Tier Record Semantics
 
@@ -97,7 +97,7 @@ Image Generated  → Prompt Status: Confirmed / Image Status: Candidate     / Co
 Asset Confirmed  → Prompt Status: Confirmed / Image Status: Confirmed     / Confirmed Status: Yes
 ```
 
-Core Asset、Support Board和Support Item均只有在用户明确确认对应图片后才能写`Confirmed Status: Yes`。Support的整板确认必须能核对Board ID与Item ID；部分Item未获明确批准时，该Item继续为`No`，不得由含糊的整板状态自动升级。
+Core Asset、Support Board和Support Item均只有在用户明确确认对应图片后才能写`Confirmed Status: Yes`。FAST不得替代该图片确认。Support的整板确认必须能核对Board ID与Item ID；部分Item未获明确批准时，该Item继续为`No`，不得由含糊的整板状态自动升级。
 
 CHAR记录还允许在同一Active Version内保存由用户显式调用`AUDIO / SEED-AUDIO Voice Asset`模块创建的文字型角色音色子资产：
 
@@ -204,6 +204,14 @@ Mutable State Dimensions只允许剧情授权的状态变化，例如湿润、�
 5. 旧Version标记Superseded但不删除。
 6. project_status.md创建新Revision并登记需要重检的下游产物。
 
+### Environment Spatial Lock
+
+对采用`knowledge/environment_multi_view_reconstruction.md`的Core ENV，Asset Registry在同一ENV Active Version中记录`Spatial Reconstruction`、`Environment View Set`、`Major Spatial Anchors`、`Character Activity Zones`、`Entrances / Exits`和`Spatial Lock`。这些是环境资产事实，不创建新资产类型、ID命名空间、STATE或第二Registry。
+
+`Spatial Lock: Locked`要求：适用的环境View均为已确认Canonical References、ENV-01仍是母参考、Spatial Consistency Check通过。锁定的Spatial Truth包含环境边界、墙体、门窗、大型家具/固定物、主要通道、重要距离和活动范围；它优先于Storyboard与Shot Composition。临时站位、镜头构图、轻微透视和非关键杂物不是Spatial Revision。
+
+改变锁定Spatial Truth时，记录为**Spatial Revision**并按本Change Protocol创建Candidate ENV Version。只复核依赖该空间事实的Storyboard、Spatial Blocking / Shot、Clip、Prompt和Review产物；旧Version保留且不得由下游图、故事板或模型输出静默覆盖。
+
 ---
 
 ## Validation Invariants
@@ -227,6 +235,8 @@ Mutable State Dimensions只允许剧情授权的状态变化，例如湿润、�
 - 每个Active CHAR Version必须把Canonical Character Appearance And Form Lock所列的适用身份特征登记为Immutable Traits，或通过Canonical References明确锁定；不得把物种形态或非人身体结构遗漏为可自由推断项。
 - 动作、姿势、表情、机位、景别、构图或镜头运动变更不得触发未授权的CHAR外观重设计。
 - 与Active CHAR Version冲突的新参考或生成结果不得成为Confirmed Artifact、Canonical Reference或最终视频交付；Review必须拒绝外貌、形态、服装基础、配色、物种或非人结构漂移。
+- `Spatial Lock: Locked`的ENV必须有已确认View Set与Major Spatial Anchors；没有双确认的Candidate View不得提供锁定事实或作为下游环境Canonical。
+- Spatial Revision必须遵循Candidate ENV Version、影响检查、用户批准与Active切换；Storyboard、Shot Composition或人物临时Blocking不得静默改写Spatial Truth。
 
 ---
 

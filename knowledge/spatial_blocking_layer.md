@@ -14,10 +14,10 @@ Spatial Blocking Layer 用“Scene Spatial Snapshot + Text Spatial Rules + Top-d
 - **触发**：每个进入 STATE-06 的 Scene 都执行 Spatial Blocking Decision；只有达到相应复杂度时才启用俯视图。
 - **不触发独立图像**：单人无走位、简单双人静态，或经判定仅有受限局部移动且不存在换边 / 越轴 / 多 Clip 风险时，不生成俯视图。
 - **所属位置**：`STATE-05 Scene Breakdown → STATE-06 Spatial Blocking Decision（内部）→ Professional Detailed Shot Script → STATE-07 Clip Production`。
-- **Required Inputs / 唯一来源**：Scene Breakdown 的场景边界与剧情动作、Active Environment / Character / Prop / FX 版本、Visual Direction、Sequence Plan（如适用）、已确认首尾帧和用户明确确认的空间事实。不得从风格名、运镜偏好或模型猜测新增门窗、家具、路线、人物动作或道具状态。
+- **Required Inputs / 唯一来源**：Scene Breakdown 的场景边界与剧情动作、Active Environment / Character / Prop / FX 版本、Visual Direction、Sequence Plan（如适用）、已确认首尾帧和用户明确确认的空间事实。若当前ENV采用多视角重建，读取其已锁定View Set、Major Spatial Anchors、活动区和出入口；不得从风格名、运镜偏好或模型猜测新增门窗、家具、路线、人物动作或道具状态。
 - **Output**：每个 Scene 一份 `Spatial Blocking Result`，至少包含 Decision、Scene Spatial Snapshot、Structured Blocking Map、Text Spatial Rules、Clip Boundary Spatial Ledger，以及适用时的 Top-down Blocking Map Prompt / 图像。该结构是生产工件，不是新的 Shot、Clip 或 Seedance 输出 Schema。
 - **Output Owner / 保存位置**：本 Knowledge 定义判断方法；STATE-06 Workflow 拥有执行与确认。Work/Codex 写入 `<active-project-root>/shots/spatial_blocking/SCENE-xxx_spatial_blocking.md`，图像写入同目录并登记同一 Revision；普通 Chat 保留在当前 STATE-06 Checkpoint 与 Portable State 摘要中。
-- **允许读取 / 写入**：只读已确认项目事实与 Active Canonical Assets；只写上述空间调度工件和当前 STATE-06 Checkpoint。Top-down Map 是 Planning Reference，不得登记为 Canonical Character / Environment / Prop / FX Asset，不得进入 STATE-08【参考资产】。
+- **允许读取 / 写入**：只读已确认项目事实与 Active Canonical Assets；只写上述空间调度工件和当前 STATE-06 Checkpoint。ENV-04是STATE-03已确认的Environment Canonical布局视角；本Layer自己的Top-down Map仍是Planning Reference，不得登记为 Canonical Character / Environment / Prop / FX Asset，不得进入 STATE-08【参考资产】。
 - **下游消费者**：STATE-06 Professional Detailed Shot Script、STATE-07 Clip Production、STATE-09 Review；STATE-08 只能通过 Confirmed Clip Production Plan 接收已投影的空间语义。
 - **禁止修改**：剧情事实、资产身份 / Active Version、Scene 目的、正式 SHOT / CLIP 顺序、导演决策、既有运镜原子、Template 字段及 STATE-08 最终 Prompt 结构。
 - **冲突路由**：场景结构或剧情动作不清返回 STATE-05；资产空间事实冲突返回对应 STATE-03 资产拥有者；逐镜 Blocking / 轴线 / 移动容量冲突留在 STATE-06；Clip 边界继承错误返回 STATE-07；只发生在 Prompt 转译或生成执行中的偏差返回 STATE-08。

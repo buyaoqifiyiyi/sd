@@ -21,6 +21,7 @@
 - 非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前分镜World-State不适用的资产及与当前生成无关的资产必须在计数前删除。完全位于转换后世界的Clip不得保留转换前世界的环境或道具形态；只有当前Clip正在执行已确认状态转换时，转换前后资产才可按各自阶段同时作为候选。
 - 上一Clip尾帧是否必需由Preflight的A/B/C决定，不由图片当前是否存在决定。A【同镜头连续承接】与B【新镜头参考型】均为`Tail Frame Required = YES`并预留1个Projected连续性图片位；【参考资产】必须直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、对应用途类型与真实状态。未提供时写“待用户提供/待上传、未确认”，不得写假路径、不得冒充已上传/已确认图片，也不得计入已提交图片数；实际存在、可访问并已确认后才进入已提交图片清单。C【新镜头且无需尾帧】为`NO`，不得加入或预留上一尾帧。
 - Storyboard、多格分镜板、拼图、接触表、Scene Top-down Blocking Map与设计表截图继续服从既有禁用规则，不因预算紧张而获得引用资格。唯一例外是按`knowledge/clip_preflight_check.md`为单一Clip生成 / 接收、通过Sketch Validation与Template Content Leakage Check、已注册Confirmed且只承担Clip Blocking / Visual Blocking Authority的`REF-SKETCH-XX`；它不是Storyboard、Planning Map或Canonical Asset，并按实际图片数计位。`REF-SKETCH-MASTER`不属于这个例外的最终视频输入层。
+- 已锁定多视角环境的ENV-01～04或Extension是独立的Environment Canonical候选；只有当前Clip确实需要其整体空间、对应朝向、布局/距离或关键区域时才按`knowledge/environment_multi_view_reconstruction.md`选择2–4张。ENV-04不得与STATE-06的Top-down Blocking Map混淆；后者仍没有视频参考资格。
 
 ## Conditional Trigger Thresholds
 

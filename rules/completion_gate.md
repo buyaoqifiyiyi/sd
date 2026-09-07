@@ -11,7 +11,7 @@
 1. 当前Workflow声明的Required Inputs已验证。
 2. Required Resources已在本次执行中实际读取；适用的Conditional Resources也已读取。
 3. Workflow所有必需步骤与本阶段质量检查已完成。
-4. 需要用户确认的Prompt、图片、Production Script、Clip Plan或其他Artifact已获得明确确认。
+4. 需要用户确认的Prompt、图片、Production Script、Clip Plan或其他Artifact已获得明确确认；只有`rules/automation_mode.md`明确列为FAST Eligible且已留下自动接受证据的Prompt、STATE-06 Detailed Shot Design或STATE-07 Clip Plan可替代该项，图片与Production Script Proposal不在替代范围内。
 5. 输出通过当前Template完整性检查，且没有竞争Schema。
 6. 当前状态、Artifact、Revision、Checkpoint、Pending Decision与Next Workflow已按状态合同成功写回；失败时不得伪称阶段完成。
 
@@ -30,8 +30,8 @@
 ## Confirmation Boundaries
 
 - STATE-01只有`Script Status: Production-Locked`才能完成。
-- STATE-03必须完成Prompt确认与图片确认双闭环；Image Generated不等于Asset Confirmed。
-- STATE-07必须有Confirmed Clip Production Plan并通过逐ClipPreflight与Reference Budget。
+- STATE-03必须完成Prompt确认与图片确认双闭环；FAST可自动确认符合资格的Prompt并批量生成Candidate，但Image Generated不等于Asset Confirmed。
+- STATE-07必须有Confirmed Clip Production Plan并通过逐ClipPreflight与Reference Budget；FAST只在所有条件已通过并保留自动接受证据时可确认该Plan。
 - STATE-08必须消费Confirmed Clip Production Plan，并按`workflows/11_video_generation_workflow.md`与`templates/10_video_prompt.md`完成逐Clip验证。
 - 用户只要求下一步时不得把未来阶段或待确认资产提前标记完成。
 

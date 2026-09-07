@@ -105,6 +105,7 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 根据镜头内容按需读取：
 
 - knowledge/spatial_blocking_layer.md（所有Scene；在正式分镜生成前完成Spatial Blocking Decision）
+- knowledge/environment_multi_view_reconstruction.md（仅当前Active Core ENV存在Spatial Reconstruction时；继承Spatial Lock与View Set，不重做环境资产）
 - knowledge/screenplay_development.md（所有Scene；读取Writer Intent Packet与Writer → Director Handoff，不从中提取Camera参数）
 - knowledge/director_decision_layer.md（所有Scene / Shot Group；在STATE-06结束前形成内部Director Decision Notes）
 - knowledge/action_previs.md（Action-dominant / Mixed，以及需要展开物理动作的Performance-dominant镜头）
@@ -192,7 +193,7 @@ Scene Breakdown。
 
 在创建正式SHOT或选择机位、焦段、构图和运镜前，必须对每个Scene执行`knowledge/spatial_blocking_layer.md`：
 
-1. 从Scene Breakdown、Active Assets、Sequence Plan（如适用）与已确认首尾帧提取空间事实；
+1. 从Scene Breakdown、Active Assets、Sequence Plan（如适用）与已确认首尾帧提取空间事实；当前ENV具有Spatial Lock时，先继承其View Set、Major Spatial Anchors、活动区/出入口与Spatial Truth，再设计Camera Zone、Direction和角色调度；
 2. 按人物数量、走位、进出场、动作类型、障碍 / 道具复杂度、Clip数量与180度轴线要求判定：`Text-Only / Top-down + Text Recommended / Top-down + Text Default`；
 3. 无论采用哪种方式，都先完成Structured Blocking Map与Text Spatial Rules；
 4. 双锁场景再准备Top-down Blocking Map Prompt或图像，并与文字规则逐项对照；
@@ -212,6 +213,7 @@ Spatial Blocking Result至少锁定：
 - 当前环境支持图像生成且Decision要求双锁时，先输出完整Top-down Blocking Map Prompt，把STATE-06保持`IN_PROGRESS`并记录`Prompt Awaiting Confirmation`；未经用户确认当前Prompt Revision，不得生成图，也不得进入正式分镜。
 - 用户确认后才生成并核对俯视图；标签缺失、路径冲突或与文字规则不一致时，先最小修正或回退Structured Text，不能把错误图当作Confirmed结果。
 - 用户明确不想生图、当前任务不需要生图或工具不可用时，输出完整`Structured Text Fallback`与风险说明后可继续；不得声称已存在图像。
+- `Automation Policy: FAST`且当前Blocking Map不触及Hard Stop时，可按`rules/automation_mode.md`自动确认该Map Prompt、生成并验证技术草图；通过后继续正式分镜。草图仍不是Canonical Asset，失败仍回退Structured Text或最小Return Route。
 
 Work/Codex把结果写入`<active-project-root>/shots/spatial_blocking/SCENE-xxx_spatial_blocking.md`；普通Chat把它保存为当前STATE-06 Checkpoint。Top-down Map只是Planning Reference，不是Storyboard、Canonical Asset或STATE-08视频参考资产。
 
@@ -417,7 +419,7 @@ COV-001（如适用）
 - `台词 / 旁白 / 口播`覆盖所有角色对白、旁白、广告口播与有意无台词；必须标明说话者、完整文本、表演指令与口型容量，禁止使用固定“女声口播”字段。
 - `同期声音设计`必须以清楚的独立子项分别记录`环境声`、`同步音效 / Foley / 呼吸 / 剧情内声源`与`声音尾部`。本字段永久禁止背景音乐、配乐、BGM、主题音乐、氛围音乐、歌曲或“无配乐”等音乐说明；用户的配乐请求必须分流至独立MUSIC / SEED-MUSIC模块。
 - `AI制作备注`至少记录Start Boundary、End-Frame Constraint、Next-Shot Handoff、Execution Risk / Seedance稳定等级、口型/动作/FX并发负荷、稳定降级、Coverage映射、禁止项，并以独立子项明确`角色一致性`、`环境一致性`、`道具一致性`与`生成风险 / 控制项`；不得把内部Director Decision Notes或Knowledge Reflection写入正式表格。
-- `素材 / 资产`逐项列出本镜实际使用的Canonical Character / Environment / Prop / FX / Voice or Audio Reference、合法首尾帧及Active Version/用途；Storyboard、分镜板、拼图或Detailed Shot Design截图不得作为视频参考资产。
+- `素材 / 资产`逐项列出本镜实际使用的Canonical Character / Environment / Prop / FX / Voice or Audio Reference、合法首尾帧及Active Version/用途；连续性敏感环境写明所属ENV、Camera Zone / Direction、关键背景结构与适用View Set的引用依据，但不把全部环境View机械列入。Storyboard、分镜板、拼图或Detailed Shot Design截图不得作为视频参考资产。
 
 Template定义的全部字段属于同一SHOT的统一生产记录，不能用多个互相矛盾的简化描述拼接。内部Camera Language Decision、Execution Risk与Director Decision负责推导和审核；正式用户可见交付只输出Template拥有的专业字段，不暴露内部逐步决策或Knowledge Reflection。
 

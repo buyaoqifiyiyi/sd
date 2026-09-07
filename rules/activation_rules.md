@@ -16,6 +16,10 @@
 
 用户明确说“调用SD流程”“用SD Film”“按SD流程”或无歧义等价表达时激活。完整Runtime Reload Trigger词表只由`rules/runtime_reload.md`拥有；凡命中其中任一显式调用/重新调用/重新加载表达，必须先完成Runtime Reload Gate，再进行意图、State Source与Workflow路由。Activation不得把重载降级成仅激活，也不得另建平行触发表。
 
+## Fast Automation Activation
+
+用户明确说“开启自动推进”“快速制作模式”“Fast Mode”或同义表达时，在State Source合法解析后读取`rules/automation_mode.md`并启用`Automation Policy: FAST`。该表达不等于剧本锁定、外部生成提交、图片Canonical确认、首次模型选择或Review PASS授权；关闭指令恢复`STANDARD`。
+
 ## Intent Is Goal, Not Current State
 
 用户提到“视频Prompt”“Seedance”“海报”“Storyboard”等通常描述目标，不证明前置阶段已经完成。激活后必须先按`rules/state_source.md`确认当前State，并按主Pipeline补齐Completion Gate，不能依据关键词直接跳转。

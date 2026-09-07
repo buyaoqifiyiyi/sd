@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r13 structural and routing validation for SD Film."""
+"""Deterministic r17 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -13,7 +13,8 @@ REQUIRED = (
     "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/midjourney.md",
     "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
     "templates/20_clip_plan.md", "templates/10_video_prompt.md",
-    "references/project_state_contract.md",
+    "references/project_state_contract.md", "rules/automation_mode.md",
+    "knowledge/environment_multi_view_reconstruction.md",
 )
 
 def read(root: Path, relative: str) -> str:
@@ -37,8 +38,15 @@ def validate_skill(root: Path) -> list[str]:
     runtime = read(root, "core/runtime-state.md")
     selection = read(root, "modules/model-selection.md")
     assets = read(root, "modules/assets.md")
+    automation = read(root, "rules/automation_mode.md")
+    performance = read(root, "knowledge/performance/micro_expression.md")
+    projection = read(root, "knowledge/prompt_compilation/state08_projection.md")
+    shot_qa = read(root, "knowledge/quality/shot_qa.md")
     character = read(root, "workflows/04_character_asset_workflow.md")
     environment = read(root, "workflows/05_environment_asset_workflow.md")
+    environment_reconstruction = read(root, "knowledge/environment_multi_view_reconstruction.md")
+    asset_lock = read(root, "references/asset_lock_contract.md")
+    spatial_blocking = read(root, "knowledge/spatial_blocking_layer.md")
     prop = read(root, "workflows/06_prop_asset_workflow.md")
     fx = read(root, "workflows/15_fx_asset_workflow.md")
     clip = read(root, "workflows/10_clip_production_workflow.md")
@@ -65,6 +73,16 @@ def validate_skill(root: Path) -> list[str]:
         (assets, "本模块是STATE-03图像工具选择与提示词适配的唯一owner"),
         (assets, "未明确指定外部图像模型：`Built-in Image`"),
         (assets, "明确指定`Midjourney`：读取`adapters/midjourney.md`"),
+        (assets, "明确指定非Midjourney的外部图像模型"),
+        (assets, "最小`CHANGE`与完整`PRESERVE`逻辑"),
+        (automation, "## FAST Eligible Work"),
+        (automation, "## Hard Stops"),
+        (automation, "将任何Candidate Image标为Canonical / Active"),
+        (state, "Automation Policy: STANDARD / FAST"),
+        (performance, "## Behavior Under Pressure"),
+        (performance, "Spatial Blocking仍是位置、朝向、距离和接触的唯一owner"),
+        (projection, "**Risk-driven Execution Locks**"),
+        (shot_qa, "### Risk-driven Prompt Evidence"),
         (midjourney, "只输出可直接粘贴的 Midjourney Prompt"),
         (midjourney, "不调用内置`image_gen`"),
         (midjourney, "不得默认附加`--v`、`--seed`、`--stylize`"),
@@ -72,10 +90,16 @@ def validate_skill(root: Path) -> list[str]:
         (environment, "modules/assets.md`的Asset Image Route"),
         (prop, "modules/assets.md`的Asset Image Route"),
         (fx, "modules/assets.md`的Asset Image Route"),
+        (environment, "Spatial Reconstruction: Full / Partial / Not Required"),
+        (environment_reconstruction, "ENV-01 + ENV-02 → ENV-03"),
+        (environment_reconstruction, "ENV-01 + ENV-02 + ENV-03 → ENV-04"),
+        (environment_reconstruction, "最相关2–4张"),
+        (asset_lock, "### Environment Spatial Lock"),
+        (spatial_blocking, "ENV-04是STATE-03已确认的Environment Canonical布局视角"),
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r12 routing marker: {marker}")
+            errors.append(f"missing r17 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -100,7 +124,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r13 structural and routing validation")
+    print("PASS: r17 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

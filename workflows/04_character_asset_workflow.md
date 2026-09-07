@@ -134,6 +134,10 @@ Asset Design
 
 每个Checkpoint都写入同一CHAR Version的`Visual Production Status`。Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revision确认不得生成图片，未经图片确认不得登记Canonical References、Active Version或confirmed asset。
 
+### FAST Automation Exception
+
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。符合资格的当前Prompt Revision可自动确认并按内置图像路由生成当前角色资产批次；所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图片确认、真实人物/品牌/授权、外部服务或任何Hard Stop。
+
 ### Existing Character Asset Fast Path
 
 若当前CHAR已有可读取且身份匹配的外部图像，且用户明确要求使用现有资产或跳过角色制作：

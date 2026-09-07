@@ -50,12 +50,18 @@ Asset Design
 
 Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revision确认不得生成图片，未经图片确认不得登记Canonical References、Active Version或confirmed asset。
 
+### FAST Automation Exception
+
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。符合资格的当前Prompt Revision可自动确认并按内置图像路由生成当前环境资产批次；所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图片确认、品牌/法务事实、外部服务或任何Hard Stop。
+
 执行前必须读取STATE-02的Asset Tiering Decision：
 
 - `Asset Tier: Core`：核心环境独立制作主参考图、多视角与关键区域设定图，形成可重复拍摄的空间锁。
 - `Asset Tier: Support`：同类环境小物、氛围装饰或低频环境元素按Board ID整合为Support Environment Reference Board；不得逐项制作完整Wide / Medium / Detail资产包。每板建议4—9个对象，风格统一但在轮廓、材质、颜色、比例和功能上清晰区分。
 
 Core与Support均执行相同的提示词确认与图片确认闭环。Support Board图片确认前，Board及其Item均不得标记confirmed。
+
+对于`Asset Tier: Core`，还必须读取`knowledge/environment_multi_view_reconstruction.md`并先作`Spatial Reconstruction: Full / Partial / Not Required`判断。它扩展本Workflow的既有主参考/多视角机制，不创建新STATE；Support不得因此暗中升级为四视图套图。
 
 ## Director-led Environment Function Pass｜Internal
 
@@ -75,6 +81,7 @@ Core与Support均执行相同的提示词确认与图片确认闭环。Support B
 - references/project_state_contract.md
 - references/asset_lock_contract.md（存在后必须读取）
 - templates/05_environment_asset_prompt.md
+- 当ENV为Core时：`knowledge/environment_multi_view_reconstruction.md`
 
 
 输入：
@@ -107,7 +114,7 @@ Core环境必须包含：
 
 
 
-## A. Wide Shot
+## A. Wide Shot / ENV-01 Master Establishing View
 
 
 大全景。
@@ -199,6 +206,8 @@ Core环境必须包含：
 
 材质逻辑。
 
+连续性敏感Core环境还按`knowledge/environment_multi_view_reconstruction.md`建立适用的`ENV-01`至`ENV-04` View Set、Major Spatial Anchors与Spatial Lock；其Spatial Truth优先于后续Storyboard与Shot Composition。
+
 
 
 ---
@@ -207,8 +216,8 @@ Core环境必须包含：
 
 先完成环境定义，再按`modules/assets.md`的Asset Image Route和Asset Tier使用`templates/05_environment_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
-- 主参考图Prompt（Main Reference Image Prompt）：通常为Wide Shot，完整建立环境身份、空间骨架、主要动线、建筑/地形关系、材质、实用光源与综合色彩。
-- 必要多视角Prompt（Required Multi-View Prompts）：根据人物活动区和镜头需求输出Medium Shot、反向视角、入口视角或高位布局视角；不需要时写`Not Required`及依据。
+- 主参考图Prompt（Main Reference Image Prompt）：通常为Wide Shot；适用空间重建时为`ENV-01 Master Establishing View`，完整建立环境身份、空间骨架、主要动线、建筑/地形关系、材质、实用光源与综合色彩。
+- 必要多视角Prompt（Required Multi-View Prompts）：先依空间重建Decision决定`Full / Partial / Not Required`。Full按`ENV-01 → ENV-02`、`ENV-01 + ENV-02 → ENV-03`、`ENV-01 + ENV-02 + ENV-03 → ENV-04`使用已确认多参考累积约束；不得采用纯单链漂移。Partial只输出有明确拍摄/连续性用途的View；不需要时写`Not Required`及依据。
 - 关键区域/细节Prompt：对剧情交互区、关键材质、标志性结构或尺度锚点输出独立可执行Prompt。
 
 以上独立Prompt Package只适用于Core环境。
@@ -251,7 +260,7 @@ templates/05_environment_asset_prompt.md
 
 Workflow负责空间、材质、状态变化与一致性判断；Template独占最终字段和排版。
 
-图片确认后更新asset_registry.md中的Asset Tier、Board ID、Item ID、`Visual Production Status: Asset Confirmed`、`Prompt Status: Confirmed`、`Image Status: Confirmed`、`Confirmed Status: Yes`、Prompt Revision、Prompt Confirmation、Candidate References、Image Confirmation、Active Version、Canonical References、Immutable Spatial Traits与`Status: Active`。图片确认前不得执行这些Active/Canonical/confirmed写入。
+图片确认后更新asset_registry.md中的Asset Tier、Board ID、Item ID、`Visual Production Status: Asset Confirmed`、`Prompt Status: Confirmed`、`Image Status: Confirmed`、`Confirmed Status: Yes`、Prompt Revision、Prompt Confirmation、Candidate References、Image Confirmation、Active Version、Canonical References、Immutable Spatial Traits与`Status: Active`。适用Core环境还记录Spatial Reconstruction、Environment View Set、Major Spatial Anchors、Character Activity Zones、Entrances / Exits和Spatial Lock；只有所需View通过Spatial Consistency Check且已确认，才可写`Spatial Lock: Locked`。图片确认前不得执行这些Active/Canonical/confirmed写入。
 
 
 
@@ -278,6 +287,10 @@ Workflow负责空间、材质、状态变化与一致性判断；Template独占�
 □ 可进入镜头设计
 
 □ Active Version与Canonical References已登记
+
+□ Full / Partial / Not Required判定有依据；Full的ENV-01～04采用累积多参考约束并通过Spatial Consistency Check
+
+□ 任何Spatial Lock都有已确认View Set、Major Spatial Anchors与Registry记录；冲突资产先修复，未继续扩展
 
 □ project_status.md已按references/project_state_contract.md记录Checkpoint
 

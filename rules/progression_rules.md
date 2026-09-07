@@ -15,6 +15,8 @@
 5. STATE-08多Clip项目按默认单Clip交付制，只输出下一个尚未交付Clip；除非用户本轮明确要求批量或全部输出。
 6. 状态变化后按`references/project_state_contract.md`写回。
 
+当`Automation Policy: FAST`时，先读取`rules/automation_mode.md`。对其明确列出的Eligible Work，当前Workflow完成必需QA后可在同一轮自动继续和写回；不得跳过State、Hard Stop、外部权限或事实冲突处理。未命中FAST资格时仍按本规则的最近Checkpoint停止。
+
 ## Authorization Boundary
 
 纯推进命令只授权继续已确定的下一生产步骤，不自动授权：
@@ -27,7 +29,7 @@
 - 跳过当前Completion Gate
 - 重做已接受且未受影响的Artifact
 
-若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止。不得把用户最终目标误解释为本轮立即交付全部后续成果。
+若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、内置图片生成批次、STATE-06/07自动接受和同轮`REF-SKETCH`后Prompt编译除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
 
 STATE-08的Before-Single-Clip-Prompt Gate是本规则的窄范围例外：用户请求指定Clip或说“下一个 / 下一步 / 继续”时，已授权系统执行该Clip的Final Visual Blocking Anchor Assessment。Final=`REQUIRED`时，生成并验证一张受限`REF-SKETCH`属于当前Prompt的自动内部生产步骤，不等同于STATE-03资产生图、Storyboard激活或Candidate确认；无需另行把纯推进命令解释为资产Prompt确认。本轮必须停在草图、注册与用途说明，下一次推进才输出Prompt。任何角色 / 环境 / 道具 / FX资产图、Formal Keyframe或非Gate图片仍服从原授权边界。
 

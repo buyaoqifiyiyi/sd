@@ -59,6 +59,7 @@
 - Chat Compatibility：`rules/chat_compatibility.md`
 - Progression：`rules/progression_rules.md`
 - Activation：`rules/activation_rules.md`
+- 自动推进策略与FAST资格/Hard Stop：`rules/automation_mode.md`
 - Completion Gate：`rules/completion_gate.md`
 - Compatibility Mapping：`rules/compatibility_mapping.md`
 - Resource Loading：`rules/resource_loading.md`
@@ -739,6 +740,18 @@ Module Type：项目控制Reference与辅助Workflow。
 Legacy Intent Backfill固定是additive compatibility pass：只补当前schema缺失且可从Confirmed Canon可靠推导的Writer / Director intent，保留Production-Locked Screenplay、Confirmed Assets、Blocking Canon / Spatial Snapshot、Confirmed `REF-SKETCH`、Accepted Take / accepted prompt及已确认镜头。它不得回STATE-01重做项目，也不得把Packet变成Portable字段或最终Template Schema。
 
 ---
+
+## Fast Automation Policy Contract
+
+Module Type：显式opt-in的Rule；不创建主STATE、项目事实、独立确认状态、Template字段或外部权限。
+
+Owner：`rules/automation_mode.md`。触发只能来自用户当前明确的自动推进指令；状态合同只镜像`Automation Policy`。`rules/progression_rules.md`消费其已确认的Eligible Work，`rules/completion_gate.md`只在本合同允许的范围内接受自动接受证据。
+
+FAST可以压缩当前Prompt确认、内置图片生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次选择或更改视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
+
+允许读取：当前用户指令、Selected State Source、当前Workflow、已确认上游事实和既有QA。允许写入：状态合同中的`Automation Policy`及既有Artifact / Version History中的自动接受证据。不得改写Production-Locked Script、Canonical Asset、用户确认、主Pipeline、最终Template Schema或外部授权。
+
+Validator不变量：只允许`STANDARD / FAST`；旧状态缺失值迁移为`STANDARD`；FAST不改变Hard Stop，Candidate Image和Production Script Proposal仍要求用户批准；任何文件引用都指向本Rule owner。
 
 ## Quality Knowledge Contract
 

@@ -10,6 +10,7 @@
 
 - 未明确指定外部图像模型：`Built-in Image`。Prompt Draft交付适合内置 Image 的结构化图片提示词，按资产需要写清主请求、主体、场景/背景、风格、构图、光影、材质和约束；Prompt Confirmed后，用户要求生成且当前环境可用时调用内置`image_gen`输出图片。用户只要提示词、或当前环境不可生成时，只交付该提示词，不伪称已生成。
 - 明确指定`Midjourney`：读取`adapters/midjourney.md`。交付该适配器格式的 Midjourney Prompt，且始终不调用内置`image_gen`。用户在Midjourney生成并回传结果后，才按既有流程登记Candidate Reference。
-- 未明确指定模型不能静默切换至第三方服务；其它外部模型必须由用户明确指定且不继承 Midjourney 格式。
+- 明确指定非Midjourney的外部图像模型：不调用内置`image_gen`，也不借用Midjourney或任一视频模型格式。若已有该模型的可核验Adapter，只读取它；否则交付模型中立、自然散文的资产Prompt，优先写主体/身份锚点、场景、构图、光线、材质和当前资产约束，并将画幅、分辨率、参考上传与其他UI参数留给用户的平台界面。对已有图像的局部编辑，只在真实输入图可用时采用最小`CHANGE`与完整`PRESERVE`逻辑；不把编辑Prompt或外部平台能力伪称为生成结果。用户回传结果后，既有Candidate Reference与双确认Gate不变。
+- 未明确指定模型不能静默切换至第三方服务；其它外部模型必须由用户明确指定且不继承 Midjourney 格式或未经验证的能力边界。
 
 路由在每个Prompt Draft记录；生成记录继续保存实际工具/模型、参数、来源与授权。Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed的双确认顺序不变。

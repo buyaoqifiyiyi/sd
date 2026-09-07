@@ -46,6 +46,18 @@ Immutable Spatial Traits：
 
 Mutable State Dimensions：
 
+Spatial Reconstruction：Full / Partial / Not Required
+
+Environment View Set：
+
+Major Spatial Anchors：
+
+Character Activity Zones：
+
+Entrances / Exits：
+
+Spatial Lock：Unlocked / Locked
+
 Dependencies：
 
 目标图像工具/模型（如已知）：
@@ -83,6 +95,8 @@ Confirmed Status：No / Yes
 - 时间、天气与允许状态：
 - Immutable Spatial Traits：
 - Mutable State Dimensions：
+- Spatial Reconstruction Decision / Basis：Full / Partial / Not Required；仅Core适用，Support写`Not Applicable`
+- Environment View Set / Major Spatial Anchors / Activity Zones / Entrances / Exits：仅适用Core记录；不适用写依据
 
 ## Image Prompt Package
 
@@ -105,9 +119,11 @@ Confirmed Status：No / Yes
 
 输出一条可独立复制执行的完整Wide Shot Prompt，写全环境主体、空间关系、视点/构图、尺度锚点、材质、光源方向与光质、综合色彩、天气/时间、项目视觉风格、一致性限制、必要负面限制和生成参数。
 
+适用空间重建时将其标为`ENV-01｜Master Establishing View`，并明确这是后续View的母参考。
+
 #### Required Multi-View Prompts
 
-根据拍摄与行动需求逐项输出Medium Shot、反向视角、入口视角或高位布局视角的独立完整Prompt；不需要时写`Not Required`及依据。每条不得使用“同上/参考前述”。
+根据拍摄与行动需求逐项输出独立完整Prompt；Full固定评估`ENV-02｜Reverse View`、`ENV-03｜Oblique Overhead View（默认约45°）`、`ENV-04｜Top-Down Spatial View（90°）`，Partial只输出有明确用途的View。每条写View ID、用途、所用已确认多参考、不可变Major Spatial Anchors与当前视点任务；顺序必须为`ENV-01 → ENV-02`、`ENV-01 + ENV-02 → ENV-03`、`ENV-01 + ENV-02 + ENV-03 → ENV-04`，不得纯单链漂移。每条不得使用“同上/参考前述”。
 
 #### Key Area / Detail Prompts
 
@@ -130,6 +146,7 @@ Confirmed Status：No / Yes
 
 - Prompt Completeness Check：
 - Spatial Consistency Check：
+- Spatial Reconstruction QA：几何、Anchor、方向（含180°回望）、光线/风格、叙事活动能力；严重冲突时停止扩展并返回受影响View修复。
 - Awaiting User Confirmation：`Image Prompts`
 - Prohibited Next Action：当前Prompt Revision确认前不得生成图片。
 
@@ -167,7 +184,7 @@ Support记录还必须保留Board ID、Item ID与同一Board Canonical Reference
 
 ## Asset Lock Record
 
-Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Production Status、Prompt Status、Image Status、Confirmed Status、Prompt Revision、Image Prompts、Prompt Confirmation、Candidate References、Image Confirmation、Canonical References、Immutable Spatial Traits、Mutable State Dimensions、Approval Basis与Downstream Usage。
+Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Production Status、Prompt Status、Image Status、Confirmed Status、Prompt Revision、Image Prompts、Prompt Confirmation、Candidate References、Image Confirmation、Canonical References、Immutable Spatial Traits、Mutable State Dimensions、Spatial Reconstruction、Environment View Set、Major Spatial Anchors、Character Activity Zones、Entrances / Exits、Spatial Lock、Approval Basis与Downstream Usage。
 
 
 ## Wide Shot

@@ -10,13 +10,14 @@
 
 - 已确认 Detailed Shot Design
 - 已确认 Character / Environment / Prop / FX Assets
+- 若Environment为`Spatial Lock: Locked`：其Active Version、适用Environment View Set、Major Spatial Anchors、活动区/出入口
 - Visual Direction
 - 需要视觉化的 Shot ID、画格数量、比例与用途
 
 ## Responsibilities
 
 - 将已确认 Shot 视觉化为辅助预演，不新增或改写剧情、Shot、资产、动作结果或连续性事实
-- 每格保留 Shot ID、构图、人物/空间关系、关键动作状态和必要边界注记
+- 每格保留 Shot ID、所属ENV、构图、Camera Zone / Direction、人物位置/朝向、主要背景结构、与上一镜的空间关系、关键动作状态和必要边界注记；这些是既有Shot/资产事实的可视化，不改写Spatial Truth
 - 输出使用 `templates/09_storyboard_prompt.md`
 - 产物登记为 Auxiliary Storyboard Artifact，不改变 Current State、Next Workflow 或主流程 Completion Gate
 

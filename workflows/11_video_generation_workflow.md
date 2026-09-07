@@ -9,13 +9,14 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 - `modules/prompt-generation.md`
 - 当前 Selected Adapter
 - `knowledge/prompt_compilation/state08_projection.md`
+- 当前Clip使用Spatial Lock环境时：`knowledge/environment_multi_view_reconstruction.md`
 - `knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
 - `templates/10_video_prompt.md`
 
 ## Procedure
 
 1. 核验 Execution Clip Plan、Adapter Profile、状态、资产和 Shot/Blocking Revision 一致；缺失或冲突回 STATE-07 或事实 owner。
-2. 对当前一个 Confirmed Execution Clip 执行最终 Reference、A/B/C 尾帧、Visual Blocking Anchor、连续性和 Prompt Preflight。不得把 Storyboard、Top-down Map 或文字伪资产作为视频参考。
+2. 对当前一个 Confirmed Execution Clip 执行最终 Reference、A/B/C 尾帧、Visual Blocking Anchor、连续性和 Prompt Preflight。Spatial Lock环境只使用STATE-07按风险预选并仍为Active/Confirmed的2–4张环境View；不得把Storyboard、STATE-06 Top-down Planning Map或文字Spatial Truth作为视频参考。`Automation Policy: FAST`下，Final Assessment=`REQUIRED`的`REF-SKETCH`验证并登记后可在同一轮继续当前Clip编译；STANDARD仍保留草图Checkpoint，任何失败照常返回最小owner。
 3. 通过 Projection 将已确认事实写入 Template 既有字段。每个 Clip 独立完整输出；不输出 Adapter、模型、内部账本、时间码或新的 Schema。
 4. 不改写剧情、关系、导演意图、Shot 目的、Blocking 或 Canonical Asset。Voice 仅显式 opt-in；Prompt 永久禁止 BGM/配乐。
 

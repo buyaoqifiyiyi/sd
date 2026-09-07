@@ -10,6 +10,12 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 正常调用方式不变：继续使用`调用sd`开始或路由，使用`下一步 / 继续`从当前Checkpoint推进。普通“下一步”不会无意义全量reload。
 
+## 自动推进模式
+
+当你想少确认、多产出时，明确说：`调用sd，开启自动推进，按快速制作模式继续。` 之后 SD Film 会自动确认符合条件的资产提示词、批量生成内置图像候选、在QA通过后继续分镜与Clip计划，并在需要调度草图时同轮产出当前Clip Prompt。
+
+它仍会在四类情况停下：制作版剧本锁定、首次视频模型选择、资产候选图片转为正式Canonical资产，以及真实人物/品牌/法务内容、外部服务或实际视频Review。随时说`关闭自动推进`即可恢复标准模式。
+
 在Codex中需要确定性启动时使用`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin，本机独立SD Film没有以`@`选择显示名的入口；`agents/openai.yaml`也不会把它注册成Plugin。普通Chat只有在宿主实际暴露本机Skills时，才可能通过`调用sd`等自然语言隐式选择。Skill更新后若Codex旧会话没有刷新，先重启桌面应用或新建Codex任务再试。当前运行时安装位置为`.codex/skills/sd-film`；不要为了普通Chat、网页端或移动端边界复制为第二份本机Skill。
 
 如需查看内部方向，可以说：`显示当前Scene的导演意图`、`为什么这样拍`或`显示这个Clip的镜头语言策略`。Skill只会给简洁摘要，不会把完整内部Packet塞进最终Prompt。
@@ -30,6 +36,8 @@ STATE-03没有指定图像模型时，默认使用内置 Image：先交付可确
 
 明确说“用 Midjourney 制作这个资产”时，系统只输出可直接粘贴的 Midjourney 英文提示词，不调用内置 Image，也不把提示词当作已生成图片。你在Midjourney生成后把结果回传，系统才继续候选图确认与资产锁定。这项选择只影响资产创作，不影响后续Seedance视频模型或Clip时长。
 
+明确指定其他外部图像模型时，系统同样只输出提示词、不会静默调用内置 Image；有已验证适配器时按该模型适配，没有时提供不假设平台能力的自然语言资产提示词。若要编辑已有图，请同时提供该图并明确“只改什么、其余保持什么”；结果回传后仍需经过候选图确认。
+
 例如：
 
 ```text
@@ -48,7 +56,9 @@ STATE-03没有指定图像模型时，默认使用内置 Image：先交付可确
 | 资产缺失检查 | `调用sd，只检查当前项目缺少哪些角色、环境、道具和正式FX资产，不生成图片。` | STATE-02 Asset Discovery / 状态核验 |
 | 角色资产 | `调用sd，只制作CHAR-001角色视觉资产，先输出生图提示词，等我确认。` | STATE-03 Character Asset |
 | Midjourney角色资产 | `调用sd，只制作CHAR-001角色视觉资产，用Midjourney，先输出提示词。` | STATE-03 Character Asset / Midjourney Prompt Only |
+| 其他外部图像模型资产 | `调用sd，只制作CHAR-001角色视觉资产，用<模型名>，先输出提示词。` | STATE-03 Character Asset / Explicit External Prompt Only |
 | 环境资产 | `调用sd，只制作ENV-001环境资产，先输出生图提示词，等我确认。` | STATE-03 Environment Asset |
+| 固定场景空间重建 | `调用sd，为ENV-001判断是否需要环境多视角空间重建；如需完整重建，按ENV-01至ENV-04先输出提示词，等我确认。` | STATE-03 Environment Asset |
 | 道具资产 | `调用sd，只制作PROP-001道具资产，先输出生图提示词，等我确认。` | STATE-03 Prop Asset |
 | 角色音色 | `调用sd，为CHAR-001设计角色音色，并输出独立Seed Audio兼容提示词。` | AUDIO / SEED-AUDIO 可选模块 |
 | 配乐 | `调用sd，为整条片子规划配乐与留白，并输出需要的SeedMusic纯音乐提示词。` | MUSIC / SEED-MUSIC 可选模块 |

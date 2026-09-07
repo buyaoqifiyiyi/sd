@@ -5,9 +5,9 @@ description: AI影视虚拟制片生产系统。处理剧本、导演转译、�
 
 # SD Film
 
-Skill Version: 2026.09.05-r13
+Skill Version: 2026.09.07-r17
 
-Build ID: sd-film-2026.09.05-r13
+Build ID: sd-film-2026.09.07-r17
 
 ## Core
 
@@ -47,5 +47,7 @@ Build ID: sd-film-2026.09.05-r13
 - `REF-SKETCH` 只用无性别技术调度人偶，且只控制空间/姿态/机位关系；不得成为角色外观或 Canonical Asset。
 - A/B/C 尾帧、资产双确认、连续性、Voice opt-in 与视频 Prompt 永久无 BGM 继续由各自现有 owner 执行。
 - Runtime Reload：`rules/runtime_reload.md`；State Source：`rules/state_source.md`；推进：`rules/progression_rules.md`；激活：`rules/activation_rules.md`；资源按需读取：`rules/resource_loading.md`。
+- 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界。
+- 固定且连续性敏感的环境在STATE-03按需读取`knowledge/environment_multi_view_reconstruction.md`：它扩展既有Environment Asset与Canonical Lock，不创建新STATE；STATE-06/07/08只继承已锁定的空间事实和按风险选择的环境参考。
 
 每次正式修改同步递增 Version / Build，并执行 `references/module_contracts.md` 的 Change Safety Checklist、Standalone Skill Discovery Guard 与 Runtime Startup / Recovery Guard。

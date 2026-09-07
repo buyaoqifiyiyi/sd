@@ -234,6 +234,8 @@ Prompt Revision与Prompt Confirmation。
 
 Candidate References与Image Confirmation。
 
+适用Core ENV还记录Spatial Reconstruction、Environment View Set、Major Spatial Anchors、Character Activity Zones、Entrances / Exits与Spatial Lock。
+
 正式资产锁定与变更必须服从：
 
 references/asset_lock_contract.md
@@ -374,6 +376,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 - 身份、脸型、服装、物种或基础外观漂移风险 → 当前Active Character Version的适用Canonical References。
 - 场景结构、门窗/家具/地标、方位或空间尺度漂移风险 → 当前Active Environment Canonical References；站位、路径、轴线与摄影机侧继续由Confirmed Spatial Blocking与文字空间规则承担，Top-down Blocking Map本身没有视频视觉输入资格。
+- 连续性敏感且已锁定的Core ENV → 按`knowledge/environment_multi_view_reconstruction.md`从ENV-01～04或有明确用途的扩展View选择当前摄影机方向、布局/距离和背景结构最相关的2–4张已确认环境Canonical图；不得机械全选，也不得用文字Spatial Truth或STATE-06 Planning Map冒充图片参考。
 - 道具造型、材质、尺寸或可识别状态漂移风险 → 当前Active Prop Canonical References；持有者、左右手、位置、方向、接触和变化过程仍写入`道具状态`及起止状态，不把文字合同伪装成图片。
 - Final Visual Blocking Assessment=`REQUIRED`且文字 / Canonical / REF-TAIL仍不足以唯一锁定Position、Facing、Distance、Topology、Axis、Camera、Pose、Gaze或Action Path → 选择经Sketch Validation确认的当前`REF-SKETCH`；它不得承担身份、环境结构、道具造型、材质、色彩、灯光或最终画风。
 - A【同镜头连续承接】或B【新镜头参考型】确需上一状态锚定 → 按既有规则选择`REF-TAIL`并声明对应用途；C【新镜头且无需尾帧】不得引用或预留旧`REF-TAIL`。
@@ -394,7 +397,7 @@ STATE-02必须为每个CHAR、ENV、PROP执行Asset Tiering Decision；Asset Tie
 
 每板建议4—9个对象，风格统一但必须通过轮廓、服饰/材质、颜色、比例和功能差异清楚区分。每板必须有稳定Board ID，每个对象必须有稳定Item ID；确认后不得重排或复用。后续只按`<Board Name> / <Board ID> / <Item ID>`引用。
 
-Core与Support执行同一双确认闭环。未确认Prompt不得生成图；未确认图片不得把Core、Board或Item标记confirmed。若Support对象在制作中被发现实际需要高一致性、独立状态或关键识别，返回STATE-02复核并升级Core，不得在Support分支暗中制作完整独立套图。
+Core与Support执行同一双确认闭环。`Automation Policy: FAST`仅可按`rules/automation_mode.md`自动确认符合资格的Prompt并汇总生成Candidate；未确认图片不得把Core、Board或Item标记confirmed。若Support对象在制作中被发现实际需要高一致性、独立状态或关键识别，返回STATE-02复核并升级Core，不得在Support分支暗中制作完整独立套图。
 
 正式FX Asset继续服从既有Formal FX / Inline Effect规则，本Two-Tier变更不改其Workflow。
 
@@ -432,9 +435,9 @@ Asset Design
 
 - Image Prompt必须是完整、可直接生图的执行文本，不得只输出外观说明、关键词清单或“用于后续生成”的参考要求。
 - Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、项目视觉风格、一致性限制、必要负面限制与适用生成参数。
-- `Visual Production Status: Prompt Draft`时必须停止并等待用户确认。
+- `Visual Production Status: Prompt Draft`时必须停止并等待用户确认；只有`Automation Policy: FAST`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续内置图片生成。
 - 同步状态必须为`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`。
-- 只有用户对当前Prompt Revision明确说出“确认生成该图”“按此Prompt生成”或其他无歧义、指向该具体Revision的生成授权后，才可写`Prompt Confirmed`并调用图片生成工具。单独的“继续 / 下一步 / 下一个 / next”始终只是纯推进指令，即使只有一个待确认Prompt Package也不得视为Prompt确认或图片生成授权；必须服从`rules/progression_rules.md`。
+- 只有用户对当前Prompt Revision明确说出“确认生成该图”“按此Prompt生成”或其他无歧义、指向该具体Revision的生成授权后，才可写`Prompt Confirmed`并调用图片生成工具；`Automation Policy: FAST`的合格资产可由`rules/automation_mode.md`记录自动确认后继续。单独的“继续 / 下一步 / 下一个 / next”在STANDARD仍只是纯推进指令；FAST仍不得把它用于外部服务、Candidate图片确认或Hard Stop。
 - Prompt发生任何实质修改后返回`Prompt Draft`，旧确认不得自动继承。
 
 ## Image Gate
