@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r21 structural and routing validation for SD Film."""
+"""Deterministic r24 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -62,6 +62,7 @@ def validate_skill(root: Path) -> list[str]:
     camera_router = read(root, "knowledge/camera_language/shot_language_router.md")
     visual_styles = read(root, "knowledge/visual_styles/index.md")
     visual_workflow = read(root, "workflows/07_visual_development_workflow.md")
+    character_template = read(root, "templates/04_character_asset_prompt.md")
     required_markers = (
         (core, "STATE-06 后：Model Selection"),
         (runtime, "STATE-06 完成后的 Model Selection 成功后"),
@@ -87,6 +88,8 @@ def validate_skill(root: Path) -> list[str]:
         (compiler_h3, "官方三段式"),
         (compiler_h3, "非叙事性音乐：N/A"),
         (assets, "本模块是STATE-03图像工具选择与提示词适配的唯一owner"),
+        (assets, "### Direct Image Default"),
+        (assets, "当前agent的实际图片生成能力决定"),
         (assets, "未明确指定外部图像模型：`Built-in Image`"),
         (assets, "明确指定`Midjourney`：读取`adapters/midjourney.md`"),
         (assets, "明确指定非Midjourney的外部图像模型"),
@@ -102,10 +105,13 @@ def validate_skill(root: Path) -> list[str]:
         (midjourney, "只输出可直接粘贴的 Midjourney Prompt"),
         (midjourney, "不调用内置`image_gen`"),
         (midjourney, "不得默认附加`--v`、`--seed`、`--stylize`"),
-        (character, "modules/assets.md`的Asset Image Route"),
-        (environment, "modules/assets.md`的Asset Image Route"),
-        (prop, "modules/assets.md`的Asset Image Route"),
-        (fx, "modules/assets.md`的Asset Image Route"),
+        (character, "Asset Image Route"),
+        (character, "Direct Image Default"),
+        (character_template, "#### Combined Character Asset Sheet Prompt"),
+        (character_template, "Three-View Prompt"),
+        (environment, "Asset Image Route"),
+        (prop, "Asset Image Route"),
+        (fx, "Asset Image Route"),
         (environment, "Spatial Reconstruction: Full / Partial / Not Required"),
         (environment_reconstruction, "ENV-01 + ENV-02 → ENV-03"),
         (environment_reconstruction, "ENV-01 + ENV-02 + ENV-03 → ENV-04"),
@@ -123,7 +129,7 @@ def validate_skill(root: Path) -> list[str]:
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r21 routing marker: {marker}")
+            errors.append(f"missing r24 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -148,7 +154,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r21 structural and routing validation")
+    print("PASS: r24 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

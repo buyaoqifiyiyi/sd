@@ -391,7 +391,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 STATE-02必须为每个CHAR、ENV、PROP执行Asset Tiering Decision；Asset Tier与Primary / Secondary / Background优先级相互独立。
 
-满足任一条件即优先`Core`：主角或固定角色、跨场景或跨Clip反复出现、承担强剧情/角色/品牌识别、需要高一致性、关键场景、剧情关键道具。Core角色独立制作三视图/面部特写/必要状态变体；Core环境独立制作主参考图/多视角/关键区域图；Core道具独立制作主参考图/必要状态或细节图。
+满足任一条件即优先`Core`：主角或固定角色、跨场景或跨Clip反复出现、承担强剧情/角色/品牌识别、需要高一致性、关键场景、剧情关键道具。Core角色先生成一张外观参考图供用户确认角色外观；该图只用于设计决策，不能成为Canonical资产。用户确认后，才独立制作一张正式角色资产设定图：同一画布内固定包含面部特写与正面、严格侧面、背面全身三视图；必要状态变体另作独立图。Core环境独立制作主参考图/多视角/关键区域图；Core道具独立制作主参考图/必要状态或细节图。
 
 不满足Core条件的一次性配角/群演、群体背景角色、同类家具与环境小物、氛围装饰、低频道具通常为`Support`。Support不得逐个制作完整独立资产包，必须按同一资产类型和相近用途形成Support Reference Board；角色、环境、道具不得跨类型混板。
 
@@ -442,6 +442,7 @@ Asset Design
 
 ## Image Gate
 
+- 当前agent具备直接图片生成能力且用户请求制作资产时，按`modules/assets.md`的Direct Image Default直接生成Candidate Image；内部Prompt不向用户展示，记录为`Prompt Status: Confirmed`与`Prompt Confirmation: Direct Image Default — user requested asset production`。用户明确要求查看或只要Prompt、当前agent不能直接生成图片、或用户选择外部图像服务时，才输出Prompt并走Prompt确认Gate。
 - 图片生成后只写`Image Generated`，并把文件或受控外部ID登记为Candidate References。
 - Image Generated时同步状态必须为`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`。
 - 未经用户确认图片，不得写Canonical References、Active Version、`Status: Active`或`Asset Confirmed`。

@@ -76,21 +76,20 @@ PASS允许完成；REVISE/REBUILD保持STATE-09 IN_PROGRESS，记录Affected IDs
 
 ## R09 STATE-03 Double-Confirmation Closure
 
-以下三个最小案例必须依次通过四个Registry状态，且每个案例在`Prompt Draft`和`Image Generated`各停止一次。示例中的“用户确认”是测试事件，不代表实际项目批准。
+以下三个最小案例必须完成正式资产的Registry状态闭环。当前agent具备直接生图能力时，默认在`Image Generated`停止；当前agent不具备能力或用户要求Prompt时，才在`Prompt Draft`和`Image Generated`各停止一次。示例中的“用户确认”是测试事件，不代表实际项目批准。
 
 ### R09-C Character
 
 输入：`CHAR-001 林遥，28岁女气象工程师，短黑发，灰蓝防水工作服，冷静克制；有对白；无剧情状态变体。`
 
-Prompt Draft输出至少包含：
+当前agent具备直接生图能力时，首次输出为一张外观参考图并等待用户确认外观；不展示Prompt，也不得把这张外观参考图写入Candidate / Canonical References、Active Version或下游视觉输入。当前agent不能直接生图或用户明确要求Prompt时，外观参考图Prompt至少包含：
 
 - 角色定义只包含视觉身份与剧情事实；“有对白”不得触发角色音色描述、Voice Profile、Seed Audio Prompt或Voice Reference字段。
-- 三视图Prompt：`角色设定表，28岁东亚女性气象工程师林遥，椭圆脸、平直眉、深棕眼、短黑发齐耳并露出双耳，身高约168厘米、匀称偏瘦体型；穿灰蓝色连帽防水工作服、深灰工装裤、黑色防滑短靴，不佩戴首饰。纯浅灰无缝背景，同一画布从左到右为正面全身自然站姿、严格右侧全身、背面全身，三个视图等比例等高度，服装接缝、口袋、拉链、帽型、鞋型与颜色完全一致；柔和中性棚拍光，真实电影角色概念设计，清晰材质与结构，4:3横幅，高分辨率。禁止改变脸型、年龄感、身体比例、发型长度、服装结构与配色；禁止透视夸张、动态姿势、额外人物、文字、水印、拼错肢体。`
-- 面部特写Prompt：`林遥面部角色参考，28岁东亚女性，椭圆脸、平直眉、深棕眼、鼻梁自然、薄而清晰的唇形、真实轻微皮肤纹理、短黑发齐耳并露出双耳；正面头肩特写，平静中性表情，视线略高于镜头，浅灰无缝背景，柔和中性棚拍主光加弱填充，肤色准确，真实电影角色概念设计，1:1，高分辨率。严格继承三视图的脸型、年龄感、发际线、发长与发色；禁止美颜塑料皮、夸张妆容、笑容、首饰、额外人物、文字、水印、五官漂移。`
+- 正式角色资产设定图Prompt：`角色设定表，28岁东亚女性气象工程师林遥，椭圆脸、平直眉、深棕眼、鼻梁自然、薄而清晰的唇形、真实轻微皮肤纹理、短黑发齐耳并露出双耳，身高约168厘米、匀称偏瘦体型；穿灰蓝色连帽防水工作服、深灰工装裤、黑色防滑短靴，不佩戴首饰。纯浅灰无缝背景，一张4:3横幅画布固定为清晰四分区：从左至右三个等比例、等高度全身区域为正面自然站姿、严格右侧、背面；右侧第四区为正面头肩面部特写，平静中性表情、视线略高于镜头。四区必须为同一角色、同一年龄感、同一发际线和发型、同一服装接缝/口袋/拉链/帽型/鞋型/配色；柔和中性棚拍光，真实电影角色概念设计，清晰材质与结构，高分辨率。禁止拆为两张图，禁止改变脸型、年龄感、身体比例、发型长度、服装结构与配色；禁止透视夸张、动态姿势、额外人物、文字、水印、拼错肢体、美颜塑料皮、夸张妆容、笑容、首饰或五官漂移。`
 - 状态变体：`Not Required—剧本未确认额外视觉状态。`
-- `Visual Production Status: Prompt Draft`与`Awaiting User Confirmation: Image Prompts`；不得生成图片。
+- `Awaiting User Confirmation: Appearance Reference Prompt`；不得生成图片。
 
-模拟用户确认`Prompt Revision: P-v001`后，状态变为`Prompt Confirmed`。生成后仅登记`Candidate References: char-001-turnaround-c01.png; char-001-face-c01.png`，状态为`Image Generated`，不得出现Canonical References或Active。模拟用户确认两张图片后，最终记录必须为`Visual Production Status: Asset Confirmed`、`Status: Active`、`Active Version: v001`，并把两张已批准Candidate References升级为Canonical References；整个案例不创建声音资产，也不因缺少声音资产阻塞。
+模拟用户确认外观后，当前agent具备直接生图能力时直接生成一张正式合成角色资产图；不能直接生图或用户要求Prompt时，先输出并确认正式资产Prompt。生成后仅登记`Candidate References: char-001-asset-sheet-c01.png`，状态为`Image Generated`，不得出现Canonical References或Active。模拟用户确认该一张合成角色资产图后，最终记录必须为`Visual Production Status: Asset Confirmed`、`Status: Active`、`Active Version: v001`，并把该已批准Candidate Reference升级为Canonical Reference；整个案例不创建声音资产，也不因缺少声音资产阻塞。
 
 ### R09-E Environment
 
@@ -152,7 +151,7 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ### R11-E Multi-Core-Character Independence
 
-多角色场景中有多个当前Clip核心角色。PASS：每个核心角色各自保留独立三视图/角色锁定图；动作/互动图只负责动作关系；非角色信息承担必要的整合压力。FAIL：把多个核心角色合并成角色总表、共用一个角色位，或用动作图替代任一角色外貌基准。
+多角色场景中有多个当前Clip核心角色。PASS：每个核心角色各自保留独立正式角色资产设定图（面部特写 + 三视图）或角色锁定图；动作/互动图只负责动作关系；非角色信息承担必要的整合压力。FAIL：把多个核心角色合并成角色总表、共用一个角色位，或用动作图替代任一角色外貌基准。
 
 ### R11 Retention Priority
 

@@ -102,15 +102,21 @@ Confirmed Status：No / Yes
 
 ## Phased Output Contract
 
+### Direct Image Default
+
+当前agent具备直接图片生成能力且用户请求制作角色资产时，默认不输出Prompt：Core直接生成外观参考图并等待用户确认外观，外观确认后直接生成Combined Character Asset Sheet并等待用户确认正式资产图。用户明确要求查看/只要Prompt，或当前agent不能直接生成图片、或用户选择外部图像服务时，才使用下列Prompt Draft步骤。直接生成时内部保存Prompt和`Prompt Confirmation: Direct Image Default — user requested asset production`，但不向用户展示。
+
 本Template不是一次性填写全部区块。每轮只输出当前合法阶段：
 
-1. `Prompt Draft`：输出Character Definition、与Asset Tier匹配的Image Prompt Package及Prompt Review Checkpoint，然后停止。
-2. `Prompt Confirmed`后：才允许执行图片生成；生成后输出Generated Image Review，状态写`Image Generated`，然后停止。
-3. 用户确认具体图片后：输出Confirmed Asset Record，状态写`Asset Confirmed`并完成Active/Canonical登记。
+1. Core首次`Appearance Reference Prompt Draft`：输出Character Definition与单张外观参考图Prompt，然后停止，等待用户确认该外观参考图Prompt；Support直接输出其Board Prompt Draft。
+2. Core外观参考图Prompt获确认后：才允许生成一张外观参考图；输出Appearance Reference Review并停止，等待用户确认外观或要求修改。该图是设计预览，不写`Visual Production Status`、Candidate / Canonical Reference、Active Version或Asset Registry。
+3. Core外观获确认后：输出正式`Prompt Draft`，其中包含Combined Character Asset Sheet Prompt及必要状态变体，然后停止，等待用户确认正式资产Prompt。Support在其Prompt获确认后直接进入图片生成。
+4. 正式资产Prompt Confirmed后：才允许执行正式资产图片生成；生成后输出Generated Image Review，状态写`Image Generated`，然后停止。
+5. 用户确认具体正式资产图片后：输出Confirmed Asset Record，状态写`Asset Confirmed`并完成Active/Canonical登记。
 
 不得在`Prompt Draft`同轮直接生成图片；不得在`Image Generated`同轮自动把Candidate Reference升级为Canonical Reference。
 
-Core与Support共用上述双确认Gate。Core使用独立角色资产包；Support按Board制作，不得逐个生成完整三视图或独立面部特写。Board图片确认前，Board及任何Item的`Confirmed Status`都必须为`No`。
+Core与Support共用上述双确认Gate。Core使用一张独立的正式角色资产设定图：同一画布内包含面部特写与正面、严格侧面、背面全身三视图；不得将其拆为独立三视图或独立面部特写Candidate Reference。Support按Board制作，不得逐个生成完整三视图或独立面部特写。Board图片确认前，Board及任何Item的`Confirmed Status`都必须为`No`。
 
 ## Character Definition
 
@@ -142,13 +148,13 @@ Core与Support共用上述双确认Gate。Core使用独立角色资产包；Supp
 
 仅当`Asset Tier: Core`时输出以下三个区块；Support写`Not Applicable — use Support Character Reference Board Prompt`。
 
-#### Three-View Character Sheet Prompt
+#### Appearance Reference Prompt
 
-输出一条可独立复制执行的完整Prompt；同一画布清楚呈现正面、严格侧面、背面全身，锁定脸型、身体比例、发型、服装结构、材质和颜色。必须写全主体、构图、视角、姿态、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数，不使用“同上/参考前述”。
+仅在尚未确认外观时输出一条可独立复制执行的完整Prompt，用一张单人头肩或半身自然肖像让用户确认脸型、五官比例、肤质、年龄感、发际线、发型、体态轮廓、主要服装与项目视觉风格。必须包含构图、视角、自然表情、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数；不要求三视图、拼版或状态变体。生成后写`Awaiting User Confirmation: Appearance Reference`并停止。该图只用于设计决策：不得登记为Candidate / Canonical Reference、Active Version、Confirmed Asset或下游视觉输入。
 
-#### Face Close-Up Prompt
+#### Combined Character Asset Sheet Prompt
 
-输出一条可独立复制执行的完整Prompt；锁定脸型、五官比例、眼睛、鼻唇、肤质、年龄感、发际线和发型细节。必须包含构图、视角、表情基线、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数。
+仅在用户确认外观参考图后输出一条可独立复制执行的完整Prompt，且该Prompt只生成一张基础正式资产。画面固定为一个清晰的四分区角色设定图：三个等比例全身区域依次呈现正面、严格侧面、背面；第四区为正面或轻微三分之二视角的头肩面部特写。四区必须继承已确认外观，且是同一角色、同一版本、同一服装、同一发型、同一年龄感与同一视觉风格，不得让特写另成角色或改变服装/发型。Prompt必须写全主体、四区构图与区域关系、视角、姿态、表情基线、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数，不使用“同上/参考前述”。禁止输出或调用独立的Three-View Prompt、Face Close-Up Prompt，禁止基础正式资产分两张生成。
 
 #### Required State Variant Prompts
 
@@ -176,7 +182,7 @@ Core与Support共用上述双确认Gate。Core使用独立角色资产包；Supp
 
 ## Generated Image Review
 
-仅在Prompt Confirmed并实际生成或回传图片后输出：
+仅在正式资产Prompt Confirmed并实际生成或回传正式资产图片后输出：
 
 - Visual Production Status：`Image Generated`
 - Prompt Status：`Confirmed`
@@ -185,7 +191,7 @@ Core与Support共用上述双确认Gate。Core使用独立角色资产包；Supp
 - Confirmed Prompt Revision：
 - Prompt Confirmation / Confirmed By / Confirmed At：
 - Candidate References：逐项记录路径或受控外部ID、用途、绑定Version、生成工具/模型、参数、来源与授权。
-- Image QA：身份、脸型、身体比例、发型、服装、三视图一致性、面部细节与状态变体边界。
+- Image QA：基础正式资产是否为同一张含面部特写 + 正面、严格侧面、背面全身三视图的角色设定图；身份、脸型、身体比例、发型、服装、四区一致性、面部细节与状态变体边界。若特写与三视图被拆为独立Candidate Reference，判定失败并重生。
 - Support Board QA：仅Support适用；核对Board ID、Item ID、对象数量、标签、轮廓/服饰/颜色/比例/功能差异及无对象混淆。
 - Awaiting User Confirmation：`Generated Images`
 - Prohibited Registry Upgrade：图片确认前不得写Canonical References、Active Version或`Status: Active`。
@@ -209,6 +215,8 @@ Support记录还必须保留Board ID、Item ID与同一Board Canonical Reference
 ## Asset Lock Record
 
 Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Production Status、Prompt Status、Image Status、Confirmed Status、Prompt Revision、Image Prompts、Prompt Confirmation、Candidate References、Image Confirmation、Canonical References、Immutable Traits、Mutable State Dimensions、Approval Basis、Supersedes与Downstream Usage。
+
+Core的外观参考图及其用户确认只记录在Character Definition的设计决策中，不写入本记录、Asset Registry、Candidate References、Canonical References或下游视觉输入。
 
 ## Voice Asset Isolation
 

@@ -66,6 +66,8 @@ Confirmed Status：No / Yes
 
 # Required Output
 
+当前agent能直接生成图片且用户请求制作道具资产时，按`modules/assets.md`的Direct Image Default直接输出生成的Candidate Image Review，不展示Prompt；用户明确要求查看/只要Prompt、当前agent不能生成图片或用户选择外部服务时，才输出本Template的Prompt Draft。图片确认仍不可跳过。
+
 ## Phased Output Contract
 
 每轮只输出当前合法阶段：`Prompt Draft`输出Prop Definition与Asset Tier匹配的Image Prompt Package后停止；Prompt确认后才能生成图片；生成后以`Image Generated`输出Candidate References并等待图片确认；只有图片确认后才输出`Asset Confirmed`记录。不得合并两个确认Gate。Core使用独立道具资产包；Support只生成同类参考板，不得逐项生成完整独立套图。Board图片确认前，Board与Item的`Confirmed Status`均为`No`。
@@ -225,4 +227,4 @@ Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Productio
 
 无意义装饰。
 
-禁止只输出道具“长什么样”；必须先交付完整可直接生图的Prompt并等待确认。未经Prompt确认不得生成图片，未经图片确认不得登记confirmed asset。
+禁止只输出道具“长什么样”。当前agent能直接生成图片时按`modules/assets.md`的Direct Image Default直接生成Candidate Image；不能生成或用户明确要求Prompt时，才交付完整可直接生图的Prompt并等待确认。未经图片确认不得登记confirmed asset。

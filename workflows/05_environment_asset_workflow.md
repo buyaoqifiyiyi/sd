@@ -54,6 +54,10 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。符合资格的当前Prompt Revision可自动确认并按内置图像路由生成当前环境资产批次；所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图片确认、品牌/法务事实、外部服务或任何Hard Stop。
 
+### Direct Image Default
+
+按`modules/assets.md`的Direct Image Default，当前agent能直接生成图片时，用户请求制作环境资产即默认直接生成Candidate Image，不展示或等待Prompt确认；用户明确要求查看/只要Prompt、当前agent不能生成图片或用户选择外部服务时，才输出Prompt。图片确认仍是不可跳过的Hard Gate。
+
 执行前必须读取STATE-02的Asset Tiering Decision：
 
 - `Asset Tier: Core`：核心环境独立制作主参考图、多视角与关键区域设定图，形成可重复拍摄的空间锁。

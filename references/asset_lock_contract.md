@@ -77,7 +77,7 @@ Image Generated
 Asset Confirmed
 ```
 
-固定迁移顺序为`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。Prompt Draft必须等待用户确认当前Prompt Revision；只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Prompt Confirmed才允许调用图片生成；Image Generated只允许登记Candidate References；Asset Confirmed必须有用户对图片的确认依据，才可写入Canonical References并切换Active Version。
+默认迁移顺序为`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。但当前agent具备直接图片生成能力且用户请求制作资产时，可由`modules/assets.md`的Direct Image Default在不展示Prompt的情况下内部记录`Prompt Confirmed`，再直接进入`Image Generated`；其Prompt Confirmation记录为`Direct Image Default — user requested asset production`。用户明确要求查看或只要Prompt时，Prompt Draft必须等待用户确认当前Prompt Revision；只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Image Generated只允许登记Candidate References；Asset Confirmed必须有用户对图片的确认依据，才可写入Canonical References并切换Active Version。
 
 ### Two-Tier Record Semantics
 

@@ -121,29 +121,37 @@ Board ID与Item ID（Support必填；Core为`Not Applicable`）。
 
 ## Visual Production Sequence
 
-角色视觉资产固定执行：
+角色视觉资产固定执行。Support角色使用标准双确认闭环；Core角色额外先通过外观参考确认：
 
 ```text
 Asset Design
-→ Image Prompt Generation
-→ 用户确认提示词
-→ Image Generation
-→ 用户确认图片
+→ [Core only] Appearance Reference Prompt
+→ 用户确认外观参考Prompt
+→ 生成外观参考图
+→ 用户确认外观
+→ [Core only] Formal Asset Sheet Prompt
+→ 用户确认正式资产Prompt
+→ 生成正式资产图
+→ 用户确认正式资产图
 → Asset Registry
 ```
 
-每个Checkpoint都写入同一CHAR Version的`Visual Production Status`。Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revision确认不得生成图片，未经图片确认不得登记Canonical References、Active Version或confirmed asset。
+Core的外观参考图是正式资产前的设计确认，不进入Asset Registry、Canonical References、Active Version或下游参考；其用户确认只授权以该外观生成正式资产Prompt。正式资产仍使用既有`Visual Production Status`与Prompt / Image双确认Hard Gate：未经当前正式资产Prompt Revision确认不得生成正式资产图，未经正式资产图确认不得登记Canonical References、Active Version或confirmed asset。
 
 ### FAST Automation Exception
 
 启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。符合资格的当前Prompt Revision可自动确认并按内置图像路由生成当前角色资产批次；所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图片确认、真实人物/品牌/授权、外部服务或任何Hard Stop。
+
+### Direct Image Default
+
+按`modules/assets.md`的Direct Image Default，当前agent具备直接图片生成能力且用户请求制作角色资产时，Core先直接生成外观参考图；用户确认外观后，直接生成正式角色资产设定图。不得默认展示或等待任一Prompt确认。只有用户明确要求查看/只要Prompt，或当前agent无法直接生成图片、或用户选择外部图像服务时，才输出对应Prompt并等待确认。无论哪种路径，外观参考图确认与正式资产图确认都必须保留；外观参考图不进入Registry，正式资产图确认前不进入Canonical / Active。
 
 ### Existing Character Asset Fast Path
 
 若当前CHAR已有可读取且身份匹配的外部图像，且用户明确要求使用现有资产或跳过角色制作：
 
 1. 将文件登记为该CHAR的Candidate Reference，记录来源、用途、可见版本与授权依据。
-2. 跳过新三视图/面部特写生成，不重复设计外观。
+2. 跳过新的正式角色资产设定图（面部特写 + 三视图）生成，不重复设计外观。
 3. 只向用户请求对具体Candidate Reference的确认；确认后登记`Active Version`与`Canonical References`。
 4. 若文件不足以承担当前下游一致性需求，再只补缺失的最小资产，不回退重做整个角色。
 
@@ -153,7 +161,7 @@ Asset Design
 
 进入制作前必须读取STATE-02的Asset Tiering Decision，不得在STATE-03凭方便重分层：
 
-- `Asset Tier: Core`：对该CHAR独立执行角色定义 → 三视图提示词 → 面部特写提示词 → 必要状态变体提示词 → 用户确认提示词 → 生成图片 → 用户确认图片 → 登记。
+- `Asset Tier: Core`：对该CHAR独立执行角色定义 → 外观参考图Prompt → 用户确认外观参考Prompt → 生成外观参考图 → 用户确认外观 → 正式角色资产设定图Prompt（同一画布内的面部特写 + 正面、严格侧面、背面全身三视图）→ 必要状态变体提示词 → 用户确认正式资产Prompt → 生成正式资产图 → 用户确认正式资产图 → 登记。基础正式资产不得拆成独立三视图图和独立面部特写图，外观参考图不得替代正式资产。
 - `Asset Tier: Support`：按STATE-02分配的同类型Board ID与Item ID进入Support Character Reference Board；不得为每个Support角色制作完整三视图、独立面部特写或完整独立资产包。Board建议包含4—9个对象，统一项目风格，同时用轮廓、服饰、颜色、比例和功能差异清楚区分每个Item。
 
 Core与Support都必须执行同一双确认闭环。Support Board图片确认前，Board及其Item均不得标记confirmed；部分Item未获明确批准时，不得用对整板的含糊确认替代。
@@ -308,10 +316,9 @@ Screen Presence与主要表演可读性；例如面部、身体轮廓、手部�
 包括：
 
 
-Core角色三视图Prompt：同一画布中的正面、严格侧面、背面全身，锁定脸型、身体比例、发型、服装结构、材质与色彩。
+Core角色外观参考图Prompt：在角色定义完成后先输出一条可独立执行的外观参考图Prompt。画面使用单人头肩或半身自然肖像，清楚呈现脸型、五官、肤质、年龄感、发际线、发型、体态轮廓、主要服装与项目视觉风格；不要求三视图或拼版。生成后必须等待用户明确确认外观或要求修改。该图仅为设计确认，不得登记为Candidate / Canonical Reference、Active Version或下游视觉输入。
 
-
-Core角色面部特写Prompt：正面或轻微三分之二视角，锁定五官、脸型、肤质、年龄感、发际线与发型细节。
+Core角色正式角色资产设定图Prompt：只有外观参考图获用户确认后才输出一条完整可执行Prompt并只生成一张基础正式资产。该单一画布固定包含正面、严格侧面、背面全身三视图，以及一个正面或轻微三分之二视角的面部特写；四个区域必须继承已确认外观，且属于同一角色、同一版本、同一服装与同一视觉风格。三视图锁定脸型、身体比例、发型、服装结构、材质与色彩；特写锁定五官、脸型、肤质、年龄感、发际线与发型细节。禁止将特写和三视图拆为两条基础资产Prompt或两张Candidate Reference。
 
 
 Core角色必要状态变体Prompt：只在Script Analysis或Asset Discovery确认湿润、污损、受伤、伪装、换装等剧情状态时生成；必须锁定角色身份和未变化的Immutable Traits。
@@ -327,14 +334,14 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 - `Visual Production Status: Prompt Draft`
 - `Prompt Revision`
 - `Asset Tier`、`Board ID`、`Item ID`
-- Core：三视图Prompt、面部特写Prompt、必要状态变体Prompt或`Not Required`依据
+- Core首次：外观参考图Prompt与`Awaiting User Confirmation: Appearance Reference Prompt`。外观确认后：正式角色资产设定图Prompt（面部特写 + 三视图）及必要状态变体Prompt或`Not Required`依据，并等待正式资产Prompt确认。
 - Support：Support Character Reference Board Prompt、Item ID Mapping与对象差异检查
 - `Prompt Status: Draft`
 - `Image Status: Not Generated`
 - `Confirmed Status: No`
 - `Awaiting User Confirmation: Image Prompts`
 
-到此必须停止并等待用户确认，不得同轮直接调用图片生成。
+当前agent具有直接图片生成能力且用户请求制作资产时，按`modules/assets.md`的Direct Image Default直接进入对应图片生成与图片审阅，不展示或等待Prompt确认；否则到此必须停止并等待用户确认。
 
 
 ---
@@ -358,7 +365,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 
 # 08 Image Generation
 
-Prompt Confirmed后按`modules/assets.md`的已记录路由执行：Built-in Image才可调用当前环境可用的内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core按已确认Prompt逐项生成三视图、面部特写与必要状态变体；Support按已确认Board Prompt生成整张Support Character Reference Board。
+当前Prompt获确认后按`modules/assets.md`的已记录路由执行：Built-in Image才可调用当前环境可用的内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core先按获确认的外观参考图Prompt生成一张外观参考图，并等待用户确认外观；不得把它登记为Candidate / Canonical Reference。外观确认后，Core再按获确认的正式资产Prompt生成一张正式角色资产设定图（面部特写 + 三视图）与必要状态变体；基础正式资产禁止拆成独立三视图和独立面部特写Candidate Reference。Support按已确认Board Prompt生成整张Support Character Reference Board。
 
 生成后记录：
 
@@ -381,7 +388,7 @@ Prompt Confirmed后按`modules/assets.md`的已记录路由执行：Built-in Ima
 
 # 09 Image Confirmation Gate
 
-用户必须明确批准具体Candidate Reference。Support分支还必须能核对Board ID、Item ID与图中对应对象；批准前不得将角色视觉资产、Board或Item视为confirmed asset。
+Core外观参考图生成后，用户必须先明确确认外观或要求修改；确认外观只允许进入正式资产Prompt Draft，不得将外观参考图、角色视觉资产或CHAR Version视为confirmed asset。正式资产图生成后，用户必须明确批准具体Candidate Reference。Support分支还必须能核对Board ID、Item ID与图中对应对象；批准前不得将角色视觉资产、Board或Item视为confirmed asset。
 
 图片被拒绝时：仅重生则回到`Prompt Confirmed`；需要修改Prompt则返回`Prompt Draft`并重新走Prompt Confirmation Gate。
 
@@ -541,7 +548,7 @@ templates/04_character_asset_prompt.md
 
 角色视觉设定。
 
-Core角色的完整三视图、面部特写与必要状态变体提示词已经用户确认；Support角色所在Board的完整参考板提示词与Item Mapping已经用户确认。
+Core角色的外观参考图已经用户确认，且完整正式角色资产设定图Prompt（面部特写 + 三视图）与必要状态变体提示词已经用户确认；Support角色所在Board的完整参考板提示词与Item Mapping已经用户确认。
 
 Core独立图片或Support Reference Board已经生成或回传，并经用户明确确认；Support Item在Board确认前不得单独视为完成。
 
@@ -616,7 +623,7 @@ Asset Discovery回答：
 
 Character Asset回答：
 
-“Core角色具体是什么、用哪些已确认Prompt生成独立三视图/面部特写/必要状态图；Support角色位于哪张同类参考板、对应哪个稳定Item ID，以及哪些图片已被确认。”
+“Core角色具体是什么、先用哪张外观参考图确认外观，再用哪些已确认Prompt生成一张正式角色资产设定图（面部特写 + 三视图）及必要状态图；Support角色位于哪张同类参考板、对应哪个稳定Item ID，以及哪些图片已被确认。”
 
 
 角色资产完成后：

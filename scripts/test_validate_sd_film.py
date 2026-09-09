@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r21 SD Film validator."""
+"""Regression tests for the r24 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -54,6 +54,14 @@ class R17RegressionTests(unittest.TestCase):
         self.assertIn("不调用内置`image_gen`", midjourney)
         self.assertNotIn("Midjourney", video_selection)
 
+    def test_direct_image_default_uses_actual_generation_capability(self) -> None:
+        assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
+        character = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Direct Image Default", assets)
+        self.assertIn("当前agent的实际图片生成能力决定", assets)
+        self.assertIn("Direct Image Default", character)
+        self.assertIn("Prompt", character)
+
     def test_every_asset_workflow_calls_the_single_image_route_owner(self) -> None:
         workflows = (
             "workflows/04_character_asset_workflow.md",
@@ -62,7 +70,15 @@ class R17RegressionTests(unittest.TestCase):
             "workflows/15_fx_asset_workflow.md",
         )
         for relative in workflows:
-            self.assertIn("modules/assets.md`的Asset Image Route", (ROOT / relative).read_text(encoding="utf-8-sig"))
+            self.assertIn("Asset Image Route", (ROOT / relative).read_text(encoding="utf-8-sig"))
+
+    def test_core_character_asset_is_one_combined_reference_sheet(self) -> None:
+        workflow = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/04_character_asset_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Direct Image Default", workflow)
+        self.assertIn("Candidate Reference", workflow)
+        self.assertIn("#### Combined Character Asset Sheet Prompt", template)
+        self.assertIn("Three-View Prompt", template)
 
     def test_acting_strategy_is_additive_and_respects_blocking_owner(self) -> None:
         performance = (ROOT / "knowledge/performance/micro_expression.md").read_text(encoding="utf-8-sig")
