@@ -184,7 +184,7 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 5. 每个入选条目记录`解决的具体风险 / 生成目标 → 资产角色 → 用途`；对Eligible但未选条目记录不选理由。当前Clip每个出场核心角色都视为具有持续身份/外观风险，仍按既有硬门槛保留各自独立三视图/角色锁定图；Reference Routing不得削弱该规则。
 6. 删除未出场角色、未使用环境、未使用道具、未使用动作图、当前World-State不适用以及不能解决当前风险的资产。参考资产按需路由，不是越多越好。
 7. 去重后，读取同一连续性判定中的A/B/C与`Tail Frame Required`。A/B无论尾帧当前是否已上传都预留1个Projected连续性图片位，并在【参考资产】直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、A类“同镜头连续承接用途”或B类“空间/站位/景别参考用途”及真实状态；未提供时标明“待用户提供/待上传、未确认”，不计入已提交图片数，不伪造路径。C不得加入或预留旧尾帧图片位，可由Canonical资产、Spatial Blocking和文字状态承接或重建。
-8. 按既有Reference Budget阈值计算Projected Final Count，最终必须`≤9`。
+8. 按既有Reference Budget计算Projected Final Count：默认最终必须`≤9`；只有Seedance 2.5通过扩展Reference Audit且网关可用时才可使用更高有效图片上限，并同时审计30图 / 10视频 / 10音频 / 合计50项与各自30秒时长限制。
 9. 只有信息过多、接近或超过参考位上限时，才整合环境多视角、道具组、空间/动作/使用关系等非角色信息；不得默认整合核心角色。
 10. 不存在、未确认或不能完整覆盖零散信息的“总图”不得虚构进入清单。入选资产缺少风险依据、必需资产漏选、用途选错或无理由过量引用时，Reference Asset Check为FAIL。
 
@@ -251,7 +251,7 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 - 任何关键动作都必须具有起点、接触/变化过程和结束状态；商业产品或关键道具只在存在足够可见时长时承担识别、状态变化或叙事证明。
 - 容量不足时，优先删除重复信息、让可见动作承担文字信息、缩短非关键台词、降低Camera / FX负荷；仍不成立则返回STATE-07拆Clip或STATE-06调整Shot。不得压缩反应、物理接触、吞咽、口型或稳定收尾来伪造通过。
 
-账本只影响现有`连续动作 / 人物动作 / 道具状态 / 音效 / 结尾状态`等语义和Return Route；不得向最终Prompt增加时间码、逐秒区间、固定语速或新的字段。
+账本只影响现有`连续动作 / 人物动作 / 道具状态 / 音效 / 结尾状态`等语义和Return Route；不得向最终Prompt增加新字段、固定语速或逐帧技术参数。Seedance 2.5在Adapter条件满足时可在既有`画面描述`使用必要的时间戳文本，其他模型不继承。
 
 本Check不授权改剧情、补刺激、增加台词或新增镜头。若STATE-06已经具有完整弧而只是在最终文字投影中缺证据，STATE-08只修现有字段映射；若Performance Goal / Arc本身缺失、镜头容量或可读性不成立，返回STATE-06修Affected SHOT与相邻Handoff；若Clip合并让反应次序、弧线或容量不可执行，返回STATE-07调整Clip组织。通过语义只进入现有`人物动作 / 连续动作 / Performance State / Next-Clip Carryover / 人物动作与情绪 / 镜头结尾状态`，不得新增Template字段。
 

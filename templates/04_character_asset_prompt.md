@@ -102,9 +102,9 @@ Confirmed Status：No / Yes
 
 ## Phased Output Contract
 
-### Direct Image Default
+### Image Model Selection Prerequisite
 
-当前agent具备直接图片生成能力且用户请求制作角色资产时，默认不输出Prompt：Core直接生成外观参考图并等待用户确认外观，外观确认后直接生成Combined Character Asset Sheet并等待用户确认正式资产图。用户明确要求查看/只要Prompt，或当前agent不能直接生成图片、或用户选择外部图像服务时，才使用下列Prompt Draft步骤。直接生成时内部保存Prompt和`Prompt Confirmation: Direct Image Default — user requested asset production`，但不向用户展示。
+在本Template的任何Prompt Draft之前，必须由`modules/image-model-selection.md`确认当前资产批次的`Selected Image Model`。未选择时只输出Image Model Selection Proposal，不输出角色Prompt或Candidate Image。选择Built-in Image也必须先走下列Prompt Draft与确认步骤；Midjourney保持外部Prompt交付。
 
 本Template不是一次性填写全部区块。每轮只输出当前合法阶段：
 
@@ -141,8 +141,13 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 - Confirmed Status：`No`
 - Prompt Language：
 - Target Image Tool / Model：
+- Image Model Selection Status：`SELECTED`
+- Image Adapter Profile：
 - Asset Image Route：
+- Image Prompt Output Template：Built-in Image写`templates/24_builtin_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
 - Generation Parameters：画幅、分辨率、背景控制及工具必需参数；未知平台时使用平台中性的可执行规格。
+
+本Template继续拥有角色资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
 
 ### Core Asset Package
 

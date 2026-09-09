@@ -1,10 +1,10 @@
-# STATE-08 / 目标视频模型提示词固定输出契约
+# STATE-08 / Seedance 2.0 视频提示词固定输出契约
 
 ## Purpose
 
 本文件是 `STATE-08 Clip-based Video Prompt / Video Generation` 最终目标视频模型提示词的唯一格式真源，拥有字段名称、字段顺序、Clip 标题、分镜结构和排版。
 
-这是强制输出契约，不是示例、建议或可选排版。任何 Workflow、Adapter、Knowledge、Rules、旧模板、历史输出习惯或模型自带的排版与本文件冲突时，一律以本文件为最高优先级。
+这是Seedance 2.0的强制输出契约，不是示例、建议或可选排版。Seedance 2.5必须使用`templates/12_seedance_25_video_prompt.md`，MiniMax H3必须使用`templates/13_minimax_h3_video_prompt.md`；不得沿用本文件的9图预算或十字段分镜骨架。任何 Workflow、Adapter、Knowledge、Rules、旧模板、历史输出习惯或模型自带的排版与所选Template冲突时，一律以所选Template为最高优先级。
 
 ---
 
@@ -13,7 +13,7 @@
 每个 Clip 必须逐字段、按以下顺序完整输出无条件字段。标题中的 `X` 替换为当前 Clip 编号，`标题`替换为当前 Clip 标题；每增加一个分镜，必须完整重复同一组分镜字段。`音色特征：`是唯一条件全局字段，只按本文件后文的显式授权条件插入；默认模板不得出现该字段。
 
 ```text
-# CLIP-X｜标题 <Target Video Model>视频提示词
+# CLIP-X｜标题 Seedance 2.0视频提示词
 时长：
 画幅：
 
@@ -103,7 +103,7 @@
 
 ### 时长：
 
-只写 Confirmed Clip Production Plan 中当前 Clip 由用户选择的平台生成时长：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，其中16—30秒须由内部严格预检PASS；MiniMax H3为4—15秒。未知网关状态不得在Prompt编译前压缩该时长；实际平台拒绝时才返回Clip规划。不得写总片时长、逐镜时间码、按秒动作区间、帧率、帧数或帧区间。唯一例外是已锁定Seedance 2.5的`Targeted Edit`，可在既有分镜正文的合适字段写受控时间段语义；MiniMax H3的视频编辑只表达明确CHANGE与PRESERVE，不写未验证时码。不得新增时间轴、目标模型或执行模式字段，也不得新增Execution Mode、Long-form或内部预检字段。
+只写 Confirmed Clip Production Plan 中当前 Clip 由用户选择的平台生成时长：Seedance 2.0为4—15秒。未知网关状态不得在Prompt编译前压缩该时长；实际平台拒绝时才返回Clip规划。不得写总片时长、逐镜时间码、按秒动作区间、帧率、帧数、帧区间或独立时间轴字段。不得新增目标模型、执行模式、Long-form或内部预检字段；2.5与H3的能力和格式一律由各自独立Template拥有。
 
 ### 画幅：
 
@@ -119,7 +119,7 @@
 
 资格通过后，依据Confirmed Clip Plan中的`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、当前生成目标与`Continuity Risks`按需选择最小充分集合，而不是把全部Eligible资产或Asset Registry机械复制进来：身份/外观风险选择Active Character Canonical References；空间结构风险选择Active Environment Canonical References，Spatial Blocking只以文字语义进入现有字段；道具造型风险选择Active Prop Canonical References；Final=`REQUIRED`时选择已验证`REF-SKETCH`并只声明Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path用途；A/B需要上一状态锚定时选择对应用途的`REF-TAIL`，C不选择旧尾帧；光线、天气或场景状态漂移只有存在实际、已确认且合格的场景视觉基准或合法参考帧时才选择图片，否则写入`主风格 / 环境一致性 / 首帧参考 / 起始状态 / 尾帧限制`。每项必须写清用途与所解决风险；参考资产按需路由，不是越多越好。
 
-提交给视频模型的图片参考每Clip硬上限为9张，并按`knowledge/reference_budget.md`执行条件性整合。先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再计入Direct / Reference-Only所需首尾帧：最终需求≤7不整合；8张且无额外帧需求原则上不整合；9张仅在无未计入连续性需求时允许；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9张必须整合同类非角色信息，仍超限时按优先级裁剪，最终≤9。
+默认提交给视频模型的图片参考每Clip稳定预算为9张，并按`knowledge/reference_budget.md`执行条件性整合。Seedance 2.5只有在Clip Plan登记明确多模态控制目标、每项输入有唯一Primary Role、且当前入口/网关确认扩展能力时，才可将图片上限扩至`min(30, 网关上限)`；同时视频≤10、音频≤10、视频和音频各自总时长≤30秒、所有类型合计≤50。否则继续使用9张稳定预算。先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再计入Direct / Reference-Only所需首尾帧；扩展预算不构成填满额度的理由。
 
 当前Clip每个核心角色必须分别列出各自独立三视图/角色锁定图；多个核心角色不得合并为角色总表，动作/姿势/互动图只负责动作关系，不得替代或覆盖独立角色外貌基准。整合只限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。
 
@@ -257,7 +257,7 @@ Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜�
 - `反向提示词：`各出现且只出现一次，并位于当前 Clip 最后。
 - `反向提示词：`之后不存在说明、备注、分镜、字段或其他正文。
 - `参考资产：`、`首帧参考：`、`尾帧限制：`均非空且位于`主风格：`之前。
-- `参考资产：`的Projected图片项总数与已提交图片数均≤9；真实视觉条目只含当前Clip实际使用且真实存在/已确认的资产与合法帧；受控待补视觉条目均写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`且未绕过正式资产确认；无重复占位；每个核心角色有各自独立图；只在超限风险触发后整合同类非角色信息。
+- `参考资产：`的Projected图片项总数与已提交图片数符合当前Adapter的有效预算：默认≤9；只有满足Seedance 2.5扩展Reference Audit时才可≤`min(30, 网关上限)`。扩展时另核验视频≤10、音频≤10、各自总时长≤30秒、全类型≤50，且每个实际输入均有唯一Primary Role。真实视觉条目只含当前Clip实际使用且真实存在/已确认的资产与合法帧；受控待补视觉条目均写明具体图像对象、实际投喂用途与`待用户补充/待上传、未确认`且未绕过正式资产确认；无重复占位；每个核心角色有各自独立图；只在超限风险触发后整合同类非角色信息。
 - 对每个视觉条目逐项提问“这是不是一张实际会被投喂/引用的视觉资产？”且答案均为“是”；任何答案为“否”的文字伪资产已从`参考资产：`移出，并按语义进入`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。真实道具图使用正式资产ID，不使用“参考说明”代替。
 - 是否根据`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State与Continuity Risks完成按需路由；每个入选视觉条目是否对应具体风险/目标；身份、空间结构、道具造型、Visual Blocking、A/B尾帧、光线/场景状态来源是否选对；当前`REF-SKETCH-XX`是否只在Final=`REQUIRED`、Sketch Validation、Template Content Leakage Check与Character Appearance Leakage Check通过时出现并服从Canonical Authority，且只用一句中性人偶代理说明而未污染Prompt；`REF-SKETCH-MASTER`是否未进入最终清单；C是否不列旧尾帧；是否没有漏选、选错、过量引用或把Top-down Blocking Map当视频参考资产。
 - 是否明确A/B/C及`Tail Frame Required = YES / NO`；A/B缺图时是否仍直接列统一`REF-TAIL`名称、用途与“待用户提供/待上传、未确认”，且未声称上传或确认；C是否完全未列`REF-TAIL`、未要求截图并采用Canonical资产、Spatial Blocking与文字重建。

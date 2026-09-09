@@ -28,7 +28,7 @@ FAIL：拒绝后仍润色台词、补场、重排、自动改编，或继续等�
 
 续接R00-A，用户明确回复“进入优化”。
 
-PASS：A/B类执行`Screenwriting Optimization → Directorial Interpretation → Production Script Proposal`；Class C按必要性先执行`Adaptation Target Detection → Script Adaptation → Adaptation Draft`再进入同一优化链。Proposal输出后写`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`并再次停止。只有用户随后明确确认Proposal，才Production-Lock并进入STATE-02。
+PASS：A/B类执行`Screenwriting Optimization → Directorial Interpretation → Production Script Proposal`；Class C按必要性先执行`Adaptation Target Detection → Script Adaptation → Adaptation Draft`再进入同一优化链。Proposal输出后写`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`、`Pending Decision: 等待Production Script Proposal确认`并再次停止。当前Proposal已展示且可核对时，用户随后使用推进表达即确认Proposal，随后Production-Lock并进入STATE-02。
 
 FAIL：把单独“继续 / 下一步 / 好的”当作优化授权或Proposal确认；Proposal输出后直接Production-Lock或进入STATE-02。
 

@@ -13,6 +13,14 @@
 - 项目数据写入Skill根目录
 - 一个模块直接修改另一个模块拥有的输出
 
+## Seedance 2.5 Template Override
+
+本文件中因历史合同而单独提到`templates/10_video_prompt.md`、9图预算或十字段分镜的描述，除非明确写为通用Selected Template，否则只适用于Seedance 2.0。Seedance 2.5一律使用`templates/12_seedance_25_video_prompt.md`：30图 / 10视频 / 10音频 / 合计50项容量审计、多模态参考职责和时间线是其专属最终Schema；MiniMax H3一律使用`templates/13_minimax_h3_video_prompt.md`：官方三段式、`@`参考输入和`非叙事性音乐：N/A`是其专属最终Schema。未来模型必须先建立独立最终Prompt Template，才能接入Model Selection。此覆盖不改变上游事实、资产双确认、A/B/C尾帧、Voice opt-in或无BGM边界。
+
+## Image Model Prompt Template Isolation
+
+图像模型不进入STATE-06后的Video Model Selection，STATE-03的`modules/image-model-selection.md`拥有当前资产批次的图像模型选择，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。Built-in Image固定使用`templates/24_builtin_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
+
 ---
 
 ## Authority Matrix
@@ -135,11 +143,13 @@ Consumers与不变量：STATE-07按Lock选择对应Profile后完成Clip整合；
 
 每种最终交付结构只能有一个Template拥有者。
 
-STATE-08最终Seedance Prompt继续只由：
+STATE-08最终Prompt按Selected Model由唯一Template拥有：
 
-templates/10_video_prompt.md
+- `templates/10_video_prompt.md`：Seedance 2.0 Prompt；
+- `templates/12_seedance_25_video_prompt.md`：Seedance 2.5多模态时间线Prompt；
+- `templates/13_minimax_h3_video_prompt.md`：MiniMax H3三段式Prompt。
 
-拥有。
+二者不得交叉复制字段或共同拥有同一模型的输出Schema。
 
 ### Upstream Facts Are Read-only Downstream
 
@@ -209,7 +219,7 @@ Script Status继续只允许`Source Material / Adaptation Draft / Optimized Prop
 
 与Director Decision Layer边界：Screenwriter拥有故事/人物逻辑、Information Architecture、Subtext、Writer Beat与Setup / Payoff，只把Character Performance Intent交给Director，不创建SCENE、SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。Director拥有Information Presentation、Performance Direction、Blocking、Composition、Camera Language与Rhythm Presentation，不擅自改变Writer锁定事实。STATE-05投影两层意图，STATE-06决定Scene / Shot Group的视听执行方向；需要改动故事时走REDIRECT / rewrite反馈链。
 
-冲突路由：Creation Brief只有在缺失项会实质改变架构或造成品牌/事实风险时请求最小决定；Existing的锁定事实、目标形式、Adaptation Intensity或修改范围不明确时保持STATE-01 IN_PROGRESS并请求用户决定。单独“继续 / 下一步 / 好的”既不构成Existing优化授权，也不构成Proposal确认；当前请求已明确“直接优化 / 直接改写”时不重复询问同一授权。用户要求修订Proposal时保持Script Development并只修改受影响范围；下游发现剧情事实冲突返回STATE-01，不在资产、镜头或Prompt阶段静默调和。
+冲突路由：Creation Brief只有在缺失项会实质改变架构或造成品牌/事实风险时请求最小决定；Existing的锁定事实、目标形式、Adaptation Intensity或修改范围不明确时保持STATE-01 IN_PROGRESS并请求用户决定。单独的推进表达不构成Existing优化授权；但在已展示、可核对的Proposal Confirmation Gate时，按`rules/progression_rules.md`确认Proposal。当前请求已明确“直接优化 / 直接改写”时不重复询问同一授权。用户要求修订Proposal时保持Script Development并只修改受影响范围；下游发现剧情事实冲突返回STATE-01，不在资产、镜头或Prompt阶段静默调和。
 
 Validator可检查的不变量：Creation / Existing双入口与互斥判定存在；Creation不要求先提供完整剧本、不输出Opportunity Report、具备十项Directable Screenplay QA且不提前写Shot Design；Existing固定诊断入口、十二项报告维度与A/B/C三档存在；报告前后没有未授权改写，明确“直接优化”不重复询问授权；四种Script Status值合法；Adaptation Draft或Optimized Proposal不能与STATE-01 COMPLETE或STATE-02+并存；C类只有明确授权后经过通用改编；短剧Adapter只按Target Detection加载；B类不被强制改编；No-Revision分支跳过报告和改写但仍执行Script Analysis；拒绝优化锁定原稿；所有Proposal后存在第二次确认；五份Knowledge与所有显式引用存在。
 
@@ -652,7 +662,7 @@ Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STA
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。逐角色还必须通过Performance / Emotion Check：Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint、Intentional Hold证据、Next-shot Carryover与多人相对表演层级可复算；静态标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸固定FAIL。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且Projected Final Count≤9。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。逐角色还必须通过Performance / Emotion Check：Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint、Intentional Hold证据、Next-shot Carryover与多人相对表演层级可复算；静态标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸固定FAIL。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且默认Projected Final Count≤9；只有Seedance 2.5扩展Reference Audit通过时才按已验证上限审计30图 / 10视频 / 10音频 / 合计50及各自30秒时长，且每项有唯一Primary Role。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
@@ -747,7 +757,7 @@ Module Type：显式opt-in的Rule；不创建主STATE、项目事实、独立确
 
 Owner：`rules/automation_mode.md`。触发只能来自用户当前明确的自动推进指令；状态合同只镜像`Automation Policy`。`rules/progression_rules.md`消费其已确认的Eligible Work，`rules/completion_gate.md`只在本合同允许的范围内接受自动接受证据。
 
-FAST可以压缩当前Prompt确认、内置图片生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次选择或更改视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
+FAST可以压缩已选Built-in Image的当前Prompt确认与内置图片生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次选择或更改图像/视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
 
 允许读取：当前用户指令、Selected State Source、当前Workflow、已确认上游事实和既有QA。允许写入：状态合同中的`Automation Policy`及既有Artifact / Version History中的自动接受证据。不得改写Production-Locked Script、Canonical Asset、用户确认、主Pipeline、最终Template Schema或外部授权。
 

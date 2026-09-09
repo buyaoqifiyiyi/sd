@@ -15,7 +15,7 @@
 在输入完整、上游事实已确认且当前QA通过时，FAST可以：
 
 - 自动继续STATE-04、STATE-05的内部设计与合法下一阶段；
-- 自动确认STATE-03的当前Prompt Revision，并使用当前环境可用的内置图像工具生成当前资产批次；同一资产类型的Candidate References汇总为一次用户批量审阅，而不是逐Prompt停下；
+- 在当前资产批次的图像模型已由用户确认且选择Built-in Image时，自动确认STATE-03的当前Prompt Revision，并使用当前环境实际可用的内置图像工具生成当前资产批次；同一资产类型的Candidate References汇总为一次用户批量审阅，而不是逐Prompt停下；
 - 在STATE-06和STATE-07的既有Checklist、Preflight和状态写回均通过时，自动接受Detailed Shot Design与Clip Production Plan；
 - 在STATE-08完成必需的Final Visual Blocking Assessment后，同轮继续编译当前Clip Prompt。`REF-SKETCH`仍必须通过既有验证，且不得成为Canonical Asset。
 
@@ -27,6 +27,7 @@ FAST不得自动：
 
 - 锁定Creation / Adaptation / Optimization产生的Production Script Proposal，或扩大既有剧本修改授权；
 - 首次选择视频模型，或改变已选择的模型、目标时长和执行模式；
+- 首次选择或改变当前资产批次的图像模型；
 - 将任何Candidate Image标为Canonical / Active，或替代用户对资产图片的批准；
 - 推断真实人物、授权、品牌/Logo、价格、SKU、法务/受监管承诺或缺失的关键事实；
 - 调用未授权的外部服务、提交外部生成、使用未知凭据，或把提示词伪称为外部生成结果；

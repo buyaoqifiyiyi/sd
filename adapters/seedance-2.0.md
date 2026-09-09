@@ -2,6 +2,7 @@
 
 ```yaml
 model: Seedance 2.0
+prompt_output_template: templates/10_video_prompt.md
 duration: { min_seconds: 4, max_seconds: 15 }
 timeline: { supported: false, default: omit }
 reference_assets: { minimal_sufficient: true, visual_budget: 9 }

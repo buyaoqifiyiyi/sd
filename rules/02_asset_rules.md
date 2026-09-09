@@ -405,6 +405,12 @@ Core与Support执行同一双确认闭环。`Automation Policy: FAST`仅可按`r
 
 # 10 Visual Asset Production Gate
 
+### Asset Checkpoint Confirmation Semantics
+
+STATE-03的资产确认仍是可审计的Gate；确认输入语义由`rules/progression_rules.md`的`Confirmation Input Semantics`唯一拥有。资产确认检查点包括当前Prompt Revision、当前Candidate Image / Candidate Reference（包括用户外部回传的图片与Existing Asset Fast Path），以及Core角色的当前外观参考图。该确认必须写入相应的Prompt Confirmation、Image Confirmation或Appearance Confirmation及时间、Revision、Candidate / Board / Item范围。
+
+对同一轮清楚列出的Candidate批次，按该全局语义确认该批次中的全部列出对象；Support Board仍须能核对Board ID、Item ID与图中区域/标签。资产记录不得放宽全局规则中的未展示、版本或对象不清、互斥选择、外部提交及Hard Stop边界。
+
 ### Existing Asset Fast Path
 
 当用户提供或项目目录中存在与CHAR / ENV / PROP / FX实体明确匹配的现有视觉文件时，资产流程先执行：
@@ -416,7 +422,7 @@ Existing File Check
 → Canonical Reference / Active Version
 ```
 
-该路径可以跳过新Prompt与图片生成，但不能跳过来源核验、用户对具体文件的明确确认、版本记录、Canonical Reference或Active Version登记。现有文件未确认前仍是Candidate Reference，不得标记`Confirmed Status: Yes`、`Status: Active`或作为下游锁定依据。
+该路径可以跳过新Prompt与图片生成，但不能跳过来源核验、用户对具体文件的确认（按`rules/progression_rules.md`解释）、版本记录、Canonical Reference或Active Version登记。现有文件未确认前仍是Candidate Reference，不得标记`Confirmed Status: Yes`、`Status: Active`或作为下游锁定依据。
 
 如果现有文件与实体身份不匹配、缺少必要视角/状态或用户要求重设计，返回标准Asset Design → Prompt → Image双确认路径。只核验当前对象，禁止为确认一个资产扫描或重做其他篇章与资产类别。
 
@@ -433,26 +439,27 @@ Asset Design
 
 ## Prompt Gate
 
+- 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。
 - Image Prompt必须是完整、可直接生图的执行文本，不得只输出外观说明、关键词清单或“用于后续生成”的参考要求。
 - Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、项目视觉风格、一致性限制、必要负面限制与适用生成参数。
-- `Visual Production Status: Prompt Draft`时必须停止并等待用户确认；只有`Automation Policy: FAST`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续内置图片生成。
+- `Visual Production Status: Prompt Draft`时必须停止在当前Prompt Confirmation Checkpoint；用户的确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续内置图片生成。
 - 同步状态必须为`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`。
-- 只有用户对当前Prompt Revision明确说出“确认生成该图”“按此Prompt生成”或其他无歧义、指向该具体Revision的生成授权后，才可写`Prompt Confirmed`并调用图片生成工具；`Automation Policy: FAST`的合格资产可由`rules/automation_mode.md`记录自动确认后继续。单独的“继续 / 下一步 / 下一个 / next”在STANDARD仍只是纯推进指令；FAST仍不得把它用于外部服务、Candidate图片确认或Hard Stop。
+- 当前Prompt Revision获得全局确认语义定义的确认后，才可写`Prompt Confirmed`并按已记录的工具路由继续；`Automation Policy: FAST`的合格资产可由`rules/automation_mode.md`记录自动确认后继续。对外部图像服务，该确认只记录Prompt Confirmed，不构成外部提交授权。
 - Prompt发生任何实质修改后返回`Prompt Draft`，旧确认不得自动继承。
 
 ## Image Gate
 
-- 当前agent具备直接图片生成能力且用户请求制作资产时，按`modules/assets.md`的Direct Image Default直接生成Candidate Image；内部Prompt不向用户展示，记录为`Prompt Status: Confirmed`与`Prompt Confirmation: Direct Image Default — user requested asset production`。用户明确要求查看或只要Prompt、当前agent不能直接生成图片、或用户选择外部图像服务时，才输出Prompt并走Prompt确认Gate。
+- 已确认选择`Built-in Image`且当前agent具备直接图片生成能力时，在当前Prompt Revision按既有规则确认后生成Candidate Image；选择`Midjourney`或其他外部模型时只交付Prompt，外部图片回传后才进入Image Generated。不得因环境可生成而跳过图像模型选择或Prompt确认。
 - 图片生成后只写`Image Generated`，并把文件或受控外部ID登记为Candidate References。
 - Image Generated时同步状态必须为`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`。
-- 未经用户确认图片，不得写Canonical References、Active Version、`Status: Active`或`Asset Confirmed`。
+- 未经全局确认语义定义的用户确认图片，不得写Canonical References、Active Version、`Status: Active`或`Asset Confirmed`。
 - 图片被拒绝时，保留其生成记录但不得升级为Canonical Reference；若只需重生则回到已确认Prompt，若需改Prompt则回到`Prompt Draft`重新确认。
-- 只有用户确认图片后，才能写`Visual Production Status: Asset Confirmed`，完成Canonical References、Active Version、Approval Basis与Approved At登记。
+- 只有图片获得全局确认语义定义的用户确认后，才能写`Visual Production Status: Asset Confirmed`，完成Canonical References、Active Version、Approval Basis与Approved At登记。
 - Asset Confirmed时同步状态才允许为`Prompt Status: Confirmed`、`Image Status: Confirmed`、`Confirmed Status: Yes`；Support还必须记录Board ID、Item ID与图中区域/标签对应关系。
 
 ## Tool Availability
 
-当前环境不能直接生成图片时，最低交付仍是完整Image Prompt与明确的Prompt确认Checkpoint。用户确认后保持STATE-03 `IN_PROGRESS`，等待外部生成图片回传或图像工具恢复；不得把纯文字设定登记为已确认视觉资产。
+当前环境不能直接生成图片时，最低交付仍是完整Image Prompt与当前Prompt Confirmation Checkpoint。用户按全局确认语义确认后保持STATE-03 `IN_PROGRESS`，等待外部生成图片回传或图像工具恢复；不得把纯文字设定登记为已确认视觉资产。
 
 
 ## Downstream Character Lock Inheritance Gate

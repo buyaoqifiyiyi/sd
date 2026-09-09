@@ -551,7 +551,7 @@ Template负责：
 
 因此：
 
-STATE-08最终Seedance视频Prompt的：
+STATE-08最终视频Prompt的：
 
 字段名称。
 
@@ -562,12 +562,11 @@ STATE-08最终Seedance视频Prompt的：
 章节结构。
 
 
-必须以：
+必须按已锁定模型路由至唯一格式来源：
 
-templates/10_video_prompt.md
-
-
-为唯一格式来源。
+- `Seedance 2.5`：`templates/12_seedance_25_video_prompt.md`
+- `Seedance 2.0`：`templates/10_video_prompt.md`
+- `MiniMax H3`：`templates/13_minimax_h3_video_prompt.md`
 
 
 本文件不得：
@@ -585,14 +584,7 @@ Knowledge不得：
 把内部分析维度作为最终输出字段。
 
 
-如果其他文件中的字段名称：
-
-与templates/10_video_prompt.md不同。
-
-
-最终输出时：
-
-必须以templates/10_video_prompt.md为准。
+如果其他文件中的字段名称与当前Selected Template不同，最终输出时必须以当前Selected Template为准。
 
 
 ---
@@ -668,9 +660,7 @@ Template Schema映射
 DO NOT PRESERVE THE INPUT SHOT FORMAT。
 
 
-最终格式必须服从：
-
-templates/10_video_prompt.md。
+最终格式必须服从当前Selected Template：Seedance 2.0为`templates/10_video_prompt.md`；Seedance 2.5为`templates/12_seedance_25_video_prompt.md`；MiniMax H3为`templates/13_minimax_h3_video_prompt.md`。
 
 
 ---
@@ -1045,9 +1035,9 @@ award winning。
 生成模型消费的是数字对应的视觉关系与运动效果，不是逐项执行精密摄影测量或刚体仿真。不得为了显得专业保留无实际生成价值的小数精度。
 
 
-STATE-08必须先消费与LOCKED Target Video Model一一匹配的内部Model Compilation Template；它只影响模型语义编译，绝不增加或改变最终字段。最终Prompt只允许在固定字段`时长：`中写一次来自Confirmed Clip Production Plan、由用户选择的“平台生成时长：N秒”：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，16—30秒只在内部严格预检PASS时成立；未知网关状态不得预先压缩该时长。只有`Target Model = Seedance 2.5`且`Execution Mode = Targeted Edit`时，才可在既有分镜正文的合适字段写受控时间段语义；不得新增时间轴字段。其他模式禁止写分镜时间码、单分镜时长、按秒动作区间、帧率或帧数；帧率和帧数仍只能作为Prompt外部平台参数。
+STATE-08必须先消费与LOCKED Target Video Model一一匹配的内部Model Compilation Template和Prompt Output Template。Seedance 2.5使用`templates/12_seedance_25_video_prompt.md`：时长为4—30秒（16—30秒只在内部严格预检PASS时成立），可按其时间线写严格递进的按秒区间，并默认按30图、10视频、10音频、合计50项容量审计。MiniMax H3使用`templates/13_minimax_h3_video_prompt.md`：时长4—15秒、官方三段式、9图/3视频/3音频/合计12项限制与末尾`非叙事性音乐：N/A`。Seedance 2.0使用`templates/10_video_prompt.md`。未知网关状态不得预先压缩确认时长；实际入口限制更低时才收缩实际提交。帧率、帧数与逐帧工程参数仍只能作为Prompt外部平台参数。
 
-STATE-08格式必须逐Clip严格服从`templates/10_video_prompt.md`固定契约：每个Clip结构完全相同，Template当前定义的无条件字段按顺序完整保留；条件字段只在Template的显式条件成立时出现，不得为了结构齐全输出空字段或状态占位。不得因批量或篇幅压缩、合并、共享、删减或改名无条件字段。内容过长时只在完整Clip之间自动分批。每个分镜的全部无条件字段必须按Template完整输出，不得增加竞争字段。任何旧格式冲突以Template为最高优先级，输出前必须逐Clip执行字段完整性检查。
+STATE-08格式必须逐Clip严格服从当前Selected Template固定契约：每个Clip结构完全相同，当前Template定义的字段按顺序完整保留；条件字段只在Template的显式条件成立时出现，不得为了结构齐全输出空字段或状态占位。不得因批量或篇幅压缩、合并、共享、删减或改名字段。内容过长时只在完整Clip之间自动分批。任何旧格式冲突以当前Template为最高优先级，输出前必须逐Clip执行字段完整性检查。
 
 
 ---
@@ -1272,7 +1262,7 @@ Seedance适配知识：
 # Negative Prompt Boundary Rule
 
 
-最终Seedance视频Prompt中，`反向提示词：`必须逐Clip且只出现一次，并由`templates/10_video_prompt.md`固定为当前Clip最后一个字段、最后一个段落；其后不得再出现分镜、说明、备注或其他正文。
+最终视频Prompt中，末尾反向约束字段必须逐Clip且只出现一次并作为当前Clip最后一个段落：Seedance 2.5使用`全局限制与反向提示词：`，其他模型使用`反向提示词：`；其后不得再出现分镜、说明、备注或其他正文。
 
 `主风格 / 人物一致性 / 环境一致性 / 参考区 / 各分镜字段`等位于其前的正文必须以正向、可执行、可观察的目标状态为主。通用的“禁止…… / 不要…… / 避免……”限制、生成错误规避项和跨字段适用的负向清单不得零散塞入正文，必须统一归并到末尾唯一的`反向提示词：`。
 
@@ -1392,9 +1382,7 @@ Seedance适配知识：
 
 ## Schema
 
-最终输出是否严格服从：
-
-templates/10_video_prompt.md。
+最终输出是否严格服从当前Selected Template：Seedance 2.0为`templates/10_video_prompt.md`；Seedance 2.5为`templates/12_seedance_25_video_prompt.md`；MiniMax H3为`templates/13_minimax_h3_video_prompt.md`。
 
 
 如果Schema不符合：
@@ -1410,7 +1398,7 @@ templates/10_video_prompt.md。
 ## Timeline
 
 
-除【时长】中来自Confirmed Clip Production Plan、由用户选择的单一“平台生成时长：N秒”（2.0为4—15秒；2.5为4—30秒且16—30秒内部严格预检PASS）外，且不属于已锁定Seedance 2.5 Targeted Edit在既有分镜正文中的受控时间段语义时，最终Prompt是否完全不包含：
+除Seedance 2.5独立模板中、与确认时长一致且严格递进的时间线分段（包括Targeted Edit受控时间段）外，Seedance 2.0与MiniMax H3最终Prompt是否完全不包含：
 
 - 时间码或起止时间戳
 - 总片时长、单分镜时长或Clip内部逐镜时长
@@ -1456,8 +1444,4 @@ Knowledge提供辅助。
 Template定义最终Schema。
 
 
-最终Seedance Prompt只能有：
-
-一个最终格式真源：
-
-templates/10_video_prompt.md
+最终Prompt只能有一个与Selected Model匹配的最终格式真源：Seedance 2.0为`templates/10_video_prompt.md`；Seedance 2.5为`templates/12_seedance_25_video_prompt.md`；MiniMax H3为`templates/13_minimax_h3_video_prompt.md`。未来模型没有独立Template时不得输出最终Prompt。

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r24 SD Film validator."""
+"""Regression tests for the r30 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -11,7 +11,7 @@ validator = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
 SPEC.loader.exec_module(validator)
 
-class R17RegressionTests(unittest.TestCase):
+class R30RegressionTests(unittest.TestCase):
     def test_active_skill_passes(self) -> None:
         self.assertEqual(validator.validate_skill(ROOT), [])
 
@@ -21,6 +21,21 @@ class R17RegressionTests(unittest.TestCase):
         self.assertIn("max_seconds: 15", two)
         self.assertIn("max_seconds: 30", twofive)
         self.assertIn("23 秒 Natural Unit", twofive)
+
+    def test_seedance_25_exposes_timestamp_and_multimodal_audits_without_claiming_web_features_for_api(self) -> None:
+        adapter = (ROOT / "adapters/seedance-2.5.md").read_text(encoding="utf-8-sig")
+        compiler = (ROOT / "knowledge/prompt_compilation/seedance_25_compilation.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/12_seedance_25_video_prompt.md").read_text(encoding="utf-8-sig")
+        state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
+        self.assertIn("timestamp_text_control", adapter)
+        self.assertIn("combined: 50", adapter)
+        self.assertIn("pure_audio_driver: supported", adapter)
+        self.assertIn("Dreamina Web专有", adapter)
+        self.assertIn("唯一Primary Role", compiler)
+        self.assertIn("参考素材职责与优先级", template)
+        self.assertIn("时间线：", template)
+        self.assertIn("Delivery Surface: STANDARD / DREAMINA_WEB", state)
+        self.assertIn("Reference Capacity Audit: SEEDANCE_25_CAPABILITY", state)
 
     def test_minimax_h3_is_explicit_and_does_not_inherit_seedance_features(self) -> None:
         h3 = (ROOT / "adapters/minimax-h3.md").read_text(encoding="utf-8-sig")
@@ -38,29 +53,69 @@ class R17RegressionTests(unittest.TestCase):
         self.assertIn("官方三段式", compiler)
         self.assertIn("非叙事性音乐：N/A", compiler)
 
+    def test_every_supported_model_has_an_isolated_final_prompt_template(self) -> None:
+        adapter20 = (ROOT / "adapters/seedance-2.0.md").read_text(encoding="utf-8-sig")
+        adapter25 = (ROOT / "adapters/seedance-2.5.md").read_text(encoding="utf-8-sig")
+        adapter_h3 = (ROOT / "adapters/minimax-h3.md").read_text(encoding="utf-8-sig")
+        h3_template = (ROOT / "templates/13_minimax_h3_video_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("templates/10_video_prompt.md", adapter20)
+        self.assertIn("prompt_output_template: templates/12_seedance_25_video_prompt.md", adapter25)
+        self.assertIn("prompt_output_template: templates/13_minimax_h3_video_prompt.md", adapter_h3)
+        self.assertIn("参考素材说明：", h3_template)
+        self.assertIn("核心创意：", h3_template)
+        self.assertIn("非叙事性音乐：N/A", h3_template)
+
     def test_state_07_owns_clip_decision(self) -> None:
         selection = (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")
         workflow = (ROOT / "workflows/10_clip_production_workflow.md").read_text(encoding="utf-8-sig")
         self.assertNotIn("先形成 Natural Unit，再输出", selection)
         self.assertIn("唯一决策 owner", workflow)
 
-    def test_asset_image_route_defaults_to_builtin_and_isolates_midjourney(self) -> None:
+    def test_asset_image_model_selection_has_no_default_and_isolates_templates(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
+        selection = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
+        builtin_adapter = (ROOT / "adapters/built-in-image.md").read_text(encoding="utf-8-sig")
+        builtin_template = (ROOT / "templates/24_builtin_image_asset_prompt.md").read_text(encoding="utf-8-sig")
         midjourney = (ROOT / "adapters/midjourney.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/14_midjourney_asset_prompt.md").read_text(encoding="utf-8-sig")
         video_selection = (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")
-        self.assertIn("未明确指定外部图像模型：`Built-in Image`", assets)
-        self.assertIn("明确指定`Midjourney`：读取`adapters/midjourney.md`", assets)
+        self.assertIn("不得默认选择Built-in Image、Midjourney或任何第三方服务", assets)
+        self.assertIn("## Available Choices", selection)
+        self.assertIn("不得默认选择Built-in Image、Midjourney或其他模型", selection)
+        self.assertIn("prompt_output_template: templates/24_builtin_image_asset_prompt.md", builtin_adapter)
+        self.assertIn("## Built-in Image Prompt Package", builtin_template)
         self.assertIn("只输出可直接粘贴的 Midjourney Prompt", midjourney)
         self.assertIn("不调用内置`image_gen`", midjourney)
+        self.assertIn("prompt_output_template: templates/14_midjourney_asset_prompt.md", midjourney)
+        self.assertIn("## Midjourney Prompt Package", template)
+        self.assertIn("## Asset-Specific Compilation", template)
+        self.assertIn("--v`、`--q`、`--s`、`--seed`", template)
         self.assertNotIn("Midjourney", video_selection)
 
-    def test_direct_image_default_uses_actual_generation_capability(self) -> None:
+    def test_external_image_models_require_isolated_templates_before_adapter_routing(self) -> None:
+        assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
+        contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        workflow_map = (ROOT / "workflows/workflow_map.md").read_text(encoding="utf-8-sig")
+        category_templates = (
+            "templates/04_character_asset_prompt.md",
+            "templates/05_environment_asset_prompt.md",
+            "templates/06_prop_asset_prompt.md",
+            "templates/13_fx_asset_prompt.md",
+        )
+        self.assertIn("独立`prompt_output_template`", assets)
+        self.assertIn("## Image Model Prompt Template Isolation", contracts)
+        self.assertIn("templates/14_midjourney_asset_prompt.md", workflow_map)
+        for relative in category_templates:
+            with self.subTest(template=relative):
+                self.assertIn("Image Prompt Output Template", (ROOT / relative).read_text(encoding="utf-8-sig"))
+
+    def test_builtin_image_requires_selection_and_actual_generation_capability(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
         character = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
-        self.assertIn("### Direct Image Default", assets)
-        self.assertIn("当前agent的实际图片生成能力决定", assets)
-        self.assertIn("Direct Image Default", character)
-        self.assertIn("Prompt", character)
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        self.assertNotIn("Direct Image Default", assets)
+        self.assertIn("仅已选择Built-in Image且当前环境实际可用时", character)
+        self.assertIn("不得因环境可生成而跳过图像模型选择或Prompt确认", rules)
 
     def test_every_asset_workflow_calls_the_single_image_route_owner(self) -> None:
         workflows = (
@@ -75,7 +130,7 @@ class R17RegressionTests(unittest.TestCase):
     def test_core_character_asset_is_one_combined_reference_sheet(self) -> None:
         workflow = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
         template = (ROOT / "templates/04_character_asset_prompt.md").read_text(encoding="utf-8-sig")
-        self.assertIn("Direct Image Default", workflow)
+        self.assertIn("Image Model Selection Gate", workflow)
         self.assertIn("Candidate Reference", workflow)
         self.assertIn("#### Combined Character Asset Sheet Prompt", template)
         self.assertIn("Three-View Prompt", template)
@@ -97,8 +152,8 @@ class R17RegressionTests(unittest.TestCase):
     def test_external_image_route_remains_explicit_and_capability_neutral(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
-        self.assertIn("明确指定非Midjourney的外部图像模型", assets)
-        self.assertIn("未明确指定模型不能静默切换至第三方服务", assets)
+        self.assertIn("明确指定其他图像模型", assets)
+        self.assertIn("不得默认选择Built-in Image、Midjourney或任何第三方服务", assets)
         self.assertIn("不假设平台能力", guide)
 
     def test_legacy_recovery_matrix_static_contract(self) -> None:
@@ -140,6 +195,18 @@ class R17RegressionTests(unittest.TestCase):
         self.assertIn("Candidate Image", automation)
         self.assertIn("图片与Production Script Proposal不在替代范围内", completion)
         self.assertIn("FAST不得替代该图片确认", asset_lock)
+
+    def test_advance_synonyms_confirm_the_current_explicit_checkpoint(self) -> None:
+        progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
+        script = (ROOT / "workflows/02_script_analysis_workflow.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        for command in ("下一步", "下一个", "继续", "往后做", "接着做", "next", "proceed", "好的"):
+            with self.subTest(command=command):
+                self.assertIn(command, progression)
+        self.assertIn("即为确认当前检查点", progression)
+        self.assertIn("不提交外部服务", progression)
+        self.assertIn("推进表达按`rules/progression_rules.md`确认该Proposal", script)
+        self.assertIn("其他同义推进表达也直接视为确认", guide)
 
     def test_environment_multi_view_reconstruction_is_state03_additive(self) -> None:
         reconstruction = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")

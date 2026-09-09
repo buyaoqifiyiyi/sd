@@ -410,7 +410,7 @@ Script Optimization Gate硬规则：
 - C类获准路径必须完成`Script Adaptation → Adaptation Draft → 编剧优化 → 导演化处理 → Production Script Proposal → 用户确认`。
 - A/B类获准路径只完成`编剧优化 → 导演化处理 → Production Script Proposal → 用户确认`，不得强制改编。
 - 用户拒绝优化/改编时，不改一字，原版本完成Script Analysis后直接Production-Lock并进入STATE-02。
-- Production Script Proposal输出后必须再次等待用户明确确认，确认前不得Production-Lock或进入STATE-02。
+- Production Script Proposal输出后必须等待当前确认检查点；确认输入按`rules/progression_rules.md`解释，确认前不得Production-Lock或进入STATE-02。
 - Adaptation Intensity只使用LEVEL 1 / LEVEL 2 / LEVEL 3，并选择最低足够等级；用户明确“基本不要改剧情”时只能LEVEL 1。
 - `Script Status: Adaptation Draft`时STATE-01保持IN_PROGRESS，不得进入STATE-02。
 - `Script Status: Optimized Proposal`时STATE-01保持IN_PROGRESS，不得进入STATE-02。

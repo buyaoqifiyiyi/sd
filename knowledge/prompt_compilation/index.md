@@ -18,7 +18,7 @@ Model Compilation Templates（仅内部编译，不拥有最终字段）：
 - [Seedance 2.5 Native Compiler](seedance_25_compilation.md)：仅在 Lock=`Seedance 2.5` 时读取，并同时读取`../seedance_25_profile.md`。
 - [MiniMax H3 Compiler](minimax_h3_compilation.md)：仅在 Lock=`MiniMax H3` 时读取，并同时读取`adapters/minimax-h3.md`。
 
-所有编译器都只确认 Camera、Composition、Performance、Sound、FX、Sequence、资产、Visual Style 与连续性信息如何进入 `templates/10_video_prompt.md` 既有字段。MiniMax H3编译器还负责把官方的“参考素材说明 + 核心创意 + 画面过程说明”映射到同一字段，并在投影前核验H3的参考输入上限与每项素材用途。
+所有编译器都只确认 Camera、Composition、Performance、Sound、FX、Sequence、资产、Visual Style 与连续性信息如何进入当前模型的独立Template：Seedance 2.0→`templates/10_video_prompt.md`，Seedance 2.5→`templates/12_seedance_25_video_prompt.md`，MiniMax H3→`templates/13_minimax_h3_video_prompt.md`。MiniMax H3编译器把官方“参考素材说明 + 核心创意 + 画面过程说明”直接映射到其独立Template，并在投影前核验H3参考输入上限与每项素材用途；未来模型必须先建立自己的Template。
 
 ## Boundary
 

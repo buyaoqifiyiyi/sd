@@ -13,7 +13,7 @@
 - Portable Baseline: `portable_project_status.md`
 - Default STATE-08 Delivery: one pending Clip per response
 - STATE-08 Clip Duration: inherited from the locked Target Video Model and Confirmed Clip Production Plan; duration rules are owned by the Model Execution Lock contract
-- STATE-08 Image Reference Limit: 9 per Clip after Preflight and World-State filtering
+- STATE-08 Reference Budget: Seedance 2.5默认按30图 / 10视频 / 10音频 / 合计50项能力上限规划并按需少用；Seedance 2.0与MiniMax H3按各自Adapter限制执行
 - Storyboard Activation: explicit only
 - AUDIO / SEED-AUDIO Voice Asset Activation: explicit only
 - STATE-08 Voice Identity Text: omitted by default; conditional minimal Delta only on explicit current-video-Prompt request
@@ -61,7 +61,9 @@
 - MUSIC / SEED-MUSIC路由：`workflows/music_router.md`。
 - Legacy兼容：`workflows/10_shot_execution_plan_workflow.md`与`workflows/19_clip_planning_workflow.md`；新项目不得把它们写为主Pipeline的Next Workflow。
 
-每个Template文件独占其用户可见Schema，其他文件不得复制完整字段骨架。STATE-08最终Schema唯一由`templates/10_video_prompt.md`拥有；`templates/11_image_to_video_prompt.md`只提供参考帧Source Data与边界约束。
+每个Template文件独占其用户可见Schema，其他文件不得复制完整字段骨架。STATE-08最终Schema按Selected Model唯一拥有：Seedance 2.0为`templates/10_video_prompt.md`，Seedance 2.5为`templates/12_seedance_25_video_prompt.md`，MiniMax H3为`templates/13_minimax_h3_video_prompt.md`；未来视频模型未建立独立Template不得接入；`templates/11_image_to_video_prompt.md`只提供参考帧Source Data与边界约束。
+
+STATE-03的资产类别Template继续拥有资产定义与确认闭环；任何新Image Prompt前必须经`modules/image-model-selection.md`确认当前资产批次的图像模型，不默认内置Image。模型Adapter声明的独立`prompt_output_template`唯一拥有该模型的最终Prompt正文：Built-in Image为`templates/24_builtin_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型未先建立独立Adapter与最终提示词模板，不得作为可选模型接入；不得污染内置Image、Midjourney或视频模型模板。
 
 ## Loading Defaults
 
@@ -80,7 +82,7 @@
 - 默认只交付剧本、各类设定资源、分镜表、Clip表和最终视频提示词；状态、视觉开发、场景拆解、色彩/镜头/情绪设定及QA作为内部生产数据，除非用户明确请求查看。
 - 优先清楚的视觉描述、专业制作逻辑、空间关系、连续性、资产一致性与AI生成可执行性。
 - Prompt是下游生产动作，不是流程起点。
-- STATE-08 Prompt正文不写分镜时间码、逐秒区间、帧数区间或帧率限制；平台参数置于Prompt之外。
+- STATE-08 Prompt正文默认不写时间码、逐秒区间、帧数区间或帧率限制；仅Seedance 2.5的多Beat、蒙太奇、复杂连续镜头或Targeted Edit可在既有分镜正文按Adapter写必要的时间戳文本。平台参数仍置于Prompt之外。
 - STATE-08反向提示词首个非空内容行永久使用固定背景音乐禁令；任何配乐请求都由独立MUSIC / SEED-MUSIC模块处理。
 - MUSIC模块默认输出纯音乐SeedMusic提示词；歌词或任何人声纹理只有用户当前明确要求时才允许。
 - 最终字段与格式始终服从当前Template，本配置不拥有任何最终Schema。

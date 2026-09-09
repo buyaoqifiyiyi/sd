@@ -5,21 +5,25 @@
 - Module Type：STATE-08 Knowledge Adapter。
 - Trigger：所有 Video Prompt / Seedance Prompt 撰写任务。
 - Inputs：已确认项目事实、STATE-06 Detailed Shot Design、STATE-07 Confirmed Clip Production Plan、由`knowledge/11_seedance_adapter.md`的Model Template Router选定的唯一内部Compiler、适用Knowledge与`knowledge/clip_planning/continuity_and_projection.md`；当前Clip使用Spatial Lock环境时还读取其Active Environment View Set与STATE-07选择记录；只有用户明确要求把声音控制写进当前视频模型Prompt时，才读取适用的Confirmed Voice Profile或Voice/Audio Reference作为条件输入。
-- Output Owner：`templates/10_video_prompt.md`；本文件不拥有、增加、删除或改名最终字段。
+- Output Owner：按Selected Model唯一选择`templates/10_video_prompt.md`（Seedance 2.0）、`templates/12_seedance_25_video_prompt.md`（Seedance 2.5）或`templates/13_minimax_h3_video_prompt.md`（MiniMax H3）；本文件不拥有、增加、删除或改名最终字段。
 - Consumer：`workflows/11_video_generation_workflow.md`。
 - Forbidden：新增剧情、重选资产、改变镜头目的、创建新主STATE、创建另一套最终Schema。
 
-## Fixed-Template Projection Gate
+### Model-Specific Template Override
+
+本文件中任何旧的`templates/10_video_prompt.md`字段映射、9图或十字段分镜描述，只适用于Seedance 2.0。`Target Video Model = Seedance 2.5`时一律由`templates/12_seedance_25_video_prompt.md`覆盖：使用多模态参考职责、30图 / 10视频 / 10音频 / 合计50项容量审计和时间线字段。`Target Video Model = MiniMax H3`时一律由`templates/13_minimax_h3_video_prompt.md`覆盖：使用参考素材说明、核心创意、画面过程说明和`非叙事性音乐：N/A`。不得混合模型Template字段。
+
+## Selected-Template Projection Gate
 
 先验证Clip Plan中`Target Video Model`、`Model Compilation Template`与已读Compiler完全匹配：2.0只接受`Seedance 2.0 Stable Compiler`，2.5只接受`Seedance 2.5 Native Compiler`。不匹配、缺失或未锁定时返回STATE-07；不可在本Gate重新选择模型。内部Compiler输出只作为语义输入，模型名、任务类型、参考角色、上传顺序、API字段和预检记录不得进入最终字段。
 
-投影粒度固定为Clip。每个Confirmed Clip分别投影为一个完整的`# CLIP-X｜标题 <Target Video Model>视频提示词`区块，完整重复Template规定的全局字段；每个`分镜X`完整重复Template规定的十个分镜字段。
+投影粒度固定为Clip。每个Confirmed Clip分别投影为一个完整的`# CLIP-X｜标题 <Target Video Model>视频提示词`区块。Seedance 2.0完整使用`templates/10_video_prompt.md`的固定字段；Seedance 2.5完整使用`templates/12_seedance_25_video_prompt.md`的多模态参考职责与时间线字段；MiniMax H3完整使用`templates/13_minimax_h3_video_prompt.md`的官方三段式字段。不得混用三套Template字段。
 
 禁止使用方头括号旧章节、独立CLIP标题字段、无授权条件字段、“与下一镜衔接”或其他新增字段。`音色特征：`只按Template显式授权条件出现；下一镜承接与Boundary Class语义投影到“镜头结尾状态”；跨Clip首尾帧语义投影到“参考资产”“首帧参考”“尾帧限制”和首/末分镜的起止状态。
 
 批量授权只改变本轮Clip数量，不改变逐Clip结构。不得压缩、合并、共享、删减或改名字段；内容过长时按完整Clip自动分批，批次边界不得拆开单个Clip。
 
-Template Mapping后与交付前各执行一次字段完整性检查。标题、八个无条件前置全局字段、一个或多个逐镜十字段组、末尾反向提示词必须完整、非空、无重复、无额外字段并严格按顺序。`音色特征：`只在用户明确要求把声音控制写进当前视频模型Prompt时作为第九个条件字段出现。任一项失败不得输出。
+Template Mapping后与交付前各执行一次Selected Template完整性检查。2.5必须通过其多模态计数/Primary Role/时间线QA；H3必须通过三段式、`@`参考素材、4—15秒和末尾`非叙事性音乐：N/A` QA；2.0必须通过其八个无条件前置全局字段、一个或多个逐镜十字段组和末尾反向提示词QA。任一项失败不得输出。
 
 ## Core Rule
 
@@ -48,7 +52,7 @@ Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm
 
 ## Director-to-Prompt Translation Pass
 
-在Prompt Attention / Control Allocation之前，先从Clip-level Director Intent提取1—3项Dramatic Priority，并按下列内部顺序投影；全部结果只能进入`templates/10_video_prompt.md`现有字段：
+在Prompt Attention / Control Allocation之前，先从Clip-level Director Intent提取1—3项Dramatic Priority，并按下列内部顺序投影；全部结果只能进入当前Selected Template字段：
 
 1. **Dramatic Priority Extraction**：锁定唯一Primary dramatic delta及最多两个支持目标；其余导演背景留在Source。
 2. **Audience Attention Hierarchy**：规定First Look、Second Look与Delayed / Withheld信息，使用动作顺序、构图、焦点、遮挡、景深和人物活动层级控制。
@@ -253,7 +257,7 @@ STATE-08内部转换链固定为：
 
 ## Reference Budget Projection Gate
 
-每个Clip在Clip Preflight与Before-Single-Clip-Prompt Gate通过后才可建立`参考资产：`。Final Visual Blocking Assessment=`REQUIRED`时，只有实际生成 / 接收、通过Sketch Validation且Blocking Signature匹配的Confirmed `REF-SKETCH`才可进入；未完成时本轮停止，不编译Prompt。Final=`NONE`不生成或预留草图；普通Prompt Rewrite复用现有Anchor。随后读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；A/B无论尾帧是否已上传都预留1个Projected位，并直接列出统一`REF-TAIL`名称、用途和真实状态；未提供时为“待用户提供/待上传、未确认”，不计入已提交图片数。C不加入或预留旧尾帧。得到Projected Final Count后执行既有阈值：≤7不整合；8张且无额外帧需求不整合；9张只有在没有未计入的合法连续性需求时允许直接使用；已有9张且仍需上一Clip尾帧/当前首帧时按10张处理并至少释放1位；>9必须整合同类非角色信息，仍超限则按规定优先级裁剪，最终≤9。
+每个Clip在Clip Preflight与Before-Single-Clip-Prompt Gate通过后才可建立参考清单。Final Visual Blocking Assessment=`REQUIRED`时，只有实际生成 / 接收、通过Sketch Validation且Blocking Signature匹配的Confirmed `REF-SKETCH`才可进入；未完成时本轮停止，不编译Prompt。Final=`NONE`不生成或预留草图；普通Prompt Rewrite复用现有Anchor。随后读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；A/B无论尾帧是否已上传都预留1个Projected位，并直接列出统一`REF-TAIL`名称、用途和真实状态；未提供时为“待用户提供/待上传、未确认”，不计入已提交图片数。C不加入或预留旧尾帧。Seedance 2.5按30图、10视频、10音频、合计50项及各自30秒时长审计；2.0与H3按其Adapter的当前有效上限审计。
 
 当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
@@ -276,7 +280,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 - Dialogue Performance仍投影到`人物动作与情绪 / 台词 / 音效`中的适用位置，只说明当前一句/当前场景怎么说，不得重定义稳定Voice Identity。
 - 雨声、风声、纸张、脚步、道具、钢琴或其他环境声/动作声属于Sound Design，只进入逐镜`音效`及其声音尾部；它们不得被路由成`音色特征：`，也不得作为启用该条件字段的证据。
 
-`时长：`只复制Confirmed Clip Production Plan中用户选择的目标时长，不得重新估算；Seedance 2.0为4—15秒，Seedance 2.5为4—30秒，16—30秒由目标时长自动触发内部严格预检且仅在PASS时成立，MiniMax H3为4—15秒。未知网关状态不得在投影前压缩该时长；实际平台拒绝时才走Return Route。除`Target Model = Seedance 2.5`且`Execution Mode = Targeted Edit`外，最终Prompt不写逐镜时长、时间码、按秒动作区间、帧率或帧数；该唯一例外只能把受控时间段语义写入既有分镜正文的适当字段，不新增时间轴字段。MiniMax H3不继承该例外。
+`时长：`只复制Confirmed Clip Production Plan中用户选择的目标时长，不得重新估算；Seedance 2.0为4—15秒，Seedance 2.5为4—30秒，16—30秒由目标时长自动触发内部严格预检且仅在PASS时成立，MiniMax H3为4—15秒。未知网关状态不得在投影前压缩该时长；实际平台拒绝时才走Return Route。Seedance 2.5的Targeted Edit、或经Adapter判定有必要的多Beat、蒙太奇、复杂连续镜头，可把受控且严格递进的时间戳文本写入既有`画面描述`，不新增时间轴字段；时间段总和不得超过当前Clip时长。其他模型不写逐镜时长、时间码、按秒动作区间、帧率或帧数，也不继承此能力。
 
 ## Global Projection Matrix
 
@@ -284,7 +288,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 |---|---|---|
 | Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
 | Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
-| Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor | 参考资产 | 当前Clip实际使用并经Reference Budget审计后Projected Final Count≤9；除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；任何`REF-TAIL`写明同镜头连续承接用途或空间/站位/景别参考用途；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
+| Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor | Selected Template的参考字段 | Seedance 2.5按30图 / 10视频 / 10音频 / 合计50及各自30秒审计，每项有唯一Primary Role；2.0/H3按各自Adapter限制。除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
 | Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
 | Clip End State / Next Clip | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
 | Character Continuity / Performance | 人物一致性；主风格 | 外观与状态锁定、表演尺度、跨镜湿润/伤痕/体力/情绪连续性 |
@@ -368,7 +372,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否只保留从上一镜/上一Clip合法继承的状态，没有混入其他镜头的动作、机位、结束状态或风格残留；是否没有堆叠互相稀释的导演、美术、摄影与渲染风格。
 - 是否没有方头括号旧章节、独立CLIP标题字段、“与下一镜衔接”或其他额外字段。
 - `参考资产：`、`首帧参考：`、`尾帧限制：`是否无条件存在且非空。
-- `参考资产：`是否通过Reference Budget Check：Projected Final Count与已提交图片数≤9、无当前Clip无关项、无重复占位；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。
+- 参考字段是否通过Reference Budget Check：Seedance 2.5默认按图片≤30、视频≤10、音频≤10、合计≤50及各自≤30秒审计；2.0/H3按各自Adapter有效上限。无当前Clip无关项、无重复占位；每个实际输入均有唯一Primary Role；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。
 - 是否通过Clip Preflight：连续性三选一且尾帧引用正确；逐分镜World-State与资产一致；角色精确数量、追逐/多人空间构图、关键道具状态和适用转场五要素均有现有字段证据；失败设计没有被反向提示词兜底。
 - 是否通过Performance / Emotion Check：逐角色Baseline、Trigger、动作前/中/后当前可见段、Post-action Residue、Arc Endpoint与Carryover可复算；Intentional Hold仍有注意、压制/延迟、呼吸/姿态或行动证据；多人相对幅度、反应顺序和视觉重点交接清楚；没有静态情绪标签、固定脸完成动作、无刺激重置、全员同强度或全员同脸。
 - 是否明确A/B/C并据此标记`Tail Frame Required = YES / NO`；A/B无图时是否在`参考资产`直接列统一`REF-TAIL`、对应用途与“待用户提供/待上传、未确认”，且未冒充已提交图片；A是否使用固定直接承接句，B是否明确另起新镜头且未使用该句，C是否完全未列`REF-TAIL`；本Clip新尾帧限制是否完整。
@@ -380,7 +384,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 
 格式冲突优先级固定为：
 
-`templates/10_video_prompt.md固定输出契约 > 任何旧Template / Workflow / Adapter / Knowledge / Rules / Validator / 示例 / 历史格式`
+`当前Selected Template固定输出契约 > 任何旧Template / Workflow / Adapter / Knowledge / Rules / Validator / 示例 / 历史格式`
 
 内容事实仍服从已确认上游资产、剧情和生产决策；Template只拥有格式，不拥有改写事实的权限。
 

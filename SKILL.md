@@ -5,9 +5,9 @@ description: AI影视虚拟制片生产系统。处理剧本、导演转译、�
 
 # SD Film
 
-Skill Version: 2026.09.09-r24
+Skill Version: 2026.09.09-r30
 
-Build ID: sd-film-2026.09.09-r24
+Build ID: sd-film-2026.09.09-r30
 
 ## Core
 
@@ -35,11 +35,11 @@ Build ID: sd-film-2026.09.09-r24
 在 STATE-06 确认后、STATE-07 前选择一个 Adapter。STATE-07 先保护 Natural Unit 的剧情、空间、动作与导演事实，再用 Adapter 将它整合为模型可执行的 Execution Clip。Adapter 只能控制模型能力、时长、Timeline、参考输入与安全降级，不能改写 Script、Writer/Director Intent、Confirmed Blocking、Canonical Asset 或 Template。
 
 - `adapters/seedance-2.0.md`：4–15 秒。
-- `adapters/seedance-2.5.md`：4–30 秒；23 秒通过长时长预检保持单 Clip，34 秒才拆分；Timeline 按需使用。
+- `adapters/seedance-2.5.md`：4–30 秒；23 秒通过长时长预检保持单 Clip，34 秒才拆分；按需使用时间戳式 Timeline，并审计 30 图 / 10 视频 / 10 音频、合计最多 50 个参考输入。Dreamina 网页端专有能力必须显式选择该入口，不能误报为方舟 API。
 - `adapters/minimax-h3.md`：4–15 秒；支持首/尾帧、全能多模态参考和已有视频编辑，按官方三段式提示词编译；不继承 Seedance 专属的时码式 Targeted Edit 或长时长能力。
 - `adapters/other-models.md`：未验证模型不继承 Seedance 能力。
 
-资产创作的图像路由不属于上述视频 Model Selection：默认由`modules/assets.md`使用内置 Image 输出；用户在STATE-03明确指定 Midjourney 时才读取`adapters/midjourney.md`，只交付 Midjourney Prompt，不调用内置图片生成。它不影响STATE-06后的模型选择、STATE-07 Clip或STATE-08视频 Prompt。
+资产创作的图像路由不属于上述视频 Model Selection：STATE-03在任何新Image Prompt前由`modules/image-model-selection.md`要求用户确认当前资产批次的图像模型，不默认内置 Image。当前可选Built-in Image（`adapters/built-in-image.md` + `templates/24_builtin_image_asset_prompt.md`）或Midjourney（`adapters/midjourney.md` + `templates/14_midjourney_asset_prompt.md`）；未来模型必须先有独立Adapter和最终提示词模板。它不影响STATE-06后的模型选择、STATE-07 Clip或STATE-08视频 Prompt。
 
 ## Global invariants
 

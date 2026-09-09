@@ -66,7 +66,7 @@ Confirmed Status：No / Yes
 
 # Required Output
 
-当前agent能直接生成图片且用户请求制作道具资产时，按`modules/assets.md`的Direct Image Default直接输出生成的Candidate Image Review，不展示Prompt；用户明确要求查看/只要Prompt、当前agent不能生成图片或用户选择外部服务时，才输出本Template的Prompt Draft。图片确认仍不可跳过。
+任何道具Prompt Draft前，必须由`modules/image-model-selection.md`确认当前资产批次的`Selected Image Model`。未选择时只输出Image Model Selection Proposal，不输出道具Prompt或Candidate Image；选择Built-in Image也不跳过Prompt确认。图片确认仍不可跳过。
 
 ## Phased Output Contract
 
@@ -92,8 +92,13 @@ Confirmed Status：No / Yes
 - Image Status：`Not Generated`
 - Confirmed Status：`No`
 - Target Image Tool / Model：
+- Image Model Selection Status：`SELECTED`
+- Image Adapter Profile：
 - Asset Image Route：
+- Image Prompt Output Template：Built-in Image写`templates/24_builtin_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
 - Generation Parameters：画幅、分辨率、背景控制及工具必需参数。
+
+本Template继续拥有道具资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
 
 ### Core Asset Package
 
@@ -227,4 +232,4 @@ Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Productio
 
 无意义装饰。
 
-禁止只输出道具“长什么样”。当前agent能直接生成图片时按`modules/assets.md`的Direct Image Default直接生成Candidate Image；不能生成或用户明确要求Prompt时，才交付完整可直接生图的Prompt并等待确认。未经图片确认不得登记confirmed asset。
+禁止只输出道具“长什么样”。在已选择图像模型后，交付完整可直接生图的Prompt并等待确认；只有选择Built-in Image且当前环境实际可用时，Prompt确认后才生成Candidate Image。未经图片确认不得登记confirmed asset。

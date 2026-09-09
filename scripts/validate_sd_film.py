@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r24 structural and routing validation for SD Film."""
+"""Deterministic r30 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -9,11 +9,11 @@ from pathlib import Path
 REQUIRED = (
     "SKILL.md", "core/pipeline.md", "core/runtime-state.md", "core/rule-priority.md",
     "modules/screenwriter.md", "modules/director.md", "modules/spatial-blocking.md",
-    "modules/clip-planning.md", "modules/model-selection.md", "modules/prompt-generation.md", "modules/assets.md",
-    "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/minimax-h3.md", "adapters/midjourney.md",
+    "modules/clip-planning.md", "modules/model-selection.md", "modules/image-model-selection.md", "modules/prompt-generation.md", "modules/assets.md",
+    "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/minimax-h3.md", "adapters/built-in-image.md", "adapters/midjourney.md",
     "knowledge/prompt_compilation/minimax_h3_compilation.md",
     "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
-    "templates/20_clip_plan.md", "templates/10_video_prompt.md",
+    "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
     "references/project_state_contract.md", "rules/automation_mode.md",
     "knowledge/environment_multi_view_reconstruction.md",
 )
@@ -38,8 +38,11 @@ def validate_skill(root: Path) -> list[str]:
     core = read(root, "core/pipeline.md")
     runtime = read(root, "core/runtime-state.md")
     selection = read(root, "modules/model-selection.md")
+    image_selection = read(root, "modules/image-model-selection.md")
     assets = read(root, "modules/assets.md")
     automation = read(root, "rules/automation_mode.md")
+    progression = read(root, "rules/progression_rules.md")
+    completion = read(root, "rules/completion_gate.md")
     performance = read(root, "knowledge/performance/micro_expression.md")
     projection = read(root, "knowledge/prompt_compilation/state08_projection.md")
     shot_qa = read(root, "knowledge/quality/shot_qa.md")
@@ -56,13 +59,25 @@ def validate_skill(root: Path) -> list[str]:
     plan = read(root, "templates/20_clip_plan.md")
     adapter20 = read(root, "adapters/seedance-2.0.md")
     adapter25 = read(root, "adapters/seedance-2.5.md")
+    profile25 = read(root, "knowledge/seedance_25_profile.md")
+    compiler25 = read(root, "knowledge/prompt_compilation/seedance_25_compilation.md")
+    reference_budget = read(root, "knowledge/reference_budget.md")
+    prompt_template = read(root, "templates/10_video_prompt.md")
+    prompt_template25 = read(root, "templates/12_seedance_25_video_prompt.md")
+    prompt_template_h3 = read(root, "templates/13_minimax_h3_video_prompt.md")
     adapter_h3 = read(root, "adapters/minimax-h3.md")
     compiler_h3 = read(root, "knowledge/prompt_compilation/minimax_h3_compilation.md")
     midjourney = read(root, "adapters/midjourney.md")
+    builtin_image = read(root, "adapters/built-in-image.md")
+    midjourney_template = read(root, "templates/14_midjourney_asset_prompt.md")
+    builtin_image_template = read(root, "templates/24_builtin_image_asset_prompt.md")
     camera_router = read(root, "knowledge/camera_language/shot_language_router.md")
     visual_styles = read(root, "knowledge/visual_styles/index.md")
     visual_workflow = read(root, "workflows/07_visual_development_workflow.md")
     character_template = read(root, "templates/04_character_asset_prompt.md")
+    environment_template = read(root, "templates/05_environment_asset_prompt.md")
+    prop_template = read(root, "templates/06_prop_asset_prompt.md")
+    fx_template = read(root, "templates/13_fx_asset_prompt.md")
     required_markers = (
         (core, "STATE-06 后：Model Selection"),
         (runtime, "STATE-06 完成后的 Model Selection 成功后"),
@@ -76,6 +91,20 @@ def validate_skill(root: Path) -> list[str]:
         (adapter20, "max_seconds: 15"),
         (adapter25, "max_seconds: 30"),
         (adapter25, "23 秒 Natural Unit 经长时长预检 PASS 后保持单 Execution Clip"),
+        (adapter25, "default_capacity_limit"),
+        (adapter25, "prompt_output_template: templates/12_seedance_25_video_prompt.md"),
+        (adapter25, "timestamp_text_control"),
+        (adapter25, "Dreamina Web专有"),
+        (profile25, "Timestamp And Dreamina Surface Boundary"),
+        (compiler25, "唯一Primary Role"),
+        (reference_budget, "合计50项"),
+        (prompt_template25, "## 唯一允许的最终模板"),
+        (prompt_template25, "参考素材职责与优先级"),
+        (prompt_template25, "时间线："),
+        (adapter_h3, "prompt_output_template: templates/13_minimax_h3_video_prompt.md"),
+        (prompt_template_h3, "参考素材说明："),
+        (prompt_template_h3, "核心创意："),
+        (prompt_template_h3, "非叙事性音乐：N/A"),
         (adapter_h3, "min_seconds: 4"),
         (adapter_h3, "max_seconds: 15"),
         (adapter_h3, "images_max: 9"),
@@ -88,15 +117,26 @@ def validate_skill(root: Path) -> list[str]:
         (compiler_h3, "官方三段式"),
         (compiler_h3, "非叙事性音乐：N/A"),
         (assets, "本模块是STATE-03图像工具选择与提示词适配的唯一owner"),
-        (assets, "### Direct Image Default"),
-        (assets, "当前agent的实际图片生成能力决定"),
-        (assets, "未明确指定外部图像模型：`Built-in Image`"),
-        (assets, "明确指定`Midjourney`：读取`adapters/midjourney.md`"),
-        (assets, "明确指定非Midjourney的外部图像模型"),
+        (assets, "### Image Model Selection Gate"),
+        (assets, "不得默认选择Built-in Image、Midjourney或任何第三方服务"),
+        (assets, "`Built-in Image`：读取`adapters/built-in-image.md`"),
+        (assets, "`Midjourney`：读取`adapters/midjourney.md`"),
+        (assets, "明确指定其他图像模型"),
         (assets, "最小`CHANGE`与完整`PRESERVE`逻辑"),
+        (image_selection, "## Available Choices"),
+        (image_selection, "不得默认选择Built-in Image、Midjourney或其他模型"),
+        (image_selection, "下一步`、`下一个`、`继续`"),
+        (image_selection, "Image Model Selection Scope"),
+        (state, "Selected Image Model: Built-in Image / Midjourney / UNSELECTED"),
+        (builtin_image, "prompt_output_template: templates/24_builtin_image_asset_prompt.md"),
+        (builtin_image_template, "## Built-in Image Prompt Package"),
         (automation, "## FAST Eligible Work"),
         (automation, "## Hard Stops"),
         (automation, "将任何Candidate Image标为Canonical / Active"),
+        (progression, "## Confirmation Input Semantics"),
+        (progression, "任何语义上表示继续推进的表达"),
+        (progression, "不提交外部服务"),
+        (completion, "确认输入语义由`rules/progression_rules.md`唯一拥有"),
         (state, "Automation Policy: STANDARD / FAST"),
         (performance, "## Behavior Under Pressure"),
         (performance, "Spatial Blocking仍是位置、朝向、距离和接触的唯一owner"),
@@ -104,11 +144,20 @@ def validate_skill(root: Path) -> list[str]:
         (shot_qa, "### Risk-driven Prompt Evidence"),
         (midjourney, "只输出可直接粘贴的 Midjourney Prompt"),
         (midjourney, "不调用内置`image_gen`"),
-        (midjourney, "不得默认附加`--v`、`--seed`、`--stylize`"),
+        (midjourney, "prompt_output_template: templates/14_midjourney_asset_prompt.md"),
+        (midjourney_template, "## Midjourney Prompt Package"),
+        (midjourney_template, "## Parameter And Syntax Discipline"),
+        (midjourney_template, "--v`、`--q`、`--s`、`--seed`、`--chaos`、`--raw`、`--niji"),
+        (midjourney_template, "## Asset-Specific Compilation"),
+        (assets, "独立`prompt_output_template`"),
         (character, "Asset Image Route"),
-        (character, "Direct Image Default"),
+        (character, "Image Model Selection Gate"),
         (character_template, "#### Combined Character Asset Sheet Prompt"),
         (character_template, "Three-View Prompt"),
+        (character_template, "Image Prompt Output Template"),
+        (environment_template, "Image Prompt Output Template"),
+        (prop_template, "Image Prompt Output Template"),
+        (fx_template, "Image Prompt Output Template"),
         (environment, "Asset Image Route"),
         (prop, "Asset Image Route"),
         (fx, "Asset Image Route"),
@@ -129,7 +178,7 @@ def validate_skill(root: Path) -> list[str]:
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r24 routing marker: {marker}")
+            errors.append(f"missing r30 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -154,7 +203,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r24 structural and routing validation")
+    print("PASS: r30 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

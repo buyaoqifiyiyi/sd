@@ -238,4 +238,4 @@ Class A/B Optimization分支：明确写`Source Material → Optimized Proposal`
 
 No Revision / Final Script分支：明确写Optimization Opportunity Report、Script Adaptation与全部内容改写Not Applicable，原版已按用户授权锁定；完成全部分析后写`Script Status: Production-Locked`，再允许进入STATE-02。
 
-Production Script Proposal确认分支：用户明确确认Proposal后才写`Script Status: Production-Locked`并进入STATE-02；只说“继续 / 下一步 / 好的”时仍保持`Optimized Proposal + IN_PROGRESS`并再次等待确认。
+Production Script Proposal确认分支：Proposal已展示且可核对时，用户的推进表达按`rules/progression_rules.md`确认Proposal，才写`Script Status: Production-Locked`并进入STATE-02；未展示或版本不清时仍保持`Optimized Proposal + IN_PROGRESS`并等待最小必要澄清。

@@ -125,6 +125,7 @@ Board ID与Item ID（Support必填；Core为`Not Applicable`）。
 
 ```text
 Asset Design
+→ Image Model Selection
 → [Core only] Appearance Reference Prompt
 → 用户确认外观参考Prompt
 → 生成外观参考图
@@ -140,11 +141,11 @@ Core的外观参考图是正式资产前的设计确认，不进入Asset Registr
 
 ### FAST Automation Exception
 
-启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。符合资格的当前Prompt Revision可自动确认并按内置图像路由生成当前角色资产批次；所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图片确认、真实人物/品牌/授权、外部服务或任何Hard Stop。
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型仍须先按`modules/image-model-selection.md`确认；符合资格的当前Prompt Revision才可自动确认并按已选图像模型路由生成当前角色资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图像模型选择、图片确认、真实人物/品牌/授权、外部服务或任何Hard Stop。
 
-### Direct Image Default
+### Image Model Selection Gate
 
-按`modules/assets.md`的Direct Image Default，当前agent具备直接图片生成能力且用户请求制作角色资产时，Core先直接生成外观参考图；用户确认外观后，直接生成正式角色资产设定图。不得默认展示或等待任一Prompt确认。只有用户明确要求查看/只要Prompt，或当前agent无法直接生成图片、或用户选择外部图像服务时，才输出对应Prompt并等待确认。无论哪种路径，外观参考图确认与正式资产图确认都必须保留；外观参考图不进入Registry，正式资产图确认前不进入Canonical / Active。
+在任何角色Prompt之前，必须按`modules/image-model-selection.md`完成当前角色资产批次的图像模型选择。未选择时展示`Image Model Selection Proposal`并停止；不得默认内置Image或直接生成。选择确认后，按该模型的独立Prompt Template输出对应Prompt，并保留外观参考图确认与正式资产图确认；外观参考图不进入Registry，正式资产图确认前不进入Canonical / Active。
 
 ### Existing Character Asset Fast Path
 
@@ -310,7 +311,7 @@ Screen Presence与主要表演可读性；例如面部、身体轮廓、手部�
 # 06 Image Prompt Generation
 
 
-先完成角色定义，再按`modules/assets.md`的Asset Image Route和Asset Tier使用`templates/04_character_asset_prompt.md`输出完整可直接生图的Prompt Package。
+先完成角色定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/04_character_asset_prompt.md`输出完整可直接生图的Prompt Package。
 
 
 包括：
@@ -341,7 +342,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 - `Confirmed Status: No`
 - `Awaiting User Confirmation: Image Prompts`
 
-当前agent具有直接图片生成能力且用户请求制作资产时，按`modules/assets.md`的Direct Image Default直接进入对应图片生成与图片审阅，不展示或等待Prompt确认；否则到此必须停止并等待用户确认。
+到此必须停止并等待当前Prompt Revision确认；选择Built-in Image也不得跳过该Prompt确认。
 
 
 ---
@@ -365,7 +366,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 
 # 08 Image Generation
 
-当前Prompt获确认后按`modules/assets.md`的已记录路由执行：Built-in Image才可调用当前环境可用的内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core先按获确认的外观参考图Prompt生成一张外观参考图，并等待用户确认外观；不得把它登记为Candidate / Canonical Reference。外观确认后，Core再按获确认的正式资产Prompt生成一张正式角色资产设定图（面部特写 + 三视图）与必要状态变体；基础正式资产禁止拆成独立三视图和独立面部特写Candidate Reference。Support按已确认Board Prompt生成整张Support Character Reference Board。
+当前Prompt获确认后按`modules/assets.md`的已记录路由执行：仅已选择Built-in Image且当前环境实际可用时可调用内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core先按获确认的外观参考图Prompt生成一张外观参考图，并等待用户确认外观；不得把它登记为Candidate / Canonical Reference。外观确认后，Core再按获确认的正式资产Prompt生成一张正式角色资产设定图（面部特写 + 三视图）与必要状态变体；基础正式资产禁止拆成独立三视图和独立面部特写Candidate Reference。Support按已确认Board Prompt生成整张Support Character Reference Board。
 
 生成后记录：
 

@@ -17,19 +17,23 @@
 
 当`Automation Policy: FAST`时，先读取`rules/automation_mode.md`。对其明确列出的Eligible Work，当前Workflow完成必需QA后可在同一轮自动继续和写回；不得跳过State、Hard Stop、外部权限或事实冲突处理。未命中FAST资格时仍按本规则的最近Checkpoint停止。
 
+## Confirmation Input Semantics
+
+本规则是所有主STATE与辅助Workflow的用户确认输入语义唯一owner。只要当前轮已展示一个可核对、版本和范围明确的确认检查点，任何语义上表示继续推进的表达（包括但不限于`下一步`、`下一个`、`继续`、`往后做`、`接着做`、`next`、`proceed`、`好的`）即为确认当前检查点，并授权完成该检查点后的合法下一生产步骤；不再额外要求“确认 / 批准 / 锁定”等同义措辞。所有Workflow、Rule、Template和Reference中“用户确认”“明确确认”“明确批准”“等待确认”均按本节解释，除非其拥有者明确说明该步骤不是确认而是选择、缺失输入或外部操作授权。
+
+该语义不替用户在多个互斥选项中作选择，不虚构缺失事实或文件，不提交外部服务，不授予真实人物、品牌、法务、受监管内容等额外权限，也不使未展示、版本不明或范围含混的Artifact得到确认。出现这些情形时，只呈现最小必要选项、输入或风险；用户的纯推进命令本身不解决它们。确认后的写回仍必须保留Artifact、Revision、时间和确认范围证据。
+
 ## Authorization Boundary
 
 纯推进命令只授权继续已确定的下一生产步骤，不自动授权：
 
-- 在STATE-03跳过Prompt确认并调用图片生成工具
-- 把Candidate图片标记为Confirmed / Canonical
 - 把Creation或Optimization分支的Production Script Proposal标记为Production-Locked
 - 批量输出全部Clip
 - 激活Storyboard或AUDIO / SEED-AUDIO辅助模块
 - 跳过当前Completion Gate
 - 重做已接受且未受影响的Artifact
 
-若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、内置图片生成批次、STATE-06/07自动接受和同轮`REF-SKETCH`后Prompt编译除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
+若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；当前确认检查点的纯推进输入按本规则的`Confirmation Input Semantics`处理。`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、内置图片生成批次、STATE-06/07自动接受和同轮`REF-SKETCH`后Prompt编译除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
 
 STATE-08的Before-Single-Clip-Prompt Gate是本规则的窄范围例外：用户请求指定Clip或说“下一个 / 下一步 / 继续”时，已授权系统执行该Clip的Final Visual Blocking Anchor Assessment。Final=`REQUIRED`时，生成并验证一张受限`REF-SKETCH`属于当前Prompt的自动内部生产步骤，不等同于STATE-03资产生图、Storyboard激活或Candidate确认；无需另行把纯推进命令解释为资产Prompt确认。本轮必须停在草图、注册与用途说明，下一次推进才输出Prompt。任何角色 / 环境 / 道具 / FX资产图、Formal Keyframe或非Gate图片仍服从原授权边界。
 

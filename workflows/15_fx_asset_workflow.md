@@ -116,7 +116,7 @@ Trigger → Source → Initial State → Propagation → Interaction → End Sta
 
 ## Step 7: Register Asset
 
-正式FX视觉资产同样受`rules/02_asset_rules.md`的Visual Asset Production Gate与`modules/assets.md`的Asset Image Route约束：按其Direct Image Default，当前agent能直接生成图片时，用户请求制作FX资产即直接生成Candidate Image，不展示或等待Prompt确认；用户明确要求查看/只要Prompt、当前agent不能生成图片或用户选择外部服务时，才输出完整FX Image Prompt并等待确认。Midjourney只交付外部生成Prompt，不调用内置生成。实际获得图片后写`Image Generated`并登记Candidate References，再次等待用户确认；只有图片确认后才写`Asset Confirmed`并登记Canonical References与Active Version。
+正式FX视觉资产同样受`rules/02_asset_rules.md`的Visual Asset Production Gate与`modules/assets.md`的Asset Image Route约束：任何FX Image Prompt前先按`modules/image-model-selection.md`确认当前资产批次模型，未选择时展示Proposal并停止。选择确认后才按其独立Prompt Template输出完整FX Image Prompt并等待确认。只有已选Built-in Image且当前环境实际可用时可生成Candidate；Midjourney只交付外部生成Prompt，不调用内置生成。实际获得图片后写`Image Generated`并登记Candidate References，再次等待用户确认；只有图片确认后才写`Asset Confirmed`并登记Canonical References与Active Version。
 
 当前环境不能生成图片时，保留完整Prompt与确认Checkpoint并保持STATE-03 `IN_PROGRESS`，等待外部生成结果回传或工具恢复。
 

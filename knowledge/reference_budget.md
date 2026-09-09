@@ -2,9 +2,9 @@
 
 ## Contract
 
-本规则是 STATE-07 Clip Production 与 STATE-08 Clip-based Video Prompt / Video Generation 共享的全局参考资产预算合同。Seedance 2.0与未明确更高网关可用性的默认有效图片上限为9张。Seedance 2.5的模型能力上限可达30图，但`Effective Gateway Limits`未明确确认可用时仍按9张；确认可用时只可使用`min(30, 实际网关图片上限)`。它必须在`knowledge/clip_preflight_check.md`完成Continuity Classification与World-State Check之后执行；预算不得反向决定连续性分类，也不得让不属于当前世界状态的资产因为“已有参考位”进入清单。
+本规则是 STATE-07 Clip Production 与 STATE-08 Clip-based Video Prompt / Video Generation 共享的全局参考资产预算合同。Seedance 2.0与MiniMax H3按各自Adapter的图片限制执行。Seedance 2.5默认以30图、10视频、10音频、合计50项为容量边界，视频和音频各自总时长≤30秒；每个输入必须有唯一Primary Role。实际入口/网关明确给出较低限制时，才以`min(能力上限, 实际入口上限)`收缩对应类型；缺少素材职责或当前世界状态不适用的项必须删除，但不得以“稳定”为由自动回退9图。它必须在`knowledge/clip_preflight_check.md`完成Continuity Classification与World-State Check之后执行；预算不得反向决定连续性分类，也不得让不属于当前世界状态的资产因为“已有参考位”进入清单。
 
-目标不是把参考图压到越少越好，而是在不超过当前有效上限的前提下，优先保留表达更清晰、更准确的原始独立资产。资产整合是参考位不足时的条件性补救，不是默认预处理。2.5支持更多参考不构成填满30图、10视频或10音频的理由；继续最小充分路由。
+目标不是把参考图压到越少越好，而是在不超过当前有效上限的前提下，优先保留表达更清晰、更准确的原始独立资产。资产整合是参考位不足时的条件性补救，不是默认预处理。2.5支持更多参考不构成填满30图、10视频或10音频的理由；每一个实际提交素材都必须在Reference Audit中有唯一Primary Role（身份、场景、动作/机位、音色或动作/口型/节奏驱动），无角色项先移除，继续最小充分路由。
 
 预算只对已经通过`knowledge/clip_preflight_check.md` Visual Input Eligibility Test的视觉条目计数。预算不能把纯文字约束变成资产，也不能因为一个说明写得很重要就给它分配图片位。
 
@@ -15,7 +15,7 @@
 `REF-SKETCH-MASTER`不属于当前Clip视频参考候选：即使真实文件已注册并在草图生成时作为Sketch Presentation输入，也不写入最终视频`参考资产：`、不占本9张预算。只有由它辅助生成、再通过Sketch Validation与Template Content Leakage Check的当前`REF-SKETCH-XX`按1张真实图片计位。母版未注册时也不得创建待补视频资产占位。
 
 - 一个实际提交的图片文件或帧占 1 个参考位。
-- Voice/Audio Reference 不属于图片时，不计入 9 张图片上限，但仍必须按声音规则登记；若目标平台把它转换或上传为图片输入，则按实际图片位计数。
+- Voice/Audio Reference 不属于图片时，不计入图片上限，但仍必须按声音规则登记；Seedance 2.5扩展审计中音频≤10、总时长≤30秒，纯音频驱动还要登记动作/口型/节奏的唯一控制目标。若目标平台把它转换或上传为图片输入，则按实际图片位计数。
 - 未实际存在、未生成、未确认、Candidate 状态、路径/ID无法核验或仅在文字中设想的“总设定图”“空间关系图”“动作关系图”不得进入候选清单或最终`参考资产：`。受控待补视觉条目只声明一个已经确定需要用户实际投喂的具体缺失图，不得把想象中的合成总图、普通文字规则或未来可能有用的素材包装为占位；A/B `REF-TAIL`必须同时写专用用途与“待用户提供/待上传、未确认”，不得冒充现有图片。
 - 站位说明、不可换边、人物距离、同坐一张板凳、道具数量、空间关系、行为限制、禁止项与镜头规则占0个图片位，并必须从`参考资产：`移到对应的`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`。
 - 非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前分镜World-State不适用的资产及与当前生成无关的资产必须在计数前删除。完全位于转换后世界的Clip不得保留转换前世界的环境或道具形态；只有当前Clip正在执行已确认状态转换时，转换前后资产才可按各自阶段同时作为候选。
@@ -25,7 +25,7 @@
 
 ## Conditional Trigger Thresholds
 
-本节的7/8/9阈值是默认9图Effective Limit的稳定工作法；若Seedance 2.5的实际网关明确允许更高图片上限，先以当前Clip具体风险和最小充分原则选取参考，再只在超过该有效上限时去重、整合和裁剪。任何情况下核心角色独立图、A/B `REF-TAIL`、Canonical Authority与实际输入资格不变；Video Extension的`REF-VIDEO`是受控视频输入，不替代既有视觉参考或End-State合同。
+本节的7/8/9阈值只适用于Seedance 2.0 / MiniMax H3或入口实际限制为9图的情况；Seedance 2.5默认按30图容量与当前入口限制执行，先以当前Clip具体风险和最小充分原则选取参考，再只在超过当前有效上限时去重、整合和裁剪。任何情况下核心角色独立图、A/B `REF-TAIL`、Canonical Authority与实际输入资格不变；Video Extension的`REF-VIDEO`是受控视频输入，不替代既有视觉参考或End-State合同。
 
 先按World-State删除不适用资产，再统计当前真实候选数；加入已经由A/B确定的上一Clip尾帧预留位，以及其他合法连续性图片需求，得到`Projected Final Count`。Projected预留不等于真实资产已存在。【参考资产】可以包含A/B的待补充`REF-TAIL`声明，但“已提交图片清单”仍只计已上传、可访问且确认可用的图片：
 
@@ -66,10 +66,10 @@
 4. 删除非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前世界状态不适用的资产及其他无关项。
 5. 去除同一文件重复引用与不增加信息的重复资产；不得把语义不同的核心角色图误判为重复。
 6. 读取Preflight中的Visual Anchor State、A/B/C与`Tail Frame Required = YES / NO`。Final=`REQUIRED`且当前Confirmed `REF-SKETCH-XX`通过Signature与Template Content Leakage比较时，将实际草图计入当前Clip图片位并锁定其用途 / Authority；`REF-SKETCH-MASTER`始终为0个视频图片位。Final=`NONE`不预留草图位；普通Prompt Rewrite复用既有草图，不重复计数或生成；REPLACE / RETIRE / CREATE后以当前Active Anchor重新计算。A/B为上一Clip尾帧预留1个Projected位，并在【参考资产】直接列出统一`REF-TAIL`名称：A标“同镜头连续承接用途”，B标“空间/站位/景别参考用途”。实际存在、可访问且已确认时记录真实引用并计入已提交图片；未提供时写“待用户提供/待上传、未确认”，主动提示用户截取并添加，不计入已提交图片数但仍计入Projected Final Count。C不得加入或预留旧尾帧。统计`Projected Final Count`。
-7. 若最终需求 `≤ 9`，直接使用独立资产，不执行整合；仅 8/9 张时完成预留与连续性复核。
-8. 若最终需求 `> 9`，只对同类非角色信息执行整合。优先选择已经存在且已确认、能完整覆盖对应零散图的总图；新总图必须先完成资产确认闭环。
+7. 若最终需求不超过当前有效图片上限，直接使用独立资产，不执行整合；默认9图预算中仅 8/9 张时完成预留与连续性复核。
+8. 若最终需求超过当前有效图片上限，只对同类非角色信息执行整合。优先选择已经存在且已确认、能完整覆盖对应零散图的总图；新总图必须先完成资产确认闭环。
 9. 再次计数；仍超限时按优先级从低到高裁剪，记录删除项、理由与由何种文字/已保留资产承接信息。
-10. 最终核对每个核心角色仍有独立外貌基准；所有真实条目均属于当前World-State或合法转换阶段；所有待补视觉条目都能说明具体图像与实际投喂用途；没有文字伪资产或重复占位；Projected Final Count与实际提交图片数均`≤ 9`。待补视觉条目不冒充已提交图片；若是应成为Canonical的正式资产则按Return Route处理。其他失败不得确认 Clip Plan或输出STATE-08 Prompt。
+10. 最终核对每个核心角色仍有独立外貌基准；所有真实条目均属于当前World-State或合法转换阶段；所有待补视觉条目都能说明具体图像与实际投喂用途；没有文字伪资产或重复占位；Projected Final Count与实际提交图片数均不超过当前有效图片上限。Seedance 2.5扩展审计还须满足视频≤10、音频≤10、合计≤50、视频/音频各自总时长≤30秒且每项有唯一Primary Role。待补视觉条目不冒充已提交图片；若是应成为Canonical的正式资产则按Return Route处理。其他失败不得确认 Clip Plan或输出STATE-08 Prompt。
 
 ## Retention Priority
 
@@ -84,7 +84,7 @@
 
 该排序用于裁剪，不取消已经判定为 Direct / Reference-Only 的连续性硬需求。若连续性图片是当前边界的必需输入，必须先通过非角色整合或裁剪更低优先项为其释放位置；不得把必需尾帧静默删除后仍声称连续继承。
 
-同理，Final Assessment=`REQUIRED`的Confirmed Visual Blocking Anchor不得为通过预算而静默删除；应先删除无关项、去重、整合或裁剪更低优先项。若与其他硬输入仍无法同时满足≤9，当前Clip不得输出Prompt，返回STATE-07调整执行合同或STATE-06降低Blocking / 动作复杂度。
+同理，Final Assessment=`REQUIRED`的Confirmed Visual Blocking Anchor不得为通过预算而静默删除；应先删除无关项、去重、整合或裁剪更低优先项。若与其他硬输入仍无法同时满足当前有效图片上限（默认9图；2.5扩展时为已验证上限），当前Clip不得输出Prompt，返回STATE-07调整执行合同或STATE-06降低Blocking / 动作复杂度。
 
 ## Required Audit Record
 
@@ -103,7 +103,7 @@ STATE-07 在`templates/20_clip_plan.md`现有 Clip Detail Card 内记录预算�
 - 最终参考图清单和总数
 - 待补充`REF-TAIL`声明与已提交图片清单分开计数；不得把“待用户提供/待上传、未确认”写成已上传或已确认
 - 每个核心角色独立图检查
-- `PASS ≤ 9` 或 Return Route
+- `PASS ≤ 当前有效图片上限；2.5扩展时同时通过50项多模态审计` 或 Return Route
 
 ## Acceptance Scenarios
 

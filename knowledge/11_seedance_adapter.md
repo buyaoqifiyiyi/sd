@@ -1,6 +1,6 @@
 # Seedance Adapter Knowledge
 
-> Legacy compatibility entry. Active model capability, duration, timeline and adaptation rules are exclusively `adapters/seedance-2.0.md` and `adapters/seedance-2.5.md`, reached through `modules/model-selection.md` after Natural Clip confirmation. This file must not be used as a competing rule owner.
+> Legacy compatibility entry. Active model capability, duration, timeline and adaptation rules are exclusively the selected `adapters/` file, reached through `modules/model-selection.md` after Natural Clip confirmation. This file must not be used as a competing rule owner. Any historical reference here to `templates/10_video_prompt.md` applies only to Seedance 2.0; Seedance 2.5 uses `templates/12_seedance_25_video_prompt.md`, MiniMax H3 uses `templates/13_minimax_h3_video_prompt.md`, and future models require their own Template before activation.
 
 
 ## Purpose

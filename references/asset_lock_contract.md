@@ -77,7 +77,7 @@ Image Generated
 Asset Confirmed
 ```
 
-默认迁移顺序为`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。但当前agent具备直接图片生成能力且用户请求制作资产时，可由`modules/assets.md`的Direct Image Default在不展示Prompt的情况下内部记录`Prompt Confirmed`，再直接进入`Image Generated`；其Prompt Confirmation记录为`Direct Image Default — user requested asset production`。用户明确要求查看或只要Prompt时，Prompt Draft必须等待用户确认当前Prompt Revision；只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Image Generated只允许登记Candidate References；Asset Confirmed必须有用户对图片的确认依据，才可写入Canonical References并切换Active Version。
+默认迁移顺序为`Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。新建或重编Prompt前必须由`modules/image-model-selection.md`确认当前资产批次的图像模型；该选择不替代Prompt或图片确认。用户明确要求查看或只要Prompt时，Prompt Draft必须等待当前确认检查点；确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Image Generated只允许登记Candidate References；Asset Confirmed必须有全局语义定义的图片确认依据，才可写入Canonical References并切换Active Version。
 
 ### Two-Tier Record Semantics
 
@@ -97,7 +97,7 @@ Image Generated  → Prompt Status: Confirmed / Image Status: Candidate     / Co
 Asset Confirmed  → Prompt Status: Confirmed / Image Status: Confirmed     / Confirmed Status: Yes
 ```
 
-Core Asset、Support Board和Support Item均只有在用户明确确认对应图片后才能写`Confirmed Status: Yes`。FAST不得替代该图片确认。Support的整板确认必须能核对Board ID与Item ID；部分Item未获明确批准时，该Item继续为`No`，不得由含糊的整板状态自动升级。
+Core Asset、Support Board和Support Item均只有在对应图片按`rules/progression_rules.md`确认后才能写`Confirmed Status: Yes`。FAST不得替代该图片确认。Support的整板确认必须能核对Board ID与Item ID；部分Item未获确认时，该Item继续为`No`，不得由含糊的整板状态自动升级。
 
 CHAR记录还允许在同一Active Version内保存由用户显式调用`AUDIO / SEED-AUDIO Voice Asset`模块创建的文字型角色音色子资产：
 
@@ -147,7 +147,7 @@ ENV-002@v003
 
 未经登记的附件只能作为Candidate Reference，不得覆盖Active Version。
 
-图像工具新生成或用户外部回传的图片，在用户确认之前也只能作为Candidate Reference。`Image Generated`不等于`Asset Confirmed`；Prompt确认不等于图片确认。只有Image Confirmation记录了明确批准的Candidate Reference与当前Version后，才可把该图片升级为Canonical Reference。
+图像工具新生成或用户外部回传的图片，在用户确认之前也只能作为Candidate Reference。`Image Generated`不等于`Asset Confirmed`；Prompt确认不等于图片确认。只有Image Confirmation按`rules/progression_rules.md`记录已确认的Candidate Reference与当前Version后，才可把该图片升级为Canonical Reference。
 
 ### Reference Authority Map
 

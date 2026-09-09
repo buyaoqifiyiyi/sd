@@ -52,13 +52,29 @@ Revision ID
 Updated At
 ```
 
+当`Current State`为STATE-03且当前资产批次需要新建或重编Image Prompt时，必须在`## State Control`保存该批次唯一的图像执行Profile：
+
+```text
+- Selected Image Model: Built-in Image / Midjourney / UNSELECTED
+- Image Adapter Profile: adapters/built-in-image.md / adapters/midjourney.md / UNSELECTED
+- Image Model Selection Status: UNSELECTED / SELECTED
+- Image Prompt Output Template: templates/24_builtin_image_asset_prompt.md / templates/14_midjourney_asset_prompt.md / UNSELECTED（必须与Selected Image Model匹配）
+- Image Delivery Route: Built-in Candidate Generation / External Prompt Only / Unavailable / UNSELECTED
+- Image Model Selection Scope: <current Asset ID / Board ID / Item ID / asset batch>
+```
+
+`UNSELECTED`在Prompt编译前是合法停点，但不得输出模型专属Prompt或生成Candidate Image。选择只控制当前资产批次的工具、模板和交付路线，不改变资产定义、Asset Tier、Canonical Reference或视频模型选择。切换模型只按`modules/image-model-selection.md`使受影响的未确认Prompt或用户明确重生的Candidate Revision重跑；已确认资产保持不变。
+
 当`Current State`为STATE-06完成后至STATE-08，或已存在Confirmed Clip Production Plan时，还必须在`## State Control`保存唯一的批次内部执行Profile：
 
 ```text
 - Selected Model: Seedance 2.0 / Seedance 2.5 / MiniMax H3 / UNSELECTED
 - Adapter Profile: adapters/seedance-2.0.md / adapters/seedance-2.5.md / adapters/minimax-h3.md / UNSELECTED
 - Model Selection Status: UNSELECTED / SELECTED
+- Delivery Surface: STANDARD / DREAMINA_WEB（仅用户明确指定Dreamina网页端时；不改变Selected Model）
+- Prompt Output Template: templates/10_video_prompt.md / templates/12_seedance_25_video_prompt.md / templates/13_minimax_h3_video_prompt.md / UNSELECTED（必须与Selected Model匹配）
 - Execution Mode: Standard Clip / Start or End Frame / Start-End Frame / All-Reference / Video Edit / Video Extension / Targeted Edit / Not Applicable
+- Reference Capacity Audit: SEEDANCE_25_CAPABILITY / ADAPTER_EFFECTIVE_LIMIT / NOT_APPLICABLE（记录图片 / 视频 / 音频 / 合计 / 时长与每项Primary Role；2.5默认使用其能力边界）
 - Long-duration Route: Not Applicable / AUTO-REQUIRED / PASS / FAIL（仅Seedance 2.5目标时长16—30秒；不是用户选择项）
 - Effective Gateway Limits: <observed external limits or UNKNOWN; may inform submitted inputs but never pre-cap the user-selected generation duration>
 - Model Selection Scope: <affected Natural Unit / CLIP IDs / current generation batch>

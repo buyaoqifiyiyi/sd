@@ -177,7 +177,7 @@ Creation与Existing两条入口都先读取唯一Writer owner `knowledge/screenp
 7. 用户要求“修改这一场 / 改台词 / 调整人物线 / 改结局”等时，保持Script Development，只修订明确范围与必要相邻因果，重跑受影响QA后再次等待确认；不得跳到STATE-05/06。
 8. 用户明确确认当前Proposal后，将确认版本登记为`Production-Locked Directable Screenplay + Writer Intent Packet`（状态值仍为`Production-Locked`），完成下方Script Analysis并进入STATE-02；Packet与该Revision绑定但不新增用户可见状态字段。
 
-Creation Brief不得输出Optimization Opportunity Report、Adaptation Draft或既有剧本修改授权问题。用户只说“下一步”且当前Proposal已经输出但未明确确认时，仍停在Proposal Confirmation Gate；若已明确确认并完成STATE-01，则“下一步”按状态合同进入STATE-02，不得重新生成剧本。
+Creation Brief不得输出Optimization Opportunity Report、Adaptation Draft或既有剧本修改授权问题。当前Proposal已经输出且处于可核对的Proposal Confirmation Gate时，用户的推进表达按`rules/progression_rules.md`确认该Proposal并完成STATE-01；若STATE-01已完成，则按状态合同进入STATE-02，不得重新生成剧本。
 
 ## 00B Existing Script / Material Route — Diagnosis Before Rewrite
 
@@ -340,7 +340,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 - Creation Brief或Existing Script / Material的Production Script Proposal输出后必须再次停止，保持`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`与`Next Workflow: 02_script_analysis_workflow.md`。
 - 用户明确确认当前Proposal：把唯一确认版本写为`Script Status: Production-Locked`，清除Pending Decision，再执行STATE-01 Completion Gate并进入STATE-02。
 - 用户要求修改Proposal：保持`Optimized Proposal + IN_PROGRESS`，只修订用户指出范围，输出新Proposal Revision并再次等待确认。
-- 用户只说“继续”“下一步”“好的”但没有明确确认提案：不得推定同意；仍停在Proposal Confirmation Gate。
+- 当前Proposal已展示且可核对时，用户说“继续”“下一步”“下一个”“往后做”“接着做”“好的”或同义推进表达，即按`rules/progression_rules.md`确认提案；未展示或版本不清时仍停在Proposal Confirmation Gate。
 
 
 ---

@@ -1,6 +1,6 @@
 # Prompt Generation Module
 
-入口：`workflows/11_video_generation_workflow.md`；语义投影 owner：`knowledge/prompt_compilation/state08_projection.md`；最终格式唯一 owner：`templates/10_video_prompt.md`。
+入口：`workflows/11_video_generation_workflow.md`；语义投影 owner：`knowledge/prompt_compilation/state08_projection.md`；最终格式由Selected Model唯一路由：Seedance 2.0使用`templates/10_video_prompt.md`，Seedance 2.5使用`templates/12_seedance_25_video_prompt.md`，MiniMax H3使用`templates/13_minimax_h3_video_prompt.md`。任何未来模型必须先建立独立最终Prompt Template，才能接入Model Selection。
 
 只读取确认的 Script、Director Intent、Storyboard（仅用户选择的辅助参考，非 Canonical）、Spatial Blocking、Natural Clip / Adapter result、Assets、首尾帧与当前 Model Adapter，编译最终模型提示词。
 

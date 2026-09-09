@@ -2,6 +2,7 @@
 
 ```yaml
 model: MiniMax H3
+prompt_output_template: templates/13_minimax_h3_video_prompt.md
 duration: { min_seconds: 4, max_seconds: 15 }
 aspect_ratio: { text_or_all_reference: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"], start_end: input_image_ratio }
 resolution: { modes: [768p, 1440p], recommended: 1440p, external_parameter_only: true }

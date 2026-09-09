@@ -14,7 +14,7 @@
 - Selected Model：Seedance 2.0 / Seedance 2.5 / MiniMax H3
 - Adapter Profile：`adapters/seedance-2.0.md` / `adapters/seedance-2.5.md` / `adapters/minimax-h3.md`；必须与Selected Model一一匹配，仅作内部执行路由，不投影为STATE-08 Prompt字段
 - Model Selection Status：SELECTED（未选择不得进入Execution Clip整合）
-- Execution Profile：Selected Model、Adapter Profile、Execution Mode、Long-duration Route、Effective Gateway Limits、Model Selection Scope；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
+- Execution Profile：Selected Model、Adapter Profile、Execution Mode、Long-duration Route、Effective Gateway Limits、Model Selection Scope、Reference Capacity Audit、Prompt Output Template与Delivery Surface；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
 - Model Duration Window：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒且16—30秒须严格预检PASS；MiniMax H3为4—15秒，时长由用户在选定模型窗口内选择
 - Total Formal Shots：
 - Total Clips：
@@ -35,7 +35,7 @@
 - Execution Mode：`Standard Clip` / `Video Extension` / `Targeted Edit`
 - 目标时长：N秒（Seedance 2.0为4—15秒；Seedance 2.5为4—30秒且16—30秒自动触发内部严格预检；MiniMax H3为4—15秒）
 - Long-duration Preflight：Not Applicable（4—15秒 / 非2.5）/ PASS / FAIL；16—30秒须确认镜头链、空间关系、表演连续性、动作/物理密度及适用转场逻辑均通过；FAIL返回`STATE-07 / 拆分Clip`
-- Model Profile Preflight：读取唯一Selected Adapter。Seedance 2.5的Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Seedance的Targeted Edit仅在用户明确要求修改既有视频时可用，时间段控制仅可写入既有分镜正文。MiniMax H3可使用首/尾帧、全能参考或已有视频编辑；两张首尾帧图禁止自动切镜，视频编辑只写明确CHANGE与PRESERVE，不写未验证时码。
+- Model Profile Preflight：读取唯一Selected Adapter。Seedance 2.5的Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Targeted Edit仅在用户明确要求修改既有视频时可用。2.5多Beat、蒙太奇或复杂连续镜头可登记必要的递进时间戳文本，最终仅进入既有分镜正文。MiniMax H3可使用首/尾帧、全能参考或已有视频编辑；两张首尾帧图禁止自动切镜，视频编辑只写明确CHANGE与PRESERVE，不写未验证时码。
 - 时长核算：SHOT-001=N秒 + SHOT-002=N秒；合计=N秒；平台生成时长=N秒
 - 组织类型：`单Shot` / `多Shot连续生成` / `多Shot有动机剪辑`
 - 组织理由：逐项说明场景连续性、时间连续性、人物动作连续性、摄影机连续性、模型执行复杂度与单次生成时长判断
@@ -97,12 +97,13 @@
   - 去重结果（重复文件或未增加信息项；不得把不同核心角色图当作重复）：
   - 连续性图片位（A/B无论是否已上传都预留1个Projected位，并在参考资产声明直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、用途与状态；“待用户提供/待上传、未确认”不得计为已提交图片；C不加入或预留旧尾帧）：
   - Projected Final Count（独立候选 + 必需连续性图片位）：
-  - 条件判定（≤7不整合 / 8张检查预留且原则上不整合 / 9张确认无额外需求 / >9触发整合）：
+  - 条件判定（Seedance 2.5默认按30图 / 10视频 / 10音频 / 合计50项与当前入口限制审计；2.0/H3按各自Adapter有效上限）：
   - 非角色整合（仅在触发时；列真实已确认总图、被完整覆盖的零散图与资产证据；未触发写“不整合”）：
   - 裁剪项与理由（仅整合后仍>9时，按保留优先级从低到高处理）：
-  - 最终参考图片清单与总数（必须≤9）：
+  - 最终参考图片清单与总数（Seedance 2.5≤30或当前入口限制；其他模型按Adapter）：
+  - Seedance 2.5 Multimodal Reference Audit：图片数≤30、视频数≤10、音频数≤10、合计≤50、视频/音频各自总时长≤30秒；每项来源 / 类型 / 上传顺序（如入口需要）/ Primary Role / 授权维度 / 当前Clip收益；无角色项已移除：
   - 核心角色独立图检查（逐个核心角色列各自三视图/角色锁定图；禁止角色总表；动作图不得替代外貌基准）：
-  - 预算结果：PASS ≤9 / Return Route
+  - 预算结果：PASS ≤当前有效图片上限（2.5扩展同时PASS 50项多模态审计）/ Return Route
 - 知识投影摘要：写可执行语义，不输出内部模式ID
 
 按 Clip ID 继续建立 Detail Card。
@@ -123,19 +124,19 @@
 
 | Clip ID | Camera/Composition | Movement | Lens/Focus | Performance | Lighting/Color | Transition | Sound | FX | Prompt Evidence Target |
 |---|---|---|---|---|---|---|---|---|---|
-| CLIP-001 |  |  |  |  |  |  |  |  | templates/10_video_prompt.md现有字段 |
+| CLIP-001 |  |  |  |  |  |  |  |  | Selected Template现有字段（2.5为12；其他为10） |
 
 ## Reference Budget Ledger
 
-| Clip ID | 原始候选数 | 删除无关 / 去重后 | 连续性预留 | Projected Final Count | 是否触发整合 | 整合替代与真实资产证据 | 裁剪 | 最终图片数 | 核心角色独立图 | 结果 |
+| Clip ID | 原始候选数 | 删除无关 / 去重后 | 连续性预留 | Projected Final Count | 是否触发整合 | 整合替代与真实资产证据 | 裁剪 | 最终图片数 / 有效上限 | 2.5多模态审计 | 核心角色独立图 | 结果 |
 |---|---:|---:|---:|---:|---|---|---|---:|---|---|
-| CLIP-001 |  |  |  |  | 否 / 是（原因） | 未触发 / 实际总图→被覆盖零散图 | 无 / 列项 |  | 逐角色列出 | PASS ≤9 / Return Route |
+| CLIP-001 |  |  |  |  | 否 / 是（原因） | 未触发 / 实际总图→被覆盖零散图 | 无 / 列项 |  / 9或扩展上限 | N/A / 图、视、音、合计、时长、角色均PASS | 逐角色列出 | PASS / Return Route |
 
 ## Clip Preflight Ledger
 
 | Clip ID | Continuity Classification | Previous Tail Formal Reference | World-State Check | Character Count Lock | Spatial Composition Lock | Prop State Check | Transition Five Elements | Reference Asset Check | Result / Return Route |
 |---|---|---|---|---|---|---|---|---|---|
-| CLIP-001 | 视觉连续 / 剧情连续 / 主动切场或切世界 | A同镜头连续承接 / B新镜头参考型 / C新镜头且无需尾帧；`Tail Frame Required = YES / NO`；REF-TAIL用途与已引用 / 待用户提供、待上传且未确认 / Canonical资产+Spatial Blocking+文字重建 | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / N/A / Affected Shot | PASS ≤9 / Affected Asset | PASS / Return Route |
+| CLIP-001 | 视觉连续 / 剧情连续 / 主动切场或切世界 | A同镜头连续承接 / B新镜头参考型 / C新镜头且无需尾帧；`Tail Frame Required = YES / NO`；REF-TAIL用途与已引用 / 待用户提供、待上传且未确认 / Canonical资产+Spatial Blocking+文字重建 | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / Affected Shot | PASS / N/A / Affected Shot | PASS / Affected Asset | PASS / Return Route |
 
 ## Coverage And Validation
 
@@ -160,7 +161,7 @@
 - 每个 Clip 是否是完整Dramatic Execution Unit；必须连续完成的表演/信息积累没有因技术方便拆断，Camera Continuity / Visual Rhythm具有功能差异：
 - 超过4个Shot的Clip是否通常至少有2种不同运镜逻辑；同类主运镜连续3次以上是否具有逐镜叙事理由；是否避免为了多样而强制每镜不同：
 - 是否完全未使用Storyboard图片、分镜板、拼图、Scene Top-down Blocking Map或多画面材料作为Clip / STATE-08视觉参考；只有经Before-Single-Clip-Prompt Gate确认、绑定当前Blocking Signature的单Clip `REF-SKETCH`可作为受限例外：
-- 每个Clip是否执行Reference Budget Check；≤7未整合、8张且无额外帧需求未整合、9张无未计入连续性需求才直接使用、>9已去重/整合同类非角色信息/按优先级裁剪并最终≤9：
+- 每个Clip是否执行Reference Budget Check；Seedance 2.5是否默认通过30图 / 10视频 / 10音频 / 合计50及各自30秒审计，且每项有唯一Primary Role；2.0/H3是否按各自Adapter的有效上限、去重和裁剪规则通过：
 - 是否只列实际存在且已确认资产，没有虚构总设定图/空间关系图/动作关系图；独立资产更清晰且未超限时是否继续使用独立图：
 - 是否逐项通过Visual Input Eligibility；纯文字站位/不可换边/人物距离/同坐一张板凳/道具数量/空间关系/行为/禁止项/镜头规则没有伪装成参考资产，并已迁移到`空间关系 / 起始状态 / 道具状态 / 首帧参考 / 尾帧限制 / 反向提示词 / Spatial Blocking Rules`：
 - 是否先按当前Clip目标与Continuity Risks完成Reference Selection / Routing；身份/外观、空间结构、道具造型、A/B尾帧、光线/场景状态风险是否路由到正确来源；C是否未引用旧尾帧；是否没有漏选必需项、用途选错或无依据过量引用：

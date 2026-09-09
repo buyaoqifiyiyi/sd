@@ -44,11 +44,11 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 ### FAST Automation Exception
 
-启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。符合资格的当前Prompt Revision可自动确认并按内置图像路由生成当前道具资产批次；所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图片确认、品牌/法务事实、外部服务或任何Hard Stop。
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型仍须先按`modules/image-model-selection.md`确认；符合资格的当前Prompt Revision才可自动确认并按已选图像模型路由生成当前道具资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图像模型选择、图片确认、品牌/法务事实、外部服务或任何Hard Stop。
 
-### Direct Image Default
+### Image Model Selection Gate
 
-按`modules/assets.md`的Direct Image Default，当前agent能直接生成图片时，用户请求制作道具资产即默认直接生成Candidate Image，不展示或等待Prompt确认；用户明确要求查看/只要Prompt、当前agent不能生成图片或用户选择外部服务时，才输出Prompt。图片确认仍是不可跳过的Hard Gate。
+在任何道具Prompt之前，必须按`modules/image-model-selection.md`完成当前道具资产批次的图像模型选择。未选择时展示`Image Model Selection Proposal`并停止；不得默认内置Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
 
 执行前必须读取STATE-02的Asset Tiering Decision：
 
@@ -176,7 +176,7 @@ Asset Tier、Tier Decision Basis、Board ID与Item ID。
 
 # 6. Image Prompt Generation
 
-先完成道具定义，再按`modules/assets.md`的Asset Image Route和Asset Tier使用`templates/06_prop_asset_prompt.md`输出完整可直接生图的Prompt Package：
+先完成道具定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/06_prop_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
 - 主参考图Prompt（Main Reference Image Prompt）：清楚锁定整体形态、比例、结构、材质、关键识别细节与标准展示视角。
 - 必要状态Prompt（Required State Variant Prompts）：只为剧本确认的开合、点亮、破损、沾污、装填、耗尽等状态输出；不需要时写`Not Required`及依据。
@@ -203,7 +203,7 @@ Support道具参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 # 8. Image Generation And Confirmation
 
-Prompt Confirmed后按`modules/assets.md`的已记录路由执行：Built-in Image才可调用当前环境可用的内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core生成独立道具图片；Support按已确认Board Prompt生成整张Support Prop Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
+Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择Built-in Image且当前环境实际可用时可调用内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core生成独立道具图片；Support按已确认Board Prompt生成整张Support Prop Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 
