@@ -261,6 +261,18 @@ templates/10_video_prompt.md
 
 任何导演参考进入后续阶段前，必须通过以下检查：
 
+### Reference-To-System Evidence Gate
+
+当用户提供影片、短片、截图或一组视觉参考时，先把分析结果分为三类，才允许将其带入 Visual Direction：
+
+- **Observable Reference Evidence**：能直接从参考中看到的构图层次、人物/环境比例、光源方向与材质结果、色彩面积关系、镜头稳定性、可见动作节奏或剪辑停点。
+- **Project Proposal**：为当前剧本提出、但并不在参考中作为既成事实存在的场景功能、色光变化、镜头策略或表演设计；必须标为待确认的导演提案，不能伪装成参考事实。
+- **Unknown / Not Transferable**：无法可靠判断的器材、参数、幕后流程、角色/时代/场景资产、声音与音乐安排，以及会改变当前项目事实的元素。它们不得因“参考片有”而自动继承。
+
+随后把通过的结果整理为两层内部源数据：项目级**Style Invariants**（跨场景保持的光色、材质、构图/摄影与表演原则）和场景级**Narrative Variants**（该场承担的空间压力、人物关系、信息揭示、色光/景深变化与观看重点）。同一视觉体系中的不同场景不应只是替换地点或人物名称；每个Variant必须说明它如何服务当前Writer / Director Intent。该两层只进入既有Project Bible / Visual Direction与后续Shot Design，不新建最终Prompt字段或独立Style Bible Schema。
+
+参考片、参考截图或解析笔记默认只是风格研究来源，不自动成为 STATE-08 的视频输入参考资产；只有通过现有资产确认、Visual Input Eligibility与Reference Budget规则的实际图像，才可按其真实用途进入`参考资产：`。
+
 ### 1. Story Function
 
 明确本次风格选择服务什么剧情功能。不能只回答“更电影化”。
@@ -409,6 +421,7 @@ ARRI + RED + IMAX + Anamorphic + Cooke + 8K + award winning
 - 仅根据用户提供或可确认的视觉特征，分析摄影、构图、光线、色彩、表演、声音和节奏。
 - 信息不足时只输出能够支持的临时视觉方向，不虚构具体风格事实。
 - 新增导演文件属于单独的知识库扩展任务；当前十份文件不因此自动扩容。
+
 
 ---
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r17 structural and routing validation for SD Film."""
+"""Deterministic r20 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -56,6 +56,9 @@ def validate_skill(root: Path) -> list[str]:
     adapter20 = read(root, "adapters/seedance-2.0.md")
     adapter25 = read(root, "adapters/seedance-2.5.md")
     midjourney = read(root, "adapters/midjourney.md")
+    camera_router = read(root, "knowledge/camera_language/shot_language_router.md")
+    visual_styles = read(root, "knowledge/visual_styles/index.md")
+    visual_workflow = read(root, "workflows/07_visual_development_workflow.md")
     required_markers = (
         (core, "STATE-06 后：Model Selection"),
         (runtime, "STATE-06 完成后的 Model Selection 成功后"),
@@ -96,10 +99,18 @@ def validate_skill(root: Path) -> list[str]:
         (environment_reconstruction, "最相关2–4张"),
         (asset_lock, "### Environment Spatial Lock"),
         (spatial_blocking, "ENV-04是STATE-03已确认的Environment Canonical布局视角"),
+        (assets, "### Prompt Evidence Ordering"),
+        (performance, "### Micro-action Timing And Hierarchy"),
+        (camera_router, "### Layered Depth And Readability"),
+        (projection, "### Prompt Evidence Specificity"),
+        (visual_styles, "### Reference-To-System Evidence Gate"),
+        (visual_styles, "Observable Reference Evidence"),
+        (visual_styles, "Project Proposal"),
+        (visual_workflow, "Reference-To-System Evidence Gate"),
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r17 routing marker: {marker}")
+            errors.append(f"missing r20 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -124,7 +135,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r17 structural and routing validation")
+    print("PASS: r20 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

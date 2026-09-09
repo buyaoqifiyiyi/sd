@@ -154,6 +154,12 @@ Field Ownership QA逐条提问：
 
 `Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`
 
+### Prompt Evidence Specificity
+
+无论是否存在Style Label，当前Clip的可见描述都优先按以下因果顺序压缩：**空间层次与观看重点 → 真实光源及其在材质上的结果 → 一条主要人物/道具变化 → 摄影机的真实路径或稳定状态 → 可冻结的结束状态**。这样可使“质感、深度、氛围、冲击力”等抽象目标都有画面证据，而不依赖无效形容词或器材堆叠。
+
+数值、焦段、光圈、滤镜、相机品牌或技术名词不是质量标签；只有它们能稳定当前Clip的透视、景深、对焦、光晕或材质可读性时才保留，并必须与已经确认的Shot Design一致。任何一项技术描述都不能替代主体、空间、动作、时间顺序或光源依据。
+
 - **Style Label**：用户或已确认Visual Direction使用的高层创作/风格锚点。
 - **Project-specific Style Meaning**：该标签在当前项目中的具体含义；必须来自用户说明、已确认Visual Direction / Project Bible、适用Director Style Knowledge与当前剧情功能的交集，不得把标签的常见联想直接当项目事实。
 - **Executable Style Carriers**：当前Clip能观察、执行和验证的光线、色彩、光学、摄影机、构图、质感、表演、节奏、空气或声音载体。

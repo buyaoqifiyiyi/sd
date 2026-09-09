@@ -388,6 +388,8 @@ knowledge/visual_styles/index.md
 
 对应视觉风格文件。
 
+对影片、短片、截图或多张视觉参考，先执行`knowledge/visual_styles/index.md`的`Reference-To-System Evidence Gate`：仅把可观察证据转为项目级Style Invariants与场景级Narrative Variants；创作提案保持待确认，未知或不可转移信息不得写成项目事实。本Workflow只消费该Gate的结论，最终Project Bible字段仍由`templates/01_project_bible_template.md`拥有。
+
 
 例如：
 

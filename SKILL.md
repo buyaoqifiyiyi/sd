@@ -5,9 +5,9 @@ description: AI影视虚拟制片生产系统。处理剧本、导演转译、�
 
 # SD Film
 
-Skill Version: 2026.09.07-r17
+Skill Version: 2026.09.09-r20
 
-Build ID: sd-film-2026.09.07-r17
+Build ID: sd-film-2026.09.09-r20
 
 ## Core
 

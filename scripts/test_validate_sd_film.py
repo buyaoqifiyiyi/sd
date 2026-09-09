@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r17 SD Film validator."""
+"""Regression tests for the r20 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -120,6 +120,30 @@ class R17RegressionTests(unittest.TestCase):
         self.assertIn("Spatial Reconstruction: Full / Partial / Not Required", workflow)
         self.assertIn("### Environment Spatial Lock", lock)
         self.assertIn("ENV-04是STATE-03已确认的Environment Canonical布局视角", blocking)
+
+    def test_prompt_quality_rules_strengthen_existing_owners_without_new_style_system(self) -> None:
+        assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
+        performance = (ROOT / "knowledge/performance/micro_expression.md").read_text(encoding="utf-8-sig")
+        camera = (ROOT / "knowledge/camera_language/shot_language_router.md").read_text(encoding="utf-8-sig")
+        projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Prompt Evidence Ordering", assets)
+        self.assertIn("### Micro-action Timing And Hierarchy", performance)
+        self.assertIn("### Layered Depth And Readability", camera)
+        self.assertIn("### Prompt Evidence Specificity", projection)
+        self.assertIn("不新增Prompt字段", assets)
+        self.assertIn("不构成自动编舞、同步口型或新增剧情动作", performance)
+        self.assertIn("不得写成无空间依据的数字缩放或漂浮运镜", camera)
+        self.assertIn("不能替代主体、空间、动作、时间顺序或光源依据", projection)
+
+    def test_reference_research_distinguishes_observation_from_project_proposal(self) -> None:
+        styles = (ROOT / "knowledge/visual_styles/index.md").read_text(encoding="utf-8-sig")
+        workflow = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Reference-To-System Evidence Gate", styles)
+        self.assertIn("Observable Reference Evidence", styles)
+        self.assertIn("Project Proposal", styles)
+        self.assertIn("Unknown / Not Transferable", styles)
+        self.assertIn("不新建最终Prompt字段或独立Style Bible Schema", styles)
+        self.assertIn("Reference-To-System Evidence Gate", workflow)
 
 if __name__ == "__main__":
     unittest.main()
