@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r20 structural and routing validation for SD Film."""
+"""Deterministic r21 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,8 @@ REQUIRED = (
     "SKILL.md", "core/pipeline.md", "core/runtime-state.md", "core/rule-priority.md",
     "modules/screenwriter.md", "modules/director.md", "modules/spatial-blocking.md",
     "modules/clip-planning.md", "modules/model-selection.md", "modules/prompt-generation.md", "modules/assets.md",
-    "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/midjourney.md",
+    "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/minimax-h3.md", "adapters/midjourney.md",
+    "knowledge/prompt_compilation/minimax_h3_compilation.md",
     "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
     "templates/20_clip_plan.md", "templates/10_video_prompt.md",
     "references/project_state_contract.md", "rules/automation_mode.md",
@@ -55,6 +56,8 @@ def validate_skill(root: Path) -> list[str]:
     plan = read(root, "templates/20_clip_plan.md")
     adapter20 = read(root, "adapters/seedance-2.0.md")
     adapter25 = read(root, "adapters/seedance-2.5.md")
+    adapter_h3 = read(root, "adapters/minimax-h3.md")
+    compiler_h3 = read(root, "knowledge/prompt_compilation/minimax_h3_compilation.md")
     midjourney = read(root, "adapters/midjourney.md")
     camera_router = read(root, "knowledge/camera_language/shot_language_router.md")
     visual_styles = read(root, "knowledge/visual_styles/index.md")
@@ -64,8 +67,7 @@ def validate_skill(root: Path) -> list[str]:
         (runtime, "STATE-06 完成后的 Model Selection 成功后"),
         (selection, "不创建 Clip、也不输出 `KEEP / ADAPT_SPLIT / RETURN`"),
         (clip, "STATE-07 是 Natural Unit 与 Execution Clip 的唯一决策 owner"),
-        (clip, "2.0：4–15 秒；23 秒 Unit 必须拆分"),
-        (clip, "2.5：4–30 秒；23 秒经 Long-duration Preflight PASS 保持单 Clip；34 秒拆分"),
+        (clip, "具体窗口和条件只由各自 Adapter 拥有"),
         (prompt, "不选择模型、不创建或拆分 Clip、不调用旧 Compiler"),
         (prompt, "templates/10_video_prompt.md"),
         (state, "Adapter Profile"),
@@ -73,6 +75,17 @@ def validate_skill(root: Path) -> list[str]:
         (adapter20, "max_seconds: 15"),
         (adapter25, "max_seconds: 30"),
         (adapter25, "23 秒 Natural Unit 经长时长预检 PASS 后保持单 Execution Clip"),
+        (adapter_h3, "min_seconds: 4"),
+        (adapter_h3, "max_seconds: 15"),
+        (adapter_h3, "images_max: 9"),
+        (adapter_h3, "videos_max: 3"),
+        (adapter_h3, "audio_max: 3"),
+        (adapter_h3, "mixed_files_max: 12"),
+        (adapter_h3, "two_images: no_automatic_cut"),
+        (adapter_h3, "unsupported_without_official_verification"),
+        (compiler_h3, "一个 Execution Clip 的生成时长必须为 4—15 秒"),
+        (compiler_h3, "官方三段式"),
+        (compiler_h3, "非叙事性音乐：N/A"),
         (assets, "本模块是STATE-03图像工具选择与提示词适配的唯一owner"),
         (assets, "未明确指定外部图像模型：`Built-in Image`"),
         (assets, "明确指定`Midjourney`：读取`adapters/midjourney.md`"),
@@ -110,7 +123,7 @@ def validate_skill(root: Path) -> list[str]:
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r20 routing marker: {marker}")
+            errors.append(f"missing r21 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -135,7 +148,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r20 structural and routing validation")
+    print("PASS: r21 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

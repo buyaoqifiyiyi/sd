@@ -20,7 +20,7 @@ STATE-07 是 Natural Unit 与 Execution Clip 的唯一决策 owner。它不重�
 1. 核验 STATE-06 已确认、Revision 匹配、正式 SHOT 完整、空间 Blocking 与资产事实可读；失败回最小 owner。
 2. 按 Shot 原顺序形成 Natural Unit：保护 Writer Beat、Director Intent、动作完整性、时空/轴线、道具、情绪和 End-State。Natural Unit 时长等于其 Shot 时长之和。
 3. 使用已选 Adapter 将 Natural Unit 整合为 Execution Clip。仅在时长或模型可执行性要求时拆分，并为每段保留动作、空间、尾帧、连续性与 Return Route。
-4. 2.0：4–15 秒；23 秒 Unit 必须拆分。2.5：4–30 秒；23 秒经 Long-duration Preflight PASS 保持单 Clip；34 秒拆分。Timeline 只在 Adapter 认为适用时采用。
+4. 按唯一 Selected Adapter 的时长、连续生成、Timeline 与安全降级规则整合。Seedance 2.0、Seedance 2.5 与 MiniMax H3 的具体窗口和条件只由各自 Adapter 拥有；不得将任一模型能力复制给另一模型。
 5. 每 Clip 执行连续性、World-State、角色数量、空间构图、表演、道具、转场、Reference Budget 和 A/B/C 尾帧用途检查。Spatial Lock环境按当前Camera Direction、景别、活动区、背景结构和风险，从已确认View Set预选最相关2–4张环境Canonical图并记录Primary Responsibility；不是机械加入全套View。`REF-SKETCH` 仅在 STATE-08 Gate 生成。
 6. 将 Selected Model、Adapter Profile、Execution Mode、时长、Preflight、End-State、Next-Clip Carryover 与受影响范围写入 State Contract 和 Clip Plan。
 

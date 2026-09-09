@@ -64,9 +64,10 @@ STATE-03没有指定图像模型时，默认使用内置 Image：先交付可确
 | 配乐 | `调用sd，为整条片子规划配乐与留白，并输出需要的SeedMusic纯音乐提示词。` | MUSIC / SEED-MUSIC 可选模块 |
 | 专业分镜 | `调用sd，根据已确认场景和资产制作Professional Detailed Shot Script。` | STATE-06 Detailed Shot Design |
 | Storyboard | `调用sd，根据已确认Detailed Shot Design制作Storyboard。` | Optional Storyboard |
-| Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为Clip；如未锁定模型，在整合前询问我选Seedance 2.0或Seedance 2.5。` | STATE-07 Clip Production |
-| 单个Clip Prompt | `调用sd，只输出CLIP-003的Seedance视频提示词。` | STATE-08 单Clip交付 |
-| 全部Clip Prompt | `调用sd，按顺序输出全部Confirmed Clip的完整Seedance视频提示词；过长就按完整Clip自动分批。` | STATE-08 批量交付 |
+| Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为Clip；如未锁定模型，在整合前询问我选Seedance 2.0、Seedance 2.5或MiniMax H3。` | STATE-07 Clip Production |
+| MiniMax H3 Clip | `调用sd，使用MiniMax H3组织已确认Shot为Clip并输出CLIP-003视频提示词。` | STATE-07 → STATE-08；H3为4—15秒，支持首/尾帧、全能多模态参考、已有视频编辑、分镜/切镜、明确对白与口型；按官方三段式提示词编译 |
+| 单个Clip Prompt | `调用sd，只输出CLIP-003的目标模型视频提示词。` | STATE-08 单Clip交付 |
+| 全部Clip Prompt | `调用sd，按顺序输出全部Confirmed Clip的完整目标模型视频提示词；过长就按完整Clip自动分批。` | STATE-08 批量交付 |
 | 下一个Clip | `调用sd，下一个Clip。` | STATE-08 下一个未交付Clip |
 | Clip返修 | `调用sd，只修CLIP-003的站位错误，其他内容和字段保持不变。` | STATE-08最小修订或对应上游Return Route |
 | 连续性检查 | `调用sd，只检查CLIP-002到CLIP-003的角色、站位、道具、轴线和首尾帧连续性，不重新生成。` | STATE-07 / STATE-09连续性核验 |
@@ -87,7 +88,7 @@ STATE-03没有指定图像模型时，默认使用内置 Image：先交付可确
 4. 任一创作或优化分支生成 `Production Script Proposal` 后都会停下来，等你确认制作版剧本。
 5. 每类视觉资产先给生图 Prompt，等你确认；生成候选图后再停一次，等你确认图片。
 6. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
-7. STATE-06完成后、Clip整合前，如当前批次尚未锁定目标模型，系统只询问一次选择`Seedance 2.0`或`Seedance 2.5`；选择会自动路由到对应的内部提示词编译模板，写入内部执行Profile与Clip Plan，不进入最终视频Prompt。你不需要另选模板；已锁定不重复问。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
+7. STATE-06完成后、Clip整合前，如当前批次尚未锁定目标模型，系统只询问一次选择`Seedance 2.0`、`Seedance 2.5`或`MiniMax H3`；选择会自动路由到对应的内部提示词编译模板，写入内部执行Profile与Clip Plan，不进入最终视频Prompt。你不需要另选模板；已锁定不重复问。MiniMax H3的全能参考最多9图、3视频、3音频且总计12个文件；每个实际投喂素材必须在提示词中写明`@图片N / @视频N / @音频N`与用途。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
 8. Seedance 2.0为4—15秒。Seedance 2.5为4—30秒：实际生成秒数由你在该窗口内选择；4—15秒沿用稳定`Standard Clip`，16—30秒由目标时长自动进入内部严格预检，不要求你额外选择`Long-form Clip`。未知网关状态不会自动限制为15秒；若实际提交被平台拒绝，系统才返回Clip规划做最小调整。它也支持受控`Video Extension`和用户明确请求的`Targeted Edit`；参考仍按最小充分选择。
 9. Clip Plan、分镜或其他需要明确确认的生产成果未确认时，不会擅自标为 Confirmed。
 8. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。

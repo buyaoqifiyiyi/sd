@@ -11,11 +11,11 @@
 - Source Detailed Shot Design Artifact / Portable Checkpoint：
 - Source Detailed Shot Design Status：Confirmed
 - Source Detailed Shot Design Revision：
-- Selected Model：Seedance 2.0 / Seedance 2.5
-- Adapter Profile：`adapters/seedance-2.0.md` / `adapters/seedance-2.5.md`；必须与Selected Model一一匹配，仅作内部执行路由，不投影为STATE-08 Prompt字段
+- Selected Model：Seedance 2.0 / Seedance 2.5 / MiniMax H3
+- Adapter Profile：`adapters/seedance-2.0.md` / `adapters/seedance-2.5.md` / `adapters/minimax-h3.md`；必须与Selected Model一一匹配，仅作内部执行路由，不投影为STATE-08 Prompt字段
 - Model Selection Status：SELECTED（未选择不得进入Execution Clip整合）
 - Execution Profile：Selected Model、Adapter Profile、Execution Mode、Long-duration Route、Effective Gateway Limits、Model Selection Scope；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
-- Model Duration Window：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒；16—30秒须严格预检PASS，时长由用户在模型窗口内选择
+- Model Duration Window：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒且16—30秒须严格预检PASS；MiniMax H3为4—15秒，时长由用户在选定模型窗口内选择
 - Total Formal Shots：
 - Total Clips：
 - Unit Rule：Shot = 导演镜头设计单位；Clip = AI视频生成执行单位；每个Shot且仅进入一个Clip；Total Clips ≤ Total Formal Shots；STATE-08每个Clip只生成一条连续Prompt
@@ -33,9 +33,9 @@
 
 - 包含 Shot：按 SHOT ID 原顺序逐项列出
 - Execution Mode：`Standard Clip` / `Video Extension` / `Targeted Edit`
-- 目标时长：N秒（2.0为4—15秒；2.5为4—30秒；16—30秒自动触发内部严格预检）
+- 目标时长：N秒（Seedance 2.0为4—15秒；Seedance 2.5为4—30秒且16—30秒自动触发内部严格预检；MiniMax H3为4—15秒）
 - Long-duration Preflight：Not Applicable（4—15秒 / 非2.5）/ PASS / FAIL；16—30秒须确认镜头链、空间关系、表演连续性、动作/物理密度及适用转场逻辑均通过；FAIL返回`STATE-07 / 拆分Clip`
-- Model Profile Preflight：Standard Clip沿用稳定短Clip；Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Targeted Edit仅在用户明确要求修改既有视频时可用，时间段控制仅可写入既有分镜正文
+- Model Profile Preflight：读取唯一Selected Adapter。Seedance 2.5的Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Seedance的Targeted Edit仅在用户明确要求修改既有视频时可用，时间段控制仅可写入既有分镜正文。MiniMax H3可使用首/尾帧、全能参考或已有视频编辑；两张首尾帧图禁止自动切镜，视频编辑只写明确CHANGE与PRESERVE，不写未验证时码。
 - 时长核算：SHOT-001=N秒 + SHOT-002=N秒；合计=N秒；平台生成时长=N秒
 - 组织类型：`单Shot` / `多Shot连续生成` / `多Shot有动机剪辑`
 - 组织理由：逐项说明场景连续性、时间连续性、人物动作连续性、摄影机连续性、模型执行复杂度与单次生成时长判断

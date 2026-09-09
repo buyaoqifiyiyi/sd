@@ -55,10 +55,10 @@ Updated At
 当`Current State`为STATE-06完成后至STATE-08，或已存在Confirmed Clip Production Plan时，还必须在`## State Control`保存唯一的批次内部执行Profile：
 
 ```text
-- Selected Model: Seedance 2.0 / Seedance 2.5 / UNSELECTED
-- Adapter Profile: adapters/seedance-2.0.md / adapters/seedance-2.5.md / UNSELECTED
+- Selected Model: Seedance 2.0 / Seedance 2.5 / MiniMax H3 / UNSELECTED
+- Adapter Profile: adapters/seedance-2.0.md / adapters/seedance-2.5.md / adapters/minimax-h3.md / UNSELECTED
 - Model Selection Status: UNSELECTED / SELECTED
-- Execution Mode: Standard Clip / Video Extension / Targeted Edit / Not Applicable
+- Execution Mode: Standard Clip / Start or End Frame / Start-End Frame / All-Reference / Video Edit / Video Extension / Targeted Edit / Not Applicable
 - Long-duration Route: Not Applicable / AUTO-REQUIRED / PASS / FAIL（仅Seedance 2.5目标时长16—30秒；不是用户选择项）
 - Effective Gateway Limits: <observed external limits or UNKNOWN; may inform submitted inputs but never pre-cap the user-selected generation duration>
 - Model Selection Scope: <affected Natural Unit / CLIP IDs / current generation batch>

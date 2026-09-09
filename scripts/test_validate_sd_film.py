@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r20 SD Film validator."""
+"""Regression tests for the r21 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -21,6 +21,22 @@ class R17RegressionTests(unittest.TestCase):
         self.assertIn("max_seconds: 15", two)
         self.assertIn("max_seconds: 30", twofive)
         self.assertIn("23 秒 Natural Unit", twofive)
+
+    def test_minimax_h3_is_explicit_and_does_not_inherit_seedance_features(self) -> None:
+        h3 = (ROOT / "adapters/minimax-h3.md").read_text(encoding="utf-8-sig")
+        compiler = (ROOT / "knowledge/prompt_compilation/minimax_h3_compilation.md").read_text(encoding="utf-8-sig")
+        self.assertIn("min_seconds: 4", h3)
+        self.assertIn("max_seconds: 15", h3)
+        self.assertIn("images_max: 9", h3)
+        self.assertIn("videos_max: 3", h3)
+        self.assertIn("audio_max: 3", h3)
+        self.assertIn("mixed_files_max: 12", h3)
+        self.assertIn("two_images: no_automatic_cut", h3)
+        self.assertIn("unsupported_without_official_verification", h3)
+        self.assertIn("Seedance_Video_Extension", h3)
+        self.assertIn("4—15 秒", compiler)
+        self.assertIn("官方三段式", compiler)
+        self.assertIn("非叙事性音乐：N/A", compiler)
 
     def test_state_07_owns_clip_decision(self) -> None:
         selection = (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")

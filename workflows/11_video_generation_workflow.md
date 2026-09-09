@@ -9,6 +9,7 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 - `modules/prompt-generation.md`
 - 当前 Selected Adapter
 - `knowledge/prompt_compilation/state08_projection.md`
+- 当前 Model Compilation Template（MiniMax H3 时为 `knowledge/prompt_compilation/minimax_h3_compilation.md`）
 - 当前Clip使用Spatial Lock环境时：`knowledge/environment_multi_view_reconstruction.md`
 - `knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
 - `templates/10_video_prompt.md`

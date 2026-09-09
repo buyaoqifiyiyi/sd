@@ -1136,6 +1136,14 @@ PASS：STATE-07/08直接消费该Profile，不重复询问。
 
 PASS：只使受影响STATE-07/08执行产物重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown和Detailed Shot Design保持Accepted。
 
+### R28-11 MiniMax H3 Standard Clip
+
+输入：Lock=`MiniMax H3`，目标时长12秒，当前Clip有两个实际已确认角色参考图，用户要求中文对白与口型一致。
+
+PASS：只选择`adapters/minimax-h3.md`，保持12秒单Clip并按最小充分原则使用真实参考图；将准确台词和最小口型/中文语义写入既有`台词：`字段，保留当前Clip风险的简洁负面提示词、永久无BGM禁令及`非叙事性音乐：N/A`；不写Seedance Video Extension、Seedance时码式Targeted Edit或未验证的上传上限。
+
+FAIL：把Seedance 2.5的30秒、Video Extension、Clay Render或时码式Targeted Edit移植给H3；忽略H3支持的首/尾帧、全能参考或已有视频编辑；把未上传的图片写成已投喂；仅因存在对白就自动写入音色身份。
+
 ## R29 Model Compilation Template Router Regression
 
 ### R29-1 Seedance 2.0 Stable Compiler
