@@ -30,7 +30,7 @@
 ## Confirmation Boundaries
 
 - STATE-01只有`Script Status: Production-Locked`才能完成。
-- STATE-03必须完成Prompt确认与图片确认双闭环；确认输入语义由`rules/progression_rules.md`唯一拥有，资产范围和记录细节由`rules/02_asset_rules.md`拥有。FAST可自动确认符合资格的Prompt并批量生成Candidate，但Image Generated不等于Asset Confirmed。
+- STATE-03必须完成Prompt确认与图片确认双闭环；确认输入语义由`rules/progression_rules.md`唯一拥有，资产范围和记录细节由`rules/02_asset_rules.md`拥有。对STATE-02 `Prop Completeness Ledger`中路由为`PROP Core`或`PROP Support Board`的每项，均须完成对应闭环；未制作不得因其他资产完成而越过。FAST可自动确认符合资格的Prompt并批量生成Candidate，但Image Generated不等于Asset Confirmed。
 - STATE-07必须有Confirmed Clip Production Plan并通过逐ClipPreflight与Reference Budget；FAST只在所有条件已通过并保留自动接受证据时可确认该Plan。
 - STATE-08必须消费Confirmed Clip Production Plan，并按`workflows/11_video_generation_workflow.md`与`templates/10_video_prompt.md`完成逐Clip验证。
 - 用户只要求下一步时不得把未来阶段或待确认资产提前标记完成。

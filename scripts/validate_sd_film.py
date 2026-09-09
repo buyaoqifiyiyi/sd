@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r30 structural and routing validation for SD Film."""
+"""Deterministic r33 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -52,6 +52,7 @@ def validate_skill(root: Path) -> list[str]:
     asset_lock = read(root, "references/asset_lock_contract.md")
     spatial_blocking = read(root, "knowledge/spatial_blocking_layer.md")
     prop = read(root, "workflows/06_prop_asset_workflow.md")
+    discovery = read(root, "workflows/03_asset_discovery_workflow.md")
     fx = read(root, "workflows/15_fx_asset_workflow.md")
     clip = read(root, "workflows/10_clip_production_workflow.md")
     prompt = read(root, "workflows/11_video_generation_workflow.md")
@@ -157,9 +158,21 @@ def validate_skill(root: Path) -> list[str]:
         (character_template, "Image Prompt Output Template"),
         (environment_template, "Image Prompt Output Template"),
         (prop_template, "Image Prompt Output Template"),
+        (prop_template, "1×4横版道具设定图"),
+        (prop_template, "covered by Main 1×4 Prop Sheet"),
+        (builtin_image_template, "four-panel prop sheet"),
+        (midjourney_template, "four-panel prop sheet"),
         (fx_template, "Image Prompt Output Template"),
         (environment, "Asset Image Route"),
         (prop, "Asset Image Route"),
+        (prop, "Main 1×4 Prop Sheet"),
+        (prop, "正面、侧面、背面、关键细节"),
+        (discovery, "## Important Prop Completeness Pass"),
+        (discovery, "Important Prop Candidate"),
+        (discovery, "Prop Production Route"),
+        (discovery, "No important PROP asset required"),
+        (prop, "Prop Completeness Ledger"),
+        (completion, "Prop Completeness Ledger"),
         (fx, "Asset Image Route"),
         (environment, "Spatial Reconstruction: Full / Partial / Not Required"),
         (environment_reconstruction, "ENV-01 + ENV-02 → ENV-03"),
@@ -178,7 +191,7 @@ def validate_skill(root: Path) -> list[str]:
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r30 routing marker: {marker}")
+            errors.append(f"missing r33 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -203,7 +216,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r30 structural and routing validation")
+    print("PASS: r33 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

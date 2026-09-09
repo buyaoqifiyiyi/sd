@@ -129,6 +129,22 @@ Item ID：Core填`Not Applicable`
 
 
 
+# Prop Completeness Ledger
+
+只记录已识别的`Important Prop Candidate`；不要逐项收录所有可见物件。候选须至少满足剧情/信息/品牌识别、关键动作或表演可读性、跨Shot / Scene状态连续性、或用户明确指定中的一项。普通陈设、背景装饰与无须锁定的通用消耗品不进入本表。
+
+- Scene / Beat：
+- 物件 / 动作证据：
+- 剧情、信息或连续性功能：
+- 当前及后续可见状态：
+- Prop Production Route：`PROP Core` / `PROP Support Board` / `Not A Formal PROP Asset`
+- PROP-ID / Board ID / Item ID：适用时填写；不适用时写`Not Applicable`
+- Not A Formal PROP Asset Reason：仅该路由填写；同时注明应进入的既有Shot / Clip道具状态字段。
+
+若没有重要道具候选，写：`No important PROP asset required`，并列出判断依据；不得以空白清单代替。
+
+
+
 ---
 
 # FX Assets

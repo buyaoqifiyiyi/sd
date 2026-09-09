@@ -48,7 +48,7 @@
 
 ### Prop And FX
 
-- Prop：先写可辨认轮廓、尺度参照、结构、材质、表面状态与功能，再写观看角度、背景和光线。
+- Prop：Core Main Reference固定写成一行四格横版设定图（four-panel prop sheet），left to right: front, strict side, back, key-detail close-up；前三格以一致尺度完整展示同一道具，第四格只放大关键机关或材质证据。先写可辨认轮廓、尺度参照、结构、材质、表面状态与功能，再写四格构图、背景和光线；不得生成四个不同设计、四张独立图或文字标签。Support Board不适用该规则。
 - Formal FX：先写可见形态、产生位置/边界、运动或消散状态、交互环境与光学证据；不得用抽象“震撼、史诗、超高级”取代物理可见事实。
 
 ### Support Board

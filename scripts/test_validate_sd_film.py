@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r30 SD Film validator."""
+"""Regression tests for the r33 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -11,7 +11,7 @@ validator = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
 SPEC.loader.exec_module(validator)
 
-class R30RegressionTests(unittest.TestCase):
+class R33RegressionTests(unittest.TestCase):
     def test_active_skill_passes(self) -> None:
         self.assertEqual(validator.validate_skill(ROOT), [])
 
@@ -127,6 +127,25 @@ class R30RegressionTests(unittest.TestCase):
         for relative in workflows:
             self.assertIn("Asset Image Route", (ROOT / relative).read_text(encoding="utf-8-sig"))
 
+    def test_asset_discovery_routes_only_important_props_before_state_03(self) -> None:
+        discovery = (ROOT / "workflows/03_asset_discovery_workflow.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/03_asset_discovery_prompt.md").read_text(encoding="utf-8-sig")
+        prop = (ROOT / "workflows/06_prop_asset_workflow.md").read_text(encoding="utf-8-sig")
+        completion = (ROOT / "rules/completion_gate.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        for marker in ("Important Prop Completeness Pass", "Important Prop Candidate", "Prop Production Route", "No important PROP asset required"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, discovery)
+        self.assertIn("普通环境陈设、背景装饰、无特写/无状态连续性的通用消耗品", discovery)
+        self.assertIn("# Prop Completeness Ledger", template)
+        self.assertIn("不要逐项收录所有可见物件", template)
+        self.assertIn("Not A Formal PROP Asset", template)
+        self.assertIn("Prop Completeness Ledger", prop)
+        self.assertIn("Prop Completeness Ledger", completion)
+        self.assertIn("R09-D Prop Discovery Completeness", scenarios)
+        self.assertIn("两盏台灯与普通报纸", scenarios)
+        self.assertIn("不进入台账、Registry或STATE-03待办", scenarios)
+
     def test_core_character_asset_is_one_combined_reference_sheet(self) -> None:
         workflow = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
         template = (ROOT / "templates/04_character_asset_prompt.md").read_text(encoding="utf-8-sig")
@@ -134,6 +153,18 @@ class R30RegressionTests(unittest.TestCase):
         self.assertIn("Candidate Reference", workflow)
         self.assertIn("#### Combined Character Asset Sheet Prompt", template)
         self.assertIn("Three-View Prompt", template)
+
+    def test_core_prop_main_reference_is_a_single_horizontal_four_panel_sheet(self) -> None:
+        workflow = (ROOT / "workflows/06_prop_asset_workflow.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/06_prop_asset_prompt.md").read_text(encoding="utf-8-sig")
+        builtin = (ROOT / "templates/24_builtin_image_asset_prompt.md").read_text(encoding="utf-8-sig")
+        midjourney = (ROOT / "templates/14_midjourney_asset_prompt.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Main 1", workflow)
+        self.assertIn("covered by Main 1", template)
+        self.assertIn("four-panel prop sheet", builtin)
+        self.assertIn("four-panel prop sheet", midjourney)
+        self.assertIn("prop-001-main-sheet-c01.png", scenarios)
 
     def test_acting_strategy_is_additive_and_respects_blocking_owner(self) -> None:
         performance = (ROOT / "knowledge/performance/micro_expression.md").read_text(encoding="utf-8-sig")

@@ -52,7 +52,7 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 执行前必须读取STATE-02的Asset Tiering Decision：
 
-- `Asset Tier: Core`：剧情关键道具独立制作主参考图与必要状态/细节图；需要时再制作使用关系图。
+- `Asset Tier: Core`：剧情关键道具独立制作一张固定`1×4横版道具设定图`作为主参考：正面、侧面、背面、关键细节从左至右同图呈现；必要状态变体、第四格仍无法验证的额外细节图与使用关系图按需补充。
 - `Asset Tier: Support`：同类家具、陈设、文书、环境小物或低频道具按Board ID整合为Support Prop Reference Board；不得逐项制作完整Overall / Detail / Usage资产包。每板建议4—9个对象，风格统一但在轮廓、材质、颜色、比例和功能上清晰区分。
 
 Core与Support均执行相同的提示词确认与图片确认闭环。Support Board图片确认前，Board及其Item均不得标记confirmed。
@@ -82,6 +82,8 @@ PROP-ID。
 
 Asset Tier、Tier Decision Basis、Board ID与Item ID。
 
+对应`Prop Completeness Ledger`条目及其`Prop Production Route`。只有已路由为`PROP Core`或`PROP Support Board`的条目可进入本Workflow；发现漏列、路由冲突或缺失Scene / Beat证据时返回STATE-02补全，不在本Workflow临时猜测或跳过资产范围。
+
 
 包括：
 
@@ -101,28 +103,24 @@ Asset Tier、Tier Decision Basis、Board ID与Item ID。
 
 
 
-## A. Overall View
+## A. Main 1×4 Prop Sheet
 
 
-整体展示。
+固定一行四格横版：正面、侧面、背面、关键细节。
 
 
 确认：
 
-形态。
-
-比例。
-
-结构。
+整体形态、比例与结构在正面 / 侧面 / 背面三格一致；第四格验证关键机关、纹理、接口、铭文、磨损或尺度锚点。
 
 
 
 ---
 
-## B. Detail View
+## B. Additional Detail View
 
 
-细节展示。
+仅当1×4主参考图的关键细节格无法清楚验证剧情关键结构时补充。
 
 
 确认：
@@ -178,9 +176,9 @@ Asset Tier、Tier Decision Basis、Board ID与Item ID。
 
 先完成道具定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/06_prop_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
-- 主参考图Prompt（Main Reference Image Prompt）：清楚锁定整体形态、比例、结构、材质、关键识别细节与标准展示视角。
+- 主参考图Prompt（Main Reference Image Prompt）：生成一张`1×4横版道具设定图`，从左至右固定为正面、侧面、背面、关键细节；四格必须是同一道具、同一版本、同一材质与状态，清楚锁定整体形态、比例、结构与关键识别细节。
 - 必要状态Prompt（Required State Variant Prompts）：只为剧本确认的开合、点亮、破损、沾污、装填、耗尽等状态输出；不需要时写`Not Required`及依据。
-- 必要细节Prompt：对剧情关键机关、纹理、铭文、接口、磨损或尺度锚点输出独立可执行Prompt。
+- 必要细节Prompt：仅在主参考图第四格仍无法清楚验证时，对剧情关键机关、纹理、铭文、接口、磨损或尺度锚点输出独立可执行Prompt。
 - 使用关系Prompt：只有在比例或握持/佩戴/操作方式无法仅靠Scale Reference锁定时生成；不得借机重新设计角色。
 
 以上独立Prompt Package只适用于Core道具。
@@ -203,7 +201,7 @@ Support道具参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 # 8. Image Generation And Confirmation
 
-Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择Built-in Image且当前环境实际可用时可调用内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core生成独立道具图片；Support按已确认Board Prompt生成整张Support Prop Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
+Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择Built-in Image且当前环境实际可用时可调用内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core首先生成一张`1×4横版道具设定图`；Support按已确认Board Prompt生成整张Support Prop Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 
@@ -237,7 +235,7 @@ Workflow负责道具身份、功能、状态和一致性判断；Template独占�
 
 □ 功能明确
 
-□ Core道具的主参考图与必要状态/细节Prompt完整；或Support道具的同类参考板、Board ID与Item Mapping完整
+□ Core道具主参考图为正面 / 侧面 / 背面 / 关键细节的1×4横版且四格一致，必要状态或额外细节Prompt完整；或Support道具的同类参考板、Board ID与Item Mapping完整
 
 □ 当前Prompt Revision已经用户确认
 
@@ -263,7 +261,7 @@ Workflow负责道具身份、功能、状态和一致性判断；Template独占�
 - Active Artifacts：PROP资产路径和Revision ID
 - Next Workflow：下一个尚未完成的STATE-03资产Workflow；全部资产完成后进入STATE-04
 
-全部Required资产均为Active或Not Applicable时，写STATE-03 COMPLETE并把Next Workflow设为07_visual_development_workflow.md；否则保持STATE-03 IN_PROGRESS。每次写入后按references/project_state_contract.md同步或输出完整Portable State，并执行其`Portable Required Field Writeback`。
+全部Required资产均为Active或Not Applicable时，且`Prop Completeness Ledger`中每个`PROP Core` / `PROP Support Board`路由项都已达到对应确认态，才写STATE-03 COMPLETE并把Next Workflow设为07_visual_development_workflow.md；否则保持STATE-03 IN_PROGRESS。每次写入后按references/project_state_contract.md同步或输出完整Portable State，并执行其`Portable Required Field Writeback`。
 
 Prop Asset只有达到`Visual Production Status: Asset Confirmed`、`Confirmed Status: Yes`且`Status: Active`才计入共享Completion Gate。Support Item还必须绑定已确认的Board ID、Item ID与Canonical Board Reference。`Prompt Draft`、`Prompt Confirmed`或`Image Generated`均不算完成。
 

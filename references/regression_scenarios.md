@@ -104,18 +104,26 @@ Prompt Draft至少包含：
 
 模拟Prompt确认、生成`env-001-main-c01.png / env-001-reverse-c01.png / env-001-console-c01.png`、图片确认后，三图才可进入Canonical References；最终必须为`Asset Confirmed + Active`。任一步缺少Prompt确认或图片确认均为FAIL。
 
+### R09-D Prop Discovery Completeness
+
+输入：Production-Locked Script包含三项可见物件：角色从桌上取走并在下一Scene交给同伴的黄铜钥匙；只在书房背景出现的两盏台灯；以及角色翻阅后放回原处的无特写普通报纸。
+
+PASS：STATE-02只将黄铜钥匙识别为`Important Prop Candidate`，因交接、近景信息揭示和跨Scene持有连续性路由为`PROP Core`。两盏台灯与普通报纸没有承担剧情/信息、关键动作、状态连续性或用户指定需求，不进入台账、Registry或STATE-03待办。钥匙未确认图片时STATE-03保持`IN_PROGRESS`。
+
+FAIL：只列角色和环境后将STATE-02标记完成；因为钥匙只出现一次而不作路由决定；将所有可见物件（包括台灯和报纸）强制列为道具资产；用空白Prop清单替代`No important PROP asset required`；或在STATE-06/08临时设计未进入STATE-03的正式重要道具。
+
 ### R09-P Prop
 
 输入：`PROP-001 手持风暴数据记录器，掌上工业仪器；正常与屏幕报警两种状态，需要接口细节。`
 
 Prompt Draft至少包含：
 
-- 主参考图Prompt：`手持风暴数据记录器，掌上工业仪器，约18厘米高、8厘米宽、3厘米厚，深灰色防滑橡胶包边，拉丝铝合金正面框，顶部短天线，正面上半部为无品牌矩形屏幕，下半部四枚实体防水按键，右侧橙色密封数据接口盖，背面可拆电池盖与腕带孔；45度三分之四产品展示视角，白灰无缝背景，柔和棚拍主光与轮廓光，真实可制造产品设计，1:1，高分辨率。锁定尺寸比例、天线、屏幕、四按键、橙色接口盖和电池盖位置；禁止品牌文字、额外按键、透明悬浮界面、夸张科幻装饰、人物、水印、结构漂移。`
+- 主参考图Prompt：`一张1×4横版道具设定图，手持风暴数据记录器，掌上工业仪器，约18厘米高、8厘米宽、3厘米厚，深灰色防滑橡胶包边，拉丝铝合金正面框，顶部短天线，正面上半部为无品牌矩形屏幕，下半部四枚实体防水按键，右侧橙色密封数据接口盖，背面可拆电池盖与腕带孔；从左至右四个等宽区依次为正面、严格右侧、背面、右侧橙色密封接口盖的关键细节近景。前三格以同一比例完整展示同一道具，四格保持同一结构、材质、基础状态、白灰无缝背景与柔和棚拍主光和轮廓光；真实可制造产品设计，高分辨率。锁定尺寸比例、天线、屏幕、四按键、橙色接口盖和电池盖位置；禁止拆成四张图、不同设计、文字标签、品牌文字、额外按键、透明悬浮界面、夸张科幻装饰、人物、水印、结构漂移。`
 - 状态Prompt：屏幕由正常数据变为红色报警界面，外壳结构、按键、天线与接口位置完全不变；完整包含同样的构图、光影、背景和限制。
-- 细节Prompt：右侧橙色密封接口盖打开的微距结构图，锁定铰链、密封圈与接口尺度；其余结构不改变。
+- 细节Prompt：`Not Required — covered by Main 1×4 Prop Sheet`；右侧橙色密封接口盖的关键细节已在第四格锁定。若剧本后来要求打开接口盖的内部机械状态，才为该新状态单独出图。
 - `Visual Production Status: Prompt Draft`并等待确认。
 
-模拟Prompt确认、生成`prop-001-main-c01.png / prop-001-alarm-c01.png / prop-001-port-c01.png`、图片确认后，三图才可进入Canonical References；最终必须为`Asset Confirmed + Active`。生成图被拒绝时保持Candidate，不能进入Registry确认态。
+模拟Prompt确认、生成`prop-001-main-sheet-c01.png / prop-001-alarm-c01.png / prop-001-port-c01.png`、图片确认后，三图才可进入Canonical References；其中`prop-001-main-sheet-c01.png`必须为正面 / 侧面 / 背面 / 关键细节的1×4横版。最终必须为`Asset Confirmed + Active`。生成图被拒绝时保持Candidate，不能进入Registry确认态。
 
 ---
 

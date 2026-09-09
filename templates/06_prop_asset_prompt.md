@@ -106,7 +106,7 @@ Confirmed Status：No / Yes
 
 #### Main Reference Image Prompt
 
-输出一条可独立复制执行的完整Prompt，写全道具主体、尺度参照、结构、材质、表面状态、标准展示视角、构图、光影、背景、项目视觉风格、一致性限制、必要负面限制和生成参数。
+输出一条可独立复制执行的完整Prompt，固定生成`1×4横版道具设定图`：从左至右四个等宽区依次为正面、严格侧面、背面、关键细节近景。前三格以一致尺度完整展示同一道具，第四格放大剧情关键机关、接口、纹理、铭文、磨损或尺度锚点。四格必须是同一道具、同一版本、同一材质、同一基础状态和一致光线/背景；不得拆成四张图、混入不同设计或以文字标签替代画面。Prompt还须写全道具主体、尺度参照、结构、材质、表面状态、构图、光影、背景、项目视觉风格、一致性限制、必要负面限制和生成参数。
 
 #### Required State Variant Prompts
 
@@ -114,7 +114,7 @@ Confirmed Status：No / Yes
 
 #### Required Detail Prompts
 
-对剧情关键机关、纹理、铭文、接口、磨损或尺度锚点逐项输出独立完整Prompt；不需要额外图时写`Not Required`及依据。
+只有主参考图第四格无法清楚验证剧情关键机关、纹理、铭文、接口、磨损或尺度锚点时，才逐项输出独立完整Prompt；否则写`Not Required — covered by Main 1×4 Prop Sheet`。
 
 #### Usage Relationship Prompt
 
@@ -151,7 +151,7 @@ Confirmed Status：No / Yes
 - Confirmed Prompt Revision：
 - Prompt Confirmation / Confirmed By / Confirmed At：
 - Candidate References：路径或受控外部ID、用途、绑定Version、工具/模型、参数、来源与授权。
-- Image QA：整体形态、尺度、结构、材质、细节、状态边界与使用关系。
+- Image QA：主参考图是否为正面 / 侧面 / 背面 / 关键细节的1×4横版，四格的整体形态、尺度、结构、材质与基础状态是否一致；以及适用的额外细节、状态边界与使用关系。
 - Support Board QA：仅Support适用；核对Board ID、Item ID、对象数量、标签、轮廓/材质/颜色/比例/功能差异及无对象混淆。
 - Awaiting User Confirmation：`Generated Images`
 - Prohibited Registry Upgrade：图片确认前不得写Canonical References、Active Version或`Status: Active`。
@@ -177,14 +177,14 @@ Support记录还必须保留Board ID、Item ID与同一Board Canonical Reference
 Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Production Status、Prompt Status、Image Status、Confirmed Status、Prompt Revision、Image Prompts、Prompt Confirmation、Candidate References、Image Confirmation、Canonical References、Immutable Traits、Mutable State Dimensions、Approval Basis与Downstream Usage。
 
 
-整体展示。
+1×4横版整体展示。
 
-对应Main Reference Image Prompt与确认后的主Canonical Reference。
+对应正面 / 侧面 / 背面 / 关键细节的Main Reference Image Prompt与确认后的主Canonical Reference。
 
 
 细节展示。
 
-只在必要时对应Required Detail Prompts。
+主参考图第四格优先；只在其不足时对应Required Detail Prompts。
 
 
 使用状态。

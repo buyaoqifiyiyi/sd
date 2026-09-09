@@ -116,6 +116,25 @@ Writer只提供故事身份、状态变化和必须保留的Plant / Payoff义务
 
 结论投影到现有Asset Tier、Priority、Tier Decision Basis、制作方式与下游引用依据，不新增用户固定字段，不因“剧本里出现”就一律制作Core Asset，也不因出场少就降级承担关键揭示/状态变化的资产。
 
+## Important Prop Completeness Pass｜Internal
+
+在输出`Prop Asset List`前，必须从Production-Locked Script识别`Important Prop Candidate`，而非逐项登记所有可见物件。候选至少满足以下一项：
+
+- 承担剧情信息、线索、Setup / Payoff、人物关系、身份或品牌识别；
+- 参与关键动作或表演可读性，例如被拿取、交接、开启、佩戴、阅读、操作、损坏或遗留，且其形态/状态会影响观众理解；
+- 需要跨Shot / Scene继承造型、持有者、状态或物理后果；
+- 用户明确指定为关键、英雄或需要锁定的道具。
+
+普通环境陈设、背景装饰、无特写/无状态连续性的通用消耗品，或只服务于环境氛围且不满足上述条件的物件，不是`Important Prop Candidate`，不得仅因可见或出现一次进入台账。对候选结合Writer Intent中的`Prop Story Function`与`Setup / Payoff relevance`核对其可见状态和跨镜继承需求。
+
+每个`Important Prop Candidate`都必须写入`Prop Completeness Ledger`，并作出唯一`Prop Production Route`：
+
+- `PROP Core`：分配稳定PROP-ID，进入独立道具资产包；适用于剧情/品牌识别、关键动作可读性、状态变化或跨Scene / Clip连续性风险。
+- `PROP Support Board`：分配PROP-ID、`BOARD-PROP-xxx`与Item ID，进入同类Support Prop Reference Board；适用于需要可见一致性但不值得独立套图的低频或场景道具。
+- `Not A Formal PROP Asset`：只适用于已识别的`Important Prop Candidate`经核对后确实无需图像参考锁定的例外；必须写明Scene / Beat证据、理由及其仍应进入的现有Shot / Clip道具状态字段。不得以“只出现一次”“属于环境”或“后面再写Prompt”为理由跳过候选判断。
+
+`Prop Completeness Ledger`是STATE-02的内部完整性证据，不创建新资产类别、主STATE或下游Prompt字段。若没有`Important Prop Candidate`，输出`No important PROP asset required`及判断依据；空白`Prop Asset List`不构成该结论。
+
 ## Commercial Fact Triage｜Conditional Internal
 
 仅当用户当前项目明确包含品牌、商品、服务承诺、价格、SKU、Logo、促销、受监管行业或法务文案时，逐项进行以下内部归类；普通叙事项目不触发：
@@ -502,6 +521,12 @@ templates/03_asset_discovery_prompt.md
 
 
 
+## Prop Completeness Ledger
+
+使用`templates/03_asset_discovery_prompt.md`拥有的`Prop Completeness Ledger`，仅呈现已识别`Important Prop Candidate`的路由决定。没有候选时，明确写`No important PROP asset required`及判断依据；不得留空。
+
+
+
 ## FX Asset List
 
 
@@ -581,6 +606,8 @@ FX资产需求清单，或明确当前项目无需正式FX Asset。
 asset_registry更新。
 
 全部CHAR、ENV、PROP已经完成Asset Tiering Decision；全部Support Asset已经分配稳定Board ID与Item ID并形成同类参考板计划。
+
+已完成`Important Prop Candidate`识别；每个候选已路由到`PROP Core`、`PROP Support Board`或有可核对理由的`Not A Formal PROP Asset`。所有需制作的道具均已进入Registry / STATE-03待办。未完成该检查不得写STATE-02 Complete，也不得仅因角色或环境资产已排期而跳过重要道具资产制作。
 
 
 
