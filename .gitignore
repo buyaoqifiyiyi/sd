@@ -20,6 +20,12 @@ id_ed25519.*
 credentials.json
 secrets.json
 
+# Workspace temp, snapshots, and push staging (never publish)
+tmp/
+
+# Local workspace memory and agent state (never publish)
+.workbuddy/
+
 # Local editor, operating-system, and temporary files
 .vscode/
 .idea/

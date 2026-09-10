@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r45 SD Film validator."""
+"""Regression tests for the r46 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -453,6 +453,21 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("Unknown / Not Transferable", styles)
         self.assertIn("不新建最终Prompt字段或独立Style Bible Schema", styles)
         self.assertIn("Reference-To-System Evidence Gate", workflow)
+
+    def test_declared_existing_assets_are_listed_not_solicited(self) -> None:
+        asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        discovery = (ROOT / "workflows/03_asset_discovery_workflow.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/03_asset_discovery_prompt.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### User-Declared Existing Assets", asset_rules)
+        self.assertIn("资产可用性声明", asset_rules)
+        self.assertIn("声明不等于登记", asset_rules)
+        self.assertIn("已有（用户声明）", asset_rules)
+        self.assertIn("## Declared-Existing Asset Handling｜Internal", discovery)
+        self.assertIn("禁止向用户索取、催交或要求补齐资产文件", discovery)
+        self.assertIn("已有（用户声明）", template)
+        self.assertIn("R35 Declared-Existing Asset Handling Regression", scenarios)
+        self.assertIn("不索取、不催交、不逐项盘问", scenarios)
 
 if __name__ == "__main__":
     unittest.main()

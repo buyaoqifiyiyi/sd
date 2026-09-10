@@ -414,6 +414,8 @@ STATE-03的资产确认仍是可审计的Gate；确认输入语义由`rules/prog
 
 ### Existing Asset Fast Path
 
+触发前提是已取得真实视觉文件或受控ID。用户仅口头声明“已有资产”不触发本路径，按本节`User-Declared Existing Assets`处理。
+
 当用户提供或项目目录中存在与CHAR / ENV / PROP / FX实体明确匹配的现有视觉文件时，资产流程先执行：
 
 ```text
@@ -426,6 +428,17 @@ Existing File Check
 该路径可以跳过新Prompt与图片生成，但不能跳过来源核验、用户对具体文件的确认（按`rules/progression_rules.md`解释）、版本记录、Canonical Reference或Active Version登记。现有文件未确认前仍是Candidate Reference，不得标记`Confirmed Status: Yes`、`Status: Active`或作为下游锁定依据。
 
 如果现有文件与实体身份不匹配、缺少必要视角/状态或用户要求重设计，返回标准Asset Design → Prompt → Image双确认路径。只核验当前对象，禁止为确认一个资产扫描或重做其他篇章与资产类别。
+
+### User-Declared Existing Assets
+
+用户以陈述方式说明自己持有资产（例如“已有资产”“这些我自己有”“参考图我这边有”“用现有资产”“不用管素材”）时，这是**资产可用性声明**，不是资源提交义务。该声明不改变Asset Discovery范围、Tier判定、Registry初始化或任何下游Gate。
+
+- **清单优先**：仍完整输出当前项目需要的CHAR / ENV / PROP / FX清单与Tier判定；在清单条目标注`已有（用户声明）`一行，其余按正常判定写`待制作`。这是清单内状态注释，不新增Template固定字段，也不改变Registry的Prompt / Image / Confirmed状态语义。
+- **禁止索取**：不得要求用户上交、上传、发送、粘贴或补齐文件，不得要求用户提供路径、文件名或自有素材清单，不得因文件未提供或不可读而重复追问，不得把交付停在素材索取上，也不得因此写BLOCKED或声称清单不完整。
+- **声明不等于登记**：`已有（用户声明）`只表示用户自述持有，不构成Existing File Check结果，不写Candidate Reference、Canonical Reference、Active Version、`Image Generated`、`Confirmed Status: Yes`或`Status: Active`，也不得作为下游视觉输入。
+- **由用户发起登记**：用户实际提供文件、给出可访问受控ID，或明确要求登记/核验该资产时才执行Existing File Check与后续确认；不得为把声明转成登记而主动索要素材。
+- **缺失由用户说明**：不逐项盘问缺什么。只有某个缺口会改变当前对象身份或阻断当前制作步骤时，才一次性指出该**具体**缺口并给最小路径；通用补全、进度催促与逐项确认一律不做。
+- **不虚构**：不得反向声称用户已持有其未声明的资产，也不得因用户声明而跳过该资产的Tier判定、Prompt / Image双确认或其他Hard Gate。
 
 所有STATE-03视觉资产，包括Character、Environment、Prop与正式FX Asset，必须按以下顺序生产：
 

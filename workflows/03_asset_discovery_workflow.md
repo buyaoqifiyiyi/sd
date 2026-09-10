@@ -102,6 +102,14 @@ Visual Requirement。
 
 # Asset Discovery Process
 
+## Declared-Existing Asset Handling｜Internal
+
+用户声明自己已有部分资产时，STATE-02仍输出完整CHAR / ENV / PROP / FX清单与Tier判定，只在清单条目上标注`已有（用户声明）`、其余标注`待制作`；发现范围、Support Board计划与Registry初始化不变。
+
+禁止在本阶段索取、催交或要求补齐任何资产文件、路径、文件名或用户自有素材清单，禁止因文件未提供而重复追问、写BLOCKED、声称清单不完整或把停止点放在素材索取上。`已有（用户声明）`不是Existing File Check结果，不得写Candidate / Canonical Reference或Active Version；用户实际提供文件、给出可访问受控ID或明确要求登记时才进入`Existing Asset Fast Path`。
+
+缺失由用户主动说明；只有缺口会改变当前对象身份或阻断当前制作步骤时，才一次性指出该具体缺口。
+
 ## Writer-informed / Director-led Asset Function Pass｜Internal
 
 在CHAR / ENV / PROP / FX清单与Tiering之前，先读取当前有效Writer Intent中的Narrative Function、Character Function、Prop Story Function与Setup / Payoff relevance，再由Director Intent只对当前候选执行视觉优先级判断：
@@ -580,6 +588,9 @@ templates/03_asset_discovery_prompt.md
 
 
 禁止生成Video Prompt。
+
+
+禁止向用户索取、催交或要求补齐资产文件、路径、文件名或自有素材清单。
 
 
 

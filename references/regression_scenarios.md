@@ -1341,6 +1341,32 @@ PASS：`REF-SKETCH Submission Compatibility=FAIL`，Prompt Pending并给出恢�
 
 PASS：NONE没有草图空槽位、占位或图片预算；Rewrite复用同一实际`REF-SKETCH`输入但不重复生成或计数；REPLACE从输入与预算移除旧草图，绑定新的可访问、Signature匹配草图后再编译。
 
+## R35 Declared-Existing Asset Handling Regression
+
+### R35-A Declared Assets Are Listed, Not Solicited
+
+输入：用户在STATE-00 / STATE-02说明“角色和环境资产我这边已经有了”，未提供任何文件或路径；项目仍需判定CHAR / ENV / PROP / FX。
+
+PASS：STATE-02照常输出完整资产清单、Tier判定与Support Board计划，已声明条目标注`已有（用户声明）`、其余标注`待制作`；不要求用户上传、发送、粘贴、提供路径、文件名或自有素材清单，不重复追问，不写BLOCKED，不把停止点放在素材索取上；Registry仍为`Prompt Status: Not Started / Image Status: Not Generated / Confirmed Status: No`。
+
+FAIL：要求用户先交资产或上传参考图；把资产清单变成逐项缺口盘问；因文件未提供或不可读而停住；或在用户未说明前虚构其持有 / 缺失状态。
+
+### R35-B Declaration Is Not Registration
+
+输入：用户声明“角色图已有”后未提供文件，随后要求继续到STATE-03。
+
+PASS：`已有（用户声明）`不满足`Existing Asset Fast Path`触发前提，角色仍走Asset Design → Prompt → Image双确认；只有用户实际提供文件、给出可访问受控ID或明确要求登记时才进入Existing File Check → Candidate Reference Registration → User Confirmation → Canonical Reference / Active Version。
+
+FAIL：把声明当已确认资产直接用于下游Prompt或视频参考；跳过Prompt / Image确认；或以“用户已有”为由跳过Tier判定与Registry状态语义。
+
+### R35-C Missing Items Come From The List Or The User
+
+输入：清单已输出，用户未说明缺失项，也未提供任何补充。
+
+PASS：Skill按清单继续当前可推进步骤，不逐项盘问缺失；只有某缺口会改变当前对象身份或阻断当前制作步骤时，才一次性指出该**具体**缺口并给最小路径。
+
+FAIL：连续追问“哪些没有”“请逐项确认是否已有”“请提供素材清单”；或把未声明资产写成缺失、把用户声明过的资产写成待制作。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1363,6 +1389,7 @@ PASS：NONE没有草图空槽位、占位或图片预算；Rewrite复用同一�
 - R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。
 - R23-A至R23-N验证Director Module从Project / Script到资产、Scene / Sequence / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Visual Grammar Baseline与Scene Delta、Project Color Reference的条件性模型输入、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离、三镜功能差异、FX / Sequence / Clip / Prompt的显式消费与多阶段Clip的观察层次；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
 - R34-A至R34-D验证STATE-00模型默认/偏好减少重复确认，但STATE-06/07仍按模型真实参考能力复核；Final=`REQUIRED`的草图在兼容模型中成为真实提交图片输入、计入预算，在文件缺失、Signature失配、预算不足或H3模式不兼容时诚实阻断；NONE、复用与替换不回归。
+- R35-A至R35-C验证用户“已有资产”属于可用性声明而非提交义务：STATE-02照常输出完整清单并标注`已有（用户声明）` / `待制作`，不索取、不催交、不逐项盘问、不写BLOCKED；声明不构成Existing File Check、Candidate / Canonical Reference或Active Version；缺失由用户主动说明或由清单承载。
 - R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。
 - R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。
