@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r33 structural and routing validation for SD Film."""
+"""Deterministic r43 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,7 @@ REQUIRED = (
     "knowledge/prompt_compilation/minimax_h3_compilation.md",
     "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
     "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
-    "references/project_state_contract.md", "rules/automation_mode.md",
+    "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md",
 )
 
@@ -35,12 +35,17 @@ def validate_skill(root: Path) -> list[str]:
         errors.append("Skill Version and Build ID must match")
     if len(skill.encode("utf-8")) > 8000:
         errors.append("SKILL.md must remain a compact routing entrypoint")
+    for alias in ("调用sd", "调用SD", "用SD Film", "重新调用sd", "恢复旧项目", "继续之前的项目"):
+        if alias not in skill:
+            errors.append(f"SKILL.md is missing discovery alias: {alias}")
     core = read(root, "core/pipeline.md")
     runtime = read(root, "core/runtime-state.md")
     selection = read(root, "modules/model-selection.md")
     image_selection = read(root, "modules/image-model-selection.md")
     assets = read(root, "modules/assets.md")
     automation = read(root, "rules/automation_mode.md")
+    asset_rules = read(root, "rules/02_asset_rules.md")
+    user_guide = read(root, "USER_GUIDE.md")
     progression = read(root, "rules/progression_rules.md")
     completion = read(root, "rules/completion_gate.md")
     performance = read(root, "knowledge/performance/micro_expression.md")
@@ -132,6 +137,14 @@ def validate_skill(root: Path) -> list[str]:
         (builtin_image, "prompt_output_template: templates/24_builtin_image_asset_prompt.md"),
         (builtin_image_template, "## Built-in Image Prompt Package"),
         (automation, "## FAST Eligible Work"),
+        (automation, "## FAST Continuous Chain"),
+        (automation, "尽量少确认"),
+        (automation, "完整视频Prompt"),
+        (automation, "Candidate Output Triage / Cleanup"),
+        (automation, "## Unified Delivery Packages"),
+        (automation, "Preproduction Package"),
+        (automation, "Execution Package"),
+        (automation, "Asset Candidate Package"),
         (automation, "## Hard Stops"),
         (automation, "将任何Candidate Image标为Canonical / Active"),
         (progression, "## Confirmation Input Semantics"),
@@ -163,6 +176,13 @@ def validate_skill(root: Path) -> list[str]:
         (builtin_image_template, "four-panel prop sheet"),
         (midjourney_template, "four-panel prop sheet"),
         (fx_template, "Image Prompt Output Template"),
+        (fx_template, "## Reference Assets And Visual Variant Policy"),
+        (fx_template, "Primary Visual Reference:"),
+        (fx_template, "Immutable Visual Anchors:"),
+        (fx_template, "### Physical Drivers"),
+        (fx_template, "Wind / Gravity / Flow:"),
+        (fx_template, "## FX State Ledger"),
+        (fx_template, "Boundary (Shot / Clip / Frame):"),
         (environment, "Asset Image Route"),
         (prop, "Asset Image Route"),
         (prop, "Main 1×4 Prop Sheet"),
@@ -174,6 +194,8 @@ def validate_skill(root: Path) -> list[str]:
         (prop, "Prop Completeness Ledger"),
         (completion, "Prop Completeness Ledger"),
         (fx, "Asset Image Route"),
+        (fx, "记录可见的物理驱动"),
+        (fx, "FX State Ledger在每个边界记录可继承状态"),
         (environment, "Spatial Reconstruction: Full / Partial / Not Required"),
         (environment_reconstruction, "ENV-01 + ENV-02 → ENV-03"),
         (environment_reconstruction, "ENV-01 + ENV-02 + ENV-03 → ENV-04"),
@@ -186,12 +208,18 @@ def validate_skill(root: Path) -> list[str]:
         (projection, "### Prompt Evidence Specificity"),
         (visual_styles, "### Reference-To-System Evidence Gate"),
         (visual_styles, "Observable Reference Evidence"),
+        (visual_styles, "### Project Color Reference Route"),
+        (asset_rules, "Project Color Reference`；它是非资产项目视觉参考"),
+        (asset_rules, "### Candidate Output Triage And Cleanup"),
+        (asset_rules, "NEEDS_USER_SELECTION"),
+        (asset_rules, "聊天历史中的图片无法由系统直接删除"),
+        (user_guide, "Project Color Reference`进入视觉开发"),
         (visual_styles, "Project Proposal"),
         (visual_workflow, "Reference-To-System Evidence Gate"),
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r33 routing marker: {marker}")
+            errors.append(f"missing r43 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -216,7 +244,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r33 structural and routing validation")
+    print("PASS: r43 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

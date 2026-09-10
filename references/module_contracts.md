@@ -828,7 +828,7 @@ Read current rules
 5. **Prompt Pollution Check**：确认新增内部控制不会直接膨胀最终Prompt。检查重复、冲突、抽象语义模板、否定词堆叠、资产重述、无效精密参数、跨镜头残留、风格堆叠与优先级淹没；内部QA、分数、Issue ID、路由说明和维护术语不得进入最终Prompt。
 6. **Routing Integrity Check**：确认新模块有正确入口、触发和返回路由；显式调用模块未变为默认必经；Optional/Auxiliary Workflow未写入主Pipeline；Legacy Compatibility未成为新项目主路由；普通“继续”未被误判为Reload、AUDIO或MUSIC授权。
 7. **Template Consistency Check**：核对Workflow声明的Output Owner、字段语义与当前Template；废弃字段不得残留。Template继续唯一拥有用户可见字段、顺序、必填性和排版。音色未显式投影时，常规STATE-08输出不得默认保留声音身份或“音色特征”字段。
-8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py skill <skill-root>`执行可确定的结构与引用检查。
+8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py --skill-root <skill-root>`执行可确定的结构与引用检查。
 9. **State / Continuity Compatibility Check**：确认STATE-00至STATE-09、Shot-State Memory、Accepted Take、Accepted Canon State、Reference Selection / Routing、REF-TAIL A Direct / B Reference-Only / C Not Required、Visual Anchor State / Blocking Signature、Spatial Blocking、资产锁、Revision与Checkpoint不被破坏；维护QA不得创建新主STATE或项目事实。
 10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
 11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
@@ -878,7 +878,7 @@ Read current rules
 - `USER_GUIDE.md` recovery commands
 - ordinary Chat vs Work routing
 
-执行owner固定为`scripts/validate_sd_film.py skill <skill-root>`与`scripts/test_validate_sd_film.py`。这两项验证始终检查LR-R1—LR-R10的静态合同和防篡改用例，因此每次正式修改都必须运行它们；如果未来脚本owner改名或迁移，必须在同一次变更中把本节、`SKILL.md`指针与测试入口一起迁移，不能只删掉检查。语义演练仍由维护者按Matrix逐项核对，脚本通过不替代语义判断。
+执行owner固定为`scripts/validate_sd_film.py --skill-root <skill-root>`与`scripts/test_validate_sd_film.py`。这两项验证始终检查LR-R1—LR-R10的静态合同和防篡改用例，因此每次正式修改都必须运行它们；如果未来脚本owner改名或迁移，必须在同一次变更中把本节、`SKILL.md`指针与测试入口一起迁移，不能只删掉检查。语义演练仍由维护者按Matrix逐项核对，脚本通过不替代语义判断。
 
 ### Standalone Skill Discovery Guard
 
@@ -892,7 +892,7 @@ Read current rules
 - Codex中的确定性显式入口是`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin或Plugin内含能力，本机独立Skill不得承诺以`@`选择显示名的入口；普通Chat只有在宿主实际暴露本机Skills时，才可能通过`description`对`调用sd`作隐式选择。`agents/openai.yaml`的`display_name`与`allow_implicit_invocation`不会把独立Skill注册成Plugin，也不证明普通Chat已有`@`入口。
 - Skill变更通常应被Codex自动检测；如果当前Codex会话未刷新元数据，要求重启桌面应用或新建Codex任务后复测。普通Chat的`@`列表没有SD Film时，不得把它误诊为Skill内容错误，也不得为迎合`@`而创建Plugin、复制Skill或弱化Runtime规则。
 
-可执行owner仍为`scripts/validate_sd_film.py skill <skill-root>`与`scripts/test_validate_sd_film.py`；它们必须检查元数据、别名、隐式调用开关、单一用户级权威副本、禁止虚假`@`显式调用声明及`Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`。安装位置、普通Chat是否暴露本机Skill以及客户端刷新属于运行环境证据，脚本之外仍需在最终报告中如实记录。
+可执行owner仍为`scripts/validate_sd_film.py --skill-root <skill-root>`与`scripts/test_validate_sd_film.py`；它们必须检查元数据、别名、隐式调用开关、单一用户级权威副本、禁止虚假`@`显式调用声明及`Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`。安装位置、普通Chat是否暴露本机Skill以及客户端刷新属于运行环境证据，脚本之外仍需在最终报告中如实记录。
 
 ### Required Self-Check Summary
 

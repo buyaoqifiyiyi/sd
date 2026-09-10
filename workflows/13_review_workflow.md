@@ -629,7 +629,7 @@ Shot Design Workflow
 
 □ 每个受审Take分别记录Planned Start / End与实际Observed Start / End；用户已接受Take时，Accepted Canon State来自该Take的Observed State并覆盖后续同维度Planned State。未接受Take未写入Canon；Accepted Take或`REF-TAIL`中的脸/服装/环境结构/道具造型漂移未覆盖正式Canonical资产，只继承授权的姿态、站位、动作阶段与其他瞬时状态
 
-□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：每个入选Reference声明Primary Role / Purpose；身份/外观、空间结构、道具造型、Visual Blocking、A/B尾帧、Motion、Camera、Audio与光线/场景状态使用正确Authority；`REF-SKETCH`只在Final Assessment=`REQUIRED`、Sketch Validation与Character Appearance Leakage Check通过且Blocking Signature匹配时出现，并只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；草图中的无性别调度人偶没有作为人物外观参考，Visual Blocking / Transient Reference没有覆盖正式身份/结构/造型；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
+□ Reference Selection / Routing与当前Clip目标和Continuity Risks一致：每个入选Reference声明Primary Role / Purpose；身份/外观、空间结构、道具造型、Visual Blocking、A/B尾帧、Motion、Camera、Audio与光线/场景状态使用正确Authority；`REF-SKETCH`只在Final Assessment=`REQUIRED`、Sketch Validation与Character Appearance Leakage Check通过且Blocking Signature匹配时出现，并只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；STATE-07入选的`Project Color Reference（非资产）`具有真实来源、光色漂移风险与唯一综合色彩用途，且没有越权控制角色、环境、道具、构图、光源、镜头或最终画风；草图中的无性别调度人偶没有作为人物外观参考，Visual Blocking / Transient Reference没有覆盖正式身份/结构/造型；C没有旧`REF-TAIL`；没有必需资产漏选、用途选错、把Top-down Blocking Map当视频参考，或因Registry存在/上一Clip使用/预算空位而过量引用
 
 □ Top-down Blocking Map仅作为Planning Reference，没有被登记为Canonical Asset、Storyboard或写入STATE-08【参考资产】
 
@@ -674,6 +674,8 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 
 
 □ 色彩/灯光是否承担功能：变化具有真实光源、空间移动或剧情事件依据，并改变信息/关系可读性；没有功能性变化时是否保持光态、色态、肤色和资产固有色稳定
+
+□ 全片Visual Grammar Baseline是否保持可识别的世界规则，同时每个Scene的空间戏剧功能与必要Scene Delta是否在空间压力、信息遮挡、色彩权限、光线、构图或观察方式中可读；不得把统一误做成每场同色、同构图、同景别或同运镜。Baseline漂移返回STATE-04；仅当前Scene Delta缺失或失效返回STATE-05/06。
 
 
 □ 表演应外放或克制的尺度是否清楚；谁先反应、谁延迟、谁泄漏、谁压住，以及结束状态是否与关系和情绪连续
@@ -762,6 +764,8 @@ Review必须在兼容的`PASS / REVISE / REBUILD` Result之外选择一个处置
 □ 没有连续慢推、连续轻微横移或“稳定中景+轻微运动”的无理由模板重复；同类主运镜连续3次以上均有逐镜叙事理由
 
 □ 每个Clip具有明确主导镜头语言；超过4个Shot时通常至少存在2种不同运镜逻辑，例外具有连续动作、长镜观察或刻意重复的叙事理由
+
+□ 多阶段Clip的实际成片是否保留Clip Movement Plan中的观察层次：不同Shot Purpose、注意力、关系 / 信息阶段或节奏功能至少在景别 / 距离、观察侧位 / 高度、构图 / 遮挡、Static / Hold或主路径的一项中可读；同一摄影机逻辑贯穿时是否确有连续长镜、压迫累积、关系冻结或信息压住的理由、解除条件和稳定终点。若Clip Plan缺失该设计返回STATE-07；Plan正确但Prompt / 生成压平为同一平视跟拍，返回STATE-08或REGENERATE。
 
 □ 多样性来自建立、跟随、揭示、靠近、克制、释放等叙事功能变化；没有为了“每镜不同”随机堆叠运镜
 

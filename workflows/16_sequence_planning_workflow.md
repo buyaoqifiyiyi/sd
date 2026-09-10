@@ -24,6 +24,7 @@ UNIT是Sequence Coverage、状态继承与Retry Boundary规划容器，不是Cli
 - knowledge/sequence/coverage_design.md
 - knowledge/sequence/sequence_continuity.md
 - knowledge/sequence/generation_unit_design.md
+- knowledge/director_decision_layer.md（只读取STATE-05已确认的Scene Director Intent与Rhythm Intent）
 - rules/04_consistency_rules.md
 - templates/14_sequence_plan.md
 
@@ -66,6 +67,7 @@ Not Applicable必须记录理由，不得静默跳过。
 - project_bible.md
 - asset_registry.md
 - 已确认Scene Breakdown
+- 已确认Scene Director Intent、Information Presentation与Rhythm Intent
 - 已确认Visual Direction
 - 已确认资产和连续性事实
 
@@ -83,7 +85,7 @@ Not Applicable必须记录理由，不得静默跳过。
 
 Initial State → Stimulus → Development → Decision / Turn → Result → Exit。
 
-只使用已确认剧情，不新增事件。
+只使用已确认剧情，并以Scene Director Intent中的Audience Position、Information Presentation与Rhythm Intent安排BEAT / Coverage的观察先后；不新增事件、SHOT、Camera参数或平行Director Packet。
 
 ---
 

@@ -798,6 +798,38 @@ PASS：三个Camera Language Decision分别承担建立、隐藏/泄漏、确认
 
 FAIL：三镜都无理由“慢推+浅景深”，或三镜为了不同而随机环绕、升降、甩镜并破坏轴线/表演。
 
+### R23-K Cross-stage Director Consumption — FX, Sequence, Clip And Prompt
+
+输入：一个项目具有已确认Scene Director Intent；其中包含需遮挡Reveal并留下后果的FX、需要跨Scene组织Coverage的Sequence，以及覆盖多个SHOT的Execution Clip。
+
+PASS：STATE-03 FX从当前Director Intent只读取视觉重点、遮挡/Reveal与后果呈现功能，不创建Camera或剧情；条件性Sequence Planning只消费已确认Scene Director Intent、Information Presentation与Rhythm Intent来组织BEAT / COV / UNIT，不创建SHOT或Camera参数；STATE-07将匹配的Director Decision Notes投影为Clip Dramatic Function、关键表演/Blocking、节奏与信息时机；STATE-08在编译前核验当前Clip Director Intent / Notes一致，并只把1—3项已确认导演优先级交给Projection。任一缺失或冲突均返回最小事实owner。
+
+FAIL：FX或Sequence绕过导演呈现约束自行创造镜头/剧情；STATE-07只写笼统“保持导演意图”而不形成Clip投影；或STATE-08仅凭旧Prompt、Adapter或模型偏好重写导演方向。
+
+### R23-L Multi-stage Clip — Observation Hierarchy Is Not Flat Follow
+
+输入：一个Seedance 2.5、20秒的Clip依次承载相遇、共同完成小动作、关系靠近、信息确认与余韵；草案要求“同一台摄影机自然跟随、保持前进方向”，所有阶段都是平视中景和轻微推进，但没有连续长镜的叙事理由。
+
+PASS：STATE-06对不同Shot Purpose / Audience Attention / 关系与信息阶段执行Adjacent Observation Contrast；STATE-07 Long-duration Preflight与Clip Movement Plan记录阶段间的观察层次，或明确连续长镜理由、受保护注意力对象、解除条件与稳定终点。若无法成立，返回STATE-07拆分Clip或使用有动机剪辑；STATE-08仅把已确认层次转为既有字段语义，不输出内部标签；STATE-09能区分“Clip Plan缺设计”与“Plan正确但Prompt / 生成压平”。
+
+FAIL：为了避免单调随机堆叠越轴、环绕、升降、甩镜或强制每镜不同；或把多阶段内容默认写成同一平视跟拍、同一路径前进和无触发的轻微推进。
+
+### R23-M Visual Grammar — Baseline Holds, Scene Delta Serves Drama
+
+输入：一个项目已确认克制、潮湿、低对比的海边小镇视觉世界；同一角色分别进入“等待的站台”“共同生活的厨房”“关系确认的海堤”。草案把三场都写成相同灰蓝色、同一平视中景与同一路径跟随；另一草案为了变化无依据加入红色霓虹与舞台顶光。
+
+PASS：STATE-04先建立不含逐Shot参数的Visual Grammar Baseline，明确可用色谱、强调色的出现条件、真实光源、材质/空间气质和摄影机介入倾向；STATE-05为每场标记空间的戏剧功能与有事实依据的Scene Delta；STATE-06再把当前主信息与关系转成镜头选择；STATE-09既能拒绝把统一机械拍成相同，也能拒绝为变化而破坏Baseline。STATE-08只继承已锁定Baseline与当前delta，不增加最终Prompt Schema。
+
+FAIL：把某位导演、某种题材或“低饱和”固化为所有项目的默认审美；让颜色只因好看出现、改写资产固有色或虚构光源；或在STATE-04以Visual Grammar名义预写逐Shot焦段、机位与运镜。
+
+### R23-N Project Color Reference — Conditional Model Input, Never Asset Authority
+
+输入：用户提供一张可访问的海边小镇色卡，并确认它用于本项目的综合色彩基线；夜景Clip存在暖色强调比重漂移风险，角色、环境、道具与首尾帧均已有更高优先级的Canonical参考。
+
+PASS：STATE-04把色卡作为`Project Color Reference`记录在既有Color System，不注册为CHAR / ENV / PROP / FX或Canonical Asset；STATE-07仅因当前光色漂移风险选入并计入Reference Budget；STATE-08在既有模型参考字段写真实来源、唯一Primary Role与“仅控制综合色相 / 明度 / 饱和度 / 强调色占比”。角色、环境、道具、构图、光源、镜头与最终画风继续服从其原owner。无真实色卡、未确认色卡、没有当前风险或有更具体场景状态参考时，色卡不进入模型输入，只有文字Color System继续生效。
+
+FAIL：把色卡当人物、环境、道具或最终画风资产；让它覆盖Canonical外观/结构、虚构光源、强制每个Clip投喂，或对仅有Hex/文字需求伪造图片输入与确认状态。
+
 ---
 
 ## R24 Screenwriter Module / Writer Intelligence End-to-End
@@ -1177,6 +1209,90 @@ PASS：内部语义分别保留首尾帧、草图Authority和延展输入，仍�
 
 PASS：前者只在既有分镜正文表达受控编辑范围与保持项，后者不含时间码或逐秒区间；两者共用固定最终Schema。
 
+---
+
+## R30 FAST Continuous Chain Regression
+
+### R30-A Explicit Low-Confirmation Language Enables FAST Only
+
+输入：项目已有合法State Source，用户说“尽量少确认，只在关键节点停，自动完成可逆步骤”。
+
+PASS：写入`Automation Policy: FAST`并读取唯一owner `rules/automation_mode.md`；不新建模式、STATE或Schema。表达不锁定Production Script Proposal、不选择模型、不批准Candidate Image、不提交外部服务，也不构成Review PASS。
+
+FAIL：把用户的低确认偏好解释为全部授权，或因为措辞未包含“Fast Mode”而仍强制STANDARD。
+
+### R30-B FAST Carries Verified Internal Work Through Prompt Delivery
+
+输入：STATE-04起的事实、资产、视频模型和Execution Profile均已锁定；STATE-04/05/06/07的QA均通过；三个Execution Clip均Confirmed，其中CLIP-02需要`REF-SKETCH`。
+
+PASS：连续推进STATE-04→05→06→07→08，自动接受Detailed Shot与Clip Plan；CLIP-02的草图验证、注册后同轮编译Prompt；三个完整Prompt按顺序交付，单轮容量不足时仅在完整Clip之间分批，下一次普通推进直接续交。每一阶段仍完成既有QA、预算、无BGM和状态写回。
+
+FAIL：要求用户在STATE之间逐次确认、草图后额外等待、仅因多Clip就停止在第一个Prompt，或跳过QA / Completion Gate。
+
+### R30-C FAST Stops At Non-Reversible Boundaries
+
+输入：FAST项目在资产图像模型未选、外部Midjourney Prompt已编译、Candidate Image已回传、或准备提交视频生成时继续推进。
+
+PASS：首次/变更模型时请求选择；已锁定Midjourney批次只自动交付外部提交包；回传Candidate后停在批次审阅，用户批准后才Active / Canonical；外部视频生成由用户显式提交；未实际查看视频不得Review PASS。
+
+FAIL：替用户选择模型、代投Midjourney或视频服务、把Prompt写成生成结果，或自动把Candidate升级Canonical。
+
+---
+
+## R31 Candidate Output Triage And Cleanup Regression
+
+### R31-A Asset Run Keeps One Valid Candidate And Removes Extras
+
+输入：CHAR-001正式资产Prompt预期一张四区角色设定图；本次内置生成返回三张：C01正确、C02为重复画布、C03是错误角色且带水印。三个未确认输出均位于当前运行可验证的临时目录。
+
+PASS：视觉核验后只将C01登记并展示为`KEEP` Candidate，报告“保留 C01，仍待图片确认”；C02 / C03标为`DISCARD`、报告最短原因、从Candidate References / Registry / 下游参考移除并删除其已核验临时文件。不得要求用户从错误或重复图中选择，C01也不得因此自动Canonical / Active。
+
+FAIL：把三张都显示为候选、只说“有错误”却不指明保留项、把C02 / C03计入预算，或删除C01 / 已确认资产。
+
+### R31-B Valid Aesthetic Alternatives Need One User Choice
+
+输入：ENV-001回传两张均满足当前Prompt、资产ID和空间结构的单图候选，差异仅是同等可用的阴天光照细微倾向，系统没有客观依据判断哪张更符合用户偏好。
+
+PASS：只展示这两张`NEEDS_USER_SELECTION`候选，标明ID与可见差异；不删除任一项，不将其自动升级Canonical / Active，等待用户的图片选择与批准。
+
+FAIL：用FAST替用户做审美选择、把两张都登记为Active，或将未确认的合格图直接删除。
+
+### R31-C Sketch Failure Is Removed Before Registration
+
+输入：CLIP-04需要`REF-SKETCH`，生成结果一张通过所有技术验证，另一张含角色发型、服装和电影光效。
+
+PASS：只保留并报告技术合格草图；泄漏图为`DISCARD`，从Candidate Evidence、Confirmed Visual Anchor、参考资产与图片预算移除；临时本地文件归属明确时直接删除，否则说明无法物理删除但不会再引用。合格草图仍须完成原有验证和注册，不成为角色资产。
+
+FAIL：把失败草图也展示或登记、只报告“草图有问题”不说保留哪张、因自动清理而跳过Sketch Validation，或删除已Confirmed草图。
+
+---
+
+## R32 Unified Delivery Package Regression
+
+### R32-A FAST Aggregates Preproduction And Execution Without Flattening Artifacts
+
+输入：核心资产、Production-Locked Script和事实已确认；视频模型/Profile已锁定；STATE-04至STATE-08所需输入完整且所有QA通过。用户启用FAST并要求继续。
+
+PASS：内部按STATE-04→05→06→07→08依序读取、检查、写回；对外以`Preproduction Package`交付可查看的Visual Direction摘要、完整Scene Breakdown与完整Detailed Shot Design，再以`Execution Package`交付完整Clip Plan和每个Clip的完整目标模型Prompt。每个Template原字段、顺序和内容保持完整；不得将多个阶段压为一张新总表或用“同上”替代。每个Clip仍执行预检、参考预算和无BGM边界。
+
+FAIL：把包名写进Project State或最终Prompt字段、跳过中间QA、只交摘要、先输出Prompt后形成Clip Plan，或因聚合改写Script / Director Intent / Canonical资产。
+
+### R32-B Hard Stop Truncates The Package At The Nearest Boundary
+
+输入：FAST项目完成STATE-06，但尚未选择视频模型；另一项目在资产Candidate Image审阅前要求一次性完成全流程。
+
+PASS：前者可以结束`Preproduction Package`，随后只展示首次模型选择；不得虚构Execution Package。后者只交付`Asset Candidate Package`的筛选结果并停在候选图确认，不进入STATE-04。用户要求统一输出不替代模型选择或Candidate / Canonical批准。
+
+FAIL：为了交付完整包默认挑选模型、把候选图升级Canonical、跳过STATE-03，或把外部提交当作包内自动步骤。
+
+### R32-C Standard Mode Aggregates Only Already-Legal Results
+
+输入：STANDARD项目说“按包交付”，但当前Detailed Shot尚未被确认，且没有FAST自动接受资格。
+
+PASS：可以将已经合法完成的相邻成果组合展示，但在当前Detailed Shot确认Checkpoint停止；不得用“按包交付”把未展示Shot或Clip Plan视为确认，更不得提前编译STATE-08 Prompt。
+
+FAIL：因为用户要求合并展示就绕过Confirmation Input Semantics、Completion Gate或Hard Stop。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1197,7 +1313,7 @@ PASS：前者只在既有分镜正文表达受控编辑范围与保持项，后�
 - R20-A至R20-F验证母版只拥有Sketch Presentation Authority、Current Clip独占Blocking内容、钢琴双人 / 三人围桌 / A3统一使用无性别技术人偶、任何Character Appearance Leakage硬失败、简单单人NONE不受母版可用性影响、Prompt Rewrite复用当前草图且母版不进入最终视频参考资产或图片预算。
 - R21-A至R21-C验证逐角色Performance Arc、Pre-action / In-action / Post-action Residue、Intentional Hold、多人相对表演层级和Clip Performance / Emotion Check；固定剧情、SHOT / Clip结构与STATE-08字段保持不变。
 - R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。
-- R23-A至R23-J验证Director Module从Project / Script到Scene / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离及三镜功能差异；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
+- R23-A至R23-N验证Director Module从Project / Script到资产、Scene / Sequence / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Visual Grammar Baseline与Scene Delta、Project Color Reference的条件性模型输入、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离、三镜功能差异、FX / Sequence / Clip / Prompt的显式消费与多阶段Clip的观察层次；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
 - R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。
 - R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

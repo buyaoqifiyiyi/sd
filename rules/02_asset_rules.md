@@ -381,6 +381,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 - Final Visual Blocking Assessment=`REQUIRED`且文字 / Canonical / REF-TAIL仍不足以唯一锁定Position、Facing、Distance、Topology、Axis、Camera、Pose、Gaze或Action Path → 选择经Sketch Validation确认的当前`REF-SKETCH`；它不得承担身份、环境结构、道具造型、材质、色彩、灯光或最终画风。
 - A【同镜头连续承接】或B【新镜头参考型】确需上一状态锚定 → 按既有规则选择`REF-TAIL`并声明对应用途；C【新镜头且无需尾帧】不得引用或预留旧`REF-TAIL`。
 - 光线、天气、综合色彩或场景当前状态存在漂移风险 → 只有实际存在、可回查且已确认的场景视觉基准图、合法首帧/尾帧或其他合格状态参考才可作为视觉输入；如果只有Project Bible、场景视觉基准或环境状态文字，则投影到`主风格 / 环境一致性 / 首帧参考 / 起始状态 / 尾帧限制`，不得虚构“Scene Anchor”或关键帧资产。
+- 当前Clip存在综合色相、明度/饱和度或强调色占比漂移风险，且没有更具体的已确认场景状态参考 → 可选择STATE-04已确认、真实可访问的`Project Color Reference`；它是非资产项目视觉参考，只承担综合色相 / 明度 / 饱和度 / 强调色占比，必须标明唯一Primary Role并计入Reference Budget。它不得控制人物、环境、道具、构图、光源、镜头或最终画风，也不得因预算空位、全片存在色卡或文字色彩需求而默认入选。
 
 每个选中条目必须能回答“它解决当前Clip的哪一项具体风险或生成目标”；仅仅Eligible、上一Clip用过、位于Registry、可能有帮助或预算尚有空位都不是入选理由。合格但与当前风险无关的资产必须不选；遗漏必需项、用途选错、A/B/C路由错误或无风险依据的过量引用都视为Reference Selection失败，并按事实拥有者返回最小修正。
 
@@ -450,12 +451,24 @@ Asset Design
 ## Image Gate
 
 - 已确认选择`Built-in Image`且当前agent具备直接图片生成能力时，在当前Prompt Revision按既有规则确认后生成Candidate Image；选择`Midjourney`或其他外部模型时只交付Prompt，外部图片回传后才进入Image Generated。不得因环境可生成而跳过图像模型选择或Prompt确认。
-- 图片生成后只写`Image Generated`，并把文件或受控外部ID登记为Candidate References。
+- 图片生成后先执行本节的`Candidate Output Triage`；只有保留项才写`Image Generated`并把文件或受控外部ID登记为Candidate References。
 - Image Generated时同步状态必须为`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`。
 - 未经全局确认语义定义的用户确认图片，不得写Canonical References、Active Version、`Status: Active`或`Asset Confirmed`。
 - 图片被拒绝时，保留其生成记录但不得升级为Canonical Reference；若只需重生则回到已确认Prompt，若需改Prompt则回到`Prompt Draft`重新确认。
 - 只有图片获得全局确认语义定义的用户确认后，才能写`Visual Production Status: Asset Confirmed`，完成Canonical References、Active Version、Approval Basis与Approved At登记。
 - Asset Confirmed时同步状态才允许为`Prompt Status: Confirmed`、`Image Status: Confirmed`、`Confirmed Status: Yes`；Support还必须记录Board ID、Item ID与图中区域/标签对应关系。
+
+### Candidate Output Triage And Cleanup
+
+每次资产生图或外部图片回传后，必须在展示、Candidate登记或图片确认前，逐项与当前Prompt Revision、资产ID、预期图数、资产类型与必要视角/版式做实际视觉核验。此筛选不是用户对图片的Canonical批准；它只处理客观不合格或多余输出，不放宽后续Image Confirmation Gate。`KEEP / DISCARD / NEEDS_USER_SELECTION`只是当轮分流结论，不新增项目状态、资产版本状态或最终Prompt字段。
+
+- `KEEP`：唯一满足当前资产合同、可读取、无重复且承担当前所需视角/版式的图片。报告其Candidate ID / 文件或受控ID、保留理由和“仍待图片确认”。
+- `DISCARD`：超出预期数量、重复、错误实体/资产类型、错误版式或视角、身份/结构/文字水印等硬失败、不可读取，或与当前Prompt Revision明显不符的图片。不得展示为可选Candidate、不得进入Candidate References、Registry、下游参考或模型预算；报告被弃用的ID / 文件或受控ID及最短原因。
+- `NEEDS_USER_SELECTION`：两张或以上图片都通过客观合同，但仅剩审美或创作取舍而没有可验证的唯一胜者。只展示这些合格项，明确它们的ID与差异，等待用户选择；用户的图片批准仍只作用所选项。
+
+对`DISCARD`的未确认本地临时输出，若当前运行环境实际拥有且已核验精确路径属于本次生成，则直接删除该文件；保留最小生成记录（Prompt Revision、来源、弃用原因、时间）以便审计，但不保留为项目候选或引用。外部服务、用户上传文件或聊天历史中的图片无法由系统直接删除时，必须明确报告“已从项目候选与后续引用中移除，原平台/聊天记录仍由用户控制”，不得假装已物理删除。已确认Canonical / Active图片、用户明确保留的图片、路径/归属不明的文件一律不得自动删除。
+
+若没有`KEEP`项，不显示伪候选或要求用户在错误图中挑选；按既有最小Return Route重生或修订Prompt。该Triage在STANDARD与FAST下都自动执行；FAST不得把它解释为图片批准。
 
 ## Tool Availability
 

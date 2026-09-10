@@ -1,13 +1,13 @@
 ---
 name: sd-film
-description: AI影视虚拟制片生产系统。处理剧本、导演转译、资产、镜头、Clip、视频 Prompt、Seedance 和项目恢复；AUDIO/MUSIC仅在明确请求时调用，视频 Prompt 永久禁止非剧情内配乐。
+description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项目、继续之前的项目：AI影视虚拟制片生产系统。处理剧本、导演转译、资产、镜头、Clip、视频 Prompt、Seedance 和项目恢复；AUDIO/MUSIC仅在明确请求时调用，视频 Prompt 永久禁止非剧情内配乐。"
 ---
 
 # SD Film
 
-Skill Version: 2026.09.10-r33
+Skill Version: 2026.09.10-r43
 
-Build ID: sd-film-2026.09.10-r33
+Build ID: sd-film-2026.09.10-r43
 
 ## Core
 

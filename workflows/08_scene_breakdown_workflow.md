@@ -92,7 +92,7 @@ Asset Development。
 
 每个Scene先投影Writer Beat Map：Dramatic / Relationship / Information Beat及`Trigger → Interpretation → Desire → Decision → Action → Consequence → New State`所需的最小因果。Writer Beat是人物、关系、信息或价值发生变化的单位，明确`Writer Beat ≠ Shot`；本阶段不得按Beat数量预定Shot数量。
 
-Director在不改变Writer Beat的前提下补充Performance Beat与Dramatic Geography：固定空间、人物起始关系、可行动区域、信息来源、遮挡/揭示位置、距离或权力变化、Spatial Evolution和场景结束的稳定空间结果。
+Director在不改变Writer Beat的前提下，先读取已确认Visual Grammar Baseline，再补充Performance Beat与Dramatic Geography：当前空间的戏剧功能、固定空间、人物起始关系、可行动区域、信息来源、遮挡/揭示位置、距离或权力变化、相对此Baseline有事实依据的Scene Delta、Spatial Evolution和场景结束的稳定空间结果。不得把同一视觉世界机械复制为每场相同色调、构图或摄影机处理。
 
 Writer Intent决定Reveal / Withhold / Delay / Confirm / Recontextualize在何个Beat进入故事；Scene Breakdown保持该Information Architecture。Director只决定Audience Position与呈现机会，不提前决定具体镜头数量。
 
@@ -261,7 +261,7 @@ FX-001（如适用）
 
 □ 每个Scene已读取并投影适用的Scene Director Intent；与锁定剧本冲突时已返回STATE-01，没有在本阶段静默改写
 
-□ 每个Scene已形成Dramatic / Relationship / Information / Performance Beat Map、Dramatic Geography、Spatial Evolution与Reveal / Withhold timing
+□ 每个Scene已形成Dramatic / Relationship / Information / Performance Beat Map、Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution与Reveal / Withhold timing；Visual Grammar Baseline保持一致但未被机械复制为同一镜头处理
 
 □ 每个Scene已形成轻量Scene Camera Strategy，且没有提前创建SHOT或具体摄影参数
 

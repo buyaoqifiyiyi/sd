@@ -58,7 +58,7 @@ Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm
 2. **Audience Attention Hierarchy**：规定First Look、Second Look与Delayed / Withheld信息，使用动作顺序、构图、焦点、遮挡、景深和人物活动层级控制。
 3. **Performance Beat Translation**：把情绪词变为最小充分的gaze、breath、pause、jaw / mouth / swallow、hand / fingertip tension、shoulder / weight、delayed reaction、suppression / leakage和post-action residue；使用现有PL1/PL2/PL3负荷逻辑，不另建强度Schema。
 4. **Composition Function Translation**：让距离、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal承担当前功能；“电影构图”不是合格结果。
-5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；理论解释留在内部。
+5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；多Shot或多阶段Clip还必须保留Confirmed Clip Movement Plan中的观察层次。不同Shot Purpose、注意力、关系 / 信息阶段或节奏功能不得被泛化成“同一台摄影机自然跟随 / 保持前进方向 / 轻微推进”；只有上游确认连续长镜理由、受保护注意力对象与稳定终点时，才可保留单一摄影机逻辑。理论解释留在内部。
 6. **Information Timing Translation**：以action order、delayed gaze、delayed rack focus、temporary occlusion、hold before reveal或适用的sound-before-image实现Reveal / Withhold / Delay / Confirm / Recontextualize。
 7. **Spatial & Relationship Translation**：继承Spatial Snapshot、Relationship Topology、Pose Hierarchy、Delta Blocking、Confirmed REF-SKETCH与REF-TAIL的授权维度；不重新设计空间。
 8. **Rhythm Translation**：把BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部；标签不输出。
@@ -101,7 +101,7 @@ Style Label Expansion、抽象转译、冲突消解、参数压缩、Cross-Shot�
 
 | 信息类型 | 权威字段 | 后续字段允许内容 |
 |---|---|---|
-| 实际输入Source、Canonical身份与Reference用途 | `参考资产` | 只引用资产携带的Authority；Confirmed Visual Blocking Anchor只写ID、用途及Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path职责，不复制草图标注全文，也不把纯文字站位、动作、数量或禁止项伪装成资产 |
+| 实际输入Source、Canonical身份与Reference用途 | `参考资产` | 只引用资产携带的Authority；Confirmed Visual Blocking Anchor只写ID、用途及Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path职责，不复制草图标注全文，也不把纯文字站位、动作、数量或禁止项伪装成资产。已确认且按STATE-07入选的`Project Color Reference（非资产）`只写真实来源、综合色彩Primary Role与其受限色相/明度/饱和度/强调色授权 |
 | 当前Clip第一帧的构图、人物位置/姿态、道具瞬时状态、动作阶段与跨Clip承接 | `首帧参考` | 首镜`起始状态`只写来源和当前镜执行所需的最短继承，不重抄整份首帧合同 |
 | 当前Clip最终稳定状态与下一Clip carryover | `尾帧限制` | 末镜`镜头结尾状态`写本镜形成该Endpoint的结果和Boundary Class，不重抄整份尾帧合同 |
 | 长期角色身份、年龄感、五官、发型、服装、身体比例与物种边界 | `人物一致性` | Clip临时坐姿、左右、距离、动作次数、道具接触和“是否拾取”等不进入本字段 |
@@ -261,7 +261,7 @@ STATE-08内部转换链固定为：
 
 当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
-最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。Confirmed `REF-SKETCH`在Seedance 2.5可作为Clay Render/白模空间调度参考；在MiniMax H3全能参考或首/尾帧模式下可作为普通图片参考。两种情况下它仍是经Gate验证的单Clip Visual Blocking Anchor：仅控制Blocking / Pose / Axis / Camera / Action Path，不控制身份、服装、年龄、材质、色彩、灯光或最终画风。Seedance Video Extension的实际`REF-VIDEO`只作为受控延展输入，叠加而不取代Canonical、首尾帧与End-State。MiniMax H3的实际视频输入则必须按其唯一动作/运镜/编辑用途标注，不替代Canonical、首尾帧与End-State。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
+最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`与STATE-07已选择的`Project Color Reference（非资产）`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。色卡条目必须标明真实来源、唯一Primary Role及“只控制综合色相 / 明度 / 饱和度 / 强调色占比”，不得伪装为Canonical资产或控制角色、环境、道具、构图、光源、镜头或最终画风。Confirmed `REF-SKETCH`在Seedance 2.5可作为Clay Render/白模空间调度参考；在MiniMax H3全能参考或首/尾帧模式下可作为普通图片参考。两种情况下它仍是经Gate验证的单Clip Visual Blocking Anchor：仅控制Blocking / Pose / Axis / Camera / Action Path，不控制身份、服装、年龄、材质、色彩、灯光或最终画风。Seedance Video Extension的实际`REF-VIDEO`只作为受控延展输入，叠加而不取代Canonical、首尾帧与End-State。MiniMax H3的实际视频输入则必须按其唯一动作/运镜/编辑用途标注，不替代Canonical、首尾帧与End-State。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
 
 每个Clip投影前必须通过四项硬门槛：
 

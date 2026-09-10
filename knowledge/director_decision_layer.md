@@ -103,19 +103,28 @@ Shot-level Packet在STATE-06形成，并兼容既有`Director Decision Notes`。
 
 Clip-level Packet由STATE-07在现有Clip Contract内投影，把Clip定义为`Dramatic Execution Unit`。它决定哪些相邻Shots必须保持在同一Clip才能完成情绪、关系或信息积累；不能为了技术方便把“怀疑→证据→确认”错误拆断，也不能为了保留情绪而把不兼容的时空、动作或模型负荷强行合并。
 
+### Visual Grammar Baseline And Scene Delta
+
+STATE-04在既有Visual Direction / Project Bible中建立`Visual Grammar Baseline`：这是全片可持续识别的世界规则，而不是一个导演名或“高级、低饱和、电影感”等风格标签。它只归纳会影响后续判断的稳定倾向：摄影/材质质感、可用色谱与强调色出现条件、真实光源逻辑、空间气质、构图与景深倾向、以及摄影机克制或介入的总体边界。它不预写逐Shot技术参数，不把任一参考片的具体审美强加给所有项目，也不新建用户可见Schema。
+
+每个Scene / Shot只携带相对该Baseline的必要`Scene Delta`：此处空间承担的戏剧功能、人物与空间的压力/亲密/秩序关系、当前信息的可见或遮挡方式、以及由锁定故事事实触发的光色、构图或观察变化。全片统一不等于每场采用相同色调、景别、构图或运镜；没有戏剧、空间或信息触发时优先保持Baseline，发生变化时必须说明它服务的观众体验并在结束时落回可读的稳定状态。
+
+色彩的导演功能是“权限”而非默认滤镜：先界定哪些色相/明度/饱和度层级可作为世界常态，再界定强调色只在何种人物状态、剧情事件、空间光源或资产事实下出现。颜色不得凭“好看”新增光源、改写资产固有色或取代Writer锁定的意义。
+
 ## Packet Persistence And Projection
 
 Packet遵守“source data向下传递、阶段owner只写自己的具体化结果”：
 
 1. STATE-00在Project Bible既有项目/故事/制作方向区域保存最小Project Director Baseline；不增加Portable State字段。
 2. STATE-01先把Writer Intent与Production-Locked Directable Screenplay绑定，再由Director把Handoff具体化为Project-level呈现策略与Scene Director Intent source data；两个Packet不互相覆盖。
-3. STATE-02/03只读取资产相关的Dramatic Function、Narrative Priority与Casting / Screen Presence要求，不复制完整Packet。
-4. STATE-04把项目意图翻译为Visual Dramaturgy / Mise-en-scène Direction，写入现有Visual Direction / Project Bible区域。
-5. STATE-05生成Scene-level投影与Scene Camera Strategy，不创建SHOT或具体摄影参数。
+3. STATE-02/03只读取资产相关的Dramatic Function、Narrative Priority、Casting / Screen Presence、Environment Narrative Force、Prop State Evolution与FX的视觉/遮挡/后果功能，不复制完整Packet。
+4. STATE-04把项目意图翻译为Visual Dramaturgy / Mise-en-scène Direction与Visual Grammar Baseline，写入现有Visual Direction / Project Bible区域；各阶段只记录相对此基线有剧情依据的Scene Delta。
+5. STATE-05生成Scene-level投影、Dramatic Geography、Scene Delta与Scene Camera Strategy，不创建SHOT或具体摄影参数。
 6. STATE-06生成Shot-level Director Decision Notes，并让Camera Language / Performance / Blocking / Action PREVIS等能力执行。
 7. STATE-07在现有Clip Detail / Clip Director Direction中形成Clip-level执行合同，不创建新ID或顶级Schema。
 8. STATE-08只读取当前Clip必要的1—3个导演优先级并执行Director-to-Prompt Translation；Packet标题和内部标签不得输出。
 9. Editing与STATE-09读取实际结果和当前有效Packet，不重新导演；如果结果证明上游决定错误，按owner返回。
+10. 条件性Sequence Planning只消费STATE-05已确认的Scene Director Intent、Information Presentation与Rhythm Intent来组织BEAT / Coverage / UNIT，不创建SHOT、Camera参数或平行Director Packet。
 
 ## Task Dominance Router
 
@@ -148,11 +157,11 @@ Screenwriter Module先控制Dramatic Intent、Character Objective、Relationship
 
 ### STATE-04 Visual Development
 
-把Style Development升级为`Visual Dramaturgy / Mise-en-scène Direction`：建立Visual Arc，而不是全片统一色调说明；让色彩、光线、对比、深度、负空间、环境压力、视觉层级、前中后景关系和视觉母题随戏剧推进保持或变化。项目级摄影倾向仍不预定逐Shot参数。
+把Style Development升级为`Visual Dramaturgy / Mise-en-scène Direction`：先建立Visual Grammar Baseline，再建立Visual Arc与有依据的Scene Delta，而不是全片统一色调说明；让色彩、光线、对比、深度、负空间、环境压力、视觉层级、前中后景关系和视觉母题随戏剧推进保持或变化。项目级摄影倾向仍不预定逐Shot参数。
 
 ### STATE-05 Scene Breakdown
 
-先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是补充Performance Beat、Scene / Dramatic Geography、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
+先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是以Visual Grammar Baseline为底补充Performance Beat、Scene / Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
 
 ### STATE-06 Detailed Shot Design
 

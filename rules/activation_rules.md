@@ -18,7 +18,7 @@
 
 ## Fast Automation Activation
 
-用户明确说“开启自动推进”“快速制作模式”“Fast Mode”或同义表达时，在State Source合法解析后读取`rules/automation_mode.md`并启用`Automation Policy: FAST`。该表达不等于剧本锁定、外部生成提交、图片Canonical确认、首次模型选择或Review PASS授权；关闭指令恢复`STANDARD`。
+用户明确说“开启自动推进”“快速制作模式”“Fast Mode”“尽量少确认”“只在关键节点停”或“自动完成可逆步骤”等无歧义表达时，在State Source合法解析后读取`rules/automation_mode.md`并启用`Automation Policy: FAST`。该表达不等于剧本锁定、外部生成提交、图片Canonical确认、首次模型选择或Review PASS授权；关闭指令恢复`STANDARD`。
 
 ## Intent Is Goal, Not Current State
 

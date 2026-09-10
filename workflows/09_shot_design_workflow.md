@@ -885,6 +885,7 @@ FX-001（如适用）
 - 每个SHOT是否先完成Camera Language Decision，且实际读取Selection Matrix、Camera Movement Index与被选主运镜原子文件
 - 镜头目的、情绪功能、空间功能、人物运动和节奏阶段是否与推荐主运镜、辅助支持、禁止运镜、稳定等级和选择理由一致
 - 是否出现没有独特叙事理由的默认“缓慢推进/轻微横移”，或连续SHOT只替换形容词而保持同一运镜模板
+- 相邻SHOT若承担不同的Shot Purpose、Audience Attention、POV / Audience Position、关系 / 信息阶段或节奏功能，是否已通过`knowledge/camera_language/shot_language_router.md`的Adjacent Observation Contrast检查，在景别 / 距离、侧位 / 高度、构图 / 遮挡、Static / Hold或主路径中留下至少一项可见差异；若刻意重复，是否记录连续长镜、压迫累积、关系冻结或信息压住的理由与解除 / 稳定终点
 
 - 景别、机位角度、摄影机物理运动、光学变化、视点和剪辑关系是否分类正确
 - Pan 与 Truck、Tilt 与 Crane、Push/Pull 与 Optical Zoom 是否被混用

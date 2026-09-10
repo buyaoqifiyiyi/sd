@@ -34,7 +34,7 @@
 - 包含 Shot：按 SHOT ID 原顺序逐项列出
 - Execution Mode：`Standard Clip` / `Video Extension` / `Targeted Edit`
 - 目标时长：N秒（Seedance 2.0为4—15秒；Seedance 2.5为4—30秒且16—30秒自动触发内部严格预检；MiniMax H3为4—15秒）
-- Long-duration Preflight：Not Applicable（4—15秒 / 非2.5）/ PASS / FAIL；16—30秒须确认镜头链、空间关系、表演连续性、动作/物理密度及适用转场逻辑均通过；FAIL返回`STATE-07 / 拆分Clip`
+- Long-duration Preflight：Not Applicable（4—15秒 / 非2.5）/ PASS / FAIL；16—30秒须确认镜头链、空间关系、表演连续性、动作/物理密度、阶段间观察层次与适用转场逻辑均通过；多个戏剧阶段若只保留同一摄影机逻辑，必须有连续长镜理由、受保护注意力对象与稳定降级；FAIL返回`STATE-07 / 拆分Clip`
 - Model Profile Preflight：读取唯一Selected Adapter。Seedance 2.5的Video Extension必须有实际上一段成片`REF-VIDEO`作为受控输入，且叠加而不替代首/尾帧、资产锁与End-State；Targeted Edit仅在用户明确要求修改既有视频时可用。2.5多Beat、蒙太奇或复杂连续镜头可登记必要的递进时间戳文本，最终仅进入既有分镜正文。MiniMax H3可使用首/尾帧、全能参考或已有视频编辑；两张首尾帧图禁止自动切镜，视频编辑只写明确CHANGE与PRESERVE，不写未验证时码。
 - 时长核算：SHOT-001=N秒 + SHOT-002=N秒；合计=N秒；平台生成时长=N秒
 - 组织类型：`单Shot` / `多Shot连续生成` / `多Shot有动机剪辑`
@@ -64,11 +64,13 @@
 - Clip Movement Plan：
   - 主导镜头语言与叙事理由：
   - 镜头间运镜变化（按Shot列出主运镜 / Static、变化触发、叙事功能、与前镜关系、终点）：
+  - 阶段间观察层次（按Shot或戏剧阶段列出Audience Attention、景别 / 距离、观察侧位 / 高度、构图 / 遮挡、Static / Hold或主路径的功能变化；不是强制每镜不同）：
+  - 刻意重复的摄影机逻辑（连续长镜 / 压迫累积 / 关系冻结 / 信息压住，或Not Applicable；写受保护注意力对象、解除条件与稳定终点）：
   - 视觉高潮镜头及理由；无独立高潮时写“保持克制”：
   - 最克制镜头及理由：
   - 重复规避（连续同类主运镜扫描；3次以上逐镜理由；超过4个Shot时的运镜逻辑数量与例外理由）：
   - Seedance复杂度控制（逐镜稳定等级、Clip峰值、同时负荷、删辅助 / 降速 / 缩短路径 / 固定机位 / 拆分降级；2.5多镜头能力不放宽复杂多人互动、物理或动作风险降级）：
-  - Clip Camera Continuity / Visual Rhythm（建立 / 隐藏 / 泄漏 / 确认 / 压住 / 释放的功能差异；Movement Trigger / Stop；景别与距离层级；禁止无理由每镜慢推+浅景深）：
+  - Clip Camera Continuity / Visual Rhythm（建立 / 隐藏 / 泄漏 / 确认 / 压住 / 释放的功能差异；Movement Trigger / Stop；景别、距离、观察侧位与构图层级；禁止无理由每镜慢推+浅景深，也禁止多个不同阶段被默认压成同一平视跟拍）：
 - 空间关系：人物A/B左右/前后/高低、分别朝左/朝右与侧身程度、视线目标、距离、行进方向、环境锚点和180度轴线；战斗/双主体/对峙/对话/追逐/相向运动必须写唯一关系轴或主攻击/运动轴
 - 空间连线（适用时）：视线 / 武器 / 攻击 / 追逐路线 / 水流 / 能量 / 抛射物的来源 → 路径 → 目标；必须与人物朝向、喷口/武器方向、屏幕方向和受击位置一致
 - 同框面部与机位限制（适用时）：双方相对时禁止同时完整正脸；优先固定侧面、侧后双人或OTS；有意越轴必须有已建立轴线、可见路径/中性机位、地标与稳定新轴线侧

@@ -33,6 +33,7 @@
 - knowledge/fx/index.md
 - knowledge/fx/physical_effects.md
 - knowledge/fx/fx_continuity.md
+- knowledge/director_decision_layer.md（当前FX的视觉重点、遮挡/Reveal与后果呈现功能）
 - rules/02_asset_rules.md
 - rules/04_consistency_rules.md
 
@@ -42,7 +43,7 @@
 
 ## Step 1: Confirm Effect Function
 
-确认：
+先读取当前Writer Intent中的剧情义务与Director Intent中的视觉呈现边界；随后确认：
 
 - 故事目的
 - 视觉重点
@@ -50,6 +51,8 @@
 - 涉及资产
 - 首次出现与后续复用
 - 是否需要跨镜头保留后果
+
+FX只服务已确认的注意力、遮挡/Reveal、空间压力或结果余韵；不得借FX资产阶段新增Camera、SHOT或未成立的剧情事件。
 
 无法说明作用的纯装饰效果不得自动升级为正式FX Asset。
 
@@ -72,6 +75,8 @@ FX-001
 Trigger → Source → Initial State → Propagation → Interaction → End State → Residue
 
 必须说明运动方向、速度倾向、尺度、覆盖范围和强度变化。
+
+当效果的运动受风、重力、流体、燃料、能量源、碰撞、附着或堆积影响时，记录可见的物理驱动；不为纯静态或无关的效果虚构物理参数。
 
 ---
 
@@ -99,6 +104,8 @@ Trigger → Source → Initial State → Propagation → Interaction → End Sta
 - 允许改变强度或方向的条件
 - 镜头边界的安全结束状态
 - 已知的结束、熄灭、清理或消散原因
+
+若效果跨Shot或Clip持续，使用`knowledge/fx/fx_continuity.md`的FX State Ledger在每个边界记录可继承状态；同时在`templates/13_fx_asset_prompt.md`锁定主视觉参考、允许的状态变体、不可变视觉锚点及变体转换条件。单镜头Inline Effect不建立这些正式记录。
 
 ---
 

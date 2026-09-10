@@ -89,6 +89,14 @@ Formal Keyframe只在确需锁定最终视觉身份、光影、材质、构图�
 
 视觉检查结果必须按`templates/23_visual_blocking_sketch_prompt.md`写Candidate Evidence Record，并实际运行`scripts/validate_sd_film.py sketch`。命令PASS只是注册的必要条件，不替代视觉检查；任何版式项、Blocking Match、泄漏检查或图片可读性失败都不得登记Confirmed。
 
+### Sketch Candidate Output Triage And Cleanup
+
+草图生成或回传后、Candidate Evidence Record和Confirmed注册前，必须逐张核验当前Clip、Blocking Signature、技术版式与预期图数。唯一通过Layout / Blocking / Template Content Leakage / Character Appearance Leakage / 可读性检查的图为`KEEP`；报告`REF-SKETCH` Candidate ID / 文件或受控ID与保留理由。多余、重复、错误Clip、错误Blocking、艺术分镜漂移、外观泄漏、不可读或任何验证失败的图为`DISCARD`：不得显示为可选草图、不得注册Candidate Evidence、Confirmed Visual Anchor、参考资产或图片预算，并报告最短弃用原因。`KEEP / DISCARD / NEEDS_USER_SELECTION`只是当轮分流结论，不新增Visual Anchor State或最终Prompt字段。
+
+若两张以上草图均完全满足同一Blocking Signature且只有不可客观判定的版式偏好差异，标为`NEEDS_USER_SELECTION`并只展示合格项；一旦用户选择，仍必须经完整验证才可注册。若没有`KEEP`项，直接沿Technical Visual Blocking Sketch route重做，不让用户在失败草图中选。
+
+对`DISCARD`的未确认本地临时草图，只有在本次运行拥有且已核验精确路径时才直接删除；保留最小生成记录和失败原因，但从项目引用与预算中移除。外部服务、用户上传或聊天历史图片不能直接删除时，明确说明已从项目引用中移除但原位置仍由用户控制。已Confirmed、用户明确保留或归属不明的草图不得自动删除。该Triage不等于Canonical资产确认，也不影响`REF-SKETCH`只作为当前Clip Blocking Authority的边界。
+
 任一项不通过，草图状态为`FAILED / REVISE`，不得进入当前Clip的Confirmed Visual Anchor。`Artistic Storyboard Drift`必须回到同一Technical Visual Blocking Sketch route按专用模板重做，不得转入Storyboard。若草图与已确认Spatial Snapshot或canonical blocking冲突，修正 / 重做草图；不得反向修改正式空间事实来迁就草图。
 
 Confirmed条目至少解释：

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r33 SD Film validator."""
+"""Regression tests for the r43 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -71,6 +71,64 @@ class R33RegressionTests(unittest.TestCase):
         self.assertNotIn("先形成 Natural Unit，再输出", selection)
         self.assertIn("唯一决策 owner", workflow)
 
+    def test_director_mapping_reaches_fx_sequence_clip_and_prompt(self) -> None:
+        director = (ROOT / "modules/director.md").read_text(encoding="utf-8-sig")
+        fx = (ROOT / "workflows/15_fx_asset_workflow.md").read_text(encoding="utf-8-sig")
+        sequence = (ROOT / "workflows/16_sequence_planning_workflow.md").read_text(encoding="utf-8-sig")
+        clip = (ROOT / "workflows/10_clip_production_workflow.md").read_text(encoding="utf-8-sig")
+        prompt = (ROOT / "workflows/11_video_generation_workflow.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("STATE-00 Project Director Baseline", director)
+        self.assertIn("STATE-08 Director-to-Prompt Translation", director)
+        self.assertIn("当前FX的视觉重点、遮挡/Reveal与后果呈现功能", fx)
+        self.assertIn("已确认Scene Director Intent、Information Presentation与Rhythm Intent", sequence)
+        self.assertIn("当前Natural Unit覆盖的Director Decision Notes与Clip-level投影", clip)
+        self.assertIn("当前Clip的1—3个已确认导演优先级", prompt)
+        self.assertIn("R23-K Cross-stage Director Consumption", scenarios)
+
+    def test_multistage_clip_cannot_default_to_flat_following(self) -> None:
+        router = (ROOT / "knowledge/camera_language/shot_language_router.md").read_text(encoding="utf-8-sig")
+        plan = (ROOT / "templates/20_clip_plan.md").read_text(encoding="utf-8-sig")
+        projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
+        review = (ROOT / "workflows/13_review_workflow.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Adjacent Observation Contrast And Deliberate Repetition", router)
+        self.assertIn("阶段间观察层次", plan)
+        self.assertIn("只保留同一摄影机逻辑", plan)
+        self.assertIn("同一台摄影机自然跟随 / 保持前进方向 / 轻微推进", projection)
+        self.assertIn("多阶段Clip的实际成片是否保留Clip Movement Plan中的观察层次", review)
+        self.assertIn("R23-L Multi-stage Clip", scenarios)
+
+    def test_visual_grammar_baseline_keeps_scene_delta_directable(self) -> None:
+        director = (ROOT / "knowledge/director_decision_layer.md").read_text(encoding="utf-8-sig")
+        visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+        scene = (ROOT / "workflows/08_scene_breakdown_workflow.md").read_text(encoding="utf-8-sig")
+        review = (ROOT / "workflows/13_review_workflow.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Visual Grammar Baseline And Scene Delta", director)
+        self.assertIn("色彩的导演功能是“权限”而非默认滤镜", director)
+        self.assertIn("Visual Grammar Baseline", visual)
+        self.assertIn("当前空间的戏剧功能", scene)
+        self.assertIn("Baseline漂移返回STATE-04", review)
+        self.assertIn("R23-M Visual Grammar", scenarios)
+
+    def test_project_color_reference_is_conditional_and_non_asset(self) -> None:
+        styles = (ROOT / "knowledge/visual_styles/index.md").read_text(encoding="utf-8-sig")
+        visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+        asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/12_seedance_25_video_prompt.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Project Color Reference Route", styles)
+        self.assertIn("不会获得资产ID", styles)
+        self.assertIn("Project Color Reference Route", visual)
+        self.assertIn("Project Color Reference`；它是非资产项目视觉参考", asset_rules)
+        self.assertIn("Project Color Reference（非资产）", projection)
+        self.assertIn("唯一Primary Role只能是综合色相 / 明度 / 饱和度 / 强调色占比", template)
+        self.assertIn("R23-N Project Color Reference", scenarios)
+        self.assertIn("Project Color Reference`进入视觉开发", guide)
+
     def test_asset_image_model_selection_has_no_default_and_isolates_templates(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
         selection = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
@@ -108,6 +166,28 @@ class R33RegressionTests(unittest.TestCase):
         for relative in category_templates:
             with self.subTest(template=relative):
                 self.assertIn("Image Prompt Output Template", (ROOT / relative).read_text(encoding="utf-8-sig"))
+
+    def test_formal_fx_template_tracks_physical_drivers_variants_and_boundaries(self) -> None:
+        template = (ROOT / "templates/13_fx_asset_prompt.md").read_text(encoding="utf-8-sig")
+        workflow = (ROOT / "workflows/15_fx_asset_workflow.md").read_text(encoding="utf-8-sig")
+        for marker in (
+            "## Reference Assets And Visual Variant Policy",
+            "Primary Visual Reference:",
+            "Allowed State Variants:",
+            "Immutable Visual Anchors:",
+            "Variant Transition Conditions:",
+            "### Physical Drivers",
+            "Wind / Gravity / Flow:",
+            "Emitter / Fuel / Power Condition:",
+            "Collision / Adhesion / Accumulation:",
+            "## FX State Ledger",
+            "Boundary (Shot / Clip / Frame):",
+            "Affected Asset State:",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, template)
+        self.assertIn("记录可见的物理驱动", workflow)
+        self.assertIn("FX State Ledger在每个边界记录可继承状态", workflow)
 
     def test_builtin_image_requires_selection_and_actual_generation_capability(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
@@ -212,6 +292,9 @@ class R33RegressionTests(unittest.TestCase):
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
         metadata = (ROOT / "agents/openai.yaml").read_text(encoding="utf-8-sig")
         self.assertIn("name: sd-film", skill)
+        for alias in ("调用sd", "调用SD", "用SD Film", "重新调用sd", "恢复旧项目", "继续之前的项目"):
+            with self.subTest(alias=alias):
+                self.assertIn(alias, skill)
         self.assertIn("$sd-film", guide)
         self.assertIn("@`选择器只显示Plugin", guide)
         self.assertIn("allow_implicit_invocation: true", metadata)
@@ -226,6 +309,59 @@ class R33RegressionTests(unittest.TestCase):
         self.assertIn("Candidate Image", automation)
         self.assertIn("图片与Production Script Proposal不在替代范围内", completion)
         self.assertIn("FAST不得替代该图片确认", asset_lock)
+
+    def test_fast_mode_runs_a_continuous_reversible_chain_but_keeps_hard_stops(self) -> None:
+        automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
+        progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
+        activation = (ROOT / "rules/activation_rules.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        for text in (automation, activation, guide):
+            with self.subTest(text=text[:32]):
+                self.assertIn("尽量少确认", text)
+        self.assertIn("## FAST Continuous Chain", automation)
+        self.assertIn("STATE-04 → STATE-05 → STATE-06 → STATE-07 → STATE-08", automation)
+        self.assertIn("完整视频Prompt", automation)
+        self.assertIn("外部生成包", automation)
+        self.assertIn("FAST Continuous Chain", progression)
+        self.assertIn("`STANDARD`本轮停在草图", progression)
+        self.assertIn("`FAST`在草图验证、注册和用途说明后同轮编译", progression)
+        self.assertIn("R30-B FAST Carries Verified Internal Work Through Prompt Delivery", scenarios)
+        self.assertIn("R30-C FAST Stops At Non-Reversible Boundaries", scenarios)
+
+    def test_candidate_triage_keeps_one_valid_output_and_only_deletes_safe_temporary_files(self) -> None:
+        asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        sketch = (ROOT / "knowledge/clip_preflight_check.md").read_text(encoding="utf-8-sig")
+        automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        for text in (asset_rules, sketch):
+            with self.subTest(text=text[:32]):
+                self.assertIn("NEEDS_USER_SELECTION", text)
+                self.assertIn("已核验精确路径", text)
+                self.assertIn("不得自动删除", text)
+        self.assertIn("Candidate Output Triage / Cleanup", automation)
+        self.assertIn("保留的Candidate ID", guide)
+        self.assertIn("R31-A Asset Run Keeps One Valid Candidate And Removes Extras", scenarios)
+        self.assertIn("R31-C Sketch Failure Is Removed Before Registration", scenarios)
+
+    def test_unified_delivery_packages_preserve_stages_templates_and_hard_stops(self) -> None:
+        automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
+        progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        for text in (automation, guide):
+            with self.subTest(text=text[:32]):
+                self.assertIn("Preproduction Package", text)
+                self.assertIn("Execution Package", text)
+                self.assertIn("Asset Candidate Package", text)
+        self.assertIn("不替代任何未展示Artifact的确认", automation)
+        self.assertIn("原有完整Template", automation)
+        self.assertIn("立即截断包", automation)
+        self.assertIn("Unified Delivery Packages", progression)
+        self.assertIn("R32-A FAST Aggregates Preproduction And Execution", scenarios)
+        self.assertIn("R32-B Hard Stop Truncates The Package", scenarios)
+        self.assertIn("R32-C Standard Mode Aggregates Only Already-Legal Results", scenarios)
 
     def test_advance_synonyms_confirm_the_current_explicit_checkpoint(self) -> None:
         progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")

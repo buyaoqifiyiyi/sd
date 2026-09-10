@@ -273,6 +273,14 @@ templates/10_video_prompt.md
 
 参考片、参考截图或解析笔记默认只是风格研究来源，不自动成为 STATE-08 的视频输入参考资产；只有通过现有资产确认、Visual Input Eligibility与Reference Budget规则的实际图像，才可按其真实用途进入`参考资产：`。
 
+### Project Color Reference Route
+
+用户提供的色卡可以作为`Project Color Reference`进入STATE-04，但它不是CHAR / ENV / PROP / FX、不是Canonical Asset、不会获得资产ID、也不具有角色外观、环境结构、道具造型、人物调度、构图、光源或最终画风权威。它只作为一张可回查的项目级视觉参考，帮助建立既有Color System中的综合色相、明度/饱和度层级、冷暖关系与强调色占比/出现条件。
+
+若色卡是可访问的真实图片，且用户已确认其应服务当前项目的Visual Grammar Baseline，STATE-07可以仅在当前Clip存在综合色彩/光线漂移风险、且没有更具体的已确认场景状态参考时，将它列为受控的实际模型图片输入；在既有模型参考字段中标注`Project Color Reference（非资产）`、真实来源、唯一Primary Role和“仅控制综合色相/明度/饱和度/强调色占比”。它照常计入当前模型的Reference Budget。色卡不得因为预算有空位而默认进入每个Clip，也不得替代或覆盖Canonical资产、首尾帧、Confirmed REF-SKETCH或文字化的当前Scene Delta。
+
+若用户只提供Hex、自然语言色彩要求或无法访问的色卡，仍可写入Color System和Visual Grammar Baseline，但没有图片输入资格；不得伪造`Project Color Reference`、上传状态或模型已使用该图。用户尚未确认色卡服务本项目时，它只作为Candidate视觉研究证据，不能锁定Baseline或进入STATE-07/08。
+
 ### 1. Story Function
 
 明确本次风格选择服务什么剧情功能。不能只回答“更电影化”。

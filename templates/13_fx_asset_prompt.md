@@ -48,7 +48,17 @@ Candidate References:
 
 Image Confirmation:
 
+## Reference Assets And Visual Variant Policy
+
 Reference Assets:
+
+Primary Visual Reference:
+
+Allowed State Variants:
+
+Immutable Visual Anchors:
+
+Variant Transition Conditions:
 
 ---
 
@@ -73,6 +83,14 @@ Scale And Coverage:
 Intensity Shape:
 
 Material Behavior:
+
+### Physical Drivers
+
+Wind / Gravity / Flow:
+
+Emitter / Fuel / Power Condition:
+
+Collision / Adhesion / Accumulation:
 
 End State:
 
@@ -107,6 +125,30 @@ Irreversible Consequences:
 Safe End Boundary:
 
 Known Termination / Cleanup:
+
+## FX State Ledger
+
+仅当效果需要跨Shot或Clip继承时，为每个镜头边界记录；单镜头Inline Effect不填此表。
+
+Boundary (Shot / Clip / Frame):
+
+Active State:
+
+Intensity:
+
+Direction:
+
+Coverage Area:
+
+Source Condition:
+
+Residue:
+
+Affected Asset State:
+
+Lighting Impact:
+
+Sound Tail:
 
 ---
 
