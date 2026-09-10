@@ -2,13 +2,14 @@
 
 ## Contract
 
-位置：STATE-03中，当前资产批次的资产定义已可读、任何新Image Prompt编译之前。它不创建主STATE，也不属于STATE-06后的`modules/model-selection.md`视频模型选择。
+位置：STATE-00确认项目图像模型默认项；STATE-03中，当前资产批次的资产定义已可读、任何新Image Prompt编译之前，直接继承该默认项或处理明确例外。它不创建主STATE，也不属于视频模型选择。
 
 ### Trigger
 
-1. 当前资产批次需要新建或重编Image Prompt，且`Image Model Selection Status: UNSELECTED`。
-2. 用户已在当前资产请求中明确指定图像模型时，直接将该指定作为唯一候选，展示选择Proposal供确认；不得再次询问同一选择。
-3. 同一批次已`SELECTED`且模型、Prompt Template和Scope均匹配时复用，不重复询问。
+1. STATE-00新项目初始化：必须提出一次`Project Model Selection Proposal`，其中含项目图像模型默认项与视频模型偏好；用户已指定图像模型时直接作为唯一候选，展示后等待确认。
+2. 当前资产批次需要新建或重编Image Prompt且有已确认`Project Image Model Default`时，自动继承为该批次的`Selected Image Model`、Adapter、Template与Delivery Route，不再逐批询问。
+3. 仅在默认项为`UNSELECTED`（旧项目迁移）、用户明确指定当前批次例外模型、默认Adapter不可用或当前批次已被明确要求更换时，展示一次当前批次选择Proposal。
+4. 同一批次已`SELECTED`且模型、Prompt Template和Scope均匹配时复用，不重复询问。
 
 已有外部图片走Existing Asset Fast Path时不触发；用户只要求资产诊断、不生成或不重编Prompt时不触发。
 
@@ -40,7 +41,7 @@
 
 用户明确说“用Midjourney / 用内置Image”等选择后，或当前请求已指定模型时，Proposal只有该一个`Proposed Image Model`。在这个已经展示的单一Proposal检查点，`下一步`、`下一个`、`继续`及等义推进表达按`rules/progression_rules.md`确认该选择；在`UNSELECTED`状态下，纯推进表达不凭空选模型，必须要求用户指定一个可用模型。
 
-确认后写入State Contract的`Selected Image Model`、`Image Adapter Profile`、`Image Prompt Output Template`、`Image Model Selection Status: SELECTED`和Scope，然后才可调用对应资产Workflow的Prompt Generation。
+STATE-00确认后写入State Contract的`Project Image Model Default`与选择状态；STATE-03继承时再写当前批次的`Selected Image Model`、`Image Adapter Profile`、`Image Prompt Output Template`、`Image Model Selection Status: SELECTED`和Scope，然后才可调用对应资产Workflow的Prompt Generation。项目默认项不是图片/资产确认，也不授权外部提交。
 
 ### Change And Return Route
 
@@ -51,6 +52,6 @@
 
 ### Ownership And Invariants
 
-本Module只拥有图像模型选择、Adapter / Template路由和选择写回；资产定义、Prompt / Image确认、Candidate、Canonical和Registry仍分别由资产Workflow、`rules/02_asset_rules.md`、资产类别Template与`references/asset_lock_contract.md`拥有。
+本Module只拥有项目图像默认项、当前批次例外选择、Adapter / Template路由和选择写回；资产定义、Prompt / Image确认、Candidate、Canonical和Registry仍分别由资产Workflow、`rules/02_asset_rules.md`、资产类别Template与`references/asset_lock_contract.md`拥有。
 
 允许写入：State Contract中的Image Model Selection字段和当前Asset Prompt Package的Target / Template / Delivery记录。禁止写入视频Model Lock、Clip、视频Prompt或主STATE。每个`SELECTED`模型必须有唯一、存在且匹配Adapter声明的最终提示词模板。

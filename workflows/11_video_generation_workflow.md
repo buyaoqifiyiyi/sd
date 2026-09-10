@@ -18,7 +18,7 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 ## Procedure
 
 1. 核验 Execution Clip Plan、Adapter Profile、状态、资产、Shot/Blocking Revision，以及当前Clip Director Intent / Director Decision Notes一致；缺失或冲突回 STATE-07 或相应事实 owner。
-2. 对当前一个 Confirmed Execution Clip 执行最终 Reference、A/B/C 尾帧、Visual Blocking Anchor、连续性和 Prompt Preflight。Spatial Lock环境只使用STATE-07按风险预选并仍为Active/Confirmed的2–4张环境View；不得把Storyboard、STATE-06 Top-down Planning Map或文字Spatial Truth作为视频参考。`Automation Policy: FAST`下，Final Assessment=`REQUIRED`的`REF-SKETCH`验证并登记后可在同一轮继续当前Clip编译；STANDARD仍保留草图Checkpoint，任何失败照常返回最小owner。
+2. 对当前一个Confirmed Execution Clip执行最终Reference、A/B/C尾帧、Visual Blocking Anchor、连续性和Prompt Preflight，并在Template投影前完成`Required Sketch Submission Binding`。Spatial Lock环境只使用STATE-07按风险预选并仍为Active/Confirmed的2–4张环境View；不得把Storyboard、STATE-06 Top-down Planning Map或文字Spatial Truth作为视频参考。Final=`REQUIRED`时，草图必须是实际可访问输入并按Adapter占用真实图片位：2.0使用现有参考资产中的真实文件/受控ID，2.5与H3 All-Reference使用`@图片N`；H3其他模式必须先回STATE-07改Execution Mode或模型。`Automation Policy: FAST`下，验证、登记和输入绑定PASS后可在同一轮继续当前Clip编译；STANDARD仍保留草图Checkpoint，任何失败照常返回最小owner。
 3. 通过 Projection 写入Selected Model的唯一最终Template。每个 Clip 独立完整输出；不输出 Adapter 或内部账本。Seedance 2.5使用独立多模态时间线模板，默认按30图 / 10视频 / 10音频 / 合计50项能力上限审计，按需少用但不回退为9图模板；时间线按当前Clip写必要阶段。H3使用独立官方三段式模板；2.0保留自己的固定Template。未来模型没有独立Template时不得编译最终Prompt。
 4. 不改写剧情、关系、导演意图、Shot 目的、Blocking 或 Canonical Asset。Voice 仅显式 opt-in；Prompt 永久禁止 BGM/配乐。
 

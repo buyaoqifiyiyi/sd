@@ -65,7 +65,7 @@
 3. 逐项回答`这是不是一张实际会被投喂/引用的视觉资产？`。答案为否的纯文字规则立即移出候选并记录迁移字段；不得继续参与去重、优先级或计数。如果对象已有真实视觉资产，改用正式ID与真实文件/受控ID。
 4. 删除非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前世界状态不适用的资产及其他无关项。
 5. 去除同一文件重复引用与不增加信息的重复资产；不得把语义不同的核心角色图误判为重复。
-6. 读取Preflight中的Visual Anchor State、A/B/C与`Tail Frame Required = YES / NO`。Final=`REQUIRED`且当前Confirmed `REF-SKETCH-XX`通过Signature与Template Content Leakage比较时，将实际草图计入当前Clip图片位并锁定其用途 / Authority；`REF-SKETCH-MASTER`始终为0个视频图片位。Final=`NONE`不预留草图位；普通Prompt Rewrite复用既有草图，不重复计数或生成；REPLACE / RETIRE / CREATE后以当前Active Anchor重新计算。A/B为上一Clip尾帧预留1个Projected位，并在【参考资产】直接列出统一`REF-TAIL`名称：A标“同镜头连续承接用途”，B标“空间/站位/景别参考用途”。实际存在、可访问且已确认时记录真实引用并计入已提交图片；未提供时写“待用户提供/待上传、未确认”，主动提示用户截取并添加，不计入已提交图片数但仍计入Projected Final Count。C不得加入或预留旧尾帧。统计`Projected Final Count`。
+6. 读取Preflight中的Visual Anchor State、A/B/C与`Tail Frame Required = YES / NO`。Final=`REQUIRED`且当前Confirmed `REF-SKETCH-XX`通过Signature与Template Content Leakage比较时，只有真实图片文件/受控ID可访问且当前Adapter允许提交，才将草图计入当前Clip图片位并锁定其用途 / Authority：Seedance 2.0在现有参考资产中作为实际图片输入，Seedance 2.5作为真实`@图片N`，MiniMax H3只在All-Reference作为真实`@图片N`。任一条件不成立即Submission Compatibility=`FAIL`，不得把名字占位当作实际输入或输出输入就绪Prompt；`REF-SKETCH-MASTER`始终为0个视频图片位。Final=`NONE`不预留草图位；普通Prompt Rewrite复用既有草图，不重复计数或生成；REPLACE / RETIRE / CREATE后以当前Active Anchor重新计算。A/B为上一Clip尾帧预留1个Projected位，并在【参考资产】直接列出统一`REF-TAIL`名称：A标“同镜头连续承接用途”，B标“空间/站位/景别参考用途”。实际存在、可访问且已确认时记录真实引用并计入已提交图片；未提供时写“待用户提供/待上传、未确认”，主动提示用户截取并添加，不计入已提交图片数但仍计入Projected Final Count。C不得加入或预留旧尾帧。统计`Projected Final Count`。
 7. 若最终需求不超过当前有效图片上限，直接使用独立资产，不执行整合；默认9图预算中仅 8/9 张时完成预留与连续性复核。
 8. 若最终需求超过当前有效图片上限，只对同类非角色信息执行整合。优先选择已经存在且已确认、能完整覆盖对应零散图的总图；新总图必须先完成资产确认闭环。
 9. 再次计数；仍超限时按优先级从低到高裁剪，记录删除项、理由与由何种文字/已保留资产承接信息。

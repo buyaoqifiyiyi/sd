@@ -66,7 +66,7 @@ Confirmed Status：No / Yes
 
 # Required Output
 
-任何道具Prompt Draft前，必须由`modules/image-model-selection.md`确认当前资产批次的`Selected Image Model`。未选择时只输出Image Model Selection Proposal，不输出道具Prompt或Candidate Image；选择Built-in Image也不跳过Prompt确认。图片确认仍不可跳过。
+任何道具Prompt Draft前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出道具Prompt或Candidate Image；选择Built-in Image也不跳过Prompt确认。图片确认仍不可跳过。
 
 ## Phased Output Contract
 

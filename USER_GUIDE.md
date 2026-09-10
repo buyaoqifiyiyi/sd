@@ -44,9 +44,9 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 ### 资产创作的图像模型
 
-STATE-03制作新资产或重编图片提示词前，会先让你选择当前资产批次的图像模型；不会默认使用内置 Image。当前可选`Built-in Image`或`Midjourney`。你在请求中直接写“用Midjourney”或“用内置Image”时，系统会展示该单一选择供确认；在这个检查点说“下一步”、`继续`等即可确认。未选择模型时，“下一步”不会替你猜选模型。
+项目启动时，系统会把图像模型默认项与视频模型偏好放在同一个选择里；不会默认使用内置Image或默认某个视频模型。当前图像可选`Built-in Image`或`Midjourney`，视频可选`Seedance 2.0`、`Seedance 2.5`或`MiniMax H3`。你在请求中直接写“资产用Midjourney，视频用Seedance 2.5”时，系统只展示这一组候选；在这个检查点说“下一步”、`继续`等即可确认。未选择模型时，“下一步”不会替你猜选模型。
 
-选择`Midjourney`时，系统会改用Midjourney专属最终提示词模板，输出可直接粘贴的英文提示词；不调用内置 Image，也不把提示词当作已生成图片。你在Midjourney生成后把结果回传，系统才继续候选图确认与资产锁定。选择`Built-in Image`时，也会使用它自己的专属模板；当前环境实际可生成才生成Candidate，否则只交付Prompt。这项选择只影响资产创作，不影响后续Seedance视频模型或Clip时长。
+选择`Midjourney`时，系统会改用Midjourney专属最终提示词模板，输出可直接粘贴的英文提示词；不调用内置Image，也不把提示词当作已生成图片。你在Midjourney生成后把结果回传，系统才继续候选图确认与资产锁定。选择`Built-in Image`时，也会使用它自己的专属模板；当前环境实际可生成才生成Candidate，否则只交付Prompt。这个图像选择会作为后续资产批次的默认项，不再每批重复问；你明确要求例外模型、模型不可用或主动改模型时才重新确认。
 
 明确指定其他外部图像模型时，系统不会静默改用内置 Image；只有已验证Adapter和专属最终提示词模板同时存在时才会加入图像模型选择，没有时提供不假设平台能力的自然语言资产提示词。每个新模型都将独立建模板，不会混用Built-in Image、Midjourney或视频模型规则。若要编辑已有图，请同时提供该图并明确“只改什么、其余保持什么”；结果回传后仍需经过候选图确认。
 
@@ -77,7 +77,7 @@ STATE-03制作新资产或重编图片提示词前，会先让你选择当前资
 | 配乐 | `调用sd，为整条片子规划配乐与留白，并输出需要的SeedMusic纯音乐提示词。` | MUSIC / SEED-MUSIC 可选模块 |
 | 专业分镜 | `调用sd，根据已确认场景和资产制作Professional Detailed Shot Script。` | STATE-06 Detailed Shot Design |
 | Storyboard | `调用sd，根据已确认Detailed Shot Design制作Storyboard。` | Optional Storyboard |
-| Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为Clip；如未锁定模型，在整合前询问我选Seedance 2.0、Seedance 2.5或MiniMax H3。` | STATE-07 Clip Production |
+| Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为Clip；沿用项目启动时选择的视频模型，并按当前Clip能力复核。` | STATE-07 Clip Production |
 | MiniMax H3 Clip | `调用sd，使用MiniMax H3组织已确认Shot为Clip并输出CLIP-003视频提示词。` | STATE-07 → STATE-08；H3为4—15秒，支持首/尾帧、全能多模态参考、已有视频编辑、分镜/切镜、明确对白与口型；按官方三段式提示词编译 |
 | Dreamina长视频 | `调用sd，使用Dreamina网页端为已确认项目准备180秒长视频提交包。` | Seedance 2.5 / Dreamina Web；仅网页端能力，不改写方舟API的4—30秒路线 |
 | Dreamina标注编辑 | `调用sd，使用Dreamina网页端编辑这段视频；在我标注的区域与时间点把X改成Y，其余保持。` | Seedance 2.5 / Dreamina Web；须提供原视频、标注与时间点 |
@@ -104,12 +104,12 @@ STATE-03制作新资产或重编图片提示词前，会先让你选择当前资
 5. 每类视觉资产先给生图 Prompt，等你确认；生成候选图后再停一次，等你确认图片。
 6. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
 7. 你可以上传色卡并明确“将此色卡作为项目色彩基线”。它会作为`Project Color Reference`进入视觉开发，而不是角色、环境、道具或效果资产；只有真实图片已可访问、你已确认采用、且某个Clip确有光色漂移风险时，才会作为该Clip的受控模型图片输入。
-8. STATE-06完成后、Clip整合前，如当前批次尚未锁定目标模型，系统只询问一次选择`Seedance 2.0`、`Seedance 2.5`或`MiniMax H3`；选择会自动路由到对应的内部提示词编译模板，写入内部执行Profile与Clip Plan，不进入最终视频Prompt。你不需要另选模板；已锁定不重复问。MiniMax H3的全能参考最多9图、3视频、3音频且总计12个文件；每个实际投喂素材必须在提示词中写明`@图片N / @视频N / @音频N`与用途。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
+8. 图像模型默认项与视频模型偏好在项目启动时只确认一次；STATE-03直接继承图像默认项，STATE-06/07按当前Clip时长、首尾帧、编辑模式和参考输入能力复核视频偏好。能兼容时不重复问；不兼容时才给最小替代选择，不会用模型能力偷偷改导演设计。选择会自动路由到对应内部提示词编译模板，写入内部执行Profile与Clip Plan，不进入最终视频Prompt。MiniMax H3的全能参考最多9图、3视频、3音频且总计12个文件；每个实际投喂素材必须在提示词中写明`@图片N / @视频N / @音频N`与用途。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
 9. Seedance 2.0为4—15秒。Seedance 2.5为4—30秒：实际生成秒数由你在该窗口内选择；4—15秒沿用稳定`Standard Clip`，16—30秒由目标时长自动进入内部严格预检，不要求你额外选择`Long-form Clip`。未知网关状态不会自动限制为15秒；若实际提交被平台拒绝，系统才返回Clip规划做最小调整。2.5现在使用独立的多模态时间线Prompt模板，默认按30图、10视频、10音频、合计50项（视频/音频各自总时长≤30秒）的能力上限规划；它会按当前Clip实际需要少用，但不再人为回退成9图上限。每项参考仍必须有唯一用途。纯音频驱动动作、口型或节奏也必须由你明确指定。2.5最终Prompt拥有独立`主风格：`字段；MiniMax H3保持官方三段式，但其`核心创意：`第一行固定为`主风格：`，两者都会把项目风格含义与最小充分的可见载体写在剧情前。
 10. 只有你明确说“使用Dreamina网页端”时，系统才会按该入口准备30—180秒一键长视频、标注编辑、绿幕、双视频转场或多格分镜的提交方案；这些不会被误报为方舟/API默认能力。
 11. 标准模式下，Clip Plan、分镜或其他需要确认的生产成果仍会在可核对的当前版本展示后才标为Confirmed；快速模式会在现有QA和状态写回通过后自动接受Detailed Shot与Clip Plan。
 12. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
-13. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，标准模式会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；快速模式则在验证和登记后同轮输出Prompt。简单Clip不会为了统一流程强制出草图。
+13. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，标准模式会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；快速模式则在验证、登记并确认真实输入已绑定后同轮输出Prompt。草图不是“文字里提一下”：Seedance 2.0必须绑定实际文件/受控ID，Seedance 2.5必须是实际`@图片N`，MiniMax H3必须在All-Reference模式作为实际`@图片N`。图片不可访问、签名不匹配、预算无位或H3处于首尾帧/视频编辑模式时，系统会明确说生成包未就绪并返回最小修复路径，绝不声称草图已被使用。简单Clip不会为了统一流程强制出草图。
 14. Review同时区分Technical Review与Director's Cut Review，并在兼容的`PASS / REVISE / REBUILD`外给出`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。技术正确但信息或情绪提前暴露仍会返修；修复后必须重新Review。
 15. Review或失败复盘后，系统可以自动提出跨项目技能经验候选；候选不会自动写入Skill。只有你明确确认后才入库，并在适用条件满足时影响后续产出或形成项目迭代建议。经验不能直接覆盖已确认剧情、资产、镜头、Clip或Prompt，项目修改仍经过对应流程与确认。
 

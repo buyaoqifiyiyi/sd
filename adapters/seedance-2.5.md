@@ -8,6 +8,7 @@ timeline: { supported: timestamp_text_control, default: omit, use_when: multi_be
 reference_assets: { minimal_sufficient: true, default_capacity_limit: { combined: 50, images: 30, videos: 10, audio: 10, video_total_seconds: 30, audio_total_seconds: 30 }, actual_submission_limit: verified_gateway_or_surface_limit }
 audio: { explicit_only: true, pure_audio_driver: supported, requires: confirmed_audio_source_and_explicit_motion_or_lipsync_scope }
 reference_audit: { every_submitted_input_requires: unique_primary_role, no_role: exclude_from_submission }
+visual_blocking_sketch: { supported: true, submission: actual_image_at_picture_n, authority: [position, facing, distance, topology, axis, camera, pose, gaze, action_path] }
 continuous_take: { supported: true, requires: long_duration_preflight_for_16_to_30_seconds }
 ```
 
@@ -18,6 +19,8 @@ Timeline 是能力而非固定字段：单动作、简单一镜到底默认省�
 Seedance 2.5默认以能力上限规划参考容量：30图、10视频、10音频，合计不超过50；视频和音频各自总时长不超过30秒。最小充分原则只决定实际提交多少，不再把2.5人为回退为9图上限；实际入口/网关更低时才按已验证限制收缩。每项实际输入均须有唯一Primary Role。纯音频驱动只在用户明确要求用该音频控制当前Clip的动作、口型或节奏、且音源可用时启用；它不改变Voice opt-in和视频Prompt永久无BGM规则。
 
 Targeted Edit 与 Video Extension 仍须有用户明确请求和有效输入。Dreamina Web专有的30—180秒一键长视频、标注编辑、绿幕、双视频无缝转场和多格分镜，只有用户明确指定Dreamina网页端且该入口可用时才可作为外部提交方案；不得将它们写成方舟/API能力或默认进入常规Clip。
+
+当Final Assessment=`REQUIRED`时，Confirmed `REF-SKETCH`必须以真实可访问图像作为`@图片N`提交，计入图片与合计预算；它不是只在文本中提及的Clay Render标签。输入不可实际提交、Signature不匹配或当前入口没有剩余图像位即FAIL / Return Route。它仅控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不能覆盖Canonical角色、环境、道具、材质、光色或最终画风。
 
 ## Dreamina Web Surface（显式入口限定）
 

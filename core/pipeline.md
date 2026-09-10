@@ -10,7 +10,7 @@ Storyboard、Audio、Music、Sequence、Poster、Editing 与 Series 是按需辅
 
 - STATE-01：Screenwriter 产生并锁定故事事实与 WRITER INTENT PACKET。
 - STATE-04—06：Director 将锁定事实转成视觉叙事、空间调度及正式 Shot，不根据视频模型重写创作意图。
-- STATE-06 后：Model Selection 选择唯一 Adapter；只取得执行能力，不改写创作事实。
+- STATE-00：一次确认项目图像模型默认项与视频模型偏好；STATE-03继承图像默认项，STATE-06后仅按当前Clip能力复核视频偏好并选择唯一Adapter。两者只取得执行能力，不改写创作事实。
 - STATE-07：先形成 Natural Unit，再按选定模型将其整合为 Execution Clip、边界、连续性、参考预算和目标时长。
 - STATE-08：以确认的 Execution Clip 编译最终 Prompt；Adapter 仅适配执行，不改写上游事实。
 - STATE-09：仅 PASS 完成；REVISE / REBUILD 返回最小受影响 owner。

@@ -87,7 +87,7 @@
 
 固定字段必须完整，但同一约束不得因此在多个字段全文复述。Template Mapping前先执行`knowledge/prompt_compilation/state08_projection.md`的Field Ownership Assignment / State Once Gate；每条约束只有一个权威字段，其他位置只在真实状态变化、边界接口或局部物理连续性高风险时写最短Delta。
 
-- `参考资产：`拥有实际输入Source、Canonical身份、Reference Authority与用途；当前Clip的Confirmed `REF-SKETCH-XX`可在Final Visual Blocking Assessment=`REQUIRED`时以受限Clip Blocking / Visual Blocking Authority锁定Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path。列入时只需用一句`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`说明代理边界，人物外观仍服从正式Character Asset；不要把完整中性人偶QA或负面词清单复制进Prompt。`REF-SKETCH-MASTER`只服务草图生成，默认禁止进入本字段。本字段不拥有纯文字临时站位、动作次数、道具接触、行为限制或禁止项全文。
+- `参考资产：`拥有实际输入Source、Canonical身份、Reference Authority与用途；当前Clip的Confirmed `REF-SKETCH-XX`在Final Visual Blocking Assessment=`REQUIRED`时必须写成`REF-SKETCH-XX｜<真实文件或受控ID>｜实际提交图片输入`，并计入9张视觉参考预算，以受限Clip Blocking / Visual Blocking Authority锁定Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path。列入时只需用一句`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`说明代理边界，人物外观仍服从正式Character Asset；不要把完整中性人偶QA或负面词清单复制进Prompt。若真实输入不可访问、Signature不匹配或预算无位，Prompt Pending而非声称已提交。`REF-SKETCH-MASTER`只服务草图生成，默认禁止进入本字段。本字段不拥有纯文字临时站位、动作次数、道具接触、行为限制或禁止项全文。
 - `首帧参考：`拥有当前Clip第一帧的构图、人物位置/姿态、道具瞬时状态、动作阶段与A/B/C承接；首镜`起始状态：`只写镜头执行所需的来源与最短继承。
 - `尾帧限制：`拥有当前Clip最终稳定状态与下一Clip carryover；末镜`镜头结尾状态：`只写本镜如何形成该Endpoint及其Boundary Class。
 - `人物一致性：`拥有长期人物身份；不拥有本Clip临时左右、坐/站、共用物体、动作次数、是否接触/拾取道具等blocking。
@@ -121,7 +121,7 @@
 
 默认提交给视频模型的图片参考每Clip稳定预算为9张，并按`knowledge/reference_budget.md`执行条件性整合。Seedance 2.5只有在Clip Plan登记明确多模态控制目标、每项输入有唯一Primary Role、且当前入口/网关确认扩展能力时，才可将图片上限扩至`min(30, 网关上限)`；同时视频≤10、音频≤10、视频和音频各自总时长≤30秒、所有类型合计≤50。否则继续使用9张稳定预算。先删除非当前Clip出场角色、未使用环境/道具/动作图并去重，再计入Direct / Reference-Only所需首尾帧；扩展预算不构成填满额度的理由。
 
-当前Clip每个核心角色必须分别列出各自独立三视图/角色锁定图；多个核心角色不得合并为角色总表，动作/姿势/互动图只负责动作关系，不得替代或覆盖独立角色外貌基准。整合只限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。
+当前Clip每个核心角色必须分别列出各自独立三视图/角色锁定图；多个核心角色不得合并为角色总表，动作/姿势/互动图只负责动作关系，不得替代或覆盖独立角色外貌基准。Final=`REQUIRED`时，已确认草图是额外的一张实际图片输入，不得以文字描述或角色图代替。整合只限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。
 
 若独立资产表达更清晰准确且未超限，继续使用独立资产，不因已有总设定图强制替换。总图只有真实存在、已确认且完整覆盖对应零散图时才能列入；不得虚构不存在或未确认的总设定图、空间关系图、动作关系图。每项必须能回查到实际文件/受控ID。
 

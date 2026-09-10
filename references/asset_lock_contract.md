@@ -77,7 +77,7 @@ Image Generated
 Asset Confirmed
 ```
 
-默认迁移顺序为`Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。新建或重编Prompt前必须由`modules/image-model-selection.md`确认当前资产批次的图像模型；该选择不替代Prompt或图片确认。用户明确要求查看或只要Prompt时，Prompt Draft必须等待当前确认检查点；确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Image Generated只允许登记Candidate References；Asset Confirmed必须有全局语义定义的图片确认依据，才可写入Canonical References并切换Active Version。
+默认迁移顺序为`Project Image Model Default Confirmed → Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。新建或重编Prompt前必须由`modules/image-model-selection.md`为当前资产批次完成图像模型路由；已确认项目默认项可直接继承，不是再次确认。该选择不替代Prompt或图片确认。用户明确要求查看或只要Prompt时，Prompt Draft必须等待当前确认检查点；确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`中符合`rules/automation_mode.md`资格的当前Revision可以记录自动确认。Image Generated只允许登记Candidate References；Asset Confirmed必须有全局语义定义的图片确认依据，才可写入Canonical References并切换Active Version。
 
 ### Two-Tier Record Semantics
 

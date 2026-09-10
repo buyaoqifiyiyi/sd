@@ -440,7 +440,7 @@ Asset Design
 
 ## Prompt Gate
 
-- 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。
+- 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型路由：优先继承STATE-00已确认的`Project Image Model Default`，只有默认项或当前批次为`UNSELECTED`、当前批次例外或默认项不可用时才提出新选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。
 - Image Prompt必须是完整、可直接生图的执行文本，不得只输出外观说明、关键词清单或“用于后续生成”的参考要求。
 - Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、项目视觉风格、一致性限制、必要负面限制与适用生成参数。
 - `Visual Production Status: Prompt Draft`时必须停止在当前Prompt Confirmation Checkpoint；用户的确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续内置图片生成。

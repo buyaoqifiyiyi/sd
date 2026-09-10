@@ -8,7 +8,7 @@
 - Not Triggered As：不得把它当成新的制作阶段、资产生成Workflow、转场特效生成器或STATE-08新增栏目。
 - Required Inputs：上一Clip End State与尾帧用途、当前Clip Start Requirement、逐分镜世界状态、Confirmed Assets及其Active Version、角色数量事实、Spatial Blocking / Relational Screen Geometry、Pose Hierarchy、Relationship Topology、STATE-06 Performance Goal / Performance Arc Map、上一有效Performance State、关键道具状态链、适用Transition事实、Action PREVIS、Confirmed Clip Production Plan，以及生成草图时必须读取的`references/ref_sketch_master.md`注册状态与Sketch Presentation Authority合同；实际生图输入包由`templates/23_visual_blocking_sketch_prompt.md`唯一拥有。
 - Input Owners：剧情与时空事实由Script / Scene拥有；资产身份与版本由Asset Registry拥有；镜头与Blocking由STATE-06拥有；Clip边界与组织由STATE-07拥有。
-- Output Owner：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过后的语义映射到`templates/10_video_prompt.md`现有字段，本模块不新增、删除或改名最终字段。
+- Output Owner：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过后的语义映射到Selected Template的既有参考字段：Seedance 2.0为`templates/10_video_prompt.md`、Seedance 2.5为`templates/12_seedance_25_video_prompt.md`、MiniMax H3为`templates/13_minimax_h3_video_prompt.md`；本模块不新增、删除或改名最终字段。
 - Allowed Writes：STATE-07 Clip Plan中的Preflight记录、`Spatial State / Continuity Risks / Reference Budget`既有栏目，以及STATE-08当前Clip Checkpoint / Projection / QA记录；可在这些既有位置保存Visual Anchor State与Blocking Signature，不新增主STATE、平行Registry或Seedance字段。Work/Codex把Confirmed Visual Blocking Sketch作为当前Clip受控参考写入Active Project Root既有`clips/`交付目录并登记文件 / 受控ID与Revision；普通Chat保留可回查的当前对话媒体引用和Checkpoint摘要。它计入图片预算，但不得登记为Canonical Character / Environment / Prop / FX Asset。
 - Consumers：`workflows/10_clip_production_workflow.md`、`workflows/11_video_generation_workflow.md`与STATE-09 Review。
 - Conflict Route：剧情/世界层事实冲突返回其事实拥有者；资产状态冲突返回STATE-03；Shot / Blocking /转场设计冲突返回STATE-06；Clip边界、参考预算或Clip执行合同冲突留在STATE-07；仅Prompt转译措辞错误留在STATE-08。
@@ -198,6 +198,18 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 
 既有Voice/Audio Reference继续按声音资产合同作为独立非视觉输入检查；本视觉资格测试不删除该支路，但普通文字音色说明不得冒充Voice/Audio Reference。
 
+### Required Sketch Submission Binding
+
+当且仅当当前Clip的`Visual Blocking Final Assessment = REQUIRED`，必须在最终Prompt编译前完成这项绑定；这是提交输入合同，不是只在文字中列出草图：
+
+1. 确认当前Active `REF-SKETCH-XX`已经通过Sketch Validation与Template Content Leakage Check、其真实图片文件或受控ID可访问，并与当前`Blocking Signature`一致。原Signature不变时复用同一个已确认图；只有既有`KEEP / REPLACE / RETIRE / CREATE`规则触发时才更换。
+2. 根据当前Selected Adapter预留一个真实图片输入位，并同时计入该模型的实际Reference Budget和已提交图片清单。Final=`NONE`时不得创建空草图槽位、占位或文字伪引用。
+3. 仅按模型真实能力序列化：Seedance 2.0在现有`参考资产：`写`REF-SKETCH-XX`的真实文件/受控ID和“实际提交图片输入”；Seedance 2.5在`多模态参考资产：`生成一个真实`@图片N`条目；MiniMax H3只在`All-Reference`模式的`参考素材说明：`生成一个真实`@图片N`条目。H3的Start / End、Start-End或Video Edit模式不得把草图写成首尾帧或已提交输入；必须返回STATE-07改为All-Reference、改选兼容模型或返回上游降低Blocking需求。
+4. 草图唯一Authority为`Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path`。它不得控制人物身份、脸、发型、体型、服装、环境/道具外观、材质、光线、色彩或最终画风；上述维度继续服从Canonical Assets与当前Template。
+5. 图片/受控ID不可访问、模型模式不兼容、输入槽位/预算不足或Signature不匹配时，标记`REF-SKETCH Submission Compatibility: FAIL`并停止在最小Return Route。不得声称“已使用/已提交草图”，不得把最终Prompt交付为输入就绪生成包。只有恢复可提交输入并复核PASS后才可继续。
+
+这项绑定的审计证据写入既有STATE-07 Reference Capacity Audit和STATE-08 Projection Ledger，不增加主STATE、项目Registry或最终Prompt顶级字段。
+
 ## D. Transition Check
 
 出现以下任一情况时强制触发：现实→幻想、幻想→现实、现实↔耳中玉境、地点跳跃、时间跳跃、尺度变化、角色形态转换、道具形态转换。
@@ -284,7 +296,7 @@ World-State通过后才执行候选筛选与`knowledge/reference_budget.md`：
 - `PASS`：八项检查全部适用项通过，允许确认STATE-07 Clip Plan或进入STATE-08 Template Mapping。
 - `FAIL / Return Route`：列出Affected Clip / Shot、失败项、冲突事实与最小修正路由。先修正Clip设计或返回事实拥有者，再从A开始重跑全部Preflight；不得边失败边生成最终Prompt。
 
-STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后的语义必须映射到`templates/10_video_prompt.md`既有字段。
+STATE-08不得把内部Preflight标题或检查表变成最终字段。通过后的语义必须映射到Selected Template既有字段。
 
 ## Acceptance Scenarios（十三个Acceptance Scenarios）
 

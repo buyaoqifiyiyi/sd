@@ -44,11 +44,11 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 ### FAST Automation Exception
 
-启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型仍须先按`modules/image-model-selection.md`确认；符合资格的当前Prompt Revision才可自动确认并按已选图像模型路由生成当前道具资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖图像模型选择、图片确认、品牌/法务事实、外部服务或任何Hard Stop。
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型先按`modules/image-model-selection.md`继承STATE-00已确认的项目默认项；只有批次例外或默认项不可用才确认新选择。符合资格的当前Prompt Revision才可自动确认并按已选图像模型路由生成当前道具资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖项目模型偏好/批次例外选择、图片确认、品牌/法务事实、外部服务或任何Hard Stop。
 
 ### Image Model Selection Gate
 
-在任何道具Prompt之前，必须按`modules/image-model-selection.md`完成当前道具资产批次的图像模型选择。未选择时展示`Image Model Selection Proposal`并停止；不得默认内置Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
+在任何道具Prompt之前，必须按`modules/image-model-selection.md`完成当前道具资产批次的图像模型路由。已确认项目默认项时直接继承；默认项缺失、不可用或用户明确要求例外模型时才展示`Image Model Selection Proposal`并停止；不得默认内置Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
 
 执行前必须读取STATE-02的Asset Tiering Decision：
 

@@ -1313,6 +1313,34 @@ PASS：顶级结构仍只有`参考素材说明：`、`核心创意：`、`画�
 
 FAIL：只写孤立风格标签、将风格藏在第二行后、增加H3顶级`主风格：`段、混入Seedance 2.5时间线或删除`非叙事性音乐：N/A`。
 
+---
+
+## R34 Required Sketch Submission Binding Regression
+
+### R34-A Project Model Choice Is Early, Clip Capability Is Late-Bound
+
+输入：新项目在STATE-00确认`Built-in Image + MiniMax H3`；STATE-03新建角色与环境资产；后续CLIP-04为H3 Start-End模式且Final=`REQUIRED`。
+
+PASS：STATE-03直接继承Built-in Image而不逐批重复提问；STATE-06/07复核H3 Start-End无法提交Required草图，只给出改为H3 All-Reference、改选兼容模型或返回上游降低Blocking的最小路径。不得为了兑现项目偏好把`REF-SKETCH`伪装为首/尾帧，也不得重做剧本、资产或导演设计。
+
+### R34-B Required Sketch Is A Real Submitted Input For Every Compatible Model
+
+输入：`REF-SKETCH-04`已验证、Confirmed、Signature匹配且其真实文件/受控ID可访问；CLIP-04的Final=`REQUIRED`，预算仍有一个图片位。
+
+PASS：Seedance 2.0的`参考资产：`列出`REF-SKETCH-04｜真实文件/受控ID｜实际提交图片输入`；Seedance 2.5的`多模态参考资产：`有其真实`@图片N`；MiniMax H3 All-Reference的`参考素材说明：`有其真实`@图片N`。三者都把它计入实际图片预算，且唯一Authority为Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path；Canonical角色、环境、道具、材质、灯光、色彩与最终画风不受草图控制。
+
+### R34-C Missing Or Incompatible Sketch Input Cannot Be Claimed
+
+输入：Final=`REQUIRED`，但`REF-SKETCH-04`文件/受控ID不可访问，或其Signature过期，或2.0/2.5预算已满，或H3仍为Start-End / Video Edit。
+
+PASS：`REF-SKETCH Submission Compatibility=FAIL`，Prompt Pending并给出恢复输入、腾出预算、改H3 All-Reference、改模型或返回Blocking的最小路径。最终文字不得写“已使用 / 已提交草图”，不得作为输入就绪生成包交付。
+
+### R34-D None, Rewrite And Replacement Boundaries
+
+输入：Final=`NONE`的简单Clip；以及一个Signature不变的Prompt Rewrite与一个Blocking重构后的REPLACE。
+
+PASS：NONE没有草图空槽位、占位或图片预算；Rewrite复用同一实际`REF-SKETCH`输入但不重复生成或计数；REPLACE从输入与预算移除旧草图，绑定新的可访问、Signature匹配草图后再编译。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1334,6 +1362,7 @@ FAIL：只写孤立风格标签、将风格藏在第二行后、增加H3顶级`�
 - R21-A至R21-C验证逐角色Performance Arc、Pre-action / In-action / Post-action Residue、Intentional Hold、多人相对表演层级和Clip Performance / Emotion Check；固定剧情、SHOT / Clip结构与STATE-08字段保持不变。
 - R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。
 - R23-A至R23-N验证Director Module从Project / Script到资产、Scene / Sequence / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Visual Grammar Baseline与Scene Delta、Project Color Reference的条件性模型输入、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离、三镜功能差异、FX / Sequence / Clip / Prompt的显式消费与多阶段Clip的观察层次；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
+- R34-A至R34-D验证STATE-00模型默认/偏好减少重复确认，但STATE-06/07仍按模型真实参考能力复核；Final=`REQUIRED`的草图在兼容模型中成为真实提交图片输入、计入预算，在文件缺失、Signature失配、预算不足或H3模式不兼容时诚实阻断；NONE、复用与替换不回归。
 - R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。
 - R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

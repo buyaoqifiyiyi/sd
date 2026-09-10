@@ -15,11 +15,11 @@
 在输入完整、上游事实已确认且当前QA通过时，FAST可以：
 
 - 自动继续STATE-04、STATE-05的内部设计与合法下一阶段；
-- 在当前资产批次的图像模型已由用户确认且选择Built-in Image时，自动确认STATE-03的当前Prompt Revision，并使用当前环境实际可用的内置图像工具生成当前资产批次；同一资产类型的Candidate References汇总为一次用户批量审阅，而不是逐Prompt停下；
+- 在STATE-00已确认项目图像模型默认项、当前资产批次已继承且选择Built-in Image时，自动确认STATE-03的当前Prompt Revision，并使用当前环境实际可用的内置图像工具生成当前资产批次；同一资产类型的Candidate References汇总为一次用户批量审阅，而不是逐Prompt停下；
 - 在STATE-06和STATE-07的既有Checklist、Preflight和状态写回均通过时，自动接受Detailed Shot Design与Clip Production Plan；
 - 在STATE-08完成必需的Final Visual Blocking Assessment后，同轮继续编译当前Clip Prompt。`REF-SKETCH`仍必须通过既有验证，且不得成为Canonical Asset。
 - 当前已锁定视频模型与执行Profile、所有相关Execution Clip均已Confirmed且无未决风险时，按Clip顺序自动编译完整视频Prompt；在单轮交付容量不足时，只能在完整Clip之间分批，下一次普通推进直接续交下一批而不再索取内部确认。
-- 当前资产批次图像模型已由用户确认且为外部模型时，自动确认该批次当前Prompt Revision并交付可提交的外部生成包；不得代替用户向外部服务提交、不得声称已生成，也不得跳过Candidate Image审阅。
+- 当前资产批次已继承STATE-00确认的图像模型默认项且为外部模型时，自动确认该批次当前Prompt Revision并交付可提交的外部生成包；不得代替用户向外部服务提交、不得声称已生成，也不得跳过Candidate Image审阅。
 
 FAST只在事实、范围、模型和所需输入都已锁定时行动。任何失败、冲突、缺失、风险超出当前规则、或用户要求查看/修改时，立即回到对应owner，不以自动模式掩盖问题。
 
@@ -50,8 +50,8 @@ FAST只在事实、范围、模型和所需输入都已锁定时行动。任何�
 FAST不得自动：
 
 - 锁定Creation / Adaptation / Optimization产生的Production Script Proposal，或扩大既有剧本修改授权；
-- 首次选择视频模型，或改变已选择的模型、目标时长和执行模式；
-- 首次选择或改变当前资产批次的图像模型；
+- 首次确认项目图像模型默认项或项目视频模型偏好，或改变已选择的模型、目标时长和执行模式；
+- 为当前资产批次选择不同于项目默认项的例外图像模型；
 - 将任何Candidate Image标为Canonical / Active，或替代用户对资产图片的批准；
 - 推断真实人物、授权、品牌/Logo、价格、SKU、法务/受监管承诺或缺失的关键事实；
 - 调用未授权的外部服务、提交外部生成、使用未知凭据，或把提示词伪称为外部生成结果；

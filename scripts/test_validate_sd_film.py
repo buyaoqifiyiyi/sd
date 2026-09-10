@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r44 SD Film validator."""
+"""Regression tests for the r45 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -11,7 +11,7 @@ validator = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
 SPEC.loader.exec_module(validator)
 
-class R33RegressionTests(unittest.TestCase):
+class R34RegressionTests(unittest.TestCase):
     def test_active_skill_passes(self) -> None:
         self.assertEqual(validator.validate_skill(ROOT), [])
 
@@ -196,6 +196,33 @@ class R33RegressionTests(unittest.TestCase):
         self.assertNotIn("Direct Image Default", assets)
         self.assertIn("仅已选择Built-in Image且当前环境实际可用时", character)
         self.assertIn("不得因环境可生成而跳过图像模型选择或Prompt确认", rules)
+
+    def test_project_models_are_selected_once_early_then_clip_capability_is_verified(self) -> None:
+        setup = (ROOT / "workflows/01_project_setup_workflow.md").read_text(encoding="utf-8-sig")
+        image_selection = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
+        video_selection = (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")
+        state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Project Model Selection Gate", setup)
+        self.assertIn("Project Model Selection Proposal", image_selection)
+        self.assertIn("STATE-06后读取Confirmed Detailed Shot Design", video_selection)
+        self.assertIn("Project Image Model Default", state)
+        self.assertIn("Project Video Model Preference", state)
+
+    def test_required_sketch_is_bound_to_real_model_input_or_blocks_honestly(self) -> None:
+        preflight = (ROOT / "knowledge/clip_preflight_check.md").read_text(encoding="utf-8-sig")
+        two = (ROOT / "templates/10_video_prompt.md").read_text(encoding="utf-8-sig")
+        twofive = (ROOT / "templates/12_seedance_25_video_prompt.md").read_text(encoding="utf-8-sig")
+        h3 = (ROOT / "templates/13_minimax_h3_video_prompt.md").read_text(encoding="utf-8-sig")
+        budget = (ROOT / "knowledge/reference_budget.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Required Sketch Submission Binding", preflight)
+        self.assertIn("实际提交图片输入", two)
+        self.assertIn("真实`@图片N`", twofive)
+        self.assertIn("仅能在All-Reference模式以真实`@图片N`提交", h3)
+        self.assertIn("Submission Compatibility=`FAIL`", budget)
+        self.assertIn("R34 Required Sketch Submission Binding Regression", scenarios)
+        self.assertIn("Final=`NONE`不预留草图位", budget)
+        self.assertIn("Signature不变时复用同一个已确认图", preflight)
 
     def test_every_asset_workflow_calls_the_single_image_route_owner(self) -> None:
         workflows = (

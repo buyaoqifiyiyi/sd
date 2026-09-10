@@ -17,7 +17,7 @@
 
 先验证Clip Plan中`Target Video Model`、`Model Compilation Template`与已读Compiler完全匹配：2.0只接受`Seedance 2.0 Stable Compiler`，2.5只接受`Seedance 2.5 Native Compiler`。不匹配、缺失或未锁定时返回STATE-07；不可在本Gate重新选择模型。内部Compiler输出只作为语义输入，模型名、任务类型、参考角色、上传顺序、API字段和预检记录不得进入最终字段。
 
-投影粒度固定为Clip。每个Confirmed Clip分别投影为一个完整的`# CLIP-X｜标题 <Target Video Model>视频提示词`区块。Seedance 2.0完整使用`templates/10_video_prompt.md`的固定字段；Seedance 2.5完整使用`templates/12_seedance_25_video_prompt.md`的多模态参考职责与时间线字段；MiniMax H3完整使用`templates/13_minimax_h3_video_prompt.md`的官方三段式字段。不得混用三套Template字段。
+投影粒度固定为Clip。每个Confirmed Clip分别投影为一个完整的`# CLIP-X｜标题 <Target Video Model>视频提示词`区块。Seedance 2.0完整使用`templates/10_video_prompt.md`的固定字段；Seedance 2.5完整使用`templates/12_seedance_25_video_prompt.md`的多模态参考职责与时间线字段；MiniMax H3完整使用`templates/13_minimax_h3_video_prompt.md`的官方三段式字段。不得混用三套Template字段。Final Assessment=`REQUIRED`时，先消费`Required Sketch Submission Binding`：2.0写真实文件/受控ID的实际图片输入，2.5与H3 All-Reference各写一个真实`@图片N`；H3其他模式不得编译成草图已提交。
 
 禁止使用方头括号旧章节、独立CLIP标题字段、无授权条件字段、“与下一镜衔接”或其他新增字段。`音色特征：`只按Template显式授权条件出现；下一镜承接与Boundary Class语义投影到“镜头结尾状态”；跨Clip首尾帧语义投影到“参考资产”“首帧参考”“尾帧限制”和首/末分镜的起止状态。
 
@@ -261,7 +261,7 @@ STATE-08内部转换链固定为：
 
 当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
-最终`参考资产：`逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`与STATE-07已选择的`Project Color Reference（非资产）`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。色卡条目必须标明真实来源、唯一Primary Role及“只控制综合色相 / 明度 / 饱和度 / 强调色占比”，不得伪装为Canonical资产或控制角色、环境、道具、构图、光源、镜头或最终画风。Confirmed `REF-SKETCH`在Seedance 2.5可作为Clay Render/白模空间调度参考；在MiniMax H3全能参考或首/尾帧模式下可作为普通图片参考。两种情况下它仍是经Gate验证的单Clip Visual Blocking Anchor：仅控制Blocking / Pose / Axis / Camera / Action Path，不控制身份、服装、年龄、材质、色彩、灯光或最终画风。Seedance Video Extension的实际`REF-VIDEO`只作为受控延展输入，叠加而不取代Canonical、首尾帧与End-State。MiniMax H3的实际视频输入则必须按其唯一动作/运镜/编辑用途标注，不替代Canonical、首尾帧与End-State。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
+最终参考字段逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`与STATE-07已选择的`Project Color Reference（非资产）`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。色卡条目必须标明真实来源、唯一Primary Role及“只控制综合色相 / 明度 / 饱和度 / 强调色占比”，不得伪装为Canonical资产或控制角色、环境、道具、构图、光源、镜头或最终画风。Final=`REQUIRED`的Confirmed `REF-SKETCH`必须消耗实际图片输入：2.0在`参考资产：`写真实文件/受控ID及“实际提交图片输入”；2.5在`多模态参考资产：`写真实`@图片N`；H3仅All-Reference的`参考素材说明：`写真实`@图片N`。H3首/尾帧或Video Edit模式不得把草图当作普通/帧图片输入。草图只控制Blocking / Pose / Axis / Camera / Action Path，不控制身份、服装、年龄、材质、色彩、灯光或最终画风。Seedance Video Extension的实际`REF-VIDEO`只作为受控延展输入，叠加而不取代Canonical、首尾帧与End-State。MiniMax H3的实际视频输入则必须按其唯一动作/运镜/编辑用途标注，不替代Canonical、首尾帧与End-State。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
 
 每个Clip投影前必须通过四项硬门槛：
 
@@ -372,7 +372,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否只保留从上一镜/上一Clip合法继承的状态，没有混入其他镜头的动作、机位、结束状态或风格残留；是否没有堆叠互相稀释的导演、美术、摄影与渲染风格。
 - 是否没有方头括号旧章节、独立CLIP标题字段、“与下一镜衔接”或其他额外字段。
 - `参考资产：`、`首帧参考：`、`尾帧限制：`是否无条件存在且非空。
-- 参考字段是否通过Reference Budget Check：Seedance 2.5默认按图片≤30、视频≤10、音频≤10、合计≤50及各自≤30秒审计；2.0/H3按各自Adapter有效上限。无当前Clip无关项、无重复占位；每个实际输入均有唯一Primary Role；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。
+- 参考字段是否通过Reference Budget Check：Seedance 2.5默认按图片≤30、视频≤10、音频≤10、合计≤50及各自≤30秒审计；2.0/H3按各自Adapter有效上限。无当前Clip无关项、无重复占位；每个实际输入均有唯一Primary Role；除明确待补充的A/B `REF-TAIL`外无虚构资产；每个`REF-TAIL`用途与状态明确；核心角色各自独立；是否仅在超限风险触发后整合同类非角色信息。Final=`REQUIRED`时，草图是否真实可访问、Signature匹配、占用一个真实图片位，且2.0使用实际文件/受控ID、2.5/H3 All-Reference使用实际`@图片N`；H3非兼容模式或任何不可提交状态不得写成已使用。
 - 是否通过Clip Preflight：连续性三选一且尾帧引用正确；逐分镜World-State与资产一致；角色精确数量、追逐/多人空间构图、关键道具状态和适用转场五要素均有现有字段证据；失败设计没有被反向提示词兜底。
 - 是否通过Performance / Emotion Check：逐角色Baseline、Trigger、动作前/中/后当前可见段、Post-action Residue、Arc Endpoint与Carryover可复算；Intentional Hold仍有注意、压制/延迟、呼吸/姿态或行动证据；多人相对幅度、反应顺序和视觉重点交接清楚；没有静态情绪标签、固定脸完成动作、无刺激重置、全员同强度或全员同脸。
 - 是否明确A/B/C并据此标记`Tail Frame Required = YES / NO`；A/B无图时是否在`参考资产`直接列统一`REF-TAIL`、对应用途与“待用户提供/待上传、未确认”，且未冒充已提交图片；A是否使用固定直接承接句，B是否明确另起新镜头且未使用该句，C是否完全未列`REF-TAIL`；本Clip新尾帧限制是否完整。

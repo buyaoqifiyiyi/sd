@@ -52,6 +52,17 @@ Revision ID
 Updated At
 ```
 
+STATE-00完成前必须在`## State Control`保存一次确认的项目模型偏好；它只减少后续重复选择，不是资产、Clip或外部提交授权：
+
+```text
+- Project Image Model Default: Built-in Image / Midjourney / UNSELECTED
+- Project Image Model Selection Status: UNSELECTED / SELECTED
+- Project Video Model Preference: Seedance 2.0 / Seedance 2.5 / MiniMax H3 / UNSELECTED
+- Project Video Model Preference Status: UNSELECTED / SELECTED
+```
+
+新项目的两个偏好必须在STATE-00 `Project Model Selection Proposal`确认后才可完成；用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。
+
 当`Current State`为STATE-03且当前资产批次需要新建或重编Image Prompt时，必须在`## State Control`保存该批次唯一的图像执行Profile：
 
 ```text
@@ -63,9 +74,9 @@ Updated At
 - Image Model Selection Scope: <current Asset ID / Board ID / Item ID / asset batch>
 ```
 
-`UNSELECTED`在Prompt编译前是合法停点，但不得输出模型专属Prompt或生成Candidate Image。选择只控制当前资产批次的工具、模板和交付路线，不改变资产定义、Asset Tier、Canonical Reference或视频模型选择。切换模型只按`modules/image-model-selection.md`使受影响的未确认Prompt或用户明确重生的Candidate Revision重跑；已确认资产保持不变。
+已确认`Project Image Model Default`且无当前批次例外时，STATE-03必须直接继承为上述Profile，不得重新要求相同选择。`UNSELECTED`在Prompt编译前是合法停点，但不得输出模型专属Prompt或生成Candidate Image。选择只控制当前资产批次的工具、模板和交付路线，不改变资产定义、Asset Tier、Canonical Reference或视频模型选择。切换模型只按`modules/image-model-selection.md`使受影响的未确认Prompt或用户明确重生的Candidate Revision重跑；已确认资产保持不变。
 
-当`Current State`为STATE-06完成后至STATE-08，或已存在Confirmed Clip Production Plan时，还必须在`## State Control`保存唯一的批次内部执行Profile：
+当`Current State`为STATE-06完成后至STATE-08，或已存在Confirmed Clip Production Plan时，还必须在`## State Control`保存经当前Clip能力复核后的唯一批次内部执行Profile：
 
 ```text
 - Selected Model: Seedance 2.0 / Seedance 2.5 / MiniMax H3 / UNSELECTED
@@ -80,7 +91,7 @@ Updated At
 - Model Selection Scope: <affected Natural Unit / CLIP IDs / current generation batch>
 ```
 
-`UNSELECTED`只允许在STATE-06完成后、STATE-07 Clip整合前短暂存在；不得确认Clip Plan。模型选择仅控制当前生成批次的执行Profile，不改变Production-Locked Script、Confirmed Assets、Scene Breakdown或Detailed Shot Design。切换模型时，只将受影响STATE-07/08执行产物标为需重跑，保留上述上游Accepted Artifacts。
+当项目视频偏好覆盖当前Clip时，STATE-06后直接继承为`Selected Model`，不得重复询问；`UNSELECTED`只允许在STATE-06完成后、STATE-07 Clip整合前短暂存在，或旧项目尚未迁移时作为最小选择停点；不得确认Clip Plan。每Clip还必须记录`REF-SKETCH Submission Compatibility: Not Applicable / PASS / FAIL`：Final=`REQUIRED`时只有Adapter支持实际提交、真实图片/受控ID可访问、Signature匹配且输入预算留位才为PASS。模型选择仅控制当前生成批次的执行Profile，不改变Production-Locked Script、Confirmed Assets、Scene Breakdown或Detailed Shot Design。切换模型时，只将受影响STATE-07/08执行产物标为需重跑，保留上述上游Accepted Artifacts。
 
 允许的 `Current State`：`STATE-00` 至 `STATE-09`。
 

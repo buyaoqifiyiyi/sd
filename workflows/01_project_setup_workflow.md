@@ -358,6 +358,20 @@ Project Initialized
 下一步行动。
 
 
+在写入STATE-00完成状态前，必须完成下列`Project Model Selection Gate`。它只收集项目级默认/偏好，不创作资产、拆Clip或编译视频Prompt。
+
+### Project Model Selection Gate
+
+读取`modules/image-model-selection.md`和`modules/model-selection.md`，在同一个`Project Model Selection Proposal`中展示：
+
+- 项目图像模型默认项：Built-in Image / Midjourney，以及各自Adapter、最终资产Prompt Template与交付路线；
+- 项目视频模型偏好：Seedance 2.0 / Seedance 2.5 / MiniMax H3，以及已验证的时长与参考输入能力摘要；
+- 已由用户当前请求指定的模型只展示为唯一候选；未指定时不得默认选择。
+
+该Proposal是一次项目启动确认点；用户在展示后说`下一步`、`继续`等按`rules/progression_rules.md`确认。确认后写入`Project Image Model Default`和`Project Video Model Preference`及各自`SELECTED`状态。图像默认项供STATE-03资产批次直接继承；视频偏好供STATE-06按每Clip的时长、Execution Mode、首尾帧和实际参考输入能力复核。它们均不等于Candidate / Canonical图片确认、不授权外部提交，也不绕过后续模型能力约束。
+
+若旧项目已有可验证唯一Selected Image Model或Selected Model，分别迁移为项目默认/偏好，不重复询问；没有证据则保持UNSELECTED，直到该项目下一个合法模型选择入口。
+
 下一步行动：
 
 ```text

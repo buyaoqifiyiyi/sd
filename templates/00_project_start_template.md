@@ -143,6 +143,28 @@ Project Root：
 
 初步视觉方向：
 
+---
+
+# Project Model Preferences
+
+项目图像模型默认项：
+
+□ Built-in Image
+
+□ Midjourney
+
+项目视频模型偏好：
+
+□ Seedance 2.0（4—15秒，最多9张视觉参考）
+
+□ Seedance 2.5（4—30秒，图片≤30 / 视频≤10 / 音频≤10 / 合计≤50，受当前入口限制）
+
+□ MiniMax H3（4—15秒；全能参考最多9图、3视频、3音频、12文件；Required草图仅All-Reference模式可提交）
+
+确认状态：`UNSELECTED / SELECTED`
+
+说明：此处是项目级默认/偏好。STATE-03直接继承图像默认项；STATE-06后仍按每个Clip的时长、首尾帧、编辑模式和真实参考输入能力复核视频偏好。选择不等于资产图片确认，也不提交外部服务。
+
 
 
 

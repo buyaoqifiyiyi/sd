@@ -19,7 +19,7 @@
 
 ## Image Model Prompt Template Isolation
 
-图像模型不进入STATE-06后的Video Model Selection，STATE-03的`modules/image-model-selection.md`拥有当前资产批次的图像模型选择，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。Built-in Image固定使用`templates/24_builtin_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
+图像模型不进入视频Model Selection：STATE-00由`modules/image-model-selection.md`拥有项目图像模型默认项的选择，STATE-03由它为当前资产批次继承默认项或处理明确例外，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。Built-in Image固定使用`templates/24_builtin_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
 
 ---
 
@@ -129,7 +129,7 @@ Module Name：`Model Execution Lock` + `Seedance 2.5 Model Profile`。
 
 Module Type：STATE-06完成后的唯一内部Gate与STATE-07/08共用的模型知识Profile；不创建主STATE、项目事实或STATE-08最终字段。
 
-Owner与触发：`workflows/10_clip_production_workflow.md`拥有Lock的询问、写回、切换与返回路由；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译和唯一Model Template Router；`knowledge/prompt_compilation/seedance_20_compilation.md`与`seedance_25_compilation.md`各自拥有对应模型的内部编译语义，后者连同`knowledge/seedance_25_profile.md`消费已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。STATE-06完成且当前生成批次未锁定目标模型时，Lock必须在Clip候选整合前只询问一次`Seedance 2.0`或`Seedance 2.5`。已锁定时不得重复询问。
+Owner与触发：`workflows/01_project_setup_workflow.md`在STATE-00拥有项目图像默认项与视频模型偏好的单次询问；`modules/model-selection.md`在STATE-06后拥有按Clip能力复核、Adapter路由与不兼容返回路径；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译和唯一Model Template Router；`knowledge/prompt_compilation/seedance_20_compilation.md`与`seedance_25_compilation.md`各自拥有对应模型的内部编译语义，后者连同`knowledge/seedance_25_profile.md`消费已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。STATE-00已确认偏好且覆盖当前Clip时不得重复询问；不兼容时只提出最小的模型/执行模式替代选择。
 
 Writeback与变更：所选Target Model、唯一匹配的Model Compilation Template、Execution Profile、Execution Mode、Long-duration Route与Effective Gateway Limits写入Project State和Confirmed Clip Production Plan。Seedance 2.5的16—30秒由用户目标时长自动触发内部严格预检，不是用户需额外选择的Execution Mode；用户可在模型窗口内选择时长，未知网关状态不得预先压缩为15秒，实际平台拒绝才作为STATE-07最小调整的触发。用户在Clip Plan确认前切换模型时，只使受影响的STATE-07 / STATE-08执行产物失效并重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown与Detailed Shot Design保持已确认状态。最终STATE-08 Prompt不得新增模型、Compiler、模式、预算或时间轴字段。
 
@@ -424,7 +424,7 @@ Module Type：STATE-06至STATE-08辅助Knowledge。
 
 输入拥有者：Shot Purpose、Scene、已确认资产、Visual Development、Performance、FX与空间连续性。
 
-输出拥有者：STATE-06由对应Shot Design Template拥有；STATE-08仍由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-06由对应Shot Design Template拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 下游消费者：Detailed Shot Design、Clip Production、Video Generation、Review。
 
@@ -445,7 +445,7 @@ Module Type：STATE-04、STATE-06至STATE-09辅助Camera Knowledge。
 
 输入拥有者：Visual Direction、Shot Purpose、Shot Scale、Camera Position / Movement、Composition、Blocking、Lighting、Performance与空间连续性。
 
-输出拥有者：STATE-04由Project Bible摄影方向拥有；STATE-06由Shot Design Template拥有；STATE-08仍由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-04由Project Bible摄影方向拥有；STATE-06由Shot Design Template拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 下游消费者：Detailed Shot Design、Clip Production、Video Generation、Review。
 
@@ -476,7 +476,7 @@ Module Type：STATE-06至STATE-08辅助Camera / Coverage Knowledge。
 
 输入拥有者：Shot Purpose、Coverage Requirement、Camera原子、Blocking、Performance、Lens、FX、Sequence与Transition Boundary。
 
-输出拥有者：STATE-06由Shot Design Template拥有；STATE-08仍由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-06由Shot Design Template拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 不变量：
 
@@ -507,7 +507,7 @@ Module Type：STATE-06至STATE-09辅助Camera Knowledge，不创建新STATE。
 
 输入拥有者：Shot Purpose、情绪/表演、人物运动、Blocking / Relational Screen Geometry、空间任务、节奏阶段、Visual Direction、模型复杂度与边界合同分别由对应上游事实和设计拥有者提供。
 
-输出拥有者：STATE-06由`templates/08_shot_design_prompt.md`拥有；STATE-07由`templates/20_clip_plan.md`拥有；STATE-08仍只由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-06由`templates/08_shot_design_prompt.md`拥有；STATE-07由`templates/20_clip_plan.md`拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 允许读取：`knowledge/camera_language/camera_movement/selection_matrix.md`、Camera Movement Index、被选主/辅助运镜原子文件，以及适用的Movement Combination / Advanced Camera Movement。允许写入：当前阶段拥有者管理的Detailed Shot Design、Clip Production Plan与内部Projection / QA结果。
 
@@ -529,7 +529,7 @@ Module Type：STATE-04、STATE-06至STATE-09辅助Knowledge。
 
 输入拥有者：Script / Scene事实、Character Asset与基线、人物关系、Shot Purpose、Action / Blocking、Dialogue / Sound、Camera / Composition、Lighting与边界状态。
 
-输出拥有者：STATE-04由Project Bible表演字段拥有；STATE-06由Shot Design Template拥有；STATE-08仍由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-04由Project Bible表演字段拥有；STATE-06由Shot Design Template拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 下游消费者：Detailed Shot Design、Clip Production、Video Generation、Review。
 
@@ -562,7 +562,7 @@ Module Type：STATE-04、STATE-06至STATE-09辅助Knowledge。
 
 输入拥有者：已确认Character / Environment / Prop / FX Asset、Visual Direction、Lighting、Shot Purpose、时间/天气、材质与边界状态。
 
-输出拥有者：STATE-04由Project Bible Color System拥有；STATE-06由Shot Design Template拥有；STATE-08仍由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-04由Project Bible Color System拥有；STATE-06由Shot Design Template拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 下游消费者：Detailed Shot Design、Clip Production、Video Generation、Review。
 
@@ -592,7 +592,7 @@ Module Type：STATE-04、STATE-06至STATE-08辅助Knowledge。
 
 输入拥有者：Visual Direction、Environment / Character / Prop / FX Asset、Shot Purpose、空间与边界连续性。
 
-输出拥有者：STATE-04由Project Bible对应字段拥有；STATE-06由Shot Design Template拥有；STATE-08仍由`templates/10_video_prompt.md`拥有。
+输出拥有者：STATE-04由Project Bible对应字段拥有；STATE-06由Shot Design Template拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 下游消费者：Detailed Shot Design、Clip Production、Video Generation、Review。
 
@@ -656,13 +656,13 @@ Module Type：STATE-07与STATE-08共享的强制Quality / Continuity Knowledge G
 
 Required Inputs及唯一来源：上一Clip End State / Tail-Frame Use、八组`Clip End-State Record / Next-Clip Carryover`、Visual Anchor State、当前Clip Start Requirement与Clip边界由STATE-07 / 当前STATE-08 Checkpoint拥有；逐分镜时空与剧情事实由Script / Scene拥有；资产与Prop State由Asset Registry / STATE-03拥有；Scene Spatial Snapshot、Pose Hierarchy、Relationship Topology、Action PREVIS、Performance Goal / Performance Arc Map与Shot几何由STATE-06拥有；Transition事实由已确认Shot / Transition设计拥有。
 
-Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过结果投影到`templates/10_video_prompt.md`既有字段；`knowledge/clip_preflight_check.md`拥有分类、检查顺序、失败条件与返回路由；`templates/23_visual_blocking_sketch_prompt.md`唯一拥有Technical Visual Blocking Sketch的图像生成输入包与Candidate Evidence Record，不拥有Assessment或最终视频Prompt Schema。
+Output拥有者：STATE-07检查记录由`templates/20_clip_plan.md`拥有；STATE-08只把通过结果投影到Selected Model对应Template的既有参考字段；`knowledge/clip_preflight_check.md`拥有分类、检查顺序、失败条件与返回路由；`templates/23_visual_blocking_sketch_prompt.md`唯一拥有Technical Visual Blocking Sketch的图像生成输入包与Candidate Evidence Record，不拥有Assessment或最终视频Prompt Schema。
 
 允许读取：Confirmed Clip Production Plan、Detailed Shot Design、Spatial Blocking、Action PREVIS、Asset Registry、Reference Budget、Transition、相邻Clip边界、实际首尾帧、已存在Visual Anchor Revision，以及`references/ref_sketch_master.md`中母版图片的真实注册状态与Presentation合同。允许写入：Clip Plan现有Preflight / Spatial State / Continuity Risks / Reference Budget栏目、当前STATE-08 Checkpoint / Projection / QA，以及绑定单一Clip的Confirmed `REF-SKETCH-XX`。不得新增主STATE、顶级Template字段或Canonical资产类型；不得把母版示例内容写入Current Clip事实。
 
 下游消费者：STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与STATE-09 Review。
 
-不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。逐角色还必须通过Performance / Emotion Check：Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint、Intentional Hold证据、Next-shot Carryover与多人相对表演层级可复算；静态标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸固定FAIL。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`、加入参考资产并本轮停在草图，下一次继续才Prompt。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且默认Projected Final Count≤9；只有Seedance 2.5扩展Reference Audit通过时才按已验证上限审计30图 / 10视频 / 10音频 / 合计50及各自30秒时长，且每项有唯一Primary Role。
+不变量：视觉连续、剧情连续、主动切场/切世界三选一；再在既有判定中明确A【同镜头连续承接 / Direct】、B【新镜头参考型 / Reference-Only】或C【新镜头且无需尾帧 / Not Required】。A/B标记`Tail Frame Required = YES`并在【参考资产】列统一`REF-TAIL`、分别声明“同镜头连续承接用途”或“空间/站位/景别参考用途”；未提供时写“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。A使用固定直接承接句，B明确另起新镜头重新构图且不使用该句。C标记`NO`，不列`REF-TAIL`，用Canonical资产、Spatial Blocking与文字规则重建。逐角色还必须通过Performance / Emotion Check：Inherited Baseline、Trigger、Pre-action / In-action / Post-action Residue、Arc Endpoint、Intentional Hold证据、Next-shot Carryover与多人相对表演层级可复算；静态标签、无刺激重置、固定脸完成动作、全员同强度或全员同脸固定FAIL。每个Clip在STATE-07只标`NONE / POSSIBLE / REQUIRED`草图风险；母版可用性不得改变Assessment。STATE-08每次单Clip Prompt前做Final Assessment。Final=`NONE`直接Prompt；Final=`REQUIRED`先生成 / 验证 / 注册Confirmed `REF-SKETCH-XX`，再完成真实输入绑定：2.0写真实文件/受控ID，2.5与H3 All-Reference写真实`@图片N`并计入预算；任一不可提交时Prompt Pending而不是“加入参考资产”即算完成。生成时遵循`Master Template carries sketch language; Current Clip data carries blocking content.`：真实已注册`REF-SKETCH-MASTER`只拥有Sketch Presentation Authority；当前`REF-SKETCH-XX`才拥有Clip Blocking Authority。母版文件不可用时必须标记Text Contract Fallback，不得声称已使用视觉母版。人物绘制层统一服从`references/ref_sketch_master.md`的`Neutral Mannequin Representation Rule`：S / P / A / Combined使用同一套无性别技术人偶，仅由角色名 / ID、技术颜色与位置标签区分；Character Asset独占性别、脸、发型、服装、年龄感、体型与身份Authority。每张当前草图还须通过Template Content Leakage Check与Character Appearance Leakage Check；明显人物外观或性别化体态泄漏固定判`FAIL = Character Appearance Leakage / Identity Contamination`。普通Prompt Rewrite必须复用原草图；只有Blocking Signature实质改变时允许KEEP / REPLACE / RETIRE / CREATE。当前草图只拥有Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，不覆盖Character / Environment / Prop Authority。每分镜先锁定World-State，再按`Clip End-State Record`、当前目标与Continuity Risks对Eligible资产执行最小充分Reference Selection / Routing；身份/空间结构/道具造型/Visual Blocking/A-B尾帧/光线场景状态分别使用正确来源，C不选旧尾帧，不因Registry存在或预算空位全选。`REF-SKETCH-MASTER`默认不进入最终视频【参考资产】且不计视频图片预算；跨世界/时空/尺度/形态变化先完成转场五要素；逐镜锁定角色精确数量、空间关系与关键道具状态；Reference Budget最后执行且默认Projected Final Count≤9；只有Seedance 2.5扩展Reference Audit通过时才按已验证上限审计30图 / 10视频 / 10音频 / 合计50及各自30秒时长，且每项有唯一Primary Role。
 
 禁止修改：剧情、世界观、Active Asset Version、角色身份、Shot目的/顺序、Spatial Blocking、主Pipeline、STATE-08 Schema。禁止用Preflight为补救错误而新增转场媒介、角色、道具、FX或剧情事件。
 
@@ -680,7 +680,7 @@ Module Type：STATE-08语义投影Knowledge。
 
 输入拥有者：项目文件、已确认阶段输出与适用Knowledge模块。
 
-输出拥有者：`templates/10_video_prompt.md`。
+输出拥有者：Selected Model对应的唯一STATE-08 Template。
 
 下游消费者：STATE-08 Final Validation与STATE-09 Review。
 
@@ -692,7 +692,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 在冲突时返回事实拥有者，不用Prompt文案静默调和
 - 按Confirmed Clip Production Plan一对一创建`# CLIP-X｜标题 Seedance视频提示词`独立Package；每个Package包含该Clip的1个或多个`分镜X`，但整个Clip只生成一条连续Prompt，不按Shot拆分，并拥有完整结尾帧、尾帧用途判定与反向提示词
 - 多Clip项目默认每轮只交付当前一个Clip；“下一个 / 下一步 / 继续”只推进一个Checkpoint。只有用户在当前请求中明确要求全部、一次性、批量或连续输出多个Clip时，才允许同轮输出多个独立Package
-- 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先用Neutral Mannequin Representation Rule生成Technical Director Blocking Sheet、执行Template Content Leakage Check、Character Appearance Leakage Check与完整Sketch Validation、注册当前`REF-SKETCH-XX`、加入参考资产并停止，下一Checkpoint才输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
+- 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先用Neutral Mannequin Representation Rule生成Technical Director Blocking Sheet、执行Template Content Leakage Check、Character Appearance Leakage Check与完整Sketch Validation并注册当前`REF-SKETCH-XX`；随后必须按`Required Sketch Submission Binding`将可访问的真实图片绑定到兼容Adapter输入，才可输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
 - 每个Clip必须服从锁定模型的用户选择时长；2.5的16—30秒须严格预检PASS；Clip内分镜保持原顺序、逐镜字段和显式状态链
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
@@ -757,7 +757,7 @@ Module Type：显式opt-in的Rule；不创建主STATE、项目事实、独立确
 
 Owner：`rules/automation_mode.md`。触发只能来自用户当前明确的自动推进指令；状态合同只镜像`Automation Policy`。`rules/progression_rules.md`消费其已确认的Eligible Work，`rules/completion_gate.md`只在本合同允许的范围内接受自动接受证据。
 
-FAST可以压缩已选Built-in Image的当前Prompt确认与内置图片生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次选择或更改图像/视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
+FAST可以压缩已继承项目Built-in Image默认项的当前Prompt确认与内置图片生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor完成真实输入绑定后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次确认或更改项目图像/视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
 
 允许读取：当前用户指令、Selected State Source、当前Workflow、已确认上游事实和既有QA。允许写入：状态合同中的`Automation Policy`及既有Artifact / Version History中的自动接受证据。不得改写Production-Locked Script、Canonical Asset、用户确认、主Pipeline、最终Template Schema或外部授权。
 
@@ -781,7 +781,7 @@ Module Type：STATE-06至STATE-08 Camera Knowledge Router。
 
 输入拥有者：Shot Purpose、Coverage、Blocking、Performance、Space、Assets、Visual Direction与Boundary。
 
-输出拥有者：STATE-06由templates/08_shot_design_prompt.md拥有；STATE-08仍由templates/10_video_prompt.md拥有。
+输出拥有者：STATE-06由templates/08_shot_design_prompt.md拥有；STATE-08由Selected Model对应的唯一Template拥有。
 
 必须按Evidence→Scale→Perspective→Position→Lens→Composition→Movement→Risk→Downgrade顺序选择。禁止重复定义Camera原子、用导演标签覆盖空间/证据或把内部Risk等级写入最终Prompt。
 

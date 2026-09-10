@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r44 structural and routing validation for SD Film."""
+"""Deterministic r45 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -12,10 +12,10 @@ REQUIRED = (
     "modules/clip-planning.md", "modules/model-selection.md", "modules/image-model-selection.md", "modules/prompt-generation.md", "modules/assets.md",
     "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/minimax-h3.md", "adapters/built-in-image.md", "adapters/midjourney.md",
     "knowledge/prompt_compilation/minimax_h3_compilation.md",
-    "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
-    "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
+    "workflows/01_project_setup_workflow.md", "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
+    "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
-    "knowledge/environment_multi_view_reconstruction.md",
+    "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
 )
 
 def read(root: Path, relative: str) -> str:
@@ -84,10 +84,20 @@ def validate_skill(root: Path) -> list[str]:
     environment_template = read(root, "templates/05_environment_asset_prompt.md")
     prop_template = read(root, "templates/06_prop_asset_prompt.md")
     fx_template = read(root, "templates/13_fx_asset_prompt.md")
+    project_setup = read(root, "workflows/01_project_setup_workflow.md")
+    project_start_template = read(root, "templates/00_project_start_template.md")
+    preflight = read(root, "knowledge/clip_preflight_check.md")
     required_markers = (
-        (core, "STATE-06 后：Model Selection"),
-        (runtime, "STATE-06 完成后的 Model Selection 成功后"),
-        (selection, "不创建 Clip、也不输出 `KEEP / ADAPT_SPLIT / RETURN`"),
+        (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
+        (runtime, "PROJECT_IMAGE_MODEL_DEFAULT"),
+        (selection, "不创建Clip、也不输出`KEEP / ADAPT_SPLIT / RETURN`"),
+        (selection, "Project Video Model Preference"),
+        (image_selection, "Project Model Selection Proposal"),
+        (project_setup, "### Project Model Selection Gate"),
+        (project_start_template, "# Project Model Preferences"),
+        (state, "Project Image Model Default"),
+        (state, "Project Video Model Preference"),
+        (state, "REF-SKETCH Submission Compatibility"),
         (clip, "STATE-07 是 Natural Unit 与 Execution Clip 的唯一决策 owner"),
         (clip, "具体窗口和条件只由各自 Adapter 拥有"),
         (prompt, "不选择模型、不创建或拆分 Clip、不调用旧 Compiler"),
@@ -101,6 +111,8 @@ def validate_skill(root: Path) -> list[str]:
         (adapter25, "prompt_output_template: templates/12_seedance_25_video_prompt.md"),
         (adapter25, "timestamp_text_control"),
         (adapter25, "Dreamina Web专有"),
+        (adapter20, "actual_image_input_in_existing_reference_assets"),
+        (adapter25, "actual_image_at_picture_n"),
         (profile25, "Timestamp And Dreamina Surface Boundary"),
         (compiler25, "唯一Primary Role"),
         (reference_budget, "合计50项"),
@@ -122,10 +134,17 @@ def validate_skill(root: Path) -> list[str]:
         (adapter_h3, "mixed_files_max: 12"),
         (adapter_h3, "two_images: no_automatic_cut"),
         (adapter_h3, "unsupported_without_official_verification"),
+        (adapter_h3, "incompatible_modes: [start_or_end_frame, start_end_frame, video_edit]"),
         (compiler_h3, "一个 Execution Clip 的生成时长必须为 4—15 秒"),
         (compiler_h3, "官方三段式"),
         (compiler_h3, "非叙事性音乐：N/A"),
-        (assets, "本模块是STATE-03图像工具选择与提示词适配的唯一owner"),
+        (prompt_template, "实际提交图片输入"),
+        (prompt_template25, "REF-SKETCH-XX @图片N"),
+        (prompt_template_h3, "REF-SKETCH-XX @图片N"),
+        (preflight, "### Required Sketch Submission Binding"),
+        (preflight, "不得声称“已使用/已提交草图”"),
+        (reference_budget, "Submission Compatibility=`FAIL`"),
+        (assets, "本模块是STATE-03图像工具路由与提示词适配的唯一owner"),
         (assets, "### Image Model Selection Gate"),
         (assets, "不得默认选择Built-in Image、Midjourney或任何第三方服务"),
         (assets, "`Built-in Image`：读取`adapters/built-in-image.md`"),
@@ -222,7 +241,7 @@ def validate_skill(root: Path) -> list[str]:
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r44 routing marker: {marker}")
+            errors.append(f"missing r45 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -247,7 +266,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r44 structural and routing validation")
+    print("PASS: r45 structural and routing validation")
     return 0
 
 if __name__ == "__main__":
