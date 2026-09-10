@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r43 SD Film validator."""
+"""Regression tests for the r44 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -362,6 +362,22 @@ class R33RegressionTests(unittest.TestCase):
         self.assertIn("R32-A FAST Aggregates Preproduction And Execution", scenarios)
         self.assertIn("R32-B Hard Stop Truncates The Package", scenarios)
         self.assertIn("R32-C Standard Mode Aggregates Only Already-Legal Results", scenarios)
+
+    def test_seedance_25_and_h3_surface_main_style_without_breaking_their_templates(self) -> None:
+        twofive = (ROOT / "templates/12_seedance_25_video_prompt.md").read_text(encoding="utf-8-sig")
+        h3 = (ROOT / "templates/13_minimax_h3_video_prompt.md").read_text(encoding="utf-8-sig")
+        projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
+        h3_compiler = (ROOT / "knowledge/prompt_compilation/minimax_h3_compilation.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("尾帧限制：\n\n主风格：\n", twofive)
+        self.assertIn("### 主风格：", twofive)
+        self.assertIn("独立、无条件的项目视觉入口", twofive)
+        self.assertIn("核心创意：\n主风格：", h3)
+        self.assertIn("不新增顶级`主风格：`段落", h3)
+        self.assertIn("独立`主风格：`", projection)
+        self.assertIn("第一行固定为`主风格：`", h3_compiler)
+        self.assertIn("R33-A Seedance 2.5 Has A Dedicated Main Style Field", scenarios)
+        self.assertIn("R33-B H3 Keeps Three-Part Structure", scenarios)
 
     def test_advance_synonyms_confirm_the_current_explicit_checkpoint(self) -> None:
         progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")

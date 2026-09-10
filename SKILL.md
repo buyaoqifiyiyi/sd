@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.10-r43
+Skill Version: 2026.09.10-r44
 
-Build ID: sd-film-2026.09.10-r43
+Build ID: sd-film-2026.09.10-r44
 
 ## Core
 

@@ -11,7 +11,7 @@
 
 ### Model-Specific Template Override
 
-本文件中任何旧的`templates/10_video_prompt.md`字段映射、9图或十字段分镜描述，只适用于Seedance 2.0。`Target Video Model = Seedance 2.5`时一律由`templates/12_seedance_25_video_prompt.md`覆盖：使用多模态参考职责、30图 / 10视频 / 10音频 / 合计50项容量审计和时间线字段。`Target Video Model = MiniMax H3`时一律由`templates/13_minimax_h3_video_prompt.md`覆盖：使用参考素材说明、核心创意、画面过程说明和`非叙事性音乐：N/A`。不得混合模型Template字段。
+本文件中任何旧的`templates/10_video_prompt.md`字段映射、9图或十字段分镜描述，只适用于Seedance 2.0。`Target Video Model = Seedance 2.5`时一律由`templates/12_seedance_25_video_prompt.md`覆盖：使用多模态参考职责、独立`主风格：`、30图 / 10视频 / 10音频 / 合计50项容量审计和时间线字段。`Target Video Model = MiniMax H3`时一律由`templates/13_minimax_h3_video_prompt.md`覆盖：使用参考素材说明、以`主风格：`首行开始的核心创意、画面过程说明和`非叙事性音乐：N/A`。不得混合模型Template字段。
 
 ## Selected-Template Projection Gate
 

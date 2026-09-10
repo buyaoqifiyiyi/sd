@@ -1293,6 +1293,26 @@ PASS：可以将已经合法完成的相邻成果组合展示，但在当前Deta
 
 FAIL：因为用户要求合并展示就绕过Confirmation Input Semantics、Completion Gate或Hard Stop。
 
+---
+
+## R33 Model-Specific Main Style Regression
+
+### R33-A Seedance 2.5 Has A Dedicated Main Style Field
+
+输入：Seedance 2.5的CLIP-02继承已确认的低饱和海边Visual Grammar Baseline，当前剧情需要人物在暮色中靠近，且时间线已有动作与镜头设计。
+
+PASS：`尾帧限制：`后、`全局叙事与画面设定：`前存在独立`主风格：`；它写项目特定风格含义与当前Clip必要的少量可见载体，例如真实暮光来源、低饱和灰蓝关系、克制观察机位与表演尺度。`全局叙事与画面设定：`只写主体、地点、事件、主题和核心镜头意图，不重复完整风格段；时间线继续承载当前动作、摄影机与光色变化。
+
+FAIL：把风格只隐含在全局叙事或时间线、在多个字段机械重复，或因新增风格字段删掉多模态参考 / 时间线 / 无BGM边界。
+
+### R33-B H3 Keeps Three-Part Structure With Main Style First In Core Idea
+
+输入：MiniMax H3的CLIP-03使用已确认青春片Visual Grammar Baseline，要求人物在厨房内完成一个克制反应。
+
+PASS：顶级结构仍只有`参考素材说明：`、`核心创意：`、`画面过程说明：`与既有末尾限制；`核心创意：`的第一行固定为`主风格：`，写项目特定含义和最小充分的可见载体，第二行再写主体、地点、事件与必要运镜。不得新增与三段式竞争的顶级风格段。
+
+FAIL：只写孤立风格标签、将风格藏在第二行后、增加H3顶级`主风格：`段、混入Seedance 2.5时间线或删除`非叙事性音乐：N/A`。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。

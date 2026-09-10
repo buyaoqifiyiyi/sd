@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r43 structural and routing validation for SD Film."""
+"""Deterministic r44 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -107,9 +107,12 @@ def validate_skill(root: Path) -> list[str]:
         (prompt_template25, "## 唯一允许的最终模板"),
         (prompt_template25, "参考素材职责与优先级"),
         (prompt_template25, "时间线："),
+        (prompt_template25, "### 主风格："),
+        (prompt_template25, "独立、无条件的项目视觉入口"),
         (adapter_h3, "prompt_output_template: templates/13_minimax_h3_video_prompt.md"),
         (prompt_template_h3, "参考素材说明："),
         (prompt_template_h3, "核心创意："),
+        (prompt_template_h3, "核心创意：\n主风格："),
         (prompt_template_h3, "非叙事性音乐：N/A"),
         (adapter_h3, "min_seconds: 4"),
         (adapter_h3, "max_seconds: 15"),
@@ -219,7 +222,7 @@ def validate_skill(root: Path) -> list[str]:
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r43 routing marker: {marker}")
+            errors.append(f"missing r44 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -244,7 +247,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r43 structural and routing validation")
+    print("PASS: r44 structural and routing validation")
     return 0
 
 if __name__ == "__main__":
