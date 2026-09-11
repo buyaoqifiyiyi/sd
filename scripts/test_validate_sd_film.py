@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r68 SD Film validator."""
+"""Regression tests for the r69 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile

@@ -58,7 +58,7 @@ Read current rules
 → Classify and resolve every finding by risk
 → Run targeted regression for the requested change and every repaired finding
 → Sync USER_GUIDE when user-facing behavior changed
-→ Sync Skill Version / Build ID
+→ Sync Skill Version / Build ID（一次迭代 = 一个对话累积的改动，不为单个任务各升一版）
 → Final change report
 ```
 
