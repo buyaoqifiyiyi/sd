@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r51 SD Film validator."""
+"""Regression tests for the r52 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -17,6 +17,19 @@ PKG_SPEC = importlib.util.spec_from_file_location(
 package_validator = importlib.util.module_from_spec(PKG_SPEC)
 assert PKG_SPEC and PKG_SPEC.loader
 PKG_SPEC.loader.exec_module(package_validator)
+
+REGRESSION_FILES = (
+    "references/regression_scenarios.md",
+    "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_system.md",
+    "references/recovery_guards.md",
+)
+
+def regression_corpus() -> str:
+    """The regression set is split across four files; assertions target the set."""
+    return "\n".join(
+        (ROOT / relative).read_text(encoding="utf-8-sig") for relative in REGRESSION_FILES
+    )
 
 class R34RegressionTests(unittest.TestCase):
     def test_active_skill_passes(self) -> None:
@@ -84,7 +97,7 @@ class R34RegressionTests(unittest.TestCase):
         sequence = (ROOT / "workflows/16_sequence_planning_workflow.md").read_text(encoding="utf-8-sig")
         clip = (ROOT / "workflows/10_clip_production_workflow.md").read_text(encoding="utf-8-sig")
         prompt = (ROOT / "workflows/11_video_generation_workflow.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("STATE-00 Project Director Baseline", director)
         self.assertIn("STATE-08 Director-to-Prompt Translation", director)
         self.assertIn("当前FX的视觉重点、遮挡/Reveal与后果呈现功能", fx)
@@ -98,7 +111,7 @@ class R34RegressionTests(unittest.TestCase):
         plan = (ROOT / "templates/20_clip_plan.md").read_text(encoding="utf-8-sig")
         projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
         review = (ROOT / "workflows/13_review_workflow.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("### Adjacent Observation Contrast And Deliberate Repetition", router)
         self.assertIn("阶段间观察层次", plan)
         self.assertIn("只保留同一摄影机逻辑", plan)
@@ -111,7 +124,7 @@ class R34RegressionTests(unittest.TestCase):
         visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
         scene = (ROOT / "workflows/08_scene_breakdown_workflow.md").read_text(encoding="utf-8-sig")
         review = (ROOT / "workflows/13_review_workflow.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("### Visual Grammar Baseline And Scene Delta", director)
         self.assertIn("色彩的导演功能是“权限”而非默认滤镜", director)
         self.assertIn("Visual Grammar Baseline", visual)
@@ -125,7 +138,7 @@ class R34RegressionTests(unittest.TestCase):
         asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
         projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
         template = (ROOT / "templates/12_seedance_25_video_prompt.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
         self.assertIn("### Project Color Reference Route", styles)
         self.assertIn("不会获得资产ID", styles)
@@ -221,7 +234,7 @@ class R34RegressionTests(unittest.TestCase):
         twofive = (ROOT / "templates/12_seedance_25_video_prompt.md").read_text(encoding="utf-8-sig")
         h3 = (ROOT / "templates/13_minimax_h3_video_prompt.md").read_text(encoding="utf-8-sig")
         budget = (ROOT / "knowledge/reference_budget.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("Required Sketch Submission Binding", preflight)
         self.assertIn("实际提交图片输入", two)
         self.assertIn("真实`@图片N`", twofive)
@@ -246,7 +259,7 @@ class R34RegressionTests(unittest.TestCase):
         template = (ROOT / "templates/03_asset_discovery_prompt.md").read_text(encoding="utf-8-sig")
         prop = (ROOT / "workflows/06_prop_asset_workflow.md").read_text(encoding="utf-8-sig")
         completion = (ROOT / "rules/completion_gate.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         for marker in ("Important Prop Completeness Pass", "Important Prop Candidate", "Prop Production Route", "No important PROP asset required"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, discovery)
@@ -273,7 +286,7 @@ class R34RegressionTests(unittest.TestCase):
         template = (ROOT / "templates/06_prop_asset_prompt.md").read_text(encoding="utf-8-sig")
         builtin = (ROOT / "templates/24_builtin_image_asset_prompt.md").read_text(encoding="utf-8-sig")
         midjourney = (ROOT / "templates/14_midjourney_asset_prompt.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("Main 1", workflow)
         self.assertIn("covered by Main 1", template)
         self.assertIn("four-panel prop sheet", builtin)
@@ -348,7 +361,7 @@ class R34RegressionTests(unittest.TestCase):
         automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
         progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
         activation = (ROOT / "rules/activation_rules.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
         for text in (automation, activation, guide):
             with self.subTest(text=text[:32]):
@@ -368,7 +381,7 @@ class R34RegressionTests(unittest.TestCase):
         sketch = (ROOT / "knowledge/clip_preflight_check.md").read_text(encoding="utf-8-sig")
         automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         for text in (asset_rules, sketch):
             with self.subTest(text=text[:32]):
                 self.assertIn("NEEDS_USER_SELECTION", text)
@@ -383,7 +396,7 @@ class R34RegressionTests(unittest.TestCase):
         automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
         progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         for text in (automation, guide):
             with self.subTest(text=text[:32]):
                 self.assertIn("Preproduction Package", text)
@@ -402,7 +415,7 @@ class R34RegressionTests(unittest.TestCase):
         h3 = (ROOT / "templates/13_minimax_h3_video_prompt.md").read_text(encoding="utf-8-sig")
         projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
         h3_compiler = (ROOT / "knowledge/prompt_compilation/minimax_h3_compilation.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("尾帧限制：\n\n主风格：\n", twofive)
         self.assertIn("### 主风格：", twofive)
         self.assertIn("独立、无条件的项目视觉入口", twofive)
@@ -465,7 +478,7 @@ class R34RegressionTests(unittest.TestCase):
         asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
         discovery = (ROOT / "workflows/03_asset_discovery_workflow.md").read_text(encoding="utf-8-sig")
         template = (ROOT / "templates/03_asset_discovery_prompt.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("### User-Declared Existing Assets", asset_rules)
         self.assertIn("资产可用性声明", asset_rules)
         self.assertIn("声明不等于登记", asset_rules)
@@ -481,7 +494,7 @@ class R34RegressionTests(unittest.TestCase):
         visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
         bible = (ROOT / "templates/01_project_bible_template.md").read_text(encoding="utf-8-sig")
         scorecard = (ROOT / "knowledge/quality/prompt_scorecard.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("# Aesthetic Decision Lock Gate", visual)
         self.assertIn("被放弃的选项", visual)
         self.assertIn("Aesthetic Decision Lock", director)
@@ -495,7 +508,7 @@ class R34RegressionTests(unittest.TestCase):
     def test_aesthetic_decision_lock_reaches_state08_projection(self) -> None:
         projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
         prompt = (ROOT / "workflows/11_video_generation_workflow.md").read_text(encoding="utf-8-sig")
-        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
         self.assertIn("| Aesthetic Decision Lock（STATE-04） | 主风格；画面描述；环境一致性 |", projection)
         self.assertIn("反差与光比结构的程度及其变化节点", projection)
         self.assertIn("Aesthetic Decision Lock的四项决定同样必须落成固定字段中的可见语义", projection)
@@ -651,38 +664,52 @@ class R50ContextBudgetTests(unittest.TestCase):
         self.assertEqual(findings, [])
 
     def test_ledger_registers_exactly_the_oversized_files(self) -> None:
-        registered = validator.read_size_ledger(ROOT)
+        ledger = validator.read_size_ledger(ROOT)
         oversized = {
             relative
-            for relative, lines in validator.scan_markdown(ROOT)
-            if lines > validator.BUDGET_TARGET_LINES
+            for relative, size in validator.scan_markdown(ROOT)
+            if size > validator.BUDGET_TARGET_BYTES
         }
-        self.assertEqual(oversized, registered)
+        self.assertEqual(oversized, set(ledger))
 
     def test_skill_entry_stays_compact(self) -> None:
-        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
-        self.assertLessEqual(skill.count("\n"), validator.SKILL_ENTRY_MAX_LINES)
+        raw = (ROOT / "SKILL.md").read_bytes().decode("utf-8-sig").encode("utf-8")
+        self.assertLessEqual(len(raw), validator.SKILL_ENTRY_MAX_BYTES)
+        self.assertLessEqual(raw.count(b"\n"), validator.SKILL_ENTRY_MAX_LINES)
 
     def test_unregistered_oversized_file_is_rejected(self) -> None:
-        findings = validator.check_context_budget([("huge/thing.md", 900)], set())
+        findings = validator.check_context_budget([("huge/thing.md", 60 * 1024)], {})
         self.assertTrue(any("not registered" in item for item in findings))
 
     def test_registered_oversized_file_is_accepted(self) -> None:
         self.assertEqual(
-            validator.check_context_budget([("huge/thing.md", 900)], {"huge/thing.md"}), []
+            validator.check_context_budget(
+                [("huge/thing.md", 60 * 1024)], {"huge/thing.md": "INTEGRAL"}
+            ),
+            [],
         )
 
     def test_ceiling_violation_is_rejected_even_when_registered(self) -> None:
-        findings = validator.check_context_budget([("huge/thing.md", 3001)], {"huge/thing.md"})
+        findings = validator.check_context_budget(
+            [("huge/thing.md", 110 * 1024)], {"huge/thing.md": "COMPOSITE"}
+        )
         self.assertTrue(any("ceiling" in item for item in findings))
 
     def test_stale_ledger_entry_is_rejected(self) -> None:
-        findings = validator.check_context_budget([("small/thing.md", 120)], {"small/thing.md"})
+        findings = validator.check_context_budget(
+            [("small/thing.md", 10 * 1024)], {"small/thing.md": "INTEGRAL"}
+        )
         self.assertTrue(any("stale" in item for item in findings))
 
     def test_ledger_entry_pointing_at_a_missing_file_is_rejected(self) -> None:
-        findings = validator.check_context_budget([], {"gone/thing.md"})
+        findings = validator.check_context_budget([], {"gone/thing.md": "INTEGRAL"})
         self.assertTrue(any("missing" in item for item in findings))
+
+    def test_unknown_ledger_class_is_rejected(self) -> None:
+        findings = validator.check_context_budget(
+            [("big/thing.md", 60 * 1024)], {"big/thing.md": "MAYBE_LATER"}
+        )
+        self.assertTrue(any("unknown class" in item for item in findings))
 
     def test_self_check_dimension_and_its_single_owner_are_wired(self) -> None:
         card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
@@ -723,12 +750,12 @@ class R51MaintenanceSelfCheckExtractionTests(unittest.TestCase):
         self.assertIn("references/maintenance_self_check.md", contracts)
         self.assertIn("references/maintenance_self_check_protocol.md", contracts)
 
-    def test_module_contracts_is_back_within_the_size_target(self) -> None:
-        lines = (ROOT / "references/module_contracts.md").read_bytes().count(b"\n")
-        self.assertLessEqual(lines, validator.BUDGET_TARGET_LINES)
-
-    def test_shrunk_file_was_unregistered_from_the_ledger(self) -> None:
-        self.assertNotIn("references/module_contracts.md", validator.read_size_ledger(ROOT))
+    def test_module_contracts_is_classified_composite_until_it_is_split(self) -> None:
+        ledger = validator.read_size_ledger(ROOT)
+        self.assertEqual(ledger.get("references/module_contracts.md"), "COMPOSITE")
+        size = dict(validator.scan_markdown(ROOT))["references/module_contracts.md"]
+        self.assertGreater(size, validator.BUDGET_TARGET_BYTES)
+        self.assertLessEqual(size, validator.BUDGET_CEILING_BYTES)
 
     def test_skill_entry_routes_to_the_run_card(self) -> None:
         skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
@@ -755,6 +782,62 @@ class R51MaintenanceSelfCheckExtractionTests(unittest.TestCase):
             with self.subTest(stale=stale):
                 self.assertNotIn(stale, knowledge)
         self.assertIn("Adapter的`duration`", knowledge)
+
+
+class R52SizeMetricAndRegressionSplitTests(unittest.TestCase):
+    """Size is measured in bytes, not lines: this corpus is 31%-57% blank lines,
+    so a line count overstates size and misjudges paragraph-dense files. And the
+    composite regression set was split so reading one scenario no longer costs
+    the whole 130 KB corpus."""
+
+    def test_size_is_measured_in_bytes_not_lines(self) -> None:
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Metric", budget)
+        self.assertIn("主度量是 UTF-8 字节数，不是行数", budget)
+        self.assertIn("## File Classes", budget)
+        for file_class in validator.LEDGER_CLASSES:
+            with self.subTest(file_class=file_class):
+                self.assertIn(file_class, budget)
+
+    def test_regression_set_is_split_with_a_single_index(self) -> None:
+        index = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Regression File Index", index)
+        for relative in REGRESSION_FILES:
+            with self.subTest(relative=relative):
+                self.assertTrue((ROOT / relative).is_file(), relative)
+                self.assertIn(relative, index)
+
+    def test_no_regression_file_costs_the_whole_corpus(self) -> None:
+        sizes = dict(validator.scan_markdown(ROOT))
+        for relative in REGRESSION_FILES:
+            with self.subTest(relative=relative):
+                self.assertLessEqual(sizes[relative], validator.BUDGET_TARGET_BYTES)
+
+    def test_recovery_guards_are_no_longer_buried_in_the_scenario_corpus(self) -> None:
+        guards = (ROOT / "references/recovery_guards.md").read_text(encoding="utf-8-sig")
+        for case in ("LR-R1", "LR-R10", "SD-R1", "SD-R5"):
+            with self.subTest(case=case):
+                self.assertIn(case, guards)
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(encoding="utf-8-sig")
+        for text in (card, criteria):
+            with self.subTest(text=text[:40]):
+                self.assertIn("references/recovery_guards.md", text)
+
+    def test_every_scenario_family_survives_the_split(self) -> None:
+        corpus = regression_corpus()
+        for scenario in ("R09", "R15", "R23", "R24", "R27", "R48", "R52",
+                         "Deterministic Expectations"):
+            with self.subTest(scenario=scenario):
+                self.assertIn(scenario, corpus)
+
+    def test_whole_skill_still_fits_its_own_budget(self) -> None:
+        self.assertEqual(
+            validator.check_context_budget(
+                validator.scan_markdown(ROOT), validator.read_size_ledger(ROOT)
+            ),
+            [],
+        )
 
 
 if __name__ == "__main__":

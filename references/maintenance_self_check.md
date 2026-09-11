@@ -56,8 +56,8 @@ Read current rules
 
 - `scripts/validate_sd_film.py --skill-root <skill-root>`：确定性结构与引用检查
 - `scripts/test_validate_sd_film.py`：完整测试入口
-- `Legacy Recovery Regression Matrix (LR-R1—LR-R10)`
-- `Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`
+- `references/recovery_guards.md` 的 `Legacy Recovery Regression Matrix (LR-R1—LR-R10)`
+- `references/recovery_guards.md` 的 `Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`
 
 上述四项是每次正式修改的固定基线，不因改动小、未触及runtime或“本轮只改文案”而跳过。脚本只负责确定性结构、不变量与引用检查；语义判据由维护者实际阅读比较完成，**脚本通过不等于全部维度自动PASS**。
 

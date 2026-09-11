@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r51 structural, routing and context-budget validation for SD Film."""
+"""Deterministic r52 structural, routing and context-budget validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -19,12 +19,18 @@ REQUIRED = (
     "references/context_budget.md",
     "references/maintenance_self_check.md",
     "references/maintenance_self_check_protocol.md",
+    "references/regression_scenarios.md",
+    "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_system.md",
+    "references/recovery_guards.md",
     "scripts/validate_prompt_package.py",
 )
 
-BUDGET_TARGET_LINES = 800
-BUDGET_CEILING_LINES = 3000
+BUDGET_TARGET_BYTES = 50 * 1024
+BUDGET_CEILING_BYTES = 100 * 1024
+SKILL_ENTRY_MAX_BYTES = 12 * 1024
 SKILL_ENTRY_MAX_LINES = 120
+LEDGER_CLASSES = ("COMPOSITE", "INTEGRAL", "NON_RUNTIME")
 NON_SKILL_DIRS = {".git", ".workbuddy", "tmp", "__pycache__", ".venv", "node_modules"}
 
 SELF_CHECK_DIMENSIONS = (
@@ -38,52 +44,62 @@ SELF_CHECK_DIMENSIONS = (
 def read(root: Path, relative: str) -> str:
     return (root / relative).read_text(encoding="utf-8-sig")
 
-def count_lines(path: Path) -> int:
-    return path.read_bytes().count(b"\n")
+def size_bytes(path: Path) -> int:
+    return len(path.read_bytes().decode("utf-8-sig").encode("utf-8"))
 
 def scan_markdown(root: Path) -> list[tuple[str, int]]:
-    """Every markdown file that ships with the skill, excluding local-only dirs."""
+    """Every markdown file that ships with the skill, sized in UTF-8 bytes.
+
+    Bytes, not lines: this corpus is 31%-57% blank lines, so a line count
+    overstates size and misjudges paragraph-dense files.
+    """
     entries: list[tuple[str, int]] = []
     for path in sorted(root.rglob("*.md")):
         relative = path.relative_to(root)
         if any(part in NON_SKILL_DIRS for part in relative.parts[:-1]):
             continue
-        entries.append((relative.as_posix(), count_lines(path)))
+        entries.append((relative.as_posix(), size_bytes(path)))
     return entries
 
-def read_size_ledger(root: Path) -> set[str]:
-    registered: set[str] = set()
+def read_size_ledger(root: Path) -> dict[str, str]:
+    """The Size Ledger rows as {relative path: file class}."""
+    ledger: dict[str, str] = {}
     for line in read(root, "references/context_budget.md").splitlines():
         stripped = line.strip()
         if not stripped.startswith("|"):
             continue
         cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-        if cells and cells[0].endswith(".md"):
-            registered.add(cells[0])
-    return registered
+        if len(cells) >= 2 and cells[0].endswith(".md"):
+            ledger[cells[0]] = cells[1]
+    return ledger
 
-def check_context_budget(entries, registered) -> list[str]:
-    """A file that outgrows the target must be registered; a registered file that
-    shrinks back within target must be unregistered. Both drifts are reported."""
+def check_context_budget(entries, ledger) -> list[str]:
+    """A file that outgrows the target must be registered with a known class; a
+    registered file that shrinks back within target must be unregistered. Both
+    drifts are reported, so the ledger never decays into a standing exemption."""
     errors: list[str] = []
-    counts = dict(entries)
-    registered = set(registered)
-    for relative, lines in entries:
-        if lines > BUDGET_CEILING_LINES:
+    sizes = dict(entries)
+    ledger = dict(ledger)
+    for relative, size in entries:
+        if size > BUDGET_CEILING_BYTES:
             errors.append(
-                f"file reached the context budget ceiling ({lines} > {BUDGET_CEILING_LINES} lines), split it: {relative}"
+                f"file reached the context budget ceiling ({size} > {BUDGET_CEILING_BYTES} bytes), "
+                f"split it: {relative}"
             )
-        elif lines > BUDGET_TARGET_LINES and relative not in registered:
+        elif size > BUDGET_TARGET_BYTES and relative not in ledger:
             errors.append(
-                f"file exceeds the context budget target ({lines} > {BUDGET_TARGET_LINES} lines) "
+                f"file exceeds the context budget target ({size} > {BUDGET_TARGET_BYTES} bytes) "
                 f"but is not registered in references/context_budget.md: {relative}"
             )
-    for relative in sorted(registered):
-        if relative not in counts:
+    for relative, file_class in sorted(ledger.items()):
+        if file_class not in LEDGER_CLASSES:
+            errors.append(f"context budget ledger has an unknown class ({file_class}): {relative}")
+        if relative not in sizes:
             errors.append(f"context budget ledger points at a missing markdown file: {relative}")
-        elif counts[relative] <= BUDGET_TARGET_LINES:
+        elif sizes[relative] <= BUDGET_TARGET_BYTES:
             errors.append(
-                f"context budget ledger entry is stale ({counts[relative]} lines, back within target), remove it: {relative}"
+                f"context budget ledger entry is stale ({sizes[relative]} bytes, back within target), "
+                f"remove it: {relative}"
             )
     return errors
 
@@ -340,6 +356,11 @@ def validate_skill(root: Path) -> list[str]:
         errors.append(
             f"SKILL.md must stay a compact routing entrypoint ({entry_lines} > {SKILL_ENTRY_MAX_LINES} lines)"
         )
+    entry_bytes = size_bytes(root / "SKILL.md")
+    if entry_bytes > SKILL_ENTRY_MAX_BYTES:
+        errors.append(
+            f"SKILL.md must stay a compact routing entrypoint ({entry_bytes} > {SKILL_ENTRY_MAX_BYTES} bytes)"
+        )
     card = read(root, "references/maintenance_self_check.md")
     criteria = read(root, "references/maintenance_self_check_protocol.md")
     contracts = read(root, "references/module_contracts.md")
@@ -361,7 +382,11 @@ def validate_skill(root: Path) -> list[str]:
         errors.append("module_contracts.md must route Skill maintenance QA to its owner")
     if "非运行时文件" not in user_guide:
         errors.append("USER_GUIDE.md must declare itself a non-runtime document")
-    errors.extend(check_context_budget(scan_markdown(root), read_size_ledger(root)))
+    ledger = read_size_ledger(root)
+    for relative, file_class in ledger.items():
+        if file_class == "NON_RUNTIME" and "非运行时文件" not in read(root, relative):
+            errors.append(f"a NON_RUNTIME ledger entry must declare itself in-file: {relative}")
+    errors.extend(check_context_budget(scan_markdown(root), ledger))
     return errors
 
 def main() -> int:
@@ -373,7 +398,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r51 structural, routing and context-budget validation")
+    print("PASS: r52 structural, routing and context-budget validation")
     return 0
 
 if __name__ == "__main__":

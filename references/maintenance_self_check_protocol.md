@@ -32,7 +32,7 @@
 10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
 11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
 12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。
-13. **Runtime Claim / Legacy Recovery Check**：核对Runtime Skill Reload、Workflow Re-entry与Legacy Project Recovery仍由唯一owner定义；Skill Source / Project State Source独立；历史Skill永不成为Current authority；Claim Gate诚实；Work只在真实必要时escalate；Legacy Intent Backfill只增补不重做；STATE-08从current owner entry重进；普通`下一步`不触发全量恢复。必须运行`references/regression_scenarios.md`中的`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`及现有Validator / tests。
+13. **Runtime Claim / Legacy Recovery Check**：核对Runtime Skill Reload、Workflow Re-entry与Legacy Project Recovery仍由唯一owner定义；Skill Source / Project State Source独立；历史Skill永不成为Current authority；Claim Gate诚实；Work只在真实必要时escalate；Legacy Intent Backfill只增补不重做；STATE-08从current owner entry重进；普通`下一步`不触发全量恢复。必须运行`references/recovery_guards.md`中的`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`及现有Validator / tests。
 14. **Standalone Skill Discovery Check**：核对当前运行时用户级权威副本位于`$HOME/.codex/skills/sd-film`、同名`sd-film`没有第二份用户级副本、`SKILL.md` frontmatter保留启动别名、`agents/openai.yaml`与Skill名称一致、`policy.allow_implicit_invocation`为`true`，且用户文档只把Codex `$sd-film`作为本机独立Skill的确定性显式入口。在当前用户客户端中，普通Chat的`@`选择器只显示Plugin；不得宣称本机独立Skill可通过`@`加显示名调用，也不得把网页/移动端读取本机Skill误写为受支持能力。
 15. **Context Budget Check**：`references/context_budget.md`是体量阈值与Size Ledger的唯一owner，本项只引用它，不复制数值。核对`SKILL.md`仍在Entry阈值内且未复制细粒度规则；本次变更没有使任何文件超过Target而漏登记；已瘦身到Target以下的文件已从Ledger摘牌；没有任何文件达到Ceiling。超长不是格式问题而是失效风险：高频必读文件越长，中段规则的遵循率越低，检索命中率越低。因此本项判定为`FIXED`时修复的是行为失效，不是排版。
 
@@ -63,7 +63,7 @@
 
 ## Runtime Recovery Regression Protection
 
-`Unconditional Chat Runtime Startup And Recovery Guard`是每次正式Skill修改的固定基线，而不是按Diff选择的可选回归。无论修改任何文件、模块、文案、Template、Knowledge、测试、Validator或仅修正拼写，都必须运行完整`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`，验证普通Chat activation、Current Skill resource解析、双source独立、Claim Gate、Work边界、legacy mapping、intent backfill、STATE-08 re-entry与plain-next隔离；不能以改动小、未触及runtime或“本轮改的不是recovery文件”为由跳过。
+`Unconditional Chat Runtime Startup And Recovery Guard`是每次正式Skill修改的固定基线，而不是按Diff选择的可选回归。无论修改任何文件、模块、文案、Template、Knowledge、测试、Validator或仅修正拼写，都必须运行`references/recovery_guards.md`中的完整`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`，验证普通Chat activation、Current Skill resource解析、双source独立、Claim Gate、Work边界、legacy mapping、intent backfill、STATE-08 re-entry与plain-next隔离；不能以改动小、未触及runtime或“本轮改的不是recovery文件”为由跳过。
 
 以下区域仍视为高风险触发面；命中时除固定基线外，还必须根据直接消费者增加定向恢复案例：
 
@@ -92,4 +92,4 @@
 - Codex中的确定性显式入口是`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin或Plugin内含能力，本机独立Skill不得承诺以`@`选择显示名的入口；普通Chat只有在宿主实际暴露本机Skills时，才可能通过`description`对`调用sd`作隐式选择。`agents/openai.yaml`的`display_name`与`allow_implicit_invocation`不会把独立Skill注册成Plugin，也不证明普通Chat已有`@`入口。
 - Skill变更通常应被Codex自动检测；如果当前Codex会话未刷新元数据，要求重启桌面应用或新建Codex任务后复测。普通Chat的`@`列表没有SD Film时，不得把它误诊为Skill内容错误，也不得为迎合`@`而创建Plugin、复制Skill或弱化Runtime规则。
 
-可执行owner仍为`scripts/validate_sd_film.py --skill-root <skill-root>`与`scripts/test_validate_sd_film.py`；它们必须检查元数据、别名、隐式调用开关、单一用户级权威副本、禁止虚假`@`显式调用声明及`Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`。安装位置、普通Chat是否暴露本机Skill以及客户端刷新属于运行环境证据，脚本之外仍需在最终报告中如实记录。
+可执行owner仍为`scripts/validate_sd_film.py --skill-root <skill-root>`与`scripts/test_validate_sd_film.py`；它们必须检查元数据、别名、隐式调用开关、单一用户级权威副本、禁止虚假`@`显式调用声明及`references/recovery_guards.md`中的`Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`。安装位置、普通Chat是否暴露本机Skill以及客户端刷新属于运行环境证据，脚本之外仍需在最终报告中如实记录。

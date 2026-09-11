@@ -16,17 +16,33 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 因此本预算检查的是**可读性纪律**，不是磁盘占用，也不是写作风格。
 
-## Budget Tiers
+## Metric
 
-行数按文件实际换行数统计，不区分EOL。
+**主度量是 UTF-8 字节数，不是行数。**
+
+模型的上下文成本按 token／字符计算，不按行。本库Markdown空行占比在31%–57%之间，用行数会把体量高估近一倍，并系统性地漏判段落密集的文件。实测教训：一个395行的文件实为57 KB（全库第4），而一个2330行的文件实为33 KB（中等）——按行数排名会把这两者判反。
+
+行数只作为`SKILL.md`的辅助约束，不作为其他文件的阈值。
+
+## Budget Tiers
 
 | Tier | 阈值 | 要求 |
 |---|---|---|
-| Entry | `SKILL.md` ≤ 120 行 | 只保留身份、版本、入口、主路由、全局不变量与索引；不得复制细粒度规则、算法或Template字段 |
-| Target | 单文件 ≤ 800 行 | 超过必须登记在下方Size Ledger |
-| Ceiling | 单文件 ≤ 3000 行 | **任何文件都不得达到**；达到即视为结构性失控，必须拆分后再提交 |
+| Entry | `SKILL.md` ≤ 12 KB 且 ≤ 120 行 | 只保留身份、版本、入口、主路由、全局不变量与索引；不得复制细粒度规则、算法或Template字段 |
+| Target | 单文件 ≤ 50 KB | 超过必须登记在下方Size Ledger |
+| Ceiling | 单文件 ≤ 100 KB | **任何文件都不得达到**；达到即视为结构性失控，必须先拆分再提交 |
 
-`SKILL.md`还同时受`scripts/validate_sd_film.py`既有字节上限约束。
+## File Classes
+
+超过Target的文件必须登记，并归入以下一类。类别决定“能不能留着不拆”：
+
+| Class | 含义 | 处置 |
+|---|---|---|
+| `COMPOSITE` | 合集型：由并列的独立小节组成，任何一次使用只需要其中一两节 | **应拆**。登记只是拆分前的过渡，不得长期保留 |
+| `INTEGRAL` | 整体型：由一条连贯的推理链或流程组成，使用时必须整块读完 | 允许保留在Target以上；但必须靠`rules/resource_loading.md`的Read Budget按章节读，并写明该边界 |
+| `NON_RUNTIME` | 非运行时文档，不参与运行时读取 | 豁免Target；但文件自身必须声明为非运行时文件 |
+
+判定方法：看小节之间是否互相依赖。小节可独立成立 → `COMPOSITE`；缺一节就读不懂整条链 → `INTEGRAL`。**只看体量不看结构会拆错文件**：整体型文件拆开后，单次使用反而要读更多文件。
 
 ## Size Ledger
 
@@ -34,23 +50,20 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 未登记的超Target文件、已降到Target以下但仍留在此表的条目、以及指向不存在文件的条目，都会使Validator失败。
 
-| File | Owner | Lines (r50) | Why It Still Stays Whole | Review By |
+| File | Class | Size (r52) | Why It Stays | Review By |
 |---|---|---|---|---|
-| references/regression_scenarios.md | Skill维护QA | 1508 | 回归场景矩阵，按R*/LR-R*/SD-R*编号顺序检索；拆分会产生跨文件引用与编号断链 | 2026-10-11 |
-| USER_GUIDE.md | 用户文档 | 906 | 面向人的使用说明，未被任何Workflow列为Required Resource，不参与运行时读取；不得被当作运行时规则来源 | 2026-10-11 |
-| workflows/09_shot_design_workflow.md | STATE-06 | 1157 | STATE-06详细镜头设计的单一owner；内部按Shot字段分组，拆分会使字段归属跨文件 | 2026-10-11 |
-| workflows/13_review_workflow.md | STATE-09 | 1032 | 三层Review与逐镜逐边界覆盖台账的单一owner；覆盖矩阵需要完整上下文才能核对 | 2026-10-11 |
-| knowledge/11_seedance_adapter.md | Seedance知识层 | 1833 | 能力数值的owner是`adapters/seedance-2.0.md`与`seedance-2.5.md`；本文件另有4处prose复述`4—15秒`／`4—30秒`窗口（889、1010、1582、1771行），属已声明的知识层复述，但能力变更时需同步。属独立变更 | 2026-10-11 |
-| rules/03_prompt_rules.md | Prompt Rules | 1447 | 22条Prompt规则按编号引用，拆分会使跨规则引用失效 | 2026-10-11 |
-| workflows/07_visual_development_workflow.md | STATE-04 | 2330 | 全库最长文件，距Ceiling余量最小；含Aesthetic Decision Lock Gate与多层视觉Gate，是最优先的拆分候选 | 2026-10-11 |
-| workflows/01_project_setup_workflow.md | STATE-00 | 1389 | 项目初始化与Project Model Selection Gate的单一owner | 2026-10-11 |
+| references/module_contracts.md | COMPOSITE | 72.8 KB | 29个并列模块合同各自独立，**应拆**；已确定按「接口与权威 / 核心模块 / 辅助模块 / 知识契约」四分的方向，未在本轮执行 | 2026-10-11 |
+| USER_GUIDE.md | NON_RUNTIME | 64.7 KB | 面向人的使用说明，文件顶部已自证为非运行时文件，未被任何Workflow列为Required Resource | 2026-10-11 |
+| knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 57.3 KB | STATE-08编译链，缺任一Gate都会漏投影，拆分会让每个Clip多读一个文件；按章节读：Global/Per-Shot Projection Matrix、Serialization Rules、Applicability Gate为常用入口 | 2026-10-11 |
+| workflows/09_shot_design_workflow.md | INTEGRAL | 51.4 KB | STATE-06 Step 0—7线性流程，Shot字段之间互相约束；按章节读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
 
 ## Ledger Maintenance
 
-- **新增必登记**：任何修改使文件超过Target时，必须在同一次变更中登记，写明Owner、当前行数、留存理由与复审日期。
+- **新增必登记**：任何修改使文件超过Target时，必须在同一次变更中登记，写明Class、当前体量、留存理由与复审日期。
 - **瘦身必摘牌**：文件降到Target以下时，必须在同一次变更中移除条目。不允许保留已经达标的僵尸条目。
+- **COMPOSITE不得长期挂账**：`COMPOSITE`类条目连续两次复审仍未拆分，视为未处理的技术债。
 - **复审到期必重估**：到达`Review By`时重新判断，要么拆分、要么更新理由与新的复审日期。不得默认续期。
-- **拆分优先于扩表**：登记不是长期解法。同一Owner连续两次复审仍未拆分时应视为未处理的技术债。
+- **拆分必须按编号／职责边界**：拆分后每个文件的编号或命名空间保持连续，并由原文件提供Index；不得为压体量而切断互相依赖的链条。
 
 ## Change Interaction
 
