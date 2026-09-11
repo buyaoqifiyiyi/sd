@@ -41,19 +41,11 @@ FX。
 
 # Workflow Position
 
-
 当前阶段：
+STATE-09 Review
 
-STATE-09
-
-
-
-进入条件：
-
-
-STATE-08 Clip-based Video Prompt / Video Generation Complete
-
-
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
 
 ---
 

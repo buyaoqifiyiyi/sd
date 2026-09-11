@@ -1,5 +1,15 @@
 # STATE-07 Clip Production Workflow
 
+# Workflow Position
+
+当前阶段：
+STATE-07 Clip Production
+
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
+
+---
+
 ## Contract
 
 Input：Confirmed STATE-06 Detailed Shot Design、WRITER / DIRECTOR INTENT、Confirmed Spatial Blocking、Canonical Assets、Selected Model / Adapter Profile。Output：`templates/20_clip_plan.md` 规定的 Confirmed Execution Clip Plan。Next：STATE-08。

@@ -3,6 +3,19 @@
 # AI影视道具资产制作流程
 
 
+# Workflow Position
+
+当前阶段：
+STATE-03 Asset Development
+
+子阶段：
+Prop Asset Development
+
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
+
+---
+
 ## 1. Workflow定位
 
 

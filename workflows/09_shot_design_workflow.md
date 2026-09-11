@@ -35,18 +35,11 @@
 
 # Workflow Position
 
-
 当前阶段：
+STATE-06 Detailed Shot Design
 
-STATE-06
-
-
-进入条件：
-
-
-STATE-05 Scene Breakdown Complete
-
-
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
 
 ---
 

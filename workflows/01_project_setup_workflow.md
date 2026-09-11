@@ -44,19 +44,10 @@ Clip Production。
 # Workflow Position
 
 当前阶段：
-
 STATE-00 Project Setup
 
-
-下一阶段：
-
-STATE-01 Script Analysis
-
-
-对应下一Workflow：
-
-02_script_analysis_workflow.md
-
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
 
 ---
 

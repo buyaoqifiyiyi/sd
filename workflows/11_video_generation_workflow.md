@@ -1,5 +1,15 @@
 # STATE-08 Video Prompt / Generation Workflow
 
+# Workflow Position
+
+当前阶段：
+STATE-08 Clip-based Video Prompt / Video Generation
+
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
+
+---
+
 ## Contract
 
 Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confirmed Script、Director Intent、Spatial Blocking、Canonical Assets、首尾帧与状态。Output schema：按Selected Model路由，Seedance 2.0为`templates/10_video_prompt.md`，Seedance 2.5为`templates/12_seedance_25_video_prompt.md`，MiniMax H3为`templates/13_minimax_h3_video_prompt.md`。本 Workflow 不选择模型、不创建或拆分 Clip、不调用旧 Compiler。

@@ -61,26 +61,11 @@ Clip Production Plan。
 
 # Workflow Position
 
-
 当前阶段：
-
 STATE-04 Visual Development
 
-
-前置阶段：
-
-STATE-03 Asset Development
-
-
-下一阶段：
-
-STATE-05 Scene Breakdown
-
-
-对应下一Workflow：
-
-08_scene_breakdown_workflow.md
-
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
 
 ---
 

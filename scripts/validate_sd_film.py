@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r64 structural, routing and readability validation for SD Film."""
+"""Deterministic r65 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -629,7 +629,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r64 structural, routing and readability validation")
+    print("PASS: r65 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

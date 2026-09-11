@@ -1,5 +1,18 @@
 # FX Asset Workflow
 
+# Workflow Position
+
+当前阶段：
+STATE-03 Asset Development
+
+子阶段：
+Formal FX Asset Development（条件）
+
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
+
+---
+
 ## Purpose
 
 将STATE-02已经识别的效果需求转换为可复用、可绑定、可追踪连续性的FX Asset。

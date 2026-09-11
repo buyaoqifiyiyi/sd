@@ -32,27 +32,11 @@
 
 # Workflow Position
 
-
 当前阶段：
-
-
 STATE-02 Asset Discovery
 
-
-
-前置阶段：
-
-
-STATE-01 Script Analysis
-
-
-
-下一阶段：
-
-
-STATE-03 Asset Development
-
-
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
 
 ---
 

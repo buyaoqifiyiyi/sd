@@ -32,37 +32,14 @@
 
 # Workflow Position
 
-
 当前阶段：
-
-
 STATE-03 Asset Development
 
-
-
 子阶段：
-
-
 Character Asset Development
 
-
-
-前置阶段：
-
-
-03_asset_discovery_workflow
-
-
-
-下一阶段：
-
-
-05_environment_asset_workflow
-
-
-06_prop_asset_workflow
-
-
+前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
+`workflows/workflow_map.md`
 
 ---
 
