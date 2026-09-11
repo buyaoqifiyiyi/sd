@@ -39,7 +39,7 @@
 - Module Contracts (knowledge contracts): `references/module_contracts_knowledge.md`
 - Skill Maintenance Self-Check (per-change entry): `references/maintenance_self_check.md`
 - Skill Maintenance Self-Check Criteria: `references/maintenance_self_check_protocol.md`
-- Skill Context Budget And Size Ledger: `references/context_budget.md`
+- Skill Accessibility Discipline And Size Index: `references/context_budget.md`
 - Portable State Baseline: `portable_project_status.md`
 - Repository Index: `index.md`
 

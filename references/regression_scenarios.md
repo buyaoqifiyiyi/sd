@@ -350,10 +350,10 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R48-A至R48-H验证交付物校验器与Skill维护校验器职责互不替代、未授权音色字段被拒、Review台账逐镜逐边界全覆盖且不得留空、`画幅：`分镜总数声明与实际数量一致、大全景尺度可由现实关系复算、人物必须响应环境光区、参考代际劣化按顺序处理且不放开线稿/Storyboard禁令，以及经验必须带P/O/C分类与触发条件、步骤、失效信号、例外、反例且耦合来源不得升级为P或不作措辞级结论；STATE-08固定Schema、R11预算硬门槛与Voice opt-in保持不变。
 - R49-A至R49-C验证STATE-04 Aesthetic Decision Lock在四个维度各要求排他性选择与被放弃的选项、无取舍的默认做法不构成决定、决定沿STATE-06与STATE-08继承并由Prompt Scorecard Hard Gate审计；四项决定不新增Project Bible竞争区域、平行Schema或STATE-08字段，逐镜参数仍由STATE-06拥有。
 - R50-A至R50-B验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；不新增任何Prompt字段。
-- R51-A至R51-D验证Skill体量预算：超Target未登记、超Ceiling、僵尸台账条目、指向不存在文件的台账条目均使Validator失败；已登记且未超Ceiling的超Target文件通过；`SKILL.md`保持在Entry行数预算内；预算本身不构成新增文件的理由，也不与`rules/resource_loading.md`的运行时读取规则重叠。
-- R52-A至R52-D验证维护自检已从模块合同抽取为可独立读取的短卡与判据真源：必读路径不再需要通读超长合同文件；`module_contracts.md`不得重新长出并行检查副本（其自身作为`COMPOSITE`体量债仍在Size Ledger待拆）；`USER_GUIDE.md`为非运行时文件；模型能力数值只由Adapter拥有，知识层不再复述原始窗口。
-- R53-A至R53-D验证体量以UTF-8字节而非行数判定、`COMPOSITE`文件必须拆分而`INTEGRAL`文件保留并写明按章节读入口、Ceiling不可被Ledger豁免且已实际执行（132.7 KB回归集被拆为四个文件）、拆分后编号连续且由原文件提供Index、引用方全部更新。
-- R54-A至R54-D验证长期体量维护方案的三层可执行：事前不新增无归属文件、不先加后登、新文件不超Target的60%；事中由Validator独立强制字节阈值、类别与Ledger一致性；事后按周期产出体检报告并对过期台账判失败；`COMPOSITE`是待拆队列而非豁免。
+- R51-A至R51-D验证Skill可达性纪律：越过复核线不阻断提交但必须给出读取入口或拆分、超Ceiling、僵尸索引条目、指向不存在文件的条目仍使Validator失败；`SKILL.md`保持在Entry预算内；体量本身不构成新增文件的理由，也不与`rules/resource_loading.md`的运行时读取规则重叠。
+- R52-A至R52-D验证维护自检已从模块合同抽取为可独立读取的短卡与判据真源：必读路径不再需要通读超长合同文件；`module_contracts.md`不得重新长出并行检查副本；`USER_GUIDE.md`为非运行时文件且不在可达性纪律管辖内；模型能力数值只由Adapter拥有，知识层不再复述原始窗口。
+- R53-A至R53-D验证体量以UTF-8字节而非行数判定、`COMPOSITE`文件必须拆分而`INTEGRAL`文件保留并写明按章节读入口、Ceiling不可被Size Index豁免且已实际执行（132.7 KB回归集被拆为四个文件）、拆分后编号连续且由原文件提供Index、引用方全部更新。
+- R54-A至R54-D验证长期可达性维护的三层可执行：事前不新增无归属文件、变厚必须给入口、新文件不超复核线60%；事中由Validator独立强制Ceiling、类别、读取入口与索引一致性；事后按周期产出体检报告；`COMPOSITE`是待拆队列而非豁免。
 - R54-E验证“减”的通道必须被实际评估：`Duplicate Rule Check`除查重复外还要判定是否存在可合并或可退役的既有规则，`Additive By Default`不得被解释成规则总量只增不减。
 - R55-A至R55-D验证自检属于Skill本体而非执行环境：`SKILL.md`前置声明自维护与写入前三项判定、协议纯文本可人工逐条执行、缺工具不得降低检查强度、版本纪律对任何执行者同样适用。
 - R55-E验证既有检测层的身份在搬家与改名后仍然连续：原名称`Skill Update Self-Check / Change Safety Checklist`保持可检索，新入口显式声明只是入口、不构成第二套体系，全库只有一个检查体系入口。

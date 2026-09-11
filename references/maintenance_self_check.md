@@ -6,7 +6,7 @@
 
 它属于Skill维护层：不是影视制作Pipeline的STATE，不写入项目状态，不进入用户视频Prompt，也不得被复制成另一套并行检查规范。
 
-生产系统的**模块接口合同**由`references/module_contracts.md`拥有，本文件不重复定义任何模块合同；Skill自身体量的**数值阈值与Size Ledger**由`references/context_budget.md`拥有，本文件只引用其一。
+生产系统的**模块接口合同**由`references/module_contracts.md`拥有，本文件不重复定义任何模块合同；Skill自身的**可达性判据与Size Index**由`references/context_budget.md`拥有，本文件只引用其一。
 
 ## Maintenance System Map
 
@@ -17,7 +17,7 @@
 | `SKILL.md` 的 `Self-Maintenance` | 入口与不变量摘要 | 任何写入**之前**（必读） |
 | 本文件 | 执行清单：顺序、判定项、报告格式 | 任何写入**之后**（必读） |
 | `maintenance_self_check_protocol.md` | 判据真源：每项的完整定义、边界与反例 | 需要判据时 |
-| `context_budget.md` | 体量阈值、文件类别与Size Ledger | 做体量判定时 |
+| `context_budget.md` | 可达性判据、文件类别与Size Index | 做可达性判定时 |
 | `recovery_guards.md` | 两个固定Guard矩阵（LR-R1—R10 / SD-R1—SD-R5） | 固定基线，每次必跑 |
 | `module_contracts.md` | 模块归属的唯一owner（本体系只引用，不复制） | 做归属判定时 |
 
@@ -33,7 +33,7 @@
 
 1. **确认这是正式修改**：只要改到`SKILL.md`、Rules、Workflows、Knowledge、Templates、References、Adapters、Validator、测试或用户文档中任何一个字节，它就是正式修改——不论改动大小、是否只改文案或拼写、是否由人还是由Agent执行。
 2. **归属判定**：先找现有owner。默认把内容补进既有文件；只有确认现有权威位置都不合适才新增文件，且新文件不得超过30 KB。
-3. **体量判定**：用**字节数**（不是行数）对照`references/context_budget.md`的Target与Ceiling。本次变更若使任一文件超过Target，或把已在Target以上的文件再推高10%，必须在**同一次变更内**处理；不得先写后登记。
+3. **可达性判定**：用**字节数**（不是行数）对照`references/context_budget.md`的复核线与Ceiling。越过复核线**不阻断**，但必须在同一次变更内说清它的读取入口，或拆分它；达到Ceiling必须先拆分。无论大小，新增内容都必须有消费者——没有消费者的内容等于已经丢了。
 4. **减法判定**：本次新增是否使某条既有规则过时、被覆盖或可合并？结论为“无”也要写下依据。`Additive By Default`保护既有字段与已确认行为，**不保护规则总量**。
 
 四项判定都是**读文件即可完成的人工判断**，不需要任何工具。
@@ -82,7 +82,7 @@ Read current rules
 | 12 | Change Classification Check | 最终变更分类是否与实际操作一致 |
 | 13 | Runtime Claim / Legacy Recovery Check | Runtime Reload、Workflow Re-entry与Legacy Recovery是否仍由唯一owner定义 |
 | 14 | Standalone Skill Discovery Check | 独立Skill的发现入口、别名与单一用户级权威副本是否完好 |
-| 15 | Context Budget Check | 是否仍守Entry / Target / Ceiling预算，且Size Ledger未被腐化 |
+| 15 | Context Budget Check | 细节是否仍能读到：Entry / 复核线 / Ceiling，Size Index是否有读取入口且未腐化 |
 
 ## Required Verification
 
@@ -91,7 +91,7 @@ Read current rules
 | 项 | 手工执行（任何环境都必须做） | 有工具时的加固 |
 |---|---|---|
 | 结构与引用完整性 | 逐个打开被引用的路径，确认存在且名称一致 | `scripts/validate_sd_film.py --skill-root <skill-root>` |
-| 体量预算 | 用字节数对照`references/context_budget.md`的Target／Ceiling与Ledger | 同上（Validator 还检查文件类别、台账一致性与 NON_RUNTIME 自证） |
+| 可达性预算 | 用字节数对照`references/context_budget.md`的复核线／Ceiling与Size Index | 同上（Validator 还检查读取入口、索引一致性与 NON_RUNTIME 自证） |
 | `LR-R1—LR-R10` | 按`references/recovery_guards.md`逐条核对 | `scripts/test_validate_sd_film.py` |
 | `SD-R1—SD-R5` | 按`references/recovery_guards.md`逐条核对 | 同上 |
 

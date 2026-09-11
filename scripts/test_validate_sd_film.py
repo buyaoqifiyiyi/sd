@@ -660,9 +660,9 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
 
 
 class R50ContextBudgetTests(unittest.TestCase):
-    """The skill must not silently outgrow its readable budget: a file past the
-    target has to be registered, and a registered file that shrinks back has to
-    be unregistered, so the ledger never decays into a standing exemption list."""
+    """Length is a signal, not a quota: the review line tells you to check how a
+    file is read, the ceiling blocks a commit, and an index entry nobody can
+    follow is worth less than none. Only the last two are failures."""
 
     def test_active_skill_stays_within_budget(self) -> None:
         findings = validator.check_context_budget(
@@ -670,23 +670,44 @@ class R50ContextBudgetTests(unittest.TestCase):
         )
         self.assertEqual(findings, [])
 
-    def test_ledger_registers_exactly_the_oversized_files(self) -> None:
+    def test_index_covers_the_runtime_files_past_the_review_line(self) -> None:
         ledger = validator.read_size_ledger(ROOT)
-        oversized = {
-            relative
-            for relative, size in validator.scan_markdown(ROOT)
-            if size > validator.BUDGET_TARGET_BYTES
-        }
-        self.assertEqual(oversized, set(ledger))
+        for relative, size in validator.scan_markdown(ROOT):
+            if size <= validator.BUDGET_TARGET_BYTES or relative in ledger:
+                continue
+            with self.subTest(relative=relative):
+                self.assertTrue(
+                    validator.declares_non_runtime(ROOT / relative),
+                    f"{relative} is past the review line and is not indexed",
+                )
 
     def test_skill_entry_stays_compact(self) -> None:
         raw = (ROOT / "SKILL.md").read_bytes().decode("utf-8-sig").encode("utf-8")
         self.assertLessEqual(len(raw), validator.SKILL_ENTRY_MAX_BYTES)
         self.assertLessEqual(raw.count(b"\n"), validator.SKILL_ENTRY_MAX_LINES)
 
-    def test_unregistered_oversized_file_is_rejected(self) -> None:
+    def test_unregistered_oversized_file_is_not_a_failure(self) -> None:
         findings = validator.check_context_budget([("huge/thing.md", 60 * 1024)], {})
-        self.assertTrue(any("not registered" in item for item in findings))
+        self.assertEqual(findings, [])
+
+    def test_review_line_crossing_is_advisory(self) -> None:
+        self.assertEqual(validator.unindexed_over_review_line(ROOT), [])
+
+    def test_index_entry_must_state_its_read_entry(self) -> None:
+        findings = validator.check_read_entries(
+            [{"File": "big/thing.md", "Class": "INTEGRAL", "Read Entry": ""}]
+        )
+        self.assertTrue(any("read entry" in item for item in findings))
+
+    def test_non_runtime_entry_needs_no_read_entry(self) -> None:
+        findings = validator.check_read_entries(
+            [{"File": "guide.md", "Class": "NON_RUNTIME", "Read Entry": ""}]
+        )
+        self.assertEqual(findings, [])
+
+    def test_non_runtime_file_sits_outside_the_review_line(self) -> None:
+        self.assertTrue(validator.declares_non_runtime(ROOT / "USER_GUIDE.md"))
+        self.assertNotIn("USER_GUIDE.md", validator.read_size_ledger(ROOT))
 
     def test_registered_oversized_file_is_accepted(self) -> None:
         self.assertEqual(
@@ -727,12 +748,12 @@ class R50ContextBudgetTests(unittest.TestCase):
                 self.assertIn("Context Budget Check", text)
                 self.assertIn("references/context_budget.md", text)
         self.assertIn("Context Budget: PASS / FIXED / WARN", card)
-        self.assertIn("## Size Ledger", budget)
+        self.assertIn("## Size Index", budget)
         self.assertIn("Ceiling", budget)
 
-    def test_budget_does_not_justify_parallel_rule_files(self) -> None:
+    def test_size_never_justifies_parallel_rule_files(self) -> None:
         budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
-        self.assertIn("本预算不构成新增文件的理由", budget)
+        self.assertIn("本纪律不构成新增文件的理由", budget)
         self.assertIn("rules/resource_loading.md", budget)
 
 
@@ -901,7 +922,8 @@ class R53LongTermBudgetMaintenanceTests(unittest.TestCase):
 
     def test_periodic_audit_report_is_produced(self) -> None:
         report = validator.build_report(ROOT)
-        for marker in ("SD Film Context Budget Report", "largest files", "over target", "review by"):
+        for marker in ("SD Film Size And Readability Report", "largest files",
+                       "past the review line", "review by"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, report)
 
@@ -936,7 +958,7 @@ class R55ToolIndependentSelfMaintenanceTests(unittest.TestCase):
         skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
         self.assertIn("## Self-Maintenance", skill)
         self.assertLess(skill.index("## Self-Maintenance"), skill.index("## Modules"))
-        for marker in ("归属判定", "体量判定", "减法判定", "纯文本的", "Skill Version"):
+        for marker in ("归属判定", "可达性判定", "减法判定", "纯文本的", "Skill Version"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, skill)
 
@@ -944,7 +966,7 @@ class R55ToolIndependentSelfMaintenanceTests(unittest.TestCase):
         card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
         self.assertIn("## Before You Write", card)
         self.assertLess(card.index("## Before You Write"), card.index("## Trigger"))
-        for marker in ("确认这是正式修改", "归属判定", "体量判定", "减法判定",
+        for marker in ("确认这是正式修改", "归属判定", "可达性判定", "减法判定",
                        "读文件即可完成的人工判断"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, card)
@@ -1017,12 +1039,12 @@ class R56MaintenanceConsolidationTests(unittest.TestCase):
             with self.subTest(leaked=leaked):
                 self.assertNotIn(leaked, budget)
         self.assertIn("## Budget Discipline", budget)
-        self.assertIn("不得先加后登", budget)
+        self.assertIn("变厚必须给出入口", budget)
 
     def test_write_time_judgement_has_a_single_full_description(self) -> None:
         card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
         budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
-        for marker in ("归属判定", "体量判定", "减法判定"):
+        for marker in ("归属判定", "可达性判定", "减法判定"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, card)
         # 体量文件不得再写一遍完整的归属／重复判定正文

@@ -4,7 +4,7 @@
 
 本文件是Skill维护QA的**判据真源**：它拥有`references/maintenance_self_check.md`中15个检查维度每一项的完整判据、边界、反例与处置要求，以及两个固定Guard的完整协议。
 
-执行入口、维护链顺序与报告格式由`references/maintenance_self_check.md`拥有。本文件不重复定义执行流程，也不定义任何模块合同（那是`references/module_contracts.md`）或Skill体量阈值（那是`references/context_budget.md`）。
+执行入口、维护链顺序与报告格式由`references/maintenance_self_check.md`拥有。本文件不重复定义执行流程，也不定义任何模块合同（那是`references/module_contracts.md`）或Skill可达性判据（那是`references/context_budget.md`）。
 
 **本协议是纯文本、人工可执行的。**每条判据都写成可由任何Agent或人直接对照文件完成的判断，不依赖`scripts/`下的验证器、不依赖特定平台、不依赖网络。`scripts/`只是某些环境下的可选加固；换到没有这些工具的环境时，按本文件逐条人工执行即可，不得以“缺少工具”为由降低检查强度——能被工具挡住的错误，也必须能被读者挡住。
 
@@ -30,18 +30,18 @@
 5. **Prompt Pollution Check**：确认新增内部控制不会直接膨胀最终Prompt。检查重复、冲突、抽象语义模板、否定词堆叠、资产重述、无效精密参数、跨镜头残留、风格堆叠与优先级淹没；内部QA、分数、Issue ID、路由说明和维护术语不得进入最终Prompt。
 6. **Routing Integrity Check**：确认新模块有正确入口、触发和返回路由；显式调用模块未变为默认必经；Optional/Auxiliary Workflow未写入主Pipeline；Legacy Compatibility未成为新项目主路由；普通“继续”未被误判为Reload、AUDIO或MUSIC授权。
 7. **Template Consistency Check**：核对Workflow声明的Output Owner、字段语义与当前Template；废弃字段不得残留。Template继续唯一拥有用户可见字段、顺序、必填性和排版。音色未显式投影时，常规STATE-08输出不得默认保留声音身份或“音色特征”字段。
-8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py --skill-root <skill-root>`执行可确定的结构与引用检查。生产交付物校验由独立owner`scripts/validate_prompt_package.py`承担：它在STATE-08交付前对已编译的`# CLIP-X｜…` Package做确定性结构断言（全局字段存在与顺序、分镜或阶段编号连续且数量与声明一致、`REF-TAIL`用途声明、终段位置与固定无BGM句、未授权`音色特征：`）。两者职责互不替代：前者守护Skill自身，后者守护本次交付；后者不进入本Checklist的维护QA执行owner。
+8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。**同时反向检查孤儿内容**：新增的字段、规则或知识必须能被某个消费者读到——被某个Workflow列为Resource、被某个Template使用、或被某个上游事实引用；定义了却无人引用的内容等于已经丢失，必须在本轮补上消费者或移除它。运行`scripts/validate_sd_film.py --skill-root <skill-root>`执行可确定的结构与引用检查。生产交付物校验由独立owner`scripts/validate_prompt_package.py`承担：它在STATE-08交付前对已编译的`# CLIP-X｜…` Package做确定性结构断言（全局字段存在与顺序、分镜或阶段编号连续且数量与声明一致、`REF-TAIL`用途声明、终段位置与固定无BGM句、未授权`音色特征：`）。两者职责互不替代：前者守护Skill自身，后者守护本次交付；后者不进入本Checklist的维护QA执行owner。
 9. **State / Continuity Compatibility Check**：确认STATE-00至STATE-09、Shot-State Memory、Accepted Take、Accepted Canon State、Reference Selection / Routing、REF-TAIL A Direct / B Reference-Only / C Not Required、Visual Anchor State / Blocking Signature、Spatial Blocking、资产锁、Revision与Checkpoint不被破坏；维护QA不得创建新主STATE或项目事实。
 10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
 11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
 12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。
 13. **Runtime Claim / Legacy Recovery Check**：核对Runtime Skill Reload、Workflow Re-entry与Legacy Project Recovery仍由唯一owner定义；Skill Source / Project State Source独立；历史Skill永不成为Current authority；Claim Gate诚实；Work只在真实必要时escalate；Legacy Intent Backfill只增补不重做；STATE-08从current owner entry重进；普通`下一步`不触发全量恢复。必须运行`references/recovery_guards.md`中的`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`及现有Validator / tests。
 14. **Standalone Skill Discovery Check**：核对当前运行时用户级权威副本位于`$HOME/.codex/skills/sd-film`、同名`sd-film`没有第二份用户级副本、`SKILL.md` frontmatter保留启动别名、`agents/openai.yaml`与Skill名称一致、`policy.allow_implicit_invocation`为`true`，且用户文档只把Codex `$sd-film`作为本机独立Skill的确定性显式入口。在当前用户客户端中，普通Chat的`@`选择器只显示Plugin；不得宣称本机独立Skill可通过`@`加显示名调用，也不得把网页/移动端读取本机Skill误写为受支持能力。
-15. **Context Budget Check**：`references/context_budget.md`是体量阈值、文件类别与Size Ledger的唯一owner，本项只引用它，不复制数值。按`Maintenance System Map`定义的三层节奏执行本项：
-    - **事前（Prevent）**：新增内容先归位到既有owner，不因“方便”而新建文件；本次变更若使任一文件超过Target，或把已在Target以上的文件再推高10%以上，必须在同一次变更内处理；新建Markdown不得超过Target的60%（30 KB）。
-    - **事中（Enforce）**：`SKILL.md`仍在Entry阈值内且未复制细粒度规则；没有文件超Target而漏登记；已瘦身到Target以下的文件已从Ledger摘牌；没有任何文件达到Ceiling；Ledger的`Size`列与实测差异不超过20%。
-    - **事后（Audit）**：`Review By`到期的条目必须重估；`COMPOSITE`条目是待拆队列，不得长期挂账；周期性全库体检只负责发现累积，不替代前两层。
-    超长不是格式问题而是失效风险：高频必读文件越长，中段规则的遵循率越低，检索命中率越低。因此本项判定为`FIXED`时修复的是行为失效，不是排版。
+15. **Context Budget Check**：`references/context_budget.md`是可达性判据、文件类别与Size Index的唯一owner，本项只引用它，不复制数值。**越线不是违规**：复核线与Ceiling的区别就是“提示”与“阻断”的区别。按`Maintenance System Map`定义的三层节奏执行本项：
+    - **事前（Prevent）**：新增内容先归位到既有owner，不因“方便”而新建文件；新建Markdown不得超过复核线的60%（30 KB）；本次变更若使文件越过复核线，必须在同一次变更内给出它的读取入口或拆分它。
+    - **事中（Enforce）**：`SKILL.md`仍在Entry阈值内且未复制细粒度规则；Size Index每条都写明读取入口；已落回复核线以下的条目已移除；`NON_RUNTIME`文件不在管辖内；没有任何文件达到Ceiling；索引的`Size`列与实测差异不超过20%。
+    - **事后（Audit）**：越过复核线但未登记的文件由`--report`列出，在周期复核时补齐；`Review By`到期的条目必须重估；`COMPOSITE`条目是待拆队列，不得长期挂账；周期性全库体检只负责发现累积，不替代前两层。
+    **本项的目标是细节能否被读到，不是文件够不够小。** 越线但不影响读取方式，不构成发现项；未越线却无人引用、没有读取入口，才是真实失效。
 
 ## Skill-Wide Detection And Risk-Based Repair
 

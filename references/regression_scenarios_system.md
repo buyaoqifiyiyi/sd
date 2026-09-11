@@ -506,21 +506,21 @@ FAIL：把“已由视觉开发锁定”当作省略理由，导致后续Clip的
 
 ## R51 Skill Context Budget Regression
 
-### R51-A Oversized File Must Be Registered Or Split
+### R51-A Oversized File Needs A Read Entry, Not A Penalty
 
-输入：一次变更使某个Workflow、Rule或Knowledge文件继续增长，越过单文件Target阈值。
+输入：一次变更使某个Workflow、Rule或Knowledge文件继续增长，越过复核线（单文件 50 KB）。
 
-PASS：在同一次变更中把该文件登记进`references/context_budget.md`的Size Ledger，写明Owner、当前行数、留存理由与复审日期；或直接拆分到阈值以内。`scripts/validate_sd_film.py`对超Target未登记的文件报告失败。
+PASS：复核“使用它的时候会读到全部吗”——用不到全部就拆分它或给出读取入口，并把入口登记进`references/context_budget.md`的Size Index。越过复核线本身**不阻断提交**，也不产生债务。
 
-FAIL：让文件静默增长；用“内容确实重要”代替登记理由；把登记当作永久豁免；或为了压行数删除已确认的规则、字段归属、Template字段或回归场景。
+FAIL：让文件静默增长到没人说得清该怎么读；或反过来，为了压数值删掉已确认的规则、字段归属、Template字段或回归场景。
 
 ### R51-B Shrunk File Must Be Unregistered
 
-输入：某文件经拆分或压缩后降到Target以下，但Size Ledger仍保留其条目。
+输入：某文件经拆分或压缩后降到复核线以下，但Size Index仍保留其条目。
 
 PASS：同一次变更中移除该条目，Validator随即通过。
 
-FAIL：保留已达标条目，使Ledger退化为长期豁免名单，下一次增长不再触发任何检查。
+FAIL：保留已达标条目，使索引退化为一份固定名单，下一次增长不再触发任何检查。
 
 ### R51-C Ceiling Is Not Waivable
 
@@ -528,15 +528,15 @@ FAIL：保留已达标条目，使Ledger退化为长期豁免名单，下一次�
 
 PASS：判定为结构性失控，先拆分为多个单一职责文件，同步更新全部引用与路由后再提交；拆分后重新核对文件引用完整性。
 
-FAIL：在Ledger中登记后照常提交；或以“本轮只改文案、与超长无关”为由延期。
+FAIL：在Size Index中登记后照常提交；或以“本轮只改文案、与超长无关”为由延期。
 
-### R51-D Budget Does Not Justify New Files
+### R51-D Size Never Justifies New Files
 
-输入：一次优化中发现多个文件超长，考虑通过新增文件降低单文件行数。
+输入：一次优化中发现多个文件越过复核线，考虑通过新增文件降低单文件体量。
 
 PASS：先按`Rule Ownership Check`确认现有权威位置；只有拆分确实需要新的单一职责载体时才新增，并同步更新所有引用、路由与回归。
 
-FAIL：以“降低行数”为由新增平行规则文件，形成第二套并行检查规范或竞争owner。
+FAIL：以“降低体量”为由新增平行规则文件，形成第二套并行检查规范或竞争owner。
 
 ## R52 Maintenance Self-Check Extraction Regression
 
@@ -544,7 +544,7 @@ FAIL：以“降低行数”为由新增平行规则文件，形成第二套并�
 
 输入：一次维护优化需要修改Skill，按`SKILL.md`入口执行维护自检。
 
-PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（15项检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到单文件Target以内并从Size Ledger摘牌。
+PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（15项检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到复核线以内并从Size Index移除。
 
 FAIL：维护自检仍只能通过通读一个超长合同文件才能找到；或抽取后`module_contracts.md`同时保留一份可执行的并行副本。
 
@@ -612,9 +612,9 @@ FAIL：拆分后出现断号、同名两处可执行副本，或引用方仍指�
 
 输入：一次优化需要在某个已接近Target的文件里补写内容。
 
-PASS：先判定归属，默认补进既有owner；如果补写会使文件超过Target，或把已在Target以上的文件再推高10%以上，就在同一次变更内先拆分／合并／删除冗余；新建Markdown不超过30 KB。
+PASS：先判定归属，默认补进既有owner；如果补写会使文件越过复核线，就在同一次变更内给出它的读取入口或先拆分；新建Markdown不超过30 KB。
 
-FAIL：先把内容写进去，再登记进Size Ledger把问题推给下一次。
+FAIL：先把内容写进去，再登记进Size Index把问题推给下一次。
 
 ### R54-B Composite Debt Is Queued, Not Shelved
 
@@ -628,7 +628,7 @@ FAIL：以“已登记”为理由长期不拆，使Ledger变成永久豁免名�
 
 输入：固定的周期性体检。
 
-PASS：运行`scripts/validate_sd_film.py --skill-root <skill-root> --report`，输出字节排名、超Target项及其类别与复审日期；Ledger登记的`Size`与实测差异超过20%即判为台账过期，并使Validator失败。
+PASS：运行`scripts/validate_sd_film.py --skill-root <skill-root> --report`，输出字节排名、越过复核线项及其类别、读取入口与复审日期；Size Index登记的`Size`与实测差异超过20%即判为索引过期，并使Validator失败。
 
 FAIL：把体检当作唯一防线，或让Ledger记录的体量长期与实测脱节。
 
@@ -741,3 +741,37 @@ FAIL：为2D项目照搬实拍焦段与光比语言，或把这些参数留空�
 PASS：STATE-00写`Medium: Pending`并询问一次；后续STATE按`live_action`既有行为继续但登记为`Pending`，不加载分化表，也不把它记成已确认真人剧。
 
 FAIL：默认取`live_action`或`2d_anime`并当作已确认事实推进，使下游按错误的剖面展开。
+
+## R58 Review Line Is A Signal, Not A Quota Regression
+
+### R58-A Crossing The Review Line Is Not A Violation
+
+输入：一次变更把某个运行时文件推到 50 KB 以上，但没有人在同一次变更里登记它。
+
+PASS：该文件出现在`--report`的提示里；Validator仍然通过，因为长度本身不是缺陷。周期性复核时要么拆分它，要么在Size Index写下它的读取入口。
+
+FAIL：因为“超过阈值”就判定提交失败；或反过来，把越线当成不需要处理的事，让文件长到没人说得清该怎么读。
+
+### R58-B Size Index Entry Without A Read Entry Fails
+
+输入：某个越线的`INTEGRAL`文件在Size Index中登记了Class与体量，但`Read Entry`列为空。
+
+PASS：Validator失败，提示该条目必须写明读取入口——索引失去可执行性就等于没有。
+
+FAIL：允许索引只记录体量而不说怎么读，使它退化成一份“哪些文件很大”的名单。
+
+### R58-C Non-Runtime Files Are Outside The Review Line
+
+输入：`USER_GUIDE.md`这类不参与运行时读取的文件越过复核线。
+
+PASS：它不在Size Index中，也不出现在`--report`的待补提示里；判定依据是文件自身声明了“非运行时文件”，而不是默认豁免。
+
+FAIL：把非运行时手册与高频必读文件用同一把尺子量，让它白挂一条不存在的问题；或不加自证地整体豁免。
+
+### R58-D Size Index Never Decays Into A Standing List
+
+输入：某登记文件经拆分降到复核线以下但条目未移除，或条目指向一个已不存在的文件。
+
+PASS：两种漂移都使Validator失败，索引始终只描述当前真实存在的厚文件。
+
+FAIL：保留已达标条目或悬空条目，使索引变成一份越积越长的固定名单。

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r58 structural, routing and context-budget validation for SD Film."""
+"""Deterministic r59 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -67,7 +67,7 @@ def scan_markdown(root: Path) -> list[tuple[str, int]]:
     return entries
 
 def read_size_ledger_rows(root: Path) -> list[dict[str, str]]:
-    """Ledger rows keyed by the Size Ledger header, so column order can change."""
+    """Size Index rows keyed by its own header, so column order can change."""
     rows: list[dict[str, str]] = []
     header: list[str] | None = None
     for line in read(root, "references/context_budget.md").splitlines():
@@ -93,7 +93,7 @@ def _column(row: dict[str, str], prefix: str) -> str:
     return ""
 
 def read_size_ledger(root: Path) -> dict[str, str]:
-    """The Size Ledger rows as {relative path: file class}."""
+    """The Size Index rows as {relative path: file class}."""
     return {row["File"]: _column(row, "class") for row in read_size_ledger_rows(root)}
 
 def read_ledger_sizes(root: Path) -> dict[str, float]:
@@ -130,9 +130,9 @@ def build_report(root: Path) -> str:
     ledger = read_size_ledger(root)
     total = sum(size for _, size in entries)
     lines = [
-        "SD Film Context Budget Report",
+        "SD Film Size And Readability Report",
         f"  files {len(entries)}   total {total / 1024:.0f} KB"
-        f"   target {BUDGET_TARGET_BYTES // 1024} KB   ceiling {BUDGET_CEILING_BYTES // 1024} KB",
+        f"   review line {BUDGET_TARGET_BYTES // 1024} KB   ceiling {BUDGET_CEILING_BYTES // 1024} KB",
         "",
         "  largest files (UTF-8 bytes)",
     ]
@@ -143,9 +143,14 @@ def build_report(root: Path) -> str:
             f"  {relative}{mark}"
         )
     over = [(r, s) for r, s in entries if s > BUDGET_TARGET_BYTES]
-    lines += ["", f"  over target: {len(over)}"]
+    lines += ["", f"  past the review line: {len(over)}   (informational, not a defect)"]
     for relative, size in over:
-        lines.append(f"    {ledger.get(relative, 'UNREGISTERED'):12s} {size / 1024:7.1f} KB  {relative}")
+        lines.append(f"    {ledger.get(relative, 'not indexed'):12s} {size / 1024:7.1f} KB  {relative}")
+    pending = unindexed_over_review_line(root)
+    if pending:
+        lines += ["", f"  runtime files past the review line with no read entry yet: {len(pending)}"]
+        for relative in pending:
+            lines.append(f"    {relative}")
     reviews = read_ledger_reviews(root)
     if reviews:
         lines += ["", "  review by"]
@@ -154,33 +159,60 @@ def build_report(root: Path) -> str:
     return "\n".join(lines)
 
 def check_context_budget(entries, ledger) -> list[str]:
-    """A file that outgrows the target must be registered with a known class; a
-    registered file that shrinks back within target must be unregistered. Both
-    drifts are reported, so the ledger never decays into a standing exemption."""
+    """Only the ceiling blocks a commit. Crossing the review line is a prompt to
+    look at how the file is read, so an unindexed file past it becomes a report
+    item rather than a failure. A stale or dangling index entry still fails, so
+    the index never decays into a standing list."""
     errors: list[str] = []
     sizes = dict(entries)
     ledger = dict(ledger)
     for relative, size in entries:
         if size > BUDGET_CEILING_BYTES:
             errors.append(
-                f"file reached the context budget ceiling ({size} > {BUDGET_CEILING_BYTES} bytes), "
+                f"file reached the size ceiling ({size} > {BUDGET_CEILING_BYTES} bytes), "
                 f"split it: {relative}"
-            )
-        elif size > BUDGET_TARGET_BYTES and relative not in ledger:
-            errors.append(
-                f"file exceeds the context budget target ({size} > {BUDGET_TARGET_BYTES} bytes) "
-                f"but is not registered in references/context_budget.md: {relative}"
             )
     for relative, file_class in sorted(ledger.items()):
         if file_class not in LEDGER_CLASSES:
-            errors.append(f"context budget ledger has an unknown class ({file_class}): {relative}")
+            errors.append(f"size index has an unknown class ({file_class}): {relative}")
         if relative not in sizes:
-            errors.append(f"context budget ledger points at a missing markdown file: {relative}")
+            errors.append(f"size index points at a missing markdown file: {relative}")
         elif sizes[relative] <= BUDGET_TARGET_BYTES:
             errors.append(
-                f"context budget ledger entry is stale ({sizes[relative]} bytes, back within target), "
+                f"size index entry is stale ({sizes[relative]} bytes, back within the review line), "
                 f"remove it: {relative}"
             )
+    return errors
+
+def declares_non_runtime(path: Path) -> bool:
+    """A file no workflow reads cannot lose rules to its own length, so it sits
+    outside the review line — but it has to declare that about itself."""
+    return "非运行时文件" in path.read_text(encoding="utf-8-sig")
+
+def unindexed_over_review_line(root: Path) -> list[str]:
+    """Runtime files past the review line that the Size Index does not describe
+    yet. Reported by --report so the periodic audit can fill the entry in; it is
+    never a failure, because length alone is not a defect."""
+    ledger = read_size_ledger(root)
+    pending: list[str] = []
+    for relative, size in scan_markdown(root):
+        if size <= BUDGET_TARGET_BYTES or relative in ledger:
+            continue
+        if declares_non_runtime(root / relative):
+            continue
+        pending.append(relative)
+    return pending
+
+def check_read_entries(rows) -> list[str]:
+    """An entry nobody can follow is worth less than no entry, so every runtime
+    entry has to say where to start reading."""
+    errors: list[str] = []
+    for row in rows:
+        relative = row.get("File", "")
+        if _column(row, "class") == "NON_RUNTIME":
+            continue
+        if not _column(row, "read").strip():
+            errors.append(f"a size index entry must state its read entry: {relative}")
     return errors
 
 def validate_skill(root: Path) -> list[str]:
@@ -256,6 +288,7 @@ def validate_skill(root: Path) -> list[str]:
     knowledge_index = read(root, "knowledge/00_knowledge_index.md")
     script_analysis = read(root, "workflows/02_script_analysis_workflow.md")
     contracts_knowledge = read(root, "references/module_contracts_knowledge.md")
+    budget_doc = read(root, "references/context_budget.md")
     required_markers = (
         (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
         (runtime, "PROJECT_IMAGE_MODEL_DEFAULT"),
@@ -433,6 +466,12 @@ def validate_skill(root: Path) -> list[str]:
         (project_bible, "未确认写 `Pending`"),
         (contracts_knowledge, "## Medium Profile Knowledge Contract"),
         (contracts_knowledge, "不得新增第四档或改名"),
+        (budget_doc, "## Size Index"),
+        (budget_doc, "目标是可达性，不是尺寸"),
+        (budget_doc, "复核线不是配额"),
+        (budget_doc, "## 可达性纪律"),
+        (budget_doc, "无孤儿内容"),
+        (budget_doc, "不在本纪律管辖内"),
     )
     for text, marker in required_markers:
         if marker not in text:
@@ -487,6 +526,7 @@ def validate_skill(root: Path) -> list[str]:
             errors.append(f"a NON_RUNTIME ledger entry must declare itself in-file: {relative}")
     entries = scan_markdown(root)
     errors.extend(check_context_budget(entries, ledger))
+    errors.extend(check_read_entries(read_size_ledger_rows(root)))
     errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
     return errors
 
@@ -495,7 +535,7 @@ def main() -> int:
     parser.add_argument("--skill-root", type=Path, required=True)
     parser.add_argument(
         "--report", action="store_true",
-        help="also print the periodic context-budget audit (sizes, ledger, reviews)",
+        help="also print the periodic size and readability audit (sizes, index, reviews)",
     )
     args = parser.parse_args()
     errors = validate_skill(args.skill_root)
@@ -505,7 +545,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r58 structural, routing and context-budget validation")
+    print("PASS: r59 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":
