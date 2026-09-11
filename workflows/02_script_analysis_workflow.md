@@ -659,20 +659,6 @@ STATE-01 Complete
 
 ---
 
-# Next Workflow
-
-
-进入：
-
-
-03_asset_discovery_workflow.md
-
-如果Script Status不是Production-Locked，Next Workflow继续写`02_script_analysis_workflow.md`。
-
-
-
----
-
 # Core Rule
 
 

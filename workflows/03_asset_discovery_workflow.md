@@ -624,27 +624,6 @@ STATE-02 Complete
 
 ---
 
-# Next Workflow
-
-
-进入：
-
-
-04_character_asset_workflow.md
-
-
-05_environment_asset_workflow.md
-
-
-06_prop_asset_workflow.md
-
-
-15_fx_asset_workflow.md（存在正式FX Asset需求时）
-
-
-
----
-
 # Core Rule
 
 

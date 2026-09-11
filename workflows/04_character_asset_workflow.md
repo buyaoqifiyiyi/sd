@@ -558,39 +558,6 @@ STATE-03保持当前主STATE；在Last Completed Step记录Character Asset Devel
 
 ---
 
-# Next Workflow
-
-每个STATE-03资产子流程完成后执行共享Completion Gate：所有Required Character / Environment / Prop / FX均为Active，或对应类别明确Not Applicable。
-
-如果共享Gate通过：
-
-- Current State：STATE-03
-- State Status：COMPLETE
-- Last Successful Checkpoint：全部Required Assets Locked
-- Next Workflow：07_visual_development_workflow.md
-
-如果未通过：保持STATE-03 IN_PROGRESS，进入下一个Pending Asset Workflow。
-
-每次上述状态变化后都同步或输出更新后的完整Portable State，并执行references/project_state_contract.md的`Portable Required Field Writeback`；同步失败不阻塞STATE-03路由。
-
-
-根据项目资产需求：
-
-进入：
-
-
-05_environment_asset_workflow.md
-
-
-或
-
-
-06_prop_asset_workflow.md
-
-
-
----
-
 # Core Rule
 
 
