@@ -919,7 +919,7 @@ Color设计或综合色彩连续性错误：
 
 ---
 
-# Quality Result
+# Completion Gate
 
 
 审核结果分为：

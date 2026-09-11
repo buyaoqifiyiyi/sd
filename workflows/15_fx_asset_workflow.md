@@ -152,11 +152,11 @@ Trigger → Source → Initial State → Propagation → Interaction → End Sta
 
 ---
 
-## Completion Gate
+# Completion Gate
 
 完成后更新可用asset_registry.md的Active Version与Canonical References，并在Selected State Source按references/project_state_contract.md登记FX Artifact、Checkpoint与Revision ID；随后同步或输出完整Portable State，并执行其`Portable Required Field Writeback`。
 
-随后执行STATE-03共享Completion Gate：全部Required资产Active或Not Applicable时写STATE-03 COMPLETE并进入07_visual_development_workflow.md；否则保持STATE-03 IN_PROGRESS。
+随后执行STATE-03共享Completion Gate：全部Required资产Active或Not Applicable时写STATE-03 COMPLETE并按`workflows/workflow_map.md`路由Next Workflow；否则保持STATE-03 IN_PROGRESS。
 
 完成必须满足：
 

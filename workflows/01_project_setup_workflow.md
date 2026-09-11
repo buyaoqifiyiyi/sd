@@ -367,7 +367,7 @@ Project Initialized
 下一步行动：
 
 ```text
-02_script_analysis_workflow.md
+按`workflows/workflow_map.md`执行下一Workflow。
 ```
 
 
@@ -472,7 +472,7 @@ Script Entry Route：
 - `Creation Brief`：用户要从创意/需求开始写剧本，且没有可供逐段诊断的既有剧本或来源叙事文本。
 - `Existing Script / Material`：用户已提供完整剧本、粗略剧本、初稿、小说/故事文本、剧情大纲、品牌文案或其他需要保留/转换的既有内容。
 
-STATE-00只负责识别并登记入口，不在本阶段创作、诊断或改写。`Creation Brief`的Next Workflow仍是`02_script_analysis_workflow.md`，由STATE-01正式执行Screenplay Generation；`Existing Script / Material`由同一Workflow执行Script Diagnosis。若用户同时上传剧本并说“调用sd”，必须优先登记Existing Script route，不得误入从零创作。
+STATE-00只负责识别并登记入口，不在本阶段创作、诊断或改写。`Creation Brief`的Next Workflow仍指向STATE-01，由STATE-01正式执行Screenplay Generation；`Existing Script / Material`由同一Workflow执行Script Diagnosis。若用户同时上传剧本并说“调用sd”，必须优先登记Existing Script route，不得误入从零创作。
 
 
 如果素材存在明显缺失：
@@ -626,7 +626,7 @@ Visual Reference。
 
 由：
 
-07_visual_development_workflow.md
+在STATE-04执行；具体Workflow按`workflows/workflow_map.md`路由。
 
 
 在STATE-04执行。
@@ -900,7 +900,7 @@ Review
 Next Action：
 
 ```text
-02_script_analysis_workflow.md
+按`workflows/workflow_map.md`执行下一Workflow。
 ```
 
 完成上述状态决定后，只按`references/project_state_contract.md`执行字段写回与Portable同步；本Workflow不复制环境分支或同步失败语义。
@@ -1163,7 +1163,7 @@ STATE-00不得：
 
 ---
 
-# Completion Condition
+# Completion Gate
 
 当以下内容完成：
 
@@ -1205,7 +1205,7 @@ Project Initialized
 下一步：
 
 ```text
-02_script_analysis_workflow.md
+按`workflows/workflow_map.md`执行下一Workflow。
 ```
 
 
@@ -1222,7 +1222,7 @@ STATE-01已经完成。
 
 下一步执行：
 
-02_script_analysis_workflow.md
+按`workflows/workflow_map.md`执行下一Workflow。
 
 
 开始STATE-01时：

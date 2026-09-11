@@ -613,7 +613,7 @@ Creation Brief入口直接输出Script Control、完整Production Script Proposa
 
 ---
 
-# Completion Condition
+# Completion Gate
 
 
 完成：

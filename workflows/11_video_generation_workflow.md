@@ -33,6 +33,6 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 3. 通过 Projection 写入Selected Model的唯一最终Template。每个 Clip 独立完整输出；不输出 Adapter 或内部账本。Seedance 2.5使用独立多模态时间线模板，默认按30图 / 10视频 / 10音频 / 合计50项能力上限审计，按需少用但不回退为9图模板；时间线按当前Clip写必要阶段。H3使用独立官方三段式模板；2.0保留自己的固定Template。未来模型没有独立Template时不得编译最终Prompt。
 4. 不改写剧情、关系、导演意图、Shot 目的、Blocking 或 Canonical Asset。Voice 仅显式 opt-in；Prompt 永久禁止 BGM/配乐。
 
-## Failure and completion
+# Completion Gate
 
 只改当前 Clip 的 Prompt 映射问题留在 STATE-08；Clip 边界、预算、尾帧或连续性组织问题回 STATE-07；Shot/Blocking 回 STATE-06；事实或资产回对应 owner。全部检查 PASS 后交付或生成，随后进入 STATE-09 Review。

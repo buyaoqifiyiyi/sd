@@ -989,7 +989,7 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 
 ---
 
-# Completion Requirement
+# Completion Gate
 
 
 完成Shot Design必须满足：
@@ -1100,7 +1100,7 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 
 ---
 
-# State Update
+# Status Update
 
 
 完成后：

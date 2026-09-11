@@ -518,7 +518,7 @@ templates/04_character_asset_prompt.md
 
 ---
 
-# Completion Condition
+# Completion Gate
 
 
 完成：

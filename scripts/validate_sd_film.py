@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r71 structural, routing and readability validation for SD Film."""
+"""Deterministic r72 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -71,6 +71,26 @@ WORKFLOW_ROUTE_FIELDS = ("下一阶段：", "对应下一Workflow：")
 WORKFLOW_ROUTE_OWNER = "workflows/workflow_map.md"
 MAIN_STATE_COUNT = 10
 PIPELINE_RESTATEMENT_RE = re.compile(r"^#\s(Next Workflow|Workflow Relationship)\s*$", re.M)
+COMPLETION_GATE_HEADING_RE = re.compile(r"^# Completion Gate\s*$", re.M)
+LEGACY_STATUS_HEADING_RE = re.compile(r"^# State Update\s*$", re.M)
+WORKFLOW_REF_RE = re.compile(r"\b(\d\d_[a-z0-9_]+_workflow)\.md")
+MAIN_STATE_OF_WORKFLOW = dict(MAIN_WORKFLOWS)
+# Auxiliary / conditional / resume / legacy workflows do not own a main STATE, so a
+# main workflow may point at them without restating the pipeline route.
+AUXILIARY_WORKFLOWS = frozenset(
+    {
+        "10_storyboard_workflow.md",
+        "12_editing_workflow.md",
+        "14_series_management_workflow.md",
+        "16_sequence_planning_workflow.md",
+        "17_poster_design_workflow.md",
+        "18_project_resume_workflow.md",
+        "20_seed_audio_voice_asset_workflow.md",
+        "21_seed_music_score_workflow.md",
+        "10_shot_execution_plan_workflow.md",
+        "19_clip_planning_workflow.md",
+    }
+)
 FINAL_PRINCIPLE_RE = re.compile(r"^#\sFinal Principle\s*$", re.M)
 FINAL_PRINCIPLE_MAX_BYTES = 150
 INTERNAL_PATH_REF_RE = re.compile(
@@ -310,6 +330,30 @@ def check_workflow_routing(root: Path) -> list[str]:
                 f"workflows/{name} must not restate the pipeline order or the next workflow: "
                 f"{restatement.group(1)}"
             )
+        # A closing block has to be findable by one name in every stage, otherwise a
+        # reader (or a runner) cannot locate the completion criteria mechanically.
+        gate_headings = COMPLETION_GATE_HEADING_RE.findall(text)
+        if len(gate_headings) != 1:
+            errors.append(
+                f"workflows/{name} must carry exactly one `# Completion Gate` closing block, "
+                f"found {len(gate_headings)}"
+            )
+        if LEGACY_STATUS_HEADING_RE.search(text):
+            errors.append(
+                f"workflows/{name} must name its state writeback `# Status Update`; "
+                "`# State Update` is retired so the block stays retrievable"
+            )
+        # The next stage's workflow name belongs to the route owner; naming it here is a
+        # second copy of the pipeline route and will drift.
+        for reference in WORKFLOW_REF_RE.finditer(text):
+            target = reference.group(1) + ".md"
+            if target == name or target in AUXILIARY_WORKFLOWS:
+                continue
+            if MAIN_STATE_OF_WORKFLOW.get(target) != declared:
+                errors.append(
+                    f"workflows/{name} must not name another stage's workflow "
+                    f"({target}); {WORKFLOW_ROUTE_OWNER} is the single route owner"
+                )
         for motto in FINAL_PRINCIPLE_RE.finditer(text):
             measured = len(section_after(text, motto).encode("utf-8"))
             if measured > FINAL_PRINCIPLE_MAX_BYTES:
@@ -871,7 +915,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r71 structural, routing and readability validation")
+    print("PASS: r72 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

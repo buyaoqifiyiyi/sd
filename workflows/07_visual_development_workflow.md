@@ -1909,7 +1909,7 @@ STATE-04禁止输出：
 
 ---
 
-# Completion Check
+# Completion Gate
 
 
 进入STATE-05前：
@@ -1988,7 +1988,7 @@ STATE-04禁止输出：
 
 ---
 
-# State Update
+# Status Update
 
 
 完成Visual Development后：
@@ -2025,7 +2025,7 @@ Visual Development
 Next Action：
 
 ```text
-08_scene_breakdown_workflow.md
+按`workflows/workflow_map.md`执行下一Workflow。
 ```
 
 

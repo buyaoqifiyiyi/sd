@@ -2,7 +2,7 @@
 
 ## Purpose
 
-本规则拥有“何时允许进入、完成、推进、退回或通过Review”的全局决策原则。各Workflow拥有本阶段具体Completion Checklist；`references/project_state_contract.md`拥有决策作出后的字段变更与持久化写回；Template只拥有最终交付格式。
+本规则拥有“何时允许进入、完成、推进、退回或通过Review”的全局决策原则。各Workflow拥有本阶段具体Completion Checklist，并以`# Completion Gate`承载该判据；`references/project_state_contract.md`拥有决策作出后的字段变更与持久化写回；Template只拥有最终交付格式。
 
 ## Completion Decision
 

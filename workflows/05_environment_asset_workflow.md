@@ -283,7 +283,7 @@ Workflow负责空间、材质、状态变化与一致性判断；Template独占�
 
 ---
 
-# Quality Check
+# Completion Gate
 
 
 检查：
@@ -315,7 +315,7 @@ Workflow负责空间、材质、状态变化与一致性判断；Template独占�
 
 ---
 
-# State Update
+# Status Update
 
 本Workflow是STATE-03子流程，不创建新STATE。
 
@@ -324,9 +324,9 @@ Workflow负责空间、材质、状态变化与一致性判断；Template独占�
 - Last Completed Step：Environment Asset Development
 - Last Successful Checkpoint：已确认ENV Revision
 - Active Artifacts：ENV资产路径和Revision ID
-- Next Workflow：下一个尚未完成的STATE-03资产Workflow；全部资产完成后进入STATE-04
+- Next Workflow：按`workflows/workflow_map.md`的STATE-03路由取值，必须写实际Workflow文件名
 
-全部Required资产均为Active或Not Applicable时，写STATE-03 COMPLETE并把Next Workflow设为07_visual_development_workflow.md；否则保持STATE-03 IN_PROGRESS。每次写入后按references/project_state_contract.md同步或输出完整Portable State，并执行其`Portable Required Field Writeback`。
+全部Required资产均为Active或Not Applicable时，写STATE-03 COMPLETE并按`workflows/workflow_map.md`写回Next Workflow；否则保持STATE-03 IN_PROGRESS。每次写入后按references/project_state_contract.md同步或输出完整Portable State，并执行其`Portable Required Field Writeback`。
 
 Environment Asset只有达到`Visual Production Status: Asset Confirmed`、`Confirmed Status: Yes`且`Status: Active`才计入共享Completion Gate。Support Item还必须绑定已确认的Board ID、Item ID与Canonical Board Reference。`Prompt Draft`、`Prompt Confirmed`或`Image Generated`均不算完成。
 

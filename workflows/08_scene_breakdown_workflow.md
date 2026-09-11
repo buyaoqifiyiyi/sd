@@ -247,7 +247,7 @@ FX-001（如适用）
 
 ---
 
-# Completion Check
+# Completion Gate
 
 
 必须完成：
@@ -282,7 +282,7 @@ FX-001（如适用）
 
 ---
 
-# State Update
+# Status Update
 
 
 完成后：

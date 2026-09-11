@@ -580,7 +580,7 @@ templates/03_asset_discovery_prompt.md
 
 ---
 
-# Completion Condition
+# Completion Gate
 
 
 完成：

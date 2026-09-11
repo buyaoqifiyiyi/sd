@@ -35,6 +35,6 @@ STATE-07 是 Natural Unit 与 Execution Clip 的唯一决策 owner。它不重�
 5. 每 Clip 执行连续性、World-State、角色数量、空间构图、表演、道具、转场、Reference Budget 和 A/B/C 尾帧用途检查；光色漂移风险按`rules/02_asset_rules.md`决定是否条件性选择已确认的`Project Color Reference`，它不成为资产。Spatial Lock环境按当前Camera Direction、景别、活动区、背景结构和风险，从已确认View Set预选最相关2–4张环境Canonical图并记录Primary Responsibility；不是机械加入全套View。`REF-SKETCH` 仅在 STATE-08 Gate 生成。
 6. 将 Selected Model、Adapter Profile、Execution Mode、时长、Preflight、End-State、Next-Clip Carryover 与受影响范围写入 State Contract 和 Clip Plan。
 
-## Completion
+# Completion Gate
 
 所有正式 Shot 原序且仅一次分配；每个 Execution Clip 有可验证输入、时长、连续性、尾帧用途和预算；Execution Clip Plan Confirmed 后完成 STATE-07。`Automation Policy: FAST`只在模型已锁定、所有Preflight PASS和状态写回成功时，按`rules/automation_mode.md`自动接受该Plan并记录依据；模型更换仅使受影响的 STATE-07/08 产物失效。

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r71 SD Film validator."""
+"""Regression tests for the r72 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -1503,7 +1503,9 @@ def workflow_body(state: str) -> str:
         "# Workflow Position\n\n"
         f"当前阶段：\n{state}\n\n"
         "前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：\n"
-        "`workflows/workflow_map.md`\n"
+        "`workflows/workflow_map.md`\n\n"
+        "# Completion Gate\n\n"
+        "前置工件已确认，本阶段可完成。\n"
     )
 
 def write_main_workflows(root: Path, overrides: dict[str, str] | None = None) -> None:
@@ -1602,7 +1604,11 @@ class R68WorkflowRoutingIntegrityTests(unittest.TestCase):
     def test_route_field_inside_position_block_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
-            body = workflow_body("STATE-04") + "\n下一阶段：\nSTATE-05 Scene Breakdown\n"
+            body = (
+                "# Workflow Position\n\n当前阶段：\nSTATE-04\n\n"
+                "`workflows/workflow_map.md`\n\n下一阶段：\nSTATE-05 Scene Breakdown\n\n"
+                "# Completion Gate\n\n前置工件已确认。\n"
+            )
             write_main_workflows(root, {"07_visual_development_workflow.md": body})
             errors = validator.check_workflow_routing(root)
             self.assertTrue(
@@ -1669,6 +1675,104 @@ class R68WorkflowRoutingIntegrityTests(unittest.TestCase):
             scratch.mkdir()
             (scratch / "note.md").write_text("见 `rules/gone.md`。\n", encoding="utf-8")
             self.assertEqual(validator.check_internal_references(root), [])
+
+
+class R72ClosingBlockAndRouteRestatementTests(unittest.TestCase):
+    """The closing block has to be findable under one name in every stage, and the next
+    stage's workflow name belongs to the route owner alone. Both are mutation-tested."""
+
+    def test_every_main_workflow_has_exactly_one_completion_gate(self) -> None:
+        for name, _ in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            self.assertEqual(
+                len(validator.COMPLETION_GATE_HEADING_RE.findall(text)), 1, name
+            )
+
+    def test_no_main_workflow_keeps_the_retired_state_update_heading(self) -> None:
+        for name, _ in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            self.assertIsNone(validator.LEGACY_STATUS_HEADING_RE.search(text), name)
+
+    def test_active_skill_names_no_other_stage_workflow(self) -> None:
+        for name, state in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            for reference in validator.WORKFLOW_REF_RE.finditer(text):
+                target = reference.group(1) + ".md"
+                if target == name or target in validator.AUXILIARY_WORKFLOWS:
+                    continue
+                self.assertEqual(
+                    validator.MAIN_STATE_OF_WORKFLOW.get(target),
+                    state,
+                    f"{name} names {target}, which belongs to another stage",
+                )
+
+    def test_missing_completion_gate_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = "# Workflow Position\n\n当前阶段：\nSTATE-05\n\n`workflows/workflow_map.md`\n"
+            write_main_workflows(root, {"08_scene_breakdown_workflow.md": body})
+            self.assertIn(
+                "workflows/08_scene_breakdown_workflow.md must carry exactly one "
+                "`# Completion Gate` closing block, found 0",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_duplicate_completion_gate_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-05") + "\n# Completion Gate\n\n第二个收尾块。\n"
+            write_main_workflows(root, {"08_scene_breakdown_workflow.md": body})
+            self.assertIn(
+                "workflows/08_scene_breakdown_workflow.md must carry exactly one "
+                "`# Completion Gate` closing block, found 2",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_retired_state_update_heading_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-05") + "\n# State Update\n\n- Next Workflow：X\n"
+            write_main_workflows(root, {"08_scene_breakdown_workflow.md": body})
+            self.assertIn(
+                "workflows/08_scene_breakdown_workflow.md must name its state writeback "
+                "`# Status Update`; `# State Update` is retired so the block stays retrievable",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_naming_another_stage_workflow_is_rejected(self) -> None:
+        """The r67 cleanup only caught the `# Next Workflow` heading form; a stage name
+        written inline or inside a code block slipped through until r72."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-05") + "\n下一步：\n\n```text\n09_shot_design_workflow.md\n```\n"
+            write_main_workflows(root, {"08_scene_breakdown_workflow.md": body})
+            self.assertIn(
+                "workflows/08_scene_breakdown_workflow.md must not name another stage's "
+                "workflow (09_shot_design_workflow.md); workflows/workflow_map.md "
+                "is the single route owner",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_auxiliary_workflow_reference_is_allowed(self) -> None:
+        """Storyboard / resume / conditional planning do not own a main STATE, so a stage
+        may point at them without becoming a second copy of the route."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = (
+                workflow_body("STATE-05")
+                + "\n按需调用`workflows/16_sequence_planning_workflow.md`与"
+                "`workflows/18_project_resume_workflow.md`。\n"
+            )
+            write_main_workflows(root, {"08_scene_breakdown_workflow.md": body})
+            self.assertEqual(validator.check_workflow_routing(root), [])
+
+    def test_own_state_workflow_reference_is_allowed(self) -> None:
+        """STATE-03 has four asset workflows; naming a sibling is not a route copy."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-03") + "\n同阶段的其余资产Workflow见`06_prop_asset_workflow.md`。\n"
+            write_main_workflows(root, {"05_environment_asset_workflow.md": body})
+            self.assertEqual(validator.check_workflow_routing(root), [])
 
 
 class BatchDeliveryTests(unittest.TestCase):
