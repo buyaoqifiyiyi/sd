@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r57 SD Film validator."""
+"""Regression tests for the r60 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -1138,6 +1138,121 @@ class R57MediumProfileTests(unittest.TestCase):
     def test_medium_profile_stays_within_the_new_file_budget(self) -> None:
         size = len((ROOT / "knowledge/medium_profiles.md").read_bytes())
         self.assertLess(size, validator.BUDGET_TARGET_BYTES * 0.6)
+
+
+class R59ShotDesignBreakdownTests(unittest.TestCase):
+    """Shot size is a taxonomy with one owner, and rhythm intent is a scene
+    fact that needs a recorded field. Both were only half-wired: the shot-size
+    list lived twice with different lengths, and the sequence planner read a
+    rhythm intent that no template recorded."""
+
+    def _shot_design(self) -> str:
+        return (ROOT / "workflows/09_shot_design_workflow.md").read_text(encoding="utf-8-sig")
+
+    def _scale_section(self) -> str:
+        text = self._shot_design()
+        start = text.index("## Shot Size")
+        return text[start:text.index("## Camera Movement", start)]
+
+    def test_shot_size_is_routed_to_its_single_owner(self) -> None:
+        text = self._shot_design()
+        self.assertIn(
+            "景别选择必须读取`knowledge/camera_language/lens_language/framing_and_scale.md`", text
+        )
+        self.assertIn(
+            "规范景别由`knowledge/camera_language/lens_language/framing_and_scale.md`唯一拥有",
+            text,
+        )
+
+    def test_inline_shot_scale_matches_the_canonical_owner(self) -> None:
+        """A short inline list next to the authoritative step is a near-at-hand
+        authority: it silently drops the two most-used sizes."""
+        section = self._scale_section()
+        for size in ("大全景。", "远景。", "全景。", "中景。", "中近景。", "近景。", "特写。", "大特写。"):
+            with self.subTest(size=size):
+                self.assertIn(size, section)
+        for extra in ("局部镜头。", "细节插入镜头。"):
+            with self.subTest(extra=extra):
+                self.assertIn(extra, section)
+
+    def test_inline_scale_refuses_to_be_a_second_owner(self) -> None:
+        section = self._scale_section()
+        self.assertIn("不得维护平行景别清单", section)
+
+    def test_shot_scale_has_a_registered_owner_contract(self) -> None:
+        contracts = (ROOT / "references/module_contracts_knowledge.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Shot Size And Framing Knowledge Contract", contracts)
+        self.assertIn(
+            "规范景别的唯一owner是`knowledge/camera_language/lens_language/framing_and_scale.md`",
+            contracts,
+        )
+        self.assertIn("不维护平行景别清单", contracts)
+
+    def test_rhythm_intent_has_a_recorded_field(self) -> None:
+        """The sequence planner reads a confirmed rhythm intent; that intent
+        has to be recorded somewhere or its consumer is orphaned."""
+        scene_template = (ROOT / "templates/07_scene_design_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Rhythm Intent（节奏结构", scene_template)
+        self.assertIn("Scene Camera Strategy", scene_template)
+
+    def test_scene_breakdown_is_what_writes_the_rhythm_intent(self) -> None:
+        breakdown = (ROOT / "workflows/08_scene_breakdown_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Scene Rhythm Intent Projection", breakdown)
+        self.assertIn("Scene Directing Brief", breakdown)
+        self.assertIn("已把已确认Rhythm Intent投影为节奏结构", breakdown)
+
+    def test_rhythm_projection_never_pre_commits_a_shot_count(self) -> None:
+        """The existing doctrine forbids fixing shot count before the shots are
+        designed. A rhythm section must not smuggle that decision back in."""
+        breakdown = (ROOT / "workflows/08_scene_breakdown_workflow.md").read_text(encoding="utf-8-sig")
+        section = breakdown[
+            breakdown.index("## Scene Rhythm Intent Projection"):breakdown.index("## Source Label Normalization")
+        ]
+        self.assertIn("不在本阶段预定", section)
+        self.assertIn("不写景别、焦段、机位、运镜路径、具体镜头数量", section)
+        self.assertIn("未确认Rhythm Intent时写`Pending`", section)
+
+    def test_rhythm_consumer_points_at_the_recorded_field(self) -> None:
+        sequence = (ROOT / "workflows/16_sequence_planning_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("`templates/07_scene_design_prompt.md`的`Scene Directing Brief`", sequence)
+        self.assertIn("本阶段不重新产生节奏意图", sequence)
+
+    def test_rhythm_intent_field_is_declared_by_the_director_owner(self) -> None:
+        director = (ROOT / "knowledge/director_decision_layer.md").read_text(encoding="utf-8-sig")
+        self.assertIn("供条件性Sequence Planning与STATE-06消费", director)
+        self.assertIn("不预定镜头数量", director)
+
+    def test_storyboard_stays_a_side_route_of_the_shot_template(self) -> None:
+        """A storyboard is a separate auxiliary route, not a richer version of
+        the shot table; conflating them is how it leaks into generation."""
+        shot_template = (ROOT / "templates/08_shot_design_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("旁路而不是升级档", shot_template)
+        self.assertIn("workflows/10_storyboard_workflow.md", shot_template)
+        self.assertIn("不进入STATE-07 / STATE-08参考资产", shot_template)
+
+    def test_rhythm_projection_declares_where_it_is_recorded(self) -> None:
+        """The projection guard used to claim it added no user-visible field,
+        which stopped being true once the Scene Directing Brief recorded it.
+        The guard that matters is no second schema and no new IDs."""
+        breakdown = (ROOT / "workflows/08_scene_breakdown_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("其投影只落在`templates/07_scene_design_prompt.md`既有的`Scene Directing Brief`区块内", breakdown)
+        self.assertIn("不创建第二套输出Schema、新STATE或SHOT / CLIP", breakdown)
+        self.assertNotIn("不新增用户可见固定字段", breakdown)
+
+    def test_shot_budget_is_not_introduced_anywhere(self) -> None:
+        """Fixing shot count before the shots exist is explicitly forbidden, so
+        no fix may smuggle a budget into the scene stage."""
+        for relative in ("workflows/08_scene_breakdown_workflow.md", "templates/07_scene_design_prompt.md"):
+            text = (ROOT / relative).read_text(encoding="utf-8-sig")
+            with self.subTest(relative=relative):
+                self.assertNotIn("Shot Budget", text)
+
+    def test_user_guide_separates_the_three_shot_delivery_forms(self) -> None:
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertIn("分镜的三种形态", guide)
+        self.assertIn("默认分镜表", guide)
+        self.assertIn("完整版专业分镜", guide)
+        self.assertIn("Storyboard 视觉分镜板", guide)
 
 
 if __name__ == "__main__":

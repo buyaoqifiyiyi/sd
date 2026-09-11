@@ -775,3 +775,39 @@ FAIL：把非运行时手册与高频必读文件用同一把尺子量，让它�
 PASS：两种漂移都使Validator失败，索引始终只描述当前真实存在的厚文件。
 
 FAIL：保留已达标条目或悬空条目，使索引变成一份越积越长的固定名单。
+
+---
+
+## R59 Shot Breakdown Coverage Regression
+
+### R59-A Shot Size Has One Owner And The Inline List Matches It
+
+输入：STATE-06需要为新镜头选择景别，Agent就近读取`workflows/09_shot_design_workflow.md`的Step 3。
+
+PASS：Step 3列出与`knowledge/camera_language/lens_language/framing_and_scale.md`一致的规范景别（含中近景与大特写）加局部镜头、细节插入镜头，并显式指向该owner；Required Knowledge在焦段路由旁给出景别路由；该owner已在`references/module_contracts_knowledge.md`登记合同。
+
+FAIL：内联清单短于规范景别，导致中近景与大特写选不出来，而下游`camera_language/image_source_coverage.md`与`director_patterns/emotional_patterns.md`（EMO-08固定中近景、EMO-15大特写/局部）仍在消费这两档。
+
+### R59-B Rhythm Intent Has A Recorded Field Before It Has A Consumer
+
+输入：某Scene判定Sequence Planning Required，`workflows/16_sequence_planning_workflow.md`读取“已确认的Rhythm Intent”。
+
+PASS：STATE-05把它投影为`templates/07_scene_design_prompt.md`的`Scene Directing Brief`字段，并由`knowledge/director_decision_layer.md`声明归属；未确认时写`Pending`，不得由Writer Beat数量反推。
+
+FAIL：消费方读取一个没有任何记录落点的Rhythm Intent（孤儿内容），或让Sequence Planning自行发明节奏意图。
+
+### R59-C Rhythm Projection Never Pre-Commits A Shot Count
+
+输入：STATE-05投影节奏意图时，Agent顺手给出“本场预计8个镜头”。
+
+PASS：节奏段只写节拍结构、必须存在的节奏对比与信息时机关系；镜头数量仍只由STATE-06按Shot Purpose Gate与实际可执行性决定，不在本阶段预定。
+
+FAIL：把预估镜头数写成配额或写进Scene输出，使STATE-06为命中数字增删镜头，退回按Beat机械切分。
+
+### R59-D Storyboard Stays A Side Route, Not An Upgrade Tier
+
+输入：用户只说“给我完整版专业分镜”。
+
+PASS：只展开`templates/08_shot_design_prompt.md`的十八字段内部记录；视觉Storyboard仍由`workflows/10_storyboard_workflow.md`另行显式请求，且不进入STATE-07 / STATE-08参考资产。
+
+FAIL：把Storyboard当作分镜表的更完整版本顺带产出，或让它进入STATE-08参考资产。

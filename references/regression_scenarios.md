@@ -8,7 +8,7 @@
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
 | `references/regression_scenarios_craft.md` | R15—R23 | Prompt 编译、表演、阻断、剧本与导演端到端 |
-| `references/regression_scenarios_system.md` | R24、R27—R35、R48—R56 | 写作、Runtime、模型适配、FAST、交付校验、美学锁与维护 |
+| `references/regression_scenarios_system.md` | R24、R27—R35、R48—R59 | 写作、Runtime、模型适配、FAST、交付校验、美学锁、维护与分镜拆解覆盖 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
 ## Purpose
@@ -358,4 +358,6 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R55-A至R55-D验证自检属于Skill本体而非执行环境：`SKILL.md`前置声明自维护与写入前三项判定、协议纯文本可人工逐条执行、缺工具不得降低检查强度、版本纪律对任何执行者同样适用。
 - R55-E验证既有检测层的身份在搬家与改名后仍然连续：原名称`Skill Update Self-Check / Change Safety Checklist`保持可检索，新入口显式声明只是入口、不构成第二套体系，全库只有一个检查体系入口。
 - R56-A至R56-C验证维护体系已整合：每条规则正文只有一处完整定义（写入前判定只在`Before You Write`）、体量文件不拥有体系框架、执行清单的`Maintenance System Map`列出全部成员与角色并声明其为分层而非并行。
+- R57-A至R57-C验证媒介剖面与Genre正交、2D档禁止套用实拍光学参数、未确认媒介不得默认真人剧；R58-A至R58-D验证越过复核线不是违规、`INTEGRAL`条目必须有读取入口、非运行时文件不在管辖内、Size Index不会腐化成固定名单。
+- R59-A至R59-D验证分镜拆解的三处覆盖：景别只有一个owner且`workflows/09`的内联清单与`framing_and_scale.md`一致（含中近景与大特写）、`Rhythm Intent`在`templates/07`有记录落点且由STATE-05投影、节奏投影不得预定镜头数量、Storyboard始终是旁路而非分镜表的升级档。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

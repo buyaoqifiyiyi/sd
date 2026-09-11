@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r59 structural, routing and readability validation for SD Film."""
+"""Deterministic r60 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -288,6 +288,12 @@ def validate_skill(root: Path) -> list[str]:
     knowledge_index = read(root, "knowledge/00_knowledge_index.md")
     script_analysis = read(root, "workflows/02_script_analysis_workflow.md")
     contracts_knowledge = read(root, "references/module_contracts_knowledge.md")
+    shot_design = read(root, "workflows/09_shot_design_workflow.md")
+    scene_breakdown = read(root, "workflows/08_scene_breakdown_workflow.md")
+    scene_template = read(root, "templates/07_scene_design_prompt.md")
+    shot_template = read(root, "templates/08_shot_design_prompt.md")
+    sequence_planning = read(root, "workflows/16_sequence_planning_workflow.md")
+    framing_scale = read(root, "knowledge/camera_language/lens_language/framing_and_scale.md")
     budget_doc = read(root, "references/context_budget.md")
     required_markers = (
         (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
@@ -472,6 +478,23 @@ def validate_skill(root: Path) -> list[str]:
         (budget_doc, "## 可达性纪律"),
         (budget_doc, "无孤儿内容"),
         (budget_doc, "不在本纪律管辖内"),
+        (framing_scale, "## Canonical Shot Scale"),
+        (framing_scale, "中近景 / Medium Close-Up"),
+        (framing_scale, "大特写 / Extreme Close-Up"),
+        (shot_design, "景别选择必须读取`knowledge/camera_language/lens_language/framing_and_scale.md`"),
+        (shot_design, "规范景别由`knowledge/camera_language/lens_language/framing_and_scale.md`唯一拥有"),
+        (shot_design, "中近景。"),
+        (shot_design, "大特写。"),
+        (shot_design, "细节插入镜头。"),
+        (contracts_knowledge, "## Shot Size And Framing Knowledge Contract"),
+        (contracts_knowledge, "规范景别的唯一owner是`knowledge/camera_language/lens_language/framing_and_scale.md`"),
+        (contracts_knowledge, "不维护平行景别清单"),
+        (scene_breakdown, "## Scene Rhythm Intent Projection"),
+        (scene_breakdown, "不在本阶段预定"),
+        (scene_template, "Rhythm Intent（节奏结构"),
+        (director_layer, "供条件性Sequence Planning与STATE-06消费"),
+        (sequence_planning, "`templates/07_scene_design_prompt.md`的`Scene Directing Brief`"),
+        (shot_template, "旁路而不是升级档"),
     )
     for text, marker in required_markers:
         if marker not in text:
@@ -545,7 +568,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r59 structural, routing and readability validation")
+    print("PASS: r60 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

@@ -163,7 +163,7 @@ Visual Grammar Baseline之后必须完成`Aesthetic Decision Lock`：在反差�
 
 ### STATE-05 Scene Breakdown
 
-先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是以Visual Grammar Baseline为底补充Performance Beat、Scene / Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
+先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是以Visual Grammar Baseline为底补充Performance Beat、Scene / Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。已确认的`Rhythm Intent`同时投影为`templates/07_scene_design_prompt.md`的`Scene Directing Brief`字段，与`Scene Camera Strategy`并列，供条件性Sequence Planning与STATE-06消费；它只描述节奏意图，不预定镜头数量，也不写景别、焦段、机位或运镜路径。未确认时写`Pending`，不得由Writer Beat数量反推。
 
 ### STATE-06 Detailed Shot Design
 

@@ -85,6 +85,38 @@ Module Type：跨镜头边界与转场选择Knowledge。
 
 ---
 
+## Shot Size And Framing Knowledge Contract
+
+Module Type：STATE-04、STATE-06至STATE-09辅助Camera Knowledge，不创建新STATE。
+
+触发：需要确定取景尺度、景别名称、信息距离、特写与局部的裁切范围，或核对连续镜头的景别继承与尺度一致性。
+
+输入拥有者：Shot Purpose、Audience Attention、Composition Strategy、Camera Position / Distance、Blocking / Spatial Lock、Focal Length与资产身份分别由对应上游事实和设计拥有者提供。
+
+输出拥有者：STATE-04由Project Bible摄影方向拥有；STATE-06由`templates/08_shot_design_prompt.md`的`景别`字段拥有；STATE-07由`templates/20_clip_plan.md`拥有；STATE-08由Selected Model对应的唯一Template拥有。
+
+下游消费者：Detailed Shot Design、Clip Production、Optional Storyboard、Video Generation与Review。
+
+不变量：
+
+- 规范景别的唯一owner是`knowledge/camera_language/lens_language/framing_and_scale.md`；其他文件只引用它，不维护平行景别清单
+- 规范景别为大全景 / 远景 / 全景 / 中景 / 中近景 / 近景 / 特写 / 大特写；局部镜头与细节插入镜头是并列的取景类型
+- 景别只记录可见取景尺度，不决定摄影机运动、焦段或情绪
+- 同一景别可由静态机位、真实位移或剪辑获得，三者必须在Shot Design中分开说明
+- 景别越近，身份来源、眼线、裁切范围与动作数量越需要明确；近不等于复杂
+- 大全景与远景必须写出人物与门、车辆、建筑之间可复算的相对比例
+
+禁止：
+
+- 只写“人物居中”“电影感构图”，或用“特写”指代未说明的拍摄方式
+- 把景别当作情绪的固定公式，或把焦段当作景别的同义词
+- 用极端裁切掩盖未确认的身份、空间或轴线事实
+- 为匹配景别语义新增人物、地点、动作或资产事实
+
+冲突时：项目级摄影方向返回STATE-04；逐镜景别、机位、距离、对焦或动作容量返回STATE-06；Clip编排返回STATE-07；资产身份或空间事实返回其拥有者。
+
+---
+
 ## Focal Length Knowledge Contract
 
 Module Type：STATE-04、STATE-06至STATE-09辅助Camera Knowledge。

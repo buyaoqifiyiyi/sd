@@ -58,10 +58,10 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 - 已降到复核线以下仍留在此表：Validator失败，防止索引腐化成一份固定名单。
 - 指向不存在的文件：Validator失败。
 
-| File | Class | Size (r59) | Read Entry | Review By |
+| File | Class | Size (r60) | Read Entry | Review By |
 |---|---|---|---|---|
 | knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 57.3 KB | STATE-08每个Clip只读当前Clip相关的Projection Matrix行与Serialization Rules；Applicability Gate在编译前读 | 2026-10-11 |
-| workflows/09_shot_design_workflow.md | INTEGRAL | 51.4 KB | 按Step读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
+| workflows/09_shot_design_workflow.md | INTEGRAL | 52.0 KB | 按Step读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
 
 `USER_GUIDE.md`已移出：它是`NON_RUNTIME`，不参与运行时读取，不属于本纪律的管辖范围。
 

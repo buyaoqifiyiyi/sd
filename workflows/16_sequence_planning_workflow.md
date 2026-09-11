@@ -24,7 +24,7 @@ UNIT是Sequence Coverage、状态继承与Retry Boundary规划容器，不是Cli
 - knowledge/sequence/coverage_design.md
 - knowledge/sequence/sequence_continuity.md
 - knowledge/sequence/generation_unit_design.md
-- knowledge/director_decision_layer.md（只读取STATE-05已确认的Scene Director Intent与Rhythm Intent）
+- knowledge/director_decision_layer.md（只读取STATE-05已确认的Scene Director Intent与Rhythm Intent；两者的记录落点是`templates/07_scene_design_prompt.md`的`Scene Directing Brief`，本阶段不重新产生节奏意图）
 - rules/04_consistency_rules.md
 - templates/14_sequence_plan.md
 

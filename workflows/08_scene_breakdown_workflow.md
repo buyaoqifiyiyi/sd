@@ -86,7 +86,7 @@ Asset Development。
 
 先读取Production-Locked Directable Screenplay、与其Revision绑定的Writer Intent Packet及STATE-01轻量Scene Director Intent。按`knowledge/screenplay_development.md`与`knowledge/director_decision_layer.md`的Handoff，将每场的Scene Purpose、Character Objective / Obstacle / Tactic、Value / Relationship / Information Change、Decision / Consequence、Setup / Payoff Function、Writer Beat Map、Scene Exit State及Audience Start / End、Performance / Spatial / Rhythm呈现意图投影到正式SCENE边界、剧情作用、空间关系和节奏阶段。
 
-这些source data只帮助发现Scene边界并保持Writer / Director意图，不新增用户可见固定字段，不允许改写Production-Locked剧情，也不创建SHOT / CLIP。若Intent与锁定剧本冲突，返回STATE-01最小修订Intent；若原项目没有独立Intent Artifact，则从锁定剧本已明确的行动、信息与关系变化提取最小可验证投影，不补造新剧情。
+这些source data只帮助发现Scene边界并保持Writer / Director意图，其投影只落在`templates/07_scene_design_prompt.md`既有的`Scene Directing Brief`区块内（Beat Map / Audience Start → End / Dramatic Geography / Reveal Timing / Scene Camera Strategy / Rhythm Intent），不创建第二套输出Schema、新STATE或SHOT / CLIP；不允许改写Production-Locked剧情。若Intent与锁定剧本冲突，返回STATE-01最小修订Intent；若原项目没有独立Intent Artifact，则从锁定剧本已明确的行动、信息与关系变化提取最小可验证投影，不补造新剧情。
 
 ## Writer Beat Map And Director Dramatic Geography
 
@@ -99,6 +99,16 @@ Writer Intent决定Reveal / Withhold / Delay / Confirm / Recontextualize在何�
 ## Scene Camera Strategy
 
 每个Scene形成一句到数句轻量策略，使用“观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放”等功能语言，说明Audience Position、注意力如何移动、何处Hold、何处允许靠近或离开、关系空间如何演化。禁止在此写35mm、85mm、特写、低机位、浅景深、Push In或正式SHOT参数；具体选择留给STATE-06固定决策顺序。
+
+## Scene Rhythm Intent Projection
+
+每个Scene还必须把已确认的`Rhythm Intent`投影为可核对的本场节奏意图，并与`Scene Camera Strategy`一并写入正式Scene输出的`Scene Directing Brief`：
+
+- 节奏结构：按Beat列出本场快慢倾向，何处Hold、何处加速、何处留出呼吸，以及场景收束落在什么节奏状态。
+- 必须存在的节奏对比：本场至少一处由剧情或空间事实触发的节奏变化，以及它服务的观众体验。
+- 与信息时机的关系：节奏变化必须服从已确认的Reveal / Withhold顺序，不得为节奏便利提前揭示或压掉必要停顿。
+
+本段只写节奏意图，不写景别、焦段、机位、运镜路径、具体镜头数量或正式SHOT参数。镜头数量仍只由STATE-06按Shot Purpose Gate与实际可执行性决定，不在本阶段预定。未确认Rhythm Intent时写`Pending`，不得由Beat数量反推。
 
 ## Source Label Normalization
 
@@ -264,6 +274,9 @@ FX-001（如适用）
 □ 每个Scene已形成Dramatic / Relationship / Information / Performance Beat Map、Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution与Reveal / Withhold timing；Visual Grammar Baseline保持一致但未被机械复制为同一镜头处理
 
 □ 每个Scene已形成轻量Scene Camera Strategy，且没有提前创建SHOT或具体摄影参数
+
+
+□ 每个Scene已把已确认Rhythm Intent投影为节奏结构、必须存在的节奏对比与信息时机关系，未确认时写`Pending`，且没有预定镜头数量
 
 
 

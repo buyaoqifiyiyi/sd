@@ -127,6 +127,8 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 
 焦段选择必须读取`knowledge/camera_language/lens_language/focal_length_and_perspective.md`；需要七档归并与降级时再读取`focal_length_patterns.md`，连续覆盖读取`focal_length_continuity.md`。
 
+景别选择必须读取`knowledge/camera_language/lens_language/framing_and_scale.md`：它是规范景别名称的唯一owner，定义大全景 / 远景 / 全景 / 中景 / 中近景 / 近景 / 特写 / 大特写，以及局部镜头与细节插入镜头；本Workflow不维护第二套景别清单。
+
 
 当用户或创意资料使用“压迫式逼近、环绕眩晕、突停凝视、纵深穿堂”等导演化名称时：
 
@@ -506,17 +508,30 @@ Camera Language Decision至少包含：
 景别：
 
 
-远景。
+规范景别由`knowledge/camera_language/lens_language/framing_and_scale.md`唯一拥有，按信息距离排列为：
 
 大全景。
+
+远景。
 
 全景。
 
 中景。
 
+中近景。
+
 近景。
 
 特写。
+
+大特写。
+
+局部镜头。
+
+细节插入镜头。
+
+
+每镜只记录所选规范景别名称；不得维护平行景别清单，也不得用焦段、机位、情绪或画面质感替代景别。
 
 
 

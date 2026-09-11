@@ -76,6 +76,9 @@ Reveal / Withhold Timing：
 Scene Camera Strategy（观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放；不写具体镜头参数）：
 
 
+Rhythm Intent（节奏结构、必须存在的节奏对比与信息时机关系；只写节奏意图，不写具体镜头数量或摄影参数）：
+
+
 ## Scene Visual Brief
 
 
