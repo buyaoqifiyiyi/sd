@@ -37,11 +37,11 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 | File | Owner | Lines (r50) | Why It Still Stays Whole | Review By |
 |---|---|---|---|---|
 | references/regression_scenarios.md | Skill维护QA | 1508 | 回归场景矩阵，按R*/LR-R*/SD-R*编号顺序检索；拆分会产生跨文件引用与编号断链 | 2026-10-11 |
-| references/module_contracts.md | Skill维护QA | 925 | 维护QA与模块接口的唯一权威来源；已识别出“Checklist短卡 + 详细合同”的拆分方向，未在本轮执行 | 2026-10-11 |
+| references/module_contracts.md | Skill维护QA | 925 | 维护QA与模块接口的唯一权威来源；维护自检整节位于790—926行，正处文件后段（最易被跳过的位置）。拆分方向为「Change Safety Checklist短卡 + 详细合同」 | 2026-10-11 |
 | USER_GUIDE.md | 用户文档 | 906 | 面向人的使用说明，未被任何Workflow列为Required Resource，不参与运行时读取；不得被当作运行时规则来源 | 2026-10-11 |
 | workflows/09_shot_design_workflow.md | STATE-06 | 1157 | STATE-06详细镜头设计的单一owner；内部按Shot字段分组，拆分会使字段归属跨文件 | 2026-10-11 |
 | workflows/13_review_workflow.md | STATE-09 | 1032 | 三层Review与逐镜逐边界覆盖台账的单一owner；覆盖矩阵需要完整上下文才能核对 | 2026-10-11 |
-| knowledge/11_seedance_adapter.md | Model Adapter知识 | 1833 | 与`adapters/seedance-2.0.md`存在能力事实双写风险；正确处置是收敛为单一owner，属独立变更 | 2026-10-11 |
+| knowledge/11_seedance_adapter.md | Seedance知识层 | 1833 | 能力数值的owner是`adapters/seedance-2.0.md`与`seedance-2.5.md`；本文件另有4处prose复述`4—15秒`／`4—30秒`窗口（889、1010、1582、1771行），属已声明的知识层复述，但能力变更时需同步。属独立变更 | 2026-10-11 |
 | rules/03_prompt_rules.md | Prompt Rules | 1447 | 22条Prompt规则按编号引用，拆分会使跨规则引用失效 | 2026-10-11 |
 | workflows/07_visual_development_workflow.md | STATE-04 | 2330 | 全库最长文件，距Ceiling余量最小；含Aesthetic Decision Lock Gate与多层视觉Gate，是最优先的拆分候选 | 2026-10-11 |
 | workflows/01_project_setup_workflow.md | STATE-00 | 1389 | 项目初始化与Project Model Selection Gate的单一owner | 2026-10-11 |
