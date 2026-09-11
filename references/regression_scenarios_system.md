@@ -605,3 +605,37 @@ FAIL：先把超Ceiling文件登记进Ledger再照常提交，使Ceiling退化�
 PASS：编号／命名空间保持连续，原文件保留原名并提供Regression File Index；所有引用方更新到新文件；回归断言改为对整个语料集求值，不因再次拆分而失效。
 
 FAIL：拆分后出现断号、同名两处可执行副本，或引用方仍指向已移走的小节。
+
+## R54 Long-Term Context Budget Maintenance Regression
+
+### R54-A Prevent Layer Blocks Growth Before It Lands
+
+输入：一次优化需要在某个已接近Target的文件里补写内容。
+
+PASS：先判定归属，默认补进既有owner；如果补写会使文件超过Target，或把已在Target以上的文件再推高10%以上，就在同一次变更内先拆分／合并／删除冗余；新建Markdown不超过30 KB。
+
+FAIL：先把内容写进去，再登记进Size Ledger把问题推给下一次。
+
+### R54-B Composite Debt Is Queued, Not Shelved
+
+输入：某`COMPOSITE`文件超Target并已登记。
+
+PASS：它被当作待拆队列；连续两次复审仍未拆分即按未处理技术债上报。历史遗留的132.7 KB回归集与72.8 KB模块合同集均在本类规则下被拆，拆后按其体量自动摘牌。
+
+FAIL：以“已登记”为理由长期不拆，使Ledger变成永久豁免名单。
+
+### R54-C Audit Runs On A Cadence And Detects Drift
+
+输入：固定的周期性体检。
+
+PASS：运行`scripts/validate_sd_film.py --skill-root <skill-root> --report`，输出字节排名、超Target项及其类别与复审日期；Ledger登记的`Size`与实测差异超过20%即判为台账过期，并使Validator失败。
+
+FAIL：把体检当作唯一防线，或让Ledger记录的体量长期与实测脱节。
+
+### R54-D Enforce Layer Is Independent Of Discipline
+
+输入：一次正式修改。
+
+PASS：字节阈值、文件类别合法性、Ledger一致性、`NON_RUNTIME`自证全部由`scripts/validate_sd_film.py`确定性执行，不依赖维护者是否记得读规则。
+
+FAIL：把体量约束只写成文档要求而不落进Validator，使是否遵守取决于自觉。

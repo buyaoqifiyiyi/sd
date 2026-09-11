@@ -33,7 +33,10 @@
 - Project State Contract: `references/project_state_contract.md`
 - Project Workspace Contract: `references/project_workspace.md`
 - Asset Lock Contract: `references/asset_lock_contract.md`
-- Module Contracts: `references/module_contracts.md`
+- Module Contracts (framework, authority and owners): `references/module_contracts.md`
+- Module Contracts (production modules): `references/module_contracts_production.md`
+- Module Contracts (auxiliary modules): `references/module_contracts_auxiliary.md`
+- Module Contracts (knowledge contracts): `references/module_contracts_knowledge.md`
 - Skill Maintenance Self-Check (per-change entry): `references/maintenance_self_check.md`
 - Skill Maintenance Self-Check Criteria: `references/maintenance_self_check_protocol.md`
 - Skill Context Budget And Size Ledger: `references/context_budget.md`

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r52 structural, routing and context-budget validation for SD Film."""
+"""Deterministic r53 structural, routing and context-budget validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -14,6 +14,10 @@ REQUIRED = (
     "knowledge/prompt_compilation/minimax_h3_compilation.md",
     "workflows/01_project_setup_workflow.md", "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
     "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
+    "references/module_contracts.md",
+    "references/module_contracts_production.md",
+    "references/module_contracts_auxiliary.md",
+    "references/module_contracts_knowledge.md",
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
     "references/context_budget.md",
@@ -61,17 +65,92 @@ def scan_markdown(root: Path) -> list[tuple[str, int]]:
         entries.append((relative.as_posix(), size_bytes(path)))
     return entries
 
-def read_size_ledger(root: Path) -> dict[str, str]:
-    """The Size Ledger rows as {relative path: file class}."""
-    ledger: dict[str, str] = {}
+def read_size_ledger_rows(root: Path) -> list[dict[str, str]]:
+    """Ledger rows keyed by the Size Ledger header, so column order can change."""
+    rows: list[dict[str, str]] = []
+    header: list[str] | None = None
     for line in read(root, "references/context_budget.md").splitlines():
         stripped = line.strip()
         if not stripped.startswith("|"):
+            header = None
             continue
         cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-        if len(cells) >= 2 and cells[0].endswith(".md"):
-            ledger[cells[0]] = cells[1]
-    return ledger
+        if header is None:
+            if cells and cells[0] == "File":
+                header = cells
+            continue
+        if all(set(cell) <= {"-"} for cell in cells if cell) and any(cells):
+            continue
+        if len(cells) == len(header):
+            rows.append(dict(zip(header, cells)))
+    return rows
+
+def _column(row: dict[str, str], prefix: str) -> str:
+    for key, value in row.items():
+        if key.lower().startswith(prefix):
+            return value
+    return ""
+
+def read_size_ledger(root: Path) -> dict[str, str]:
+    """The Size Ledger rows as {relative path: file class}."""
+    return {row["File"]: _column(row, "class") for row in read_size_ledger_rows(root)}
+
+def read_ledger_sizes(root: Path) -> dict[str, float]:
+    """Declared size in KB per ledger row, so a stale ledger is detectable."""
+    declared: dict[str, float] = {}
+    for row in read_size_ledger_rows(root):
+        found = re.search(r"([\d.]+)\s*KB", _column(row, "size"), re.I)
+        if found:
+            declared[row["File"]] = float(found.group(1))
+    return declared
+
+def read_ledger_reviews(root: Path) -> dict[str, str]:
+    """Review-by date per ledger row."""
+    return {row["File"]: _column(row, "review") for row in read_size_ledger_rows(root)}
+
+def check_ledger_sizes(entries, declared, tolerance: float = 0.20) -> list[str]:
+    """The ledger records a size per entry; if reality drifts past tolerance the
+    ledger is stale and no longer describes what it claims to describe."""
+    errors: list[str] = []
+    sizes = dict(entries)
+    for relative, recorded in declared.items():
+        if relative not in sizes:
+            continue
+        actual = sizes[relative] / 1024
+        if recorded > 0 and abs(actual - recorded) / recorded > tolerance:
+            errors.append(
+                f"context budget ledger size is stale for {relative} "
+                f"(recorded {recorded} KB, actual {actual:.1f} KB); update the ledger"
+            )
+    return errors
+
+def build_report(root: Path) -> str:
+    entries = sorted(scan_markdown(root), key=lambda item: -item[1])
+    ledger = read_size_ledger(root)
+    total = sum(size for _, size in entries)
+    lines = [
+        "SD Film Context Budget Report",
+        f"  files {len(entries)}   total {total / 1024:.0f} KB"
+        f"   target {BUDGET_TARGET_BYTES // 1024} KB   ceiling {BUDGET_CEILING_BYTES // 1024} KB",
+        "",
+        "  largest files (UTF-8 bytes)",
+    ]
+    for relative, size in entries[:10]:
+        mark = f"  [{ledger[relative]}]" if relative in ledger else ""
+        lines.append(
+            f"    {size / 1024:7.1f} KB  {size * 100 / BUDGET_CEILING_BYTES:5.1f}% of ceiling"
+            f"  {relative}{mark}"
+        )
+    over = [(r, s) for r, s in entries if s > BUDGET_TARGET_BYTES]
+    lines += ["", f"  over target: {len(over)}"]
+    for relative, size in over:
+        lines.append(f"    {ledger.get(relative, 'UNREGISTERED'):12s} {size / 1024:7.1f} KB  {relative}")
+    reviews = read_ledger_reviews(root)
+    if reviews:
+        lines += ["", "  review by"]
+        for relative, when in sorted(reviews.items()):
+            lines.append(f"    {when:12s} {relative}")
+    return "\n".join(lines)
 
 def check_context_budget(entries, ledger) -> list[str]:
     """A file that outgrows the target must be registered with a known class; a
@@ -386,19 +465,27 @@ def validate_skill(root: Path) -> list[str]:
     for relative, file_class in ledger.items():
         if file_class == "NON_RUNTIME" and "非运行时文件" not in read(root, relative):
             errors.append(f"a NON_RUNTIME ledger entry must declare itself in-file: {relative}")
-    errors.extend(check_context_budget(scan_markdown(root), ledger))
+    entries = scan_markdown(root)
+    errors.extend(check_context_budget(entries, ledger))
+    errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
     return errors
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skill-root", type=Path, required=True)
+    parser.add_argument(
+        "--report", action="store_true",
+        help="also print the periodic context-budget audit (sizes, ledger, reviews)",
+    )
     args = parser.parse_args()
     errors = validate_skill(args.skill_root)
+    if args.report:
+        print(build_report(args.skill_root))
     if errors:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r52 structural, routing and context-budget validation")
+    print("PASS: r53 structural, routing and context-budget validation")
     return 0
 
 if __name__ == "__main__":

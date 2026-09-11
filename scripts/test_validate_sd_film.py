@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r52 SD Film validator."""
+"""Regression tests for the r53 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -17,6 +17,13 @@ PKG_SPEC = importlib.util.spec_from_file_location(
 package_validator = importlib.util.module_from_spec(PKG_SPEC)
 assert PKG_SPEC and PKG_SPEC.loader
 PKG_SPEC.loader.exec_module(package_validator)
+
+MODULE_CONTRACT_FILES = (
+    "references/module_contracts.md",
+    "references/module_contracts_production.md",
+    "references/module_contracts_auxiliary.md",
+    "references/module_contracts_knowledge.md",
+)
 
 REGRESSION_FILES = (
     "references/regression_scenarios.md",
@@ -750,12 +757,12 @@ class R51MaintenanceSelfCheckExtractionTests(unittest.TestCase):
         self.assertIn("references/maintenance_self_check.md", contracts)
         self.assertIn("references/maintenance_self_check_protocol.md", contracts)
 
-    def test_module_contracts_is_classified_composite_until_it_is_split(self) -> None:
+    def test_split_module_contracts_left_the_ledger_clean(self) -> None:
         ledger = validator.read_size_ledger(ROOT)
-        self.assertEqual(ledger.get("references/module_contracts.md"), "COMPOSITE")
-        size = dict(validator.scan_markdown(ROOT))["references/module_contracts.md"]
-        self.assertGreater(size, validator.BUDGET_TARGET_BYTES)
-        self.assertLessEqual(size, validator.BUDGET_CEILING_BYTES)
+        for relative in MODULE_CONTRACT_FILES:
+            with self.subTest(relative=relative):
+                self.assertTrue((ROOT / relative).is_file(), relative)
+                self.assertNotIn(relative, ledger)
 
     def test_skill_entry_routes_to_the_run_card(self) -> None:
         skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
@@ -835,6 +842,86 @@ class R52SizeMetricAndRegressionSplitTests(unittest.TestCase):
         self.assertEqual(
             validator.check_context_budget(
                 validator.scan_markdown(ROOT), validator.read_size_ledger(ROOT)
+            ),
+            [],
+        )
+
+
+class R53LongTermBudgetMaintenanceTests(unittest.TestCase):
+    """The budget only holds if it prevents growth as well as measuring it: a
+    prevent layer, an enforce layer, a recurring audit, and a module-contract
+    split that leaves the ledger describing only genuinely integral files."""
+
+    def test_module_contracts_are_split_and_absent_from_the_ledger(self) -> None:
+        ledger = validator.read_size_ledger(ROOT)
+        sizes = dict(validator.scan_markdown(ROOT))
+        for relative in MODULE_CONTRACT_FILES:
+            with self.subTest(relative=relative):
+                self.assertTrue((ROOT / relative).is_file(), relative)
+                self.assertLessEqual(sizes[relative], validator.BUDGET_TARGET_BYTES)
+                self.assertNotIn(relative, ledger)
+
+    def test_authority_and_owner_list_stay_in_the_framework_file(self) -> None:
+        frame = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Authority Matrix", frame)
+        self.assertIn("## Stable Interface Rules", frame)
+        self.assertIn("## Module Contract File Index", frame)
+        for relative in MODULE_CONTRACT_FILES[1:]:
+            with self.subTest(relative=relative):
+                self.assertIn(relative, frame)
+
+    def test_split_files_do_not_re_own_the_authority_matrix(self) -> None:
+        for relative in MODULE_CONTRACT_FILES[1:]:
+            text = (ROOT / relative).read_text(encoding="utf-8-sig")
+            with self.subTest(relative=relative):
+                self.assertNotIn("## Authority Matrix", text)
+                self.assertIn("references/module_contracts.md", text)
+
+    def test_every_module_contract_section_survived_the_split(self) -> None:
+        corpus = "\n".join(
+            (ROOT / relative).read_text(encoding="utf-8-sig") for relative in MODULE_CONTRACT_FILES
+        )
+        for section in (
+            "Stable Interface Rules", "Authority Matrix",
+            "Screenwriter Module, Adaptation And Analysis Gate Contract",
+            "STATE-03 Visual Asset Production Contract", "Prompt Compilation Module Contract",
+            "Clip Production Module Contract", "Project State And Recovery Contract",
+            "Shot Language Router Contract", "Clip Preflight Check Module Contract",
+            "MUSIC / SEED-MUSIC Score Module Contract", "AUDIO / SEED-AUDIO Voice Asset Module Contract",
+            "Skill Experience Module Contract", "Poster Design Module Contract",
+            "Sequence Module Contract", "Fast Automation Policy Contract",
+            "Performance Expression Knowledge Contract", "Transition Knowledge Contract",
+            "Focal Length Knowledge Contract", "Color Knowledge Contract",
+            "Camera Movement Combination Knowledge Contract", "Camera Composition Knowledge Contract",
+            "Camera Movement Selection Matrix Knowledge Contract", "Lighting Knowledge Contract",
+            "Quality Knowledge Contract",
+        ):
+            with self.subTest(section=section):
+                self.assertIn(section, corpus)
+
+    def test_budget_states_prevent_enforce_and_audit(self) -> None:
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        for marker in ("## Long-Term Maintenance", "### 1. Prevent", "### 2. Enforce",
+                       "### 3. Audit", "### 4. Debt Policy", "先归位，再新增", "不得先加后登"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, budget)
+
+    def test_periodic_audit_report_is_produced(self) -> None:
+        report = validator.build_report(ROOT)
+        for marker in ("SD Film Context Budget Report", "largest files", "over target", "review by"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, report)
+
+    def test_stale_ledger_size_is_rejected(self) -> None:
+        findings = validator.check_ledger_sizes(
+            [("big/thing.md", 80 * 1024)], {"big/thing.md": 50.0}
+        )
+        self.assertTrue(any("stale" in item for item in findings))
+
+    def test_current_ledger_sizes_are_accurate(self) -> None:
+        self.assertEqual(
+            validator.check_ledger_sizes(
+                validator.scan_markdown(ROOT), validator.read_ledger_sizes(ROOT)
             ),
             [],
         )

@@ -16,7 +16,7 @@
 
 创建Sequence Plan时同时读取：
 
-- references/module_contracts.md
+- references/module_contracts_auxiliary.md
 - workflows/16_sequence_planning_workflow.md
 - templates/14_sequence_plan.md
 

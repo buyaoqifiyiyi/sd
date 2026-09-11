@@ -18,7 +18,7 @@ UNIT是Sequence Coverage、状态继承与Retry Boundary规划容器，不是Cli
 
 执行前必须读取：
 
-- references/module_contracts.md
+- references/module_contracts_auxiliary.md
 - references/artifact_revision_contract.md
 - knowledge/sequence/index.md
 - knowledge/sequence/coverage_design.md

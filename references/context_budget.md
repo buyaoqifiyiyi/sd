@@ -50,9 +50,8 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 未登记的超Target文件、已降到Target以下但仍留在此表的条目、以及指向不存在文件的条目，都会使Validator失败。
 
-| File | Class | Size (r52) | Why It Stays | Review By |
+| File | Class | Size (r53) | Why It Stays | Review By |
 |---|---|---|---|---|
-| references/module_contracts.md | COMPOSITE | 72.8 KB | 29个并列模块合同各自独立，**应拆**；已确定按「接口与权威 / 核心模块 / 辅助模块 / 知识契约」四分的方向，未在本轮执行 | 2026-10-11 |
 | USER_GUIDE.md | NON_RUNTIME | 64.7 KB | 面向人的使用说明，文件顶部已自证为非运行时文件，未被任何Workflow列为Required Resource | 2026-10-11 |
 | knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 57.3 KB | STATE-08编译链，缺任一Gate都会漏投影，拆分会让每个Clip多读一个文件；按章节读：Global/Per-Shot Projection Matrix、Serialization Rules、Applicability Gate为常用入口 | 2026-10-11 |
 | workflows/09_shot_design_workflow.md | INTEGRAL | 51.4 KB | STATE-06 Step 0—7线性流程，Shot字段之间互相约束；按章节读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
@@ -64,6 +63,35 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 - **COMPOSITE不得长期挂账**：`COMPOSITE`类条目连续两次复审仍未拆分，视为未处理的技术债。
 - **复审到期必重估**：到达`Review By`时重新判断，要么拆分、要么更新理由与新的复审日期。不得默认续期。
 - **拆分必须按编号／职责边界**：拆分后每个文件的编号或命名空间保持连续，并由原文件提供Index；不得为压体量而切断互相依赖的链条。
+
+## Long-Term Maintenance
+
+体量问题不会因为一次拆分而结束——只要还在迭代，文件就还会增长。所以本预算分三层执行，缺任何一层都会退化回“越写越长”。
+
+### 1. Prevent｜写之前
+
+- **先归位，再新增**：新增内容默认补进既有owner；先按`Rule Ownership Check`确认，确认不了才允许新增文件。
+- **不得先加后登**：如果本次变更会让任一文件**超过Target**，或把一个已在Target以上的文件再推高**10%以上**，必须在同一次变更内处理（拆分／合并／删除冗余），不得靠登记台账蒙混过关。
+- **新文件不得一出生就是大文件**：新建Markdown不得超过Target的60%（30 KB）。超过即说明它本应是既有文件的一节，或本身就该再分。
+- **正文不复制**：引用其他文件只写路由或不变量，不复制完整协议或Schema（见`Duplicate Rule Check`）。
+
+### 2. Enforce｜改的时候
+
+- `scripts/validate_sd_film.py`以**字节阈值、文件类别与Ledger一致性**做确定性检查，不依赖维护者自觉。
+- `Skill Update Self-Check`的`Context Budget Check`维度按本文件判定，结果写进必交的报告模板。
+
+### 3. Audit｜周期性
+
+- **周期性全库体检**：按固定节奏运行`scripts/validate_sd_film.py --skill-root <skill-root> --report`，输出字节排名、Ledger一致性、复审到期项与最接近Ceiling的文件。
+- **体检只负责发现累积**，不替代事前与事中；发现项按风险分级在当轮修复。
+- **台账随体量走**：Ledger的`Size`列必须反映最近一次实测值；实测与登记值差异超过20%即视为台账过期，Validator会失败。
+- **到期必须重估**：到达`Review By`时重新判定，要么拆分、要么更新理由与新的复审日期。`COMPOSITE`类连续两次复审仍未拆分，按未处理技术债上报。
+
+### 4. Debt Policy
+
+- `COMPOSITE`条目是**待拆队列**，不是长期状态。
+- `INTEGRAL`条目必须写明“按章节读”的入口；不写入口的`INTEGRAL`视同未登记。
+- 宁可拆一个文件，也不要为了凑阈值删掉已确认的规则、字段归属或回归场景。
 
 ## Change Interaction
 
