@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Regression tests for the r61 SD Film validator."""
+"""Regression tests for the r63 SD Film validator."""
 from __future__ import annotations
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -353,6 +354,18 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("$sd-film", guide)
         self.assertIn("@`选择器只显示Plugin", guide)
         self.assertIn("allow_implicit_invocation: true", metadata)
+
+    def test_nested_staging_skill_entry_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "SKILL.md").write_text("---\nname: sd-film\n---\n", encoding="utf-8")
+            staging = root / "tmp" / "sd-push" / "SKILL.md"
+            staging.parent.mkdir(parents=True)
+            staging.write_text("---\nname: sd-film\n---\n", encoding="utf-8")
+            self.assertEqual(
+                validator.duplicate_sd_film_entries(root),
+                ["tmp/sd-push/SKILL.md"],
+            )
 
     def test_fast_mode_is_explicit_and_preserves_hard_stops(self) -> None:
         automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")

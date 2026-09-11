@@ -96,6 +96,7 @@
 - `SKILL.md` frontmatter的`name`仍为`sd-film`，`description`前置保留`调用sd`、`调用SD`、`用SD Film`、`重新调用sd`、`恢复旧项目`、`继续之前的项目`等高价值启动词；隐式调用只以当前description作发现提示，不以旧对话Skill摘要补位。
 - `agents/openai.yaml`存在，`interface.display_name`为`SD Film`，`interface.default_prompt`显式提及`$sd-film`，`policy.allow_implicit_invocation`为`true`；Writer、Director、STATE Workflow和USER_GUIDE不得覆盖该调用策略。
 - 当前运行时用户级权威安装采用`$HOME/.codex/skills/sd-film`；不得同时在`$HOME/.agents/skills`或另一用户级Skill目录保留第二份同名`sd-film`。运行时安装根发生迁移时执行一次迁移，不维持双写或两个独立副本。
+- 发现器会递归读取Skill根目录下的`SKILL.md`；因此Git忽略`tmp/`不等于运行时忽略它。临时打包或推送副本必须放在Skill根目录之外，或在完成前移除其`name: sd-film`入口；Validator必须拒绝根目录内的第二个同名入口。
 - Codex中的确定性显式入口是`$sd-film`。在当前用户客户端的普通Chat中，`@`选择器只显示Plugin或Plugin内含能力，本机独立Skill不得承诺以`@`选择显示名的入口；普通Chat只有在宿主实际暴露本机Skills时，才可能通过`description`对`调用sd`作隐式选择。`agents/openai.yaml`的`display_name`与`allow_implicit_invocation`不会把独立Skill注册成Plugin，也不证明普通Chat已有`@`入口。
 - Skill变更通常应被Codex自动检测；如果当前Codex会话未刷新元数据，要求重启桌面应用或新建Codex任务后复测。普通Chat的`@`列表没有SD Film时，不得把它误诊为Skill内容错误，也不得为迎合`@`而创建Plugin、复制Skill或弱化Runtime规则。
 

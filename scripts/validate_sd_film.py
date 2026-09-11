@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r62 structural, routing and readability validation for SD Film."""
+"""Deterministic r63 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -51,6 +51,21 @@ SELF_CHECK_DIMENSIONS = (
 
 def read(root: Path, relative: str) -> str:
     return (root / relative).read_text(encoding="utf-8-sig")
+
+def duplicate_sd_film_entries(root: Path) -> list[str]:
+    """Find nested entries that a recursive skill discovery scan could register."""
+    canonical = (root / "SKILL.md").resolve()
+    duplicates: list[str] = []
+    for candidate in root.rglob("SKILL.md"):
+        if candidate.resolve() == canonical or ".git" in candidate.parts:
+            continue
+        try:
+            contents = candidate.read_text(encoding="utf-8-sig")
+        except UnicodeDecodeError:
+            continue
+        if re.search(r"^name:\s*sd-film\s*$", contents, re.MULTILINE):
+            duplicates.append(candidate.relative_to(root).as_posix())
+    return sorted(duplicates)
 
 def size_bytes(path: Path) -> int:
     return len(path.read_bytes().decode("utf-8-sig").encode("utf-8"))
@@ -235,6 +250,11 @@ def validate_skill(root: Path) -> list[str]:
     for alias in ("调用sd", "调用SD", "用SD Film", "重新调用sd", "恢复旧项目", "继续之前的项目"):
         if alias not in skill:
             errors.append(f"SKILL.md is missing discovery alias: {alias}")
+    for duplicate in duplicate_sd_film_entries(root):
+        errors.append(
+            f"duplicate SD Film discovery entry inside the canonical root: {duplicate}; "
+            "remove or relocate staging copies"
+        )
     core = read(root, "core/pipeline.md")
     runtime = read(root, "core/runtime-state.md")
     selection = read(root, "modules/model-selection.md")
@@ -609,7 +629,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r62 structural, routing and readability validation")
+    print("PASS: r63 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":
