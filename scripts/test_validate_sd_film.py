@@ -1042,5 +1042,81 @@ class R56MaintenanceConsolidationTests(unittest.TestCase):
         self.assertIn("Maintenance System Map", section)
 
 
+class R57MediumProfileTests(unittest.TestCase):
+    """A medium is not a genre. Live action, 3D and 2D share one narrative core
+    but not one camera language, so the axis has to be named, routed, and
+    carried by the field that already exists rather than a new one."""
+
+    def _profiles(self) -> str:
+        return (ROOT / "knowledge/medium_profiles.md").read_text(encoding="utf-8-sig")
+
+    def test_exactly_three_profiles_are_defined(self) -> None:
+        text = self._profiles()
+        for profile in ("`live_action`", "`3d_animation`", "`2d_anime`"):
+            with self.subTest(profile=profile):
+                self.assertIn(profile, text)
+        self.assertIn("不得新增第四档或改名", text)
+
+    def test_each_layer_has_its_own_divergence_table(self) -> None:
+        text = self._profiles()
+        for layer in ("## Screenwriter Layer", "## Director Layer", "## Aesthetic Layer"):
+            with self.subTest(layer=layer):
+                self.assertIn(layer, text)
+
+    def test_drawn_medium_bans_optical_parameters(self) -> None:
+        text = self._profiles()
+        self.assertIn("**`2d_anime` 禁止项**", text)
+        for banned in ("焦段毫米数", "光比比值", "真实景深"):
+            with self.subTest(banned=banned):
+                self.assertIn(banned, text)
+
+    def test_medium_is_orthogonal_to_genre(self) -> None:
+        text = self._profiles()
+        self.assertIn("媒介与Genre正交", text)
+        self.assertIn("不改变Genre承诺", text)
+
+    def test_medium_never_creates_prompt_fields(self) -> None:
+        text = self._profiles()
+        self.assertIn("不因媒介新增任何字段", text)
+        self.assertIn("不改变任何Model Adapter能力", text)
+
+    def test_medium_field_is_reused_not_duplicated(self) -> None:
+        bible = (ROOT / "templates/01_project_bible_template.md").read_text(encoding="utf-8-sig")
+        self.assertEqual(bible.count("媒介形式"), 1)
+        self.assertIn("未确认写 `Pending`", bible)
+
+    def test_unconfirmed_medium_stays_pending(self) -> None:
+        setup = (ROOT / "workflows/01_project_setup_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("# Medium Profile｜Internal", setup)
+        self.assertIn("不得默认取`2d_anime`或`live_action`", setup)
+        self.assertIn("不得把它登记为已确认真人剧", setup)
+
+    def test_medium_route_reaches_script_analysis(self) -> None:
+        script = (ROOT / "workflows/02_script_analysis_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("媒介剖面与目标形式是两根独立的轴", script)
+
+    def test_medium_gate_precedes_the_aesthetic_lock(self) -> None:
+        visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("# Medium Profile Gate", visual)
+        self.assertLess(
+            visual.index("# Medium Profile Gate"),
+            visual.index("# Aesthetic Decision Lock Gate"),
+        )
+
+    def test_medium_profile_is_discoverable_from_the_knowledge_index(self) -> None:
+        index = (ROOT / "knowledge/00_knowledge_index.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Persistent Medium Profile", index)
+        self.assertIn("knowledge/medium_profiles.md", index)
+
+    def test_medium_profile_has_a_registered_owner_contract(self) -> None:
+        contracts = (ROOT / "references/module_contracts_knowledge.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Medium Profile Knowledge Contract", contracts)
+        self.assertIn("knowledge/medium_profiles.md", contracts)
+
+    def test_medium_profile_stays_within_the_new_file_budget(self) -> None:
+        size = len((ROOT / "knowledge/medium_profiles.md").read_bytes())
+        self.assertLess(size, validator.BUDGET_TARGET_BYTES * 0.6)
+
+
 if __name__ == "__main__":
     unittest.main()

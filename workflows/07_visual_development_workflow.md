@@ -213,6 +213,19 @@ Update Project Status
 
 ---
 
+# Medium Profile Gate
+
+本Workflow开始前必须先读取已确认的`媒介形式`，并按需加载`knowledge/medium_profiles.md`。
+
+- 已确认`live_action` / `3d_animation` / `2d_anime`时，按该档的编剧承载、镜头语言基底与美学词表执行本阶段的Visual Direction与Cinematic Parameter定义。
+- 媒介为`Pending`或缺失时，记录`Medium Profile: PENDING`并把该决定返回STATE-00；不得默认按真人剧展开方向。
+- `2d_anime`下，`Camera Style`、`Lens Direction`、`Aperture And Depth`、`Filter And Texture`等光学参数区域必须写明本档等效表达（注意引导、明暗对比、帧感），不得留空或照搬实拍参数；不得写入焦段毫米数、光比比值或器材。
+- `3d_animation`下，光的性质属于打光与渲染设计，不得沿用实拍光比捕捉语言。
+
+本Gate只改变上述三张表在本阶段的表达方式：不新增Project Bible区域，不改变Aesthetic Decision Lock的四维度，不改变STATE-08 Template字段。
+
+---
+
 # Visual Dramaturgy / Mise-en-scène Gate
 
 在风格检索和参数定义前先读取Writer Intent中的Theme / Story Arc、Motif / Symbol Function、Information Architecture与Setup / Payoff obligations，再读取Project / Scene Director Intent建立项目级Visual Arc。Writer决定这些元素为何存在、何时建立或回收；Director把它们转译为Visual Dramaturgy：

@@ -50,9 +50,9 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 未登记的超Target文件、已降到Target以下但仍留在此表的条目、以及指向不存在文件的条目，都会使Validator失败。
 
-| File | Class | Size (r53) | Why It Stays | Review By |
+| File | Class | Size (r58) | Why It Stays | Review By |
 |---|---|---|---|---|
-| USER_GUIDE.md | NON_RUNTIME | 64.7 KB | 面向人的使用说明，文件顶部已自证为非运行时文件，未被任何Workflow列为Required Resource | 2026-10-11 |
+| USER_GUIDE.md | NON_RUNTIME | 65.2 KB | 面向人的使用说明，文件顶部已自证为非运行时文件，未被任何Workflow列为Required Resource | 2026-10-11 |
 | knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 57.3 KB | STATE-08编译链，缺任一Gate都会漏投影，拆分会让每个Clip多读一个文件；按章节读：Global/Per-Shot Projection Matrix、Serialization Rules、Applicability Gate为常用入口 | 2026-10-11 |
 | workflows/09_shot_design_workflow.md | INTEGRAL | 51.4 KB | STATE-06 Step 0—7线性流程，Shot字段之间互相约束；按章节读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
 

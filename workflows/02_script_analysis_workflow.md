@@ -292,6 +292,8 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 从用户要求与已确认项目事实判断目标形式。只有目标明确为短剧、竖屏剧情或1—3分钟剧情视频时，才读取并执行`knowledge/adaptation/short_form_drama_adapter.md`。其他类型将该Adapter记录为Not Applicable及理由，不得强制套用前3秒、前30秒或五段短剧模型。目标缺失且会实质改变改编结构时，写`Adapter Load: Pending`与Pending Decision，不得猜测平台规则。
 
+媒介剖面与目标形式是两根独立的轴：本阶段同时读取已确认的`媒介形式`，按`knowledge/medium_profiles.md`的Screenwriter Layer决定信息承载方式（`2d_anime`下信息必须外化为可见动作、符号化表情或OS，不得依赖微表情留白）。媒介为`Pending`时记`Medium Profile: PENDING`并返回STATE-00；不得从Genre、目标形式或平台推定媒介，也不得因目标为短剧就默认真人剧。
+
 ### Adaptation Intensity Selection
 
 - LEVEL 1 Light Adaptation：保留原结构，主要压缩、视觉化与台词优化。

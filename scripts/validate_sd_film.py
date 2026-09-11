@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r57 structural, routing and context-budget validation for SD Film."""
+"""Deterministic r58 structural, routing and context-budget validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -20,6 +20,7 @@ REQUIRED = (
     "references/module_contracts_knowledge.md",
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
+    "knowledge/medium_profiles.md",
     "references/context_budget.md",
     "references/maintenance_self_check.md",
     "references/maintenance_self_check_protocol.md",
@@ -251,6 +252,10 @@ def validate_skill(root: Path) -> list[str]:
     project_setup = read(root, "workflows/01_project_setup_workflow.md")
     project_start_template = read(root, "templates/00_project_start_template.md")
     preflight = read(root, "knowledge/clip_preflight_check.md")
+    medium_profiles = read(root, "knowledge/medium_profiles.md")
+    knowledge_index = read(root, "knowledge/00_knowledge_index.md")
+    script_analysis = read(root, "workflows/02_script_analysis_workflow.md")
+    contracts_knowledge = read(root, "references/module_contracts_knowledge.md")
     required_markers = (
         (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
         (runtime, "PROJECT_IMAGE_MODEL_DEFAULT"),
@@ -413,6 +418,21 @@ def validate_skill(root: Path) -> list[str]:
         (projection, "Aesthetic Decision Lock"),
         (projection, "反差与光比结构的程度及其变化节点"),
         (prompt, "Aesthetic Decision Lock"),
+        (medium_profiles, "## Screenwriter Layer"),
+        (medium_profiles, "## Director Layer"),
+        (medium_profiles, "## Aesthetic Layer"),
+        (medium_profiles, "**`2d_anime` 禁止项**"),
+        (medium_profiles, "媒介与Genre正交"),
+        (medium_profiles, "`live_action`、`3d_animation`、`2d_anime`"),
+        (project_setup, "# Medium Profile｜Internal"),
+        (project_setup, "不得把它登记为已确认真人剧"),
+        (visual_workflow, "# Medium Profile Gate"),
+        (visual_workflow, "不得写入焦段毫米数、光比比值或器材"),
+        (script_analysis, "媒介剖面与目标形式是两根独立的轴"),
+        (knowledge_index, "## Persistent Medium Profile"),
+        (project_bible, "未确认写 `Pending`"),
+        (contracts_knowledge, "## Medium Profile Knowledge Contract"),
+        (contracts_knowledge, "不得新增第四档或改名"),
     )
     for text, marker in required_markers:
         if marker not in text:
@@ -485,7 +505,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r57 structural, routing and context-budget validation")
+    print("PASS: r58 structural, routing and context-budget validation")
     return 0
 
 if __name__ == "__main__":

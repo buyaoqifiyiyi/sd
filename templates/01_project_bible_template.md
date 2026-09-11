@@ -10,7 +10,7 @@
 
 项目类型：
 
-媒介形式：
+媒介形式（`live_action` / `3d_animation` / `2d_anime`；未确认写 `Pending`）：
 
 目标模型：
 

@@ -549,6 +549,24 @@ STATE-08 Clip-based Video Prompt / Video Generation。
 
 ---
 
+# Medium Profile｜Internal
+
+STATE-00必须从用户已明确输入中确认项目`媒介形式`，并写入`project_bible.md`的`Project Information → 媒介形式`字段（既有字段，不新增）。值域固定为：
+
+- `live_action`：真人 / 实拍；画面由真实光穿过光学镜头生成。
+- `3d_animation`：三维 / 三渲二 / CG动画；画面由虚拟摄影机渲染。
+- `2d_anime`：二维 / 漫剧 / 动画 / 手绘 / 动态漫画；画面由线条与色块绘制，不存在摄影机。
+
+判定规则：
+
+- 只记录用户直接提供或可从素材直接确认的值；不得从Genre、题材、平台或画风标签推定媒介。
+- 用户只说“动画”而未指明维度时写`Medium: Pending`并询问一次；不得默认取`2d_anime`或`live_action`。
+- 未确认时保持`Pending`，后续STATE按`live_action`的既有行为继续，但不得把它登记为已确认真人剧。
+
+媒介与Genre正交：Genre承诺不因媒介改变，媒介也不改变任何主STATE、Template字段或STATE-08最终Schema。该字段的值域与三档分化规则由`knowledge/medium_profiles.md`拥有；STATE-00只负责记录，不在此展开编剧、镜头语言或美学分化。
+
+---
+
 # Project Writer Foundation｜Internal
 
 STATE-00从用户已明确输入中提取最小Writer Foundation：`Premise / Theme or Thematic Question / Dramatic Question / Genre Promise / Story Engine / Core Conflict`。只记录当前可证实内容与清楚标记的Assumption；不要求用户填写完整WRITER INTENT PACKET，不在STATE-00分析完整人物心理、创建Scene、生成剧本或决定Camera。

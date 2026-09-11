@@ -66,6 +66,14 @@ STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；S
 ---
 
 
+## Persistent Medium Profile
+
+所有主STATE按需读取`knowledge/medium_profiles.md`。它是媒介剖面的唯一知识Owner，定义`live_action` / `3d_animation` / `2d_anime`三档在编剧信息承载、镜头语言基底与美学词表上的分化规则。
+
+它由STATE-00确认的`媒介形式`触发：已确认时在STATE-01（编剧承载）与STATE-04（美学与摄影方向）读取；未确认时记`Pending`，按`live_action`既有行为继续但不得登记为已确认真人剧。媒介与Genre正交，不改变任何主STATE、Template字段或STATE-08最终Schema。
+
+---
+
 ## STATE-01 Script Analysis
 
 

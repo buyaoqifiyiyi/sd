@@ -137,6 +137,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 - 固定主流程是 `STATE-00 Project Setup → STATE-01 Script Analysis → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Video Prompt / Generation → STATE-09 Review`。
 - 视觉开发（STATE-04）会在内部锁定四项排他性美学决定：反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹。每项都要写明选择、被放弃的选项和依据，不接受“电影感 / 高级感”这类标签；主光比程度、色彩对抗与构图主张会写入 Project Bible，并作为 STATE-05 到 STATE-08 的执行基准，不会在 Prompt 阶段临时另起一套审美。
+- 项目启动时会确认一次**媒介形式**：`live_action`（真人 / 实拍）、`3d_animation`（三维 / 三渲二 / CG）、`2d_anime`（二维 / 漫剧 / 手绘 / 动态漫画）。它不改变题材，但会改变镜头、表演与美学三套语言——尤其是 2D 漫剧不能沿用实拍焦段、光比与器材参数。你只说“动画”而没指明二维或三维时，系统会问你一次，不会默认按真人剧往下做；已在指令里说明媒介时不会重复问。
 - “我要最终视频”只表示目标，不表示可以跳过前置阶段。
 - 新项目首次响应静默完成项目确认、初始化和输入分析准备，并直接交付当前合法的剧本阶段成果。
 - Storyboard、角色音色和配乐都不是主流程必经步骤，只有显式请求才进入对应辅助模块。

@@ -237,3 +237,27 @@ Module Type：STATE-06至STATE-09辅助Knowledge。
 必须执行Shot QA、相邻镜QA、Execution Risk和适用的Prompt Scorecard。禁止用分数覆盖Hard Gate、把QA字段写入STATE-08 Prompt或用审美偏好改写剧情事实。
 
 ---
+
+## Medium Profile Knowledge Contract
+
+Module Type：STATE-00确认、STATE-01与STATE-04消费的跨媒介Knowledge；不创建新STATE、不新增Template字段。
+
+Owner：`knowledge/medium_profiles.md`。STATE-00负责把确认结果写入`project_bible.md`的`Project Information → 媒介形式`字段；本文件拥有该字段的值域与三档分化规则。
+
+触发：项目`媒介形式`为`live_action` / `3d_animation` / `2d_anime`时，在STATE-01（编剧承载）与STATE-04（美学与摄影方向）读取；为`Pending`时记录`Medium Profile: PENDING`并把决定返回STATE-00，不加载分化表。
+
+不触发：不因Genre、题材、平台或画风标签加载；Storyboard、Poster、Sequence、MUSIC、AUDIO等辅助模块不因本Knowledge改变各自既有边界。
+
+不变量：
+
+- 三档ID固定为`live_action`、`3d_animation`、`2d_anime`，不得新增第四档或改名
+- 媒介与Genre正交，两者不得互相覆盖
+- `2d_anime`不得指定焦段毫米数、光比比值、器材或真实景深；`3d_animation`不得沿用实拍光比捕捉语言
+- 媒介分化只改变既有Template字段的表达方式，不新增任何字段
+- 一个媒介的资产不得静默用于另一个媒介
+
+禁止：把媒介当成Genre子类；从平台或题材推定媒介；用本Knowledge改写剧情事实、资产身份或STATE-08 Schema。
+
+冲突时：媒介决定本身返回STATE-00；资产身份返回资产拥有者；逐镜镜头语言返回STATE-06；项目级美学方向返回STATE-04。
+
+---

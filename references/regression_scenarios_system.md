@@ -715,3 +715,29 @@ FAIL：把体系框架写在体量文件里，使读者从体量文件进入时�
 PASS：执行清单的`Maintenance System Map`列出全部成员文件、各自角色与读取时机，并声明它们是**分层关系、不是并行副本**。
 
 FAIL：成员分散且没有任何一处说明它们的关系，读者需要自己拼出体系全貌。
+
+## R57 Medium Profile Regression
+
+### R57-A Medium Is Orthogonal To Genre
+
+输入：同一题材（如爱情）分别以`live_action`与`2d_anime`建立项目。
+
+PASS：两者的Genre承诺、主Pipeline、Template字段与STATE-08 Schema完全相同；分档差异只出现在编剧信息承载、镜头语言基底与美学词表三张表内。
+
+FAIL：把媒介当作Genre的子类或后缀，使“2D爱情剧”与“真人爱情剧”被判成两个不同题材，或让媒介改变Genre承诺。
+
+### R57-B Drawn Medium Cannot Use Optical Parameters
+
+输入：`2d_anime`项目进入STATE-04定义摄影方向。
+
+PASS：`Camera Style`、`Lens Direction`、`Aperture And Depth`、`Filter And Texture`按绘制媒介的等效表达填写（注意引导、明暗对比、帧感）；不出现焦段毫米数、光比比值、轨道器材或真实景深。
+
+FAIL：为2D项目照搬实拍焦段与光比语言，或把这些参数留空而不给等效表达。
+
+### R57-C Unconfirmed Medium Is Not Silently Live Action
+
+输入：用户只说“动画”，未指明二维或三维。
+
+PASS：STATE-00写`Medium: Pending`并询问一次；后续STATE按`live_action`既有行为继续但登记为`Pending`，不加载分化表，也不把它记成已确认真人剧。
+
+FAIL：默认取`live_action`或`2d_anime`并当作已确认事实推进，使下游按错误的剖面展开。
