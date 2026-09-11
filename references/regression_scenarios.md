@@ -926,7 +926,7 @@ FAIL：新增STATE、普通继续触发全量重载、丢失Writer Packet、跳�
 
 ## R25 Legacy Recovery Regression Matrix (LR-R1—LR-R10)
 
-本Matrix是`rules/runtime_reload.md`的Legacy Project Recovery Integrity直接回归，并由`references/module_contracts.md`的`Unconditional Chat Runtime Startup And Recovery Guard`强制触发。每次正式修改SD Film都必须完整运行LR-R1至LR-R10，不论改动文件、模块、风险、是否用户可见或是否仅为拼写修正；不能因Diff未直接修改recovery文件而跳过。凡修改activation / routing、Reload / Re-entry、State Source / Portable State、Project Setup / status schema、Pipeline / STATE owner、Screenwriter、Director、STATE-07/08 Current Object / Clip、USER_GUIDE recovery command或ordinary Chat / Work routing，还必须增加对应直接消费者的定向案例。
+本Matrix是`rules/runtime_reload.md`的Legacy Project Recovery Integrity直接回归，并由`references/maintenance_self_check_protocol.md`的`Unconditional Chat Runtime Startup And Recovery Guard`强制触发。每次正式修改SD Film都必须完整运行LR-R1至LR-R10，不论改动文件、模块、风险、是否用户可见或是否仅为拼写修正；不能因Diff未直接修改recovery文件而跳过。凡修改activation / routing、Reload / Re-entry、State Source / Portable State、Project Setup / status schema、Pipeline / STATE owner、Screenwriter、Director、STATE-07/08 Current Object / Clip、USER_GUIDE recovery command或ordinary Chat / Work routing，还必须增加对应直接消费者的定向案例。
 
 ### LR-R1 Ordinary Chat Recovery Must Not Default to Work
 
@@ -1023,7 +1023,7 @@ FAIL：每次`下一步`都重新执行Legacy Project Recovery、生成新Reload
 
 ## R26 Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)
 
-本Matrix由`references/module_contracts.md`的`Standalone Skill Discovery Guard`拥有触发要求。每次正式修改SD Film都必须运行SD-R1至SD-R5，并与LR-R1至LR-R10一起作为固定基线；它验证独立Skill的发现入口，不把Skill改造成Plugin。
+本Matrix由`references/maintenance_self_check_protocol.md`的`Standalone Skill Discovery Guard`拥有触发要求。每次正式修改SD Film都必须运行SD-R1至SD-R5，并与LR-R1至LR-R10一起作为固定基线；它验证独立Skill的发现入口，不把Skill改造成Plugin。
 
 ### SD-R1 User-level Canonical Location And Single Authority
 
@@ -1511,6 +1511,40 @@ PASS：先按`Rule Ownership Check`确认现有权威位置；只有拆分确实
 
 FAIL：以“降低行数”为由新增平行规则文件，形成第二套并行检查规范或竞争owner。
 
+## R52 Maintenance Self-Check Extraction Regression
+
+### R52-A Must-Read Path Stops Being A Long File
+
+输入：一次维护优化需要修改Skill，按`SKILL.md`入口执行维护自检。
+
+PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（15项检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到单文件Target以内并从Size Ledger摘牌。
+
+FAIL：维护自检仍只能通过通读一个超长合同文件才能找到；或抽取后`module_contracts.md`同时保留一份可执行的并行副本。
+
+### R52-B Module Contracts Does Not Re-Grow The Checklist
+
+输入：后续修改在`references/module_contracts.md`中再次写入检查维度、维护链或报告模板。
+
+PASS：判定为Duplicate Rule，保留单一权威来源；`scripts/validate_sd_film.py`检测到合同文件重新出现维护自检标题即失败。
+
+FAIL：允许合同文件与维护QA文件并行维护同一套检查。
+
+### R52-C Non-Runtime Documents Are Not Runtime Authority
+
+输入：某个Workflow或规则需要引用用户用法说明。
+
+PASS：`USER_GUIDE.md`顶部声明自身为非运行时文件；运行时读取按`rules/resource_loading.md`的Read Budget执行，用户说明只用于确认用户可见行为。
+
+FAIL：把`USER_GUIDE.md`当作规则、恢复、路由或Schema来源；或为让它“更权威”而把内部规则复制进用户文档。
+
+### R52-D Capability Numbers Have One Owner
+
+输入：模型时长窗口或参考预算发生变化。
+
+PASS：只修改对应Adapter的能力数值；知识层不再复述原始窗口，只引用Adapter的`duration`并说明超出稳定窗口时的预检条件。
+
+FAIL：知识层保留一份独立的窗口数值，使一次能力变更必须在多个文件同步。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1540,4 +1574,5 @@ FAIL：以“降低行数”为由新增平行规则文件，形成第二套并�
 - R49-A至R49-C验证STATE-04 Aesthetic Decision Lock在四个维度各要求排他性选择与被放弃的选项、无取舍的默认做法不构成决定、决定沿STATE-06与STATE-08继承并由Prompt Scorecard Hard Gate审计；四项决定不新增Project Bible竞争区域、平行Schema或STATE-08字段，逐镜参数仍由STATE-06拥有。
 - R50-A至R50-B验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；不新增任何Prompt字段。
 - R51-A至R51-D验证Skill体量预算：超Target未登记、超Ceiling、僵尸台账条目、指向不存在文件的台账条目均使Validator失败；已登记且未超Ceiling的超Target文件通过；`SKILL.md`保持在Entry行数预算内；预算本身不构成新增文件的理由，也不与`rules/resource_loading.md`的运行时读取规则重叠。
+- R52-A至R52-D验证维护自检已从模块合同抽取为可独立读取的短卡与判据真源：必读路径不再需要通读超长合同文件；`module_contracts.md`不得重新长出并行检查副本并已从Size Ledger摘牌；`USER_GUIDE.md`为非运行时文件；模型能力数值只由Adapter拥有，知识层不再复述原始窗口。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

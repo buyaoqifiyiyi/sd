@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.11-r50
+Skill Version: 2026.09.11-r51
 
-Build ID: sd-film-2026.09.11-r50
+Build ID: sd-film-2026.09.11-r51
 
 ## Core
 
@@ -51,4 +51,4 @@ STATE-00先确认项目级图像模型默认项与视频模型偏好；STATE-03�
 - 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界。
 - 固定且连续性敏感的环境在STATE-03按需读取`knowledge/environment_multi_view_reconstruction.md`：它扩展既有Environment Asset与Canonical Lock，不创建新STATE；STATE-06/07/08只继承已锁定的空间事实和按风险选择的环境参考。
 
-每次正式修改同步递增 Version / Build，并执行 `references/module_contracts.md` 的 Change Safety Checklist、Standalone Skill Discovery Guard 与 Runtime Startup / Recovery Guard。
+每次正式修改同步递增 Version / Build，并执行 `references/maintenance_self_check.md` 的15项Self-Check与两个Guard（判据真源：`references/maintenance_self_check_protocol.md`）。

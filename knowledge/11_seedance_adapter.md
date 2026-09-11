@@ -886,7 +886,7 @@ Seedance适配必须把每个镜头理解为：
 
 下一镜衔接
 
-按Confirmed Clip Production Plan序列化：`一个Clip = 一个G Prompt Package = 一条连续Prompt`。一个Clip可包含一个或多个按原顺序排列、可在已锁定模型窗口内稳定执行的正式Shot：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒，16—30秒只在严格预检PASS且实际网关确认允许时成立。多Shot只作为同一条Prompt中的连续导演镜头阶段，不按Shot拆Prompt。Clip内保留起始、连续变化、空间/道具/摄影机关系、结尾和衔接，跨Clip关系通过上一G段尾帧资产与边界字段传递。禁止为了减少Clip数量强行合并。
+按Confirmed Clip Production Plan序列化：`一个Clip = 一个G Prompt Package = 一条连续Prompt`。一个Clip可包含一个或多个按原顺序排列、可在已锁定模型窗口内稳定执行的正式Shot：各模型的时长窗口只以对应Adapter的`duration`字段为唯一真源；超出稳定窗口的时长只在严格预检PASS且实际网关确认允许时成立。多Shot只作为同一条Prompt中的连续导演镜头阶段，不按Shot拆Prompt。Clip内保留起始、连续变化、空间/道具/摄影机关系、结尾和衔接，跨Clip关系通过上一G段尾帧资产与边界字段传递。禁止为了减少Clip数量强行合并。
 
 ## Delivery Mode Gate
 
@@ -1007,7 +1007,7 @@ Seedance视频最重要的能力之一：
 是理解时间变化。
 
 
-这里的时间分析主要用于内部动作顺序与密度判断。最终Prompt只在【时长】保留Confirmed Clip的模型适用平台生成时长：2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS；实际秒数由用户在该模型窗口内选择，不输出时间码、总片时长、单分镜时长或按秒分段。
+这里的时间分析主要用于内部动作顺序与密度判断。最终Prompt只在【时长】保留Confirmed Clip的模型适用平台生成时长（具体窗口以已锁定模型Adapter的`duration`为唯一真源；超出稳定窗口的时长须严格预检PASS）；实际秒数由用户在该模型窗口内选择，不输出时间码、总片时长、单分镜时长或按秒分段。
 
 该平台生成时长必须直接复制Confirmed Clip Production Plan，并在交付前与Clip表交叉核对；Clip Production Plan内部必须先完成来源Shot逐项求和、合计、目标时长与平台生成时长四项一致性核算。任一不一致都返回STATE-07 Clip Production，不进入生成。
 
@@ -1579,7 +1579,7 @@ Seedance Adapter负责：
 
 ## Model Profile Routing
 
-本Adapter是所有Seedance目标的共通层，不替代Model Execution Lock。STATE-07只在`Target Video Model`已锁定后选择Profile：`Seedance 2.0`继续执行现有稳定4—15秒短Clip与≤9图片预算；`Seedance 2.5`额外读取`knowledge/seedance_25_profile.md`，允许用户选择4—30秒Clip，而16—30秒由目标时长自动触发严格预检，不要求用户选择Long-form。平台/API可用性不得在规划阶段压缩用户选择的时长；实际提交失败才进入最小Return Route。图片/视频/音频输入数和输入格式仍只使用实际可确认的入口能力。
+本Adapter是所有Seedance目标的共通层，不替代Model Execution Lock。STATE-07只在`Target Video Model`已锁定后选择Profile：`Seedance 2.0`继续执行其Adapter声明的稳定短Clip窗口与图片预算；`Seedance 2.5`额外读取`knowledge/seedance_25_profile.md`，允许用户在其Adapter声明的更长窗口内选择Clip时长，而超出稳定窗口的时长由目标时长自动触发严格预检，不要求用户选择Long-form。平台/API可用性不得在规划阶段压缩用户选择的时长；实际提交失败才进入最小Return Route。图片/视频/音频输入数和输入格式仍只使用实际可确认的入口能力。
 
 ### Model Template Router
 
@@ -1768,7 +1768,7 @@ Knowledge不得：
 
 Confirmed Clip与独立G生成段一对一；Clip内可含1个或多个正式分镜。单镜独立执行，多镜按原顺序作为同一次长镜头连续执行。
 
-每段时长服从已锁定模型和用户选择（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS），拥有可复用尾帧、独立反向提示词、完整逐镜字段和明确的前后段关系。
+每段时长服从已锁定模型Adapter声明的窗口和用户选择，超出稳定窗口时须严格预检PASS，拥有可复用尾帧、独立反向提示词、完整逐镜字段和明确的前后段关系。
 
 角色一致。
 

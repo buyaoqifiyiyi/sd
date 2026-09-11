@@ -34,6 +34,9 @@
 - Project Workspace Contract: `references/project_workspace.md`
 - Asset Lock Contract: `references/asset_lock_contract.md`
 - Module Contracts: `references/module_contracts.md`
+- Skill Maintenance Self-Check (per-change entry): `references/maintenance_self_check.md`
+- Skill Maintenance Self-Check Criteria: `references/maintenance_self_check_protocol.md`
+- Skill Context Budget And Size Ledger: `references/context_budget.md`
 - Portable State Baseline: `portable_project_status.md`
 - Repository Index: `index.md`
 

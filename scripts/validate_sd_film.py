@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r50 structural, routing and context-budget validation for SD Film."""
+"""Deterministic r51 structural, routing and context-budget validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -17,6 +17,8 @@ REQUIRED = (
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
     "references/context_budget.md",
+    "references/maintenance_self_check.md",
+    "references/maintenance_self_check_protocol.md",
     "scripts/validate_prompt_package.py",
 )
 
@@ -24,6 +26,14 @@ BUDGET_TARGET_LINES = 800
 BUDGET_CEILING_LINES = 3000
 SKILL_ENTRY_MAX_LINES = 120
 NON_SKILL_DIRS = {".git", ".workbuddy", "tmp", "__pycache__", ".venv", "node_modules"}
+
+SELF_CHECK_DIMENSIONS = (
+    "Duplicate Rule Check", "Conflict Check", "Terminology Drift Check", "Rule Ownership Check",
+    "Prompt Pollution Check", "Routing Integrity Check", "Template Consistency Check",
+    "Reference Integrity Check", "State / Continuity Compatibility Check", "User Guide Sync Check",
+    "Regression Check", "Change Classification Check", "Runtime Claim / Legacy Recovery Check",
+    "Standalone Skill Discovery Check", "Context Budget Check",
+)
 
 def read(root: Path, relative: str) -> str:
     return (root / relative).read_text(encoding="utf-8-sig")
@@ -330,11 +340,27 @@ def validate_skill(root: Path) -> list[str]:
         errors.append(
             f"SKILL.md must stay a compact routing entrypoint ({entry_lines} > {SKILL_ENTRY_MAX_LINES} lines)"
         )
+    card = read(root, "references/maintenance_self_check.md")
+    criteria = read(root, "references/maintenance_self_check_protocol.md")
     contracts = read(root, "references/module_contracts.md")
-    if "Context Budget Check" not in contracts:
-        errors.append("Skill Update Self-Check is missing the Context Budget Check dimension")
-    if "references/context_budget.md" not in contracts:
-        errors.append("Skill Update Self-Check must route the context budget to its single owner")
+    for dimension in SELF_CHECK_DIMENSIONS:
+        if dimension not in card:
+            errors.append(f"maintenance run card is missing the check dimension: {dimension}")
+        if dimension not in criteria:
+            errors.append(f"maintenance protocol is missing the criteria for: {dimension}")
+    if "references/context_budget.md" not in card:
+        errors.append("the maintenance run card must route the context budget to its single owner")
+    if "references/context_budget.md" not in criteria:
+        errors.append("the maintenance protocol must route the context budget to its single owner")
+    for guard in ("Runtime Recovery Regression Protection", "Standalone Skill Discovery Guard"):
+        if guard not in criteria:
+            errors.append(f"maintenance protocol is missing the guard: {guard}")
+    if "\n## Skill Update Self-Check" in contracts:
+        errors.append("module_contracts.md must not re-own the maintenance self-check")
+    if "references/maintenance_self_check.md" not in contracts:
+        errors.append("module_contracts.md must route Skill maintenance QA to its owner")
+    if "非运行时文件" not in user_guide:
+        errors.append("USER_GUIDE.md must declare itself a non-runtime document")
     errors.extend(check_context_budget(scan_markdown(root), read_size_ledger(root)))
     return errors
 
@@ -347,7 +373,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r50 structural, routing and context-budget validation")
+    print("PASS: r51 structural, routing and context-budget validation")
     return 0
 
 if __name__ == "__main__":

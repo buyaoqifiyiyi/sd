@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r50 SD Film validator."""
+"""Regression tests for the r51 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -635,8 +635,8 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         ):
             text = (ROOT / relative).read_text(encoding="utf-8")
             self.assertIn("validate_prompt_package.py", text, relative)
-        contracts = (ROOT / "references" / "module_contracts.md").read_text(encoding="utf-8")
-        self.assertIn("validate_prompt_package.py", contracts)
+        criteria = (ROOT / "references" / "maintenance_self_check_protocol.md").read_text(encoding="utf-8")
+        self.assertIn("validate_prompt_package.py", criteria)
 
 
 class R50ContextBudgetTests(unittest.TestCase):
@@ -685,11 +685,14 @@ class R50ContextBudgetTests(unittest.TestCase):
         self.assertTrue(any("missing" in item for item in findings))
 
     def test_self_check_dimension_and_its_single_owner_are_wired(self) -> None:
-        contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(encoding="utf-8-sig")
         budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
-        self.assertIn("Context Budget Check", contracts)
-        self.assertIn("references/context_budget.md", contracts)
-        self.assertIn("Context Budget: PASS / FIXED / WARN", contracts)
+        for text in (card, criteria):
+            with self.subTest(text=text[:40]):
+                self.assertIn("Context Budget Check", text)
+                self.assertIn("references/context_budget.md", text)
+        self.assertIn("Context Budget: PASS / FIXED / WARN", card)
         self.assertIn("## Size Ledger", budget)
         self.assertIn("Ceiling", budget)
 
@@ -697,6 +700,61 @@ class R50ContextBudgetTests(unittest.TestCase):
         budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
         self.assertIn("本预算不构成新增文件的理由", budget)
         self.assertIn("rules/resource_loading.md", budget)
+
+
+class R51MaintenanceSelfCheckExtractionTests(unittest.TestCase):
+    """The maintenance QA protocol was extracted out of the module contract so the
+    path that must be read on every single change is short. module_contracts owns
+    module interfaces only and must not silently re-grow its own copy."""
+
+    def test_run_card_and_criteria_are_separate_and_complete(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(encoding="utf-8-sig")
+        for dimension in validator.SELF_CHECK_DIMENSIONS:
+            with self.subTest(dimension=dimension):
+                self.assertIn(dimension, card)
+                self.assertIn(dimension, criteria)
+
+    def test_module_contracts_stops_owning_the_self_check(self) -> None:
+        contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        self.assertNotIn("\n## Skill Update Self-Check", contracts)
+        self.assertNotIn("### Check Dimensions", contracts)
+        self.assertNotIn("### Required Self-Check Summary", contracts)
+        self.assertIn("references/maintenance_self_check.md", contracts)
+        self.assertIn("references/maintenance_self_check_protocol.md", contracts)
+
+    def test_module_contracts_is_back_within_the_size_target(self) -> None:
+        lines = (ROOT / "references/module_contracts.md").read_bytes().count(b"\n")
+        self.assertLessEqual(lines, validator.BUDGET_TARGET_LINES)
+
+    def test_shrunk_file_was_unregistered_from_the_ledger(self) -> None:
+        self.assertNotIn("references/module_contracts.md", validator.read_size_ledger(ROOT))
+
+    def test_skill_entry_routes_to_the_run_card(self) -> None:
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        self.assertIn("references/maintenance_self_check.md", skill)
+        self.assertIn("references/maintenance_self_check_protocol.md", skill)
+
+    def test_user_guide_declares_itself_non_runtime(self) -> None:
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertIn("非运行时文件", guide)
+
+    def test_resource_loading_owns_a_read_budget(self) -> None:
+        loading = (ROOT / "rules/resource_loading.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Read Budget", loading)
+        self.assertIn("references/maintenance_self_check.md", loading)
+        self.assertIn("references/context_budget.md", loading)
+
+    def test_seedance_duration_window_stops_being_restated_in_the_knowledge_layer(self) -> None:
+        knowledge = (ROOT / "knowledge/11_seedance_adapter.md").read_text(encoding="utf-8-sig")
+        adapter20 = (ROOT / "adapters/seedance-2.0.md").read_text(encoding="utf-8-sig")
+        adapter25 = (ROOT / "adapters/seedance-2.5.md").read_text(encoding="utf-8-sig")
+        self.assertIn("max_seconds: 15", adapter20)
+        self.assertIn("max_seconds: 30", adapter25)
+        for stale in ("Seedance 2.0为4—15秒", "2.0为4—15秒", "2.5为4—30秒", "允许用户选择4—30秒Clip"):
+            with self.subTest(stale=stale):
+                self.assertNotIn(stale, knowledge)
+        self.assertIn("Adapter的`duration`", knowledge)
 
 
 if __name__ == "__main__":

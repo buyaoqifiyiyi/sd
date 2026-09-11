@@ -37,7 +37,6 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 | File | Owner | Lines (r50) | Why It Still Stays Whole | Review By |
 |---|---|---|---|---|
 | references/regression_scenarios.md | Skill维护QA | 1508 | 回归场景矩阵，按R*/LR-R*/SD-R*编号顺序检索；拆分会产生跨文件引用与编号断链 | 2026-10-11 |
-| references/module_contracts.md | Skill维护QA | 925 | 维护QA与模块接口的唯一权威来源；维护自检整节位于790—926行，正处文件后段（最易被跳过的位置）。拆分方向为「Change Safety Checklist短卡 + 详细合同」 | 2026-10-11 |
 | USER_GUIDE.md | 用户文档 | 906 | 面向人的使用说明，未被任何Workflow列为Required Resource，不参与运行时读取；不得被当作运行时规则来源 | 2026-10-11 |
 | workflows/09_shot_design_workflow.md | STATE-06 | 1157 | STATE-06详细镜头设计的单一owner；内部按Shot字段分组，拆分会使字段归属跨文件 | 2026-10-11 |
 | workflows/13_review_workflow.md | STATE-09 | 1032 | 三层Review与逐镜逐边界覆盖台账的单一owner；覆盖矩阵需要完整上下文才能核对 | 2026-10-11 |
@@ -55,6 +54,6 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 ## Change Interaction
 
-- 本预算不构成新增文件的理由。新增或拆分文件时，`references/module_contracts.md`的`Rule Ownership Check`仍然优先；只有确认现有权威位置不合适才允许新增。
-- 本文件的数值与Ledger不与任何其他文件重复：`references/module_contracts.md`的`Context Budget Check`只引用本文件，不复制阈值。
+- 本预算不构成新增文件的理由。新增或拆分文件时，`references/maintenance_self_check_protocol.md`的`Rule Ownership Check`仍然优先；只有确认现有权威位置不合适才允许新增。
+- 本文件的数值与Ledger不与任何其他文件重复：`references/maintenance_self_check_protocol.md`的`Context Budget Check`只引用本文件，不复制阈值。
 - 读取顺序、按需读取与复用纪律仍由`rules/resource_loading.md`拥有；本文件不重复定义运行时加载行为。
