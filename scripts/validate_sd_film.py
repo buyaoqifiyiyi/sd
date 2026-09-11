@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r46 structural and routing validation for SD Film."""
+"""Deterministic r48 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -16,6 +16,7 @@ REQUIRED = (
     "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
+    "scripts/validate_prompt_package.py",
 )
 
 def read(root: Path, relative: str) -> str:
@@ -80,6 +81,9 @@ def validate_skill(root: Path) -> list[str]:
     camera_router = read(root, "knowledge/camera_language/shot_language_router.md")
     visual_styles = read(root, "knowledge/visual_styles/index.md")
     visual_workflow = read(root, "workflows/07_visual_development_workflow.md")
+    project_bible = read(root, "templates/01_project_bible_template.md")
+    director_layer = read(root, "knowledge/director_decision_layer.md")
+    scorecard = read(root, "knowledge/quality/prompt_scorecard.md")
     character_template = read(root, "templates/04_character_asset_prompt.md")
     environment_template = read(root, "templates/05_environment_asset_prompt.md")
     prop_template = read(root, "templates/06_prop_asset_prompt.md")
@@ -239,10 +243,17 @@ def validate_skill(root: Path) -> list[str]:
         (user_guide, "Project Color Reference`进入视觉开发"),
         (visual_styles, "Project Proposal"),
         (visual_workflow, "Reference-To-System Evidence Gate"),
+        (visual_workflow, "# Aesthetic Decision Lock Gate"),
+        (visual_workflow, "被放弃的选项"),
+        (visual_workflow, "视觉母题与变化轨迹"),
+        (director_layer, "Aesthetic Decision Lock"),
+        (project_bible, "Aesthetic Decision Lock"),
+        (project_bible, "视觉母题与变化轨迹（"),
+        (scorecard, "Aesthetic Decision Lock"),
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r46 routing marker: {marker}")
+            errors.append(f"missing r48 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -267,7 +278,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r46 structural and routing validation")
+    print("PASS: r48 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

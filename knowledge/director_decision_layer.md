@@ -159,6 +159,8 @@ Screenwriter Module先控制Dramatic Intent、Character Objective、Relationship
 
 把Style Development升级为`Visual Dramaturgy / Mise-en-scène Direction`：先建立Visual Grammar Baseline，再建立Visual Arc与有依据的Scene Delta，而不是全片统一色调说明；让色彩、光线、对比、深度、负空间、环境压力、视觉层级、前中后景关系和视觉母题随戏剧推进保持或变化。项目级摄影倾向仍不预定逐Shot参数。
 
+Visual Grammar Baseline之后必须完成`Aesthetic Decision Lock`：在反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹四个维度各做出一次排他性决定。Baseline只描述世界的稳定倾向，Lock必须给出选择、被放弃的选项、事实依据与可见后果。没有放弃项的表述是描述而不是决定，不得写入Project Bible。四项决定共用`Mandatory Director Questions`的判定纪律：只能用风格标签、技巧名称、器材参数或“为了电影感”回答时，项目级决策与Shot级决策同样不合格。四项决定是项目级承诺，不是逐镜参数；具体焦段、机位、运镜与逐镜光态仍由STATE-06决定。
+
 ### STATE-05 Scene Breakdown
 
 先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是以Visual Grammar Baseline为底补充Performance Beat、Scene / Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。
@@ -283,6 +285,7 @@ Editing只改变有素材依据的排列、时长、反应优先级、声音连�
 
 - Director Thinking从STATE-00/01持续到Scene、Shot、Clip、Prompt、Editing与Review，没有创建新主STATE。
 - Project / Scene / Shot / Clip四层Packet具有当前有效source、owner、Revision或Checkpoint关联；未知项没有被虚构。
+- STATE-04建立了Aesthetic Decision Lock，四个维度各有选择、被放弃的选项、依据与可见后果；项目级视觉说明如果只有风格标签、技巧名称、器材参数或“为了电影感”，不合格。
 - 每个Shot通过固定决策顺序和Deletion Loss检查；Camera choice是intent的后果。
 - 镜头运动具有Trigger与Stop；Static同样具有保护对象和理由。
 - Director Module调用现有Performance、Spatial Blocking、Action PREVIS、Camera Language、Prompt Compiler与Continuity能力，没有复制其规则。

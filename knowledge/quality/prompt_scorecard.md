@@ -20,6 +20,7 @@
 - 未触发用户显式批量覆盖时，本轮只有当前一个Clip Prompt Package；“下一个 / 下一步 / 继续”没有展开多个Clip。
 - 无任何背景音乐生成指令，且每个Clip反向提示词首个非空内容行无例外逐字为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”。
 - Required Coverage未丢失。
+- 当前Clip继承并执行了STATE-04 Aesthetic Decision Lock中与本案相关的决定；只写风格标签、器材参数或“电影感”，而未落到已锁定的光比结构、色彩对抗关系、构图主张或视觉母题时，该项不通过。
 
 ---
 
@@ -32,11 +33,13 @@
 | Spatial / Action / Boundary Continuity | 20 |
 | Performance / Dialogue / Lip-sync Executability | 10 |
 | Camera / Lens / Composition Motivation | 10 |
-| Lighting / Color / FX / Sound Coherence | 10 |
+| Lighting / Color / FX / Sound Coherence（执行 Aesthetic Decision Lock 的程度） | 10 |
 | Seedance Stability And Risk Downgrade | 15 |
 | Template / Semantic Projection Discipline | 5 |
 
 每项按实际证据评分，不得因文字华丽加分。
+
+Camera / Lens / Composition Motivation与Lighting / Color / FX / Sound Coherence两项必须落入STATE-04 Aesthetic Decision Lock已锁定的选择，不得在STATE-08另起一套临时审美。本评分仍不能替代人工审美判断。
 
 ---
 

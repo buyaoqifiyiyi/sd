@@ -10,9 +10,12 @@ audio: { explicit_only: true, pure_audio_driver: supported, requires: confirmed_
 reference_audit: { every_submitted_input_requires: unique_primary_role, no_role: exclude_from_submission }
 visual_blocking_sketch: { supported: true, submission: actual_image_at_picture_n, authority: [position, facing, distance, topology, axis, camera, pose, gaze, action_path] }
 continuous_take: { supported: true, requires: long_duration_preflight_for_16_to_30_seconds }
+capability_valid_as_of: 2026-09-11
 ```
 
 在 Model Selection 后由 STATE-07 消费。23 秒 Natural Unit 经长时长预检 PASS 后保持单 Execution Clip；不因旧 15 秒规则拆分。34 秒 Natural Unit 才按连续性合同适配拆分。
+
+本Adapter的`duration`、`default_capacity_limit`（30图 / 10视频 / 10音频 / 合计50）等能力数值属于`O｜Operational Parameter`，不是跨项目原则。`capability_valid_as_of`到期、模型版本更新或平台能力变更时，必须先重新取证再引用；未复测前不得作为当前依据，也不得把旧数值当成该模型的不变属性。
 
 Timeline 是能力而非固定字段：单动作、简单一镜到底默认省略；多段动作、蒙太奇或连续长镜头内多个节奏节点，可在既有分镜正文中使用与Clip时长一致、严格递进的`0—3秒 / 第3秒`时间戳语义。它不新增最终字段、表格或逐帧技术参数。每个时间段必须说明可见事件、摄影机、动作/对白/音效与结束状态；时间戳不精确承诺模型必然逐帧命中。
 

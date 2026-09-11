@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r46 SD Film validator."""
+"""Regression tests for the r48 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -10,6 +10,13 @@ SPEC = importlib.util.spec_from_file_location("validator", ROOT / "scripts" / "v
 validator = importlib.util.module_from_spec(SPEC)
 assert SPEC and SPEC.loader
 SPEC.loader.exec_module(validator)
+
+PKG_SPEC = importlib.util.spec_from_file_location(
+    "package_validator", ROOT / "scripts" / "validate_prompt_package.py"
+)
+package_validator = importlib.util.module_from_spec(PKG_SPEC)
+assert PKG_SPEC and PKG_SPEC.loader
+PKG_SPEC.loader.exec_module(package_validator)
 
 class R34RegressionTests(unittest.TestCase):
     def test_active_skill_passes(self) -> None:
@@ -468,6 +475,155 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("已有（用户声明）", template)
         self.assertIn("R35 Declared-Existing Asset Handling Regression", scenarios)
         self.assertIn("不索取、不催交、不逐项盘问", scenarios)
+
+    def test_aesthetic_decision_lock_requires_exclusive_choices(self) -> None:
+        director = (ROOT / "knowledge/director_decision_layer.md").read_text(encoding="utf-8-sig")
+        visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+        bible = (ROOT / "templates/01_project_bible_template.md").read_text(encoding="utf-8-sig")
+        scorecard = (ROOT / "knowledge/quality/prompt_scorecard.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("# Aesthetic Decision Lock Gate", visual)
+        self.assertIn("被放弃的选项", visual)
+        self.assertIn("Aesthetic Decision Lock", director)
+        self.assertIn("视觉母题与变化轨迹（", bible)
+        self.assertIn("Aesthetic Decision Lock", scorecard)
+        self.assertIn("R49 Aesthetic Decision Lock Regression", scenarios)
+        self.assertIn("不新增竞争区域或平行Schema", visual)
+        self.assertIn("缺少被放弃的选项视为尚未做出决定", bible)
+        self.assertIn("不能替代人工审美判断", scorecard)
+
+class R47PromptPackageValidatorTests(unittest.TestCase):
+    """The delivered STATE-08 Prompt Package validator must accept conformant
+    packages and reject structurally broken ones."""
+
+    def build_20(self, *, shot_two: bool = False, voice: bool = False, ref_tail: str = "") -> str:
+        shots = [1] if not shot_two else [1, 2]
+        body = []
+        for number in shots:
+            body.append(
+                f"分镜{number}\n"
+                "景别：中景\n"
+                "镜头/机位：50mm倾向，眼平高度，固定机位\n"
+                "起始状态：人物坐于堂屋左侧\n"
+                "画面描述：先抬眼，再抬耳勺；后景有人在柜台后擦杯\n"
+                "人物动作与情绪：目光落在耳勺上，呼吸放浅\n"
+                "空间关系：人物位于画面左侧三分之一\n"
+                "道具状态：PROP-001，右手持有\n"
+                "台词：无\n"
+                "音效：市集底声与耳勺轻碰声\n"
+                "镜头结尾状态：Continuous Handoff，保持坐姿\n"
+            )
+        voice_line = "音色特征：低沉男声\n" if voice else ""
+        return (
+            "# CLIP-001｜掏耳 Seedance 2.0视频提示词\n"
+            "时长：8秒\n"
+            "画幅：16:9横屏\n\n"
+            "参考资产：\n"
+            f"CHAR-001｜吴御史｜实际提交图片输入\n{ref_tail}"
+            "首帧参考：C【新镜头且无需尾帧】另起新镜头\n"
+            "尾帧限制：人物停在中景右侧\n\n"
+            "主风格：低饱和胶片质感\n"
+            "人物一致性：CHAR-001@v003\n"
+            "环境一致性：ENV-002@v001\n"
+            f"{voice_line}\n"
+            + "\n".join(body) +
+            "\n反向提示词：\n"
+            "禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。\n"
+        )
+
+    def check(self, text: str, model: str = "seedance-2.0", allow_voice: bool = False) -> list[str]:
+        errors, _ = package_validator.validate(text, model, allow_voice)
+        return errors
+
+    def test_conformant_package_passes(self) -> None:
+        self.assertEqual(self.check(self.build_20()), [])
+        self.assertEqual(self.check(self.build_20(shot_two=True)), [])
+
+    def test_unauthorized_voice_field_is_rejected(self) -> None:
+        findings = self.check(self.build_20(voice=True))
+        self.assertTrue(any("音色特征" in item for item in findings))
+
+    def test_voice_field_is_allowed_only_with_explicit_authorization(self) -> None:
+        findings = self.check(self.build_20(voice=True), allow_voice=True)
+        self.assertFalse(any("音色特征" in item for item in findings))
+
+    def test_non_contiguous_shot_numbering_is_rejected(self) -> None:
+        text = self.build_20(shot_two=True).replace("分镜2", "分镜3")
+        findings = self.check(text)
+        self.assertTrue(any("分镜编号" in item for item in findings))
+
+    def test_empty_shot_field_is_rejected(self) -> None:
+        text = self.build_20().replace("起始状态：人物坐于堂屋左侧", "起始状态：")
+        findings = self.check(text)
+        self.assertTrue(any("空值字段" in item for item in findings))
+
+    def test_ref_tail_requires_declared_usage(self) -> None:
+        without_usage = self.build_20(ref_tail="REF-TAIL-01｜CLIP-000尾帧参考\n")
+        self.assertTrue(any("REF-TAIL" in item for item in self.check(without_usage)))
+        with_usage = self.build_20(
+            ref_tail="REF-TAIL-01｜CLIP-000尾帧参考（同镜头连续承接用途）\n"
+        )
+        self.assertFalse(any("REF-TAIL" in item for item in self.check(with_usage)))
+
+    def test_missing_no_bgm_sentence_is_rejected(self) -> None:
+        text = self.build_20().replace("禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，"
+                                       "只保留台词、环境声、动作音效和必要的自然声音。", "注意保持一致性。")
+        findings = self.check(text)
+        self.assertTrue(any("无BGM" in item for item in findings))
+
+    def test_json_package_is_rejected(self) -> None:
+        findings = self.check("{\"clip\": \"CLIP-001\"}")
+        self.assertTrue(any("JSON" in item for item in findings))
+
+    def test_seedance_25_stages_must_be_contiguous(self) -> None:
+        text = (
+            "# CLIP-001｜掏耳 Seedance 2.5视频提示词\n"
+            "时长：10秒\n画幅：16:9横屏\n\n"
+            "多模态参考资产：\n- @图片1：CHAR-001\n"
+            "参考素材职责与优先级：\n- 身份由 CHAR-001 承担\n"
+            "首帧参考：C\n尾帧限制：稳定\n\n"
+            "主风格：低饱和胶片\n"
+            "全局叙事与画面设定：一句话\n"
+            "全局一致性与执行约束：轴线保持\n\n"
+            "时间线：\n"
+            "[0—4秒]\n画面与镜头：a\n人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n"
+            "[6—10秒]\n画面与镜头：a\n人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n\n"
+            "全局限制与反向提示词：\n"
+            + package_validator.NO_BGM_SENTENCE + "\n"
+        )
+        errors, _ = package_validator.validate(text, "seedance-2.5", False)
+        self.assertTrue(any("阶段" in item for item in errors))
+
+    def test_minimax_h3_requires_fixed_last_line(self) -> None:
+        text = (
+            "# CLIP-001｜掏耳 MiniMax H3视频提示词\n"
+            "时长：8秒\n画幅：16:9横屏\n\n"
+            "参考素材说明：\n- @图片1：CHAR-001\n"
+            "核心创意：\n主风格：低饱和胶片\n一句话\n"
+            "画面过程说明：开始、过程、结束\n\n"
+            "反向提示词：\n" + package_validator.NO_BGM_SENTENCE + "\n\n"
+            "非叙事性音乐：N/A\n"
+        )
+        self.assertEqual(package_validator.validate(text, "minimax-h3", False)[0], [])
+        broken = text.replace("非叙事性音乐：N/A\n", "")
+        errors, _ = package_validator.validate(broken, "minimax-h3", False)
+        self.assertTrue(any("最后一行" in item for item in errors))
+
+    def test_package_validator_is_registered_and_documented(self) -> None:
+        required = ROOT / "scripts" / "validate_prompt_package.py"
+        self.assertTrue(required.is_file())
+        source = (ROOT / "scripts" / "validate_sd_film.py").read_text(encoding="utf-8")
+        self.assertIn("scripts/validate_prompt_package.py", source)
+        for relative in (
+            "templates/10_video_prompt.md",
+            "templates/12_seedance_25_video_prompt.md",
+            "templates/13_minimax_h3_video_prompt.md",
+        ):
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertIn("validate_prompt_package.py", text, relative)
+        contracts = (ROOT / "references" / "module_contracts.md").read_text(encoding="utf-8")
+        self.assertIn("validate_prompt_package.py", contracts)
+
 
 if __name__ == "__main__":
     unittest.main()

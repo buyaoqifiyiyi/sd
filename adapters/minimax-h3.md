@@ -16,9 +16,12 @@ dialogue_and_lipsync: { supported: true, explicit_only: true, multilingual: true
 prompt: { max_characters: 7000, preferred_structure: [reference_materials, core_idea, visual_process] }
 execution_modes: [text_to_video, start_or_end_frame, start_end_frame, all_reference, video_edit]
 unsupported_without_official_verification: [Seedance_Video_Extension, Seedance_timecoded_Targeted_Edit, long_duration_over_15_seconds]
+capability_valid_as_of: 2026-09-11
 ```
 
 在 Model Selection 后由 STATE-07 消费。Natural Unit 只有在 4—15 秒、动作和镜头复杂度通过预检时才保持单个 Execution Clip；超过 15 秒时按已确认的动作、空间、End-State 与 A/B/C 连续性合同 `ADAPT_SPLIT`。H3 具备基础分镜与较强切镜点遵从：多镜 Clip 可按故事线或 Shot 分段；要一镜到底时，明确单段连续动作且禁止切镜。两张首/尾帧图模式只补两帧间的动作、光影和声音，不能规划自动切镜。
+
+本Adapter的`duration`、`reference_assets`上限、`prompt.max_characters`、分辨率与帧率等能力数值属于`O｜Operational Parameter`，不是跨项目原则。`capability_valid_as_of`到期、模型版本更新或平台能力变更时，必须先重新取证再引用；未复测前不得作为当前依据，也不得把旧数值当成该模型的不变属性。
 
 MiniMax H3 的全能参考模式支持最多9张图、3段视频、3段音频，混合输入最多12个文件；视频或音频每段2—15秒、各类总时长最多15秒，音频必须与图片或视频一起输入。首/尾帧入口最多2张图。每个实际投喂素材在`参考素材说明：`中必须按上传顺序显式标注`@图片N / @视频N / @音频N`及唯一用途（人物/物体/场景/关键帧/风格/构图/动作/运镜/音色/音频复用/视频编辑）；不使用的素材不得列入，也不得伪造已上传状态。
 

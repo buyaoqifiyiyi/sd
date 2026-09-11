@@ -74,6 +74,8 @@ Boundaries：
 | Shot | Result | Story / Coverage | Asset Lock | Space / Action | Performance / Lip-sync | Camera / Lighting / Color | Sound / FX | Seedance Stability | Problem | Return Route |
 |---|---|---|---|---|---|---|---|---|---|---|
 
+每一行对应一个受审 SHOT，必须逐一列全，不得只列有问题的 SHOT，也不得用一段总体评价替代逐镜记录。每个质量维度都必须给出结论：通过写`PASS`（或`无风险`），不适用写`N/A`并写明理由，**不得留空**。结论为`PASS`时，`Problem`写`无`，`Return Route`写`不适用`。缺少任一 SHOT 行、或任一维度为空，均视为本次 Review 未完成，不得作出`PASS`。跨维度出现的同一问题各自保留本行视角，由事实 Owner 合并处置；不得提前删除看似重复的记录。
+
 `Space / Action`对战斗、双主体、对峙、对话、追逐、相向运动必须检查：A/B左右与前后、分别朝向、视线目标、距离、唯一关系轴、摄影机轴线侧、Connector来源—路径—目标，以及双方相对同框时是否避免同时完整正脸。
 
 ---
@@ -82,6 +84,8 @@ Boundaries：
 
 | Boundary | Class | Outgoing Anchor | Cut Point | Incoming Anchor | Inherited State | Authorized Change | Result | Problem |
 |---|---|---|---|---|---|---|---|---|
+
+每一行对应一个实际受审边界，必须逐一边界列全，不得只列有问题的边界。`Outgoing Anchor`、`Cut Point`、`Incoming Anchor`、`Inherited State`与`Authorized Change`都必须填写；无变化写`无`并说明依据，`N/A`必须写明理由，不得留空。缺少任一边界行或任一并列字段为空，视为本次 Review 未完成。
 
 每个适用边界必须成对复核Outgoing Tail Frame与Incoming First Frame的镜头几何；无授权跨轴、左右交换、朝向翻转、双正脸或攻击/视线/水流等Connector反向均为Hard Gate失败，返回STATE-06；仅Clip组织或尾帧用途错误时返回STATE-07。
 

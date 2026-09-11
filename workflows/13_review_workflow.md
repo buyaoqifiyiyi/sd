@@ -648,6 +648,12 @@ Shot Design Workflow
 
 Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Shot-Level QA → Space / Action`、`Adjacent-Shot Continuity QA`与`Problems And Corrective Actions`，不新增Review Template字段。
 
+## Review Coverage Completeness
+
+`Shot-Level QA`与`Adjacent-Shot Continuity QA`是全覆盖台账，不是问题清单：每个受审SHOT与每个受审边界都必须占一行，且每一列都必须给出结论。通过写`PASS`或`无风险`，不适用写`N/A`并写明理由，不得留空，也不得用一段总体评价替代逐镜、逐边界记录。结论为`PASS`时，`Problem`写`无`，`Return Route`写`不适用`。
+
+缺少任一SHOT行、任一边界行，或任一维度、任一并列字段为空时，本次Review判为未完成：不得作出`PASS`，不得进入Completion Gate，先补齐台账再继续。跨维度或跨SHOT出现的同一问题各自保留本行视角，由事实Owner合并处置，不得提前删除看似重复的记录。
+
 ---
 
 # Director QA

@@ -229,6 +229,37 @@ Update Project Status
 
 上述语义分配到`templates/01_project_bible_template.md`现有Overall Visual Style、Color System、Lighting Style、Camera Style、Composition Rules、Environment Style与Continuity区域，不新增竞争Schema。Camera Style只确定项目倾向，不写具体SHOT焦段、机位和运镜。
 
+
+---
+
+# Aesthetic Decision Lock Gate
+
+Visual Dramaturgy Gate产出Visual Grammar Baseline之后、Cinematic Parameter Definition与Project Bible写入之前，必须在以下四个维度各做出**一次排他性决定**。
+
+Visual Grammar Baseline回答"这个世界的稳定视觉倾向是什么"；Aesthetic Decision Lock回答"在这四个维度上我们选择了哪一边、放弃了哪一边"。没有放弃项的表述是描述，不是决定。
+
+四个维度固定为：
+
+1. **反差与光比结构** —— 落到`Lighting Style`的"光质、强度、光比与衰减"。
+2. **色彩对抗关系** —— 落到`Color System`的"综合色相关系与饱和度层级"。
+3. **构图主张** —— 落到`Composition Rules`的"构图原则"。
+4. **视觉母题与变化轨迹** —— 落到`Overall Visual Style`与`Continuity Notes`。
+
+每一项必须同时给出：
+
+- **选择**：具体到能被画面证实，而不是形容词。写"人物面部与背景保持可读分离，在确认节点允许主光抽离、面部一侧落入暗部"，而不是"高级光比"。
+- **被放弃的选项**：另一个在同类项目中同样成立的方向，以及本项目为什么不选它。缺少放弃项即判定为未做决定。
+- **依据**：来自Writer Theme / Story Arc / Director Intent或已确认项目事实，不接受"更好看"或"更有电影感"。
+- **可见后果**：STATE-05至STATE-08可据此判断自己是否已漂移的可观察标准。
+
+判定纪律：
+
+- 四个维度都只能用风格标签、技巧名称、器材参数、审美大词或"为了电影感"回答时，Aesthetic Decision Lock不成立，不得写入Project Bible，也不得进入STATE-05。
+- 决定必须在既有Project Bible字段内表达，不新增竞争区域或平行Schema；`Composition Rules`不得只留一句概括性构图原则。
+- 四项决定是项目级承诺，不是逐镜参数：具体焦段、机位、运镜与逐镜光态仍由STATE-06决定。
+- 与已确认资产冲突时以资产为最高事实优先级；不得借本Gate改变角色身份、环境结构、资产固有色或剧情事实。
+
+
 ---
 
 # Step 1: Visual Analysis
@@ -1863,6 +1894,16 @@ STATE-04禁止输出：
 □ Overall Visual Concept已经建立
 
 □ Visual Dramaturgy / Mise-en-scène与Visual Arc已经建立；色光、对比、深度、负空间、环境、视觉层级和母题的保持/变化均有戏剧依据
+
+□ Aesthetic Decision Lock已在反差与光比结构、色彩对抗关系、构图主张、视觉母题四个维度各做出排他性决定
+
+□ 四项决定均写明被放弃的选项、事实依据与可观察的可见后果
+
+□ 四项决定已写入Project Bible既有字段，没有新增竞争区域或平行Schema
+
+□ 没有用风格标签、技巧名称、器材参数或“为了电影感”替代任何一项决定
+
+□ 视觉母题具有至少三次可出现、变化或反转的轨迹，不是装饰性重复
 
 
 □ Cinematography Direction已经建立

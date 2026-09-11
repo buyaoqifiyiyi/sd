@@ -347,7 +347,7 @@ Owner：`knowledge/skill_experience.md`；存储、确认、应用、项目迭�
 
 冲突路由：与硬规则、用户当前指令或已确认项目事实冲突时标记`CONFLICT / REVIEW`并暂停应用，返回对应Owner；不静默改写或删除历史证据。
 
-Validator不变量：候选未确认不得入库；经验不占用现有实体ID命名空间；经验不出现在主Pipeline STATE列表；经验应用不绕过Completion Gate；每次经验入库触发完整Skill Update Self-Check。
+Validator不变量：候选未确认不得入库；经验不占用现有实体ID命名空间；经验不出现在主Pipeline STATE列表；经验应用不绕过Completion Gate；每次经验入库触发完整Skill Update Self-Check。每个候选与确认记录必须带`Class: P / O / C`；`O`类必须带`valid_as_of`；`Triggers`、`Procedure`、`Failure Signals`、`Exceptions`、`Counter-examples`缺任一字段不得入库；`coupled_uncharacterized`来源不得升级为`P`，也不得据此宣称某一措辞必然有效。
 
 ## Sequence Module Contract
 
@@ -828,7 +828,7 @@ Read current rules
 5. **Prompt Pollution Check**：确认新增内部控制不会直接膨胀最终Prompt。检查重复、冲突、抽象语义模板、否定词堆叠、资产重述、无效精密参数、跨镜头残留、风格堆叠与优先级淹没；内部QA、分数、Issue ID、路由说明和维护术语不得进入最终Prompt。
 6. **Routing Integrity Check**：确认新模块有正确入口、触发和返回路由；显式调用模块未变为默认必经；Optional/Auxiliary Workflow未写入主Pipeline；Legacy Compatibility未成为新项目主路由；普通“继续”未被误判为Reload、AUDIO或MUSIC授权。
 7. **Template Consistency Check**：核对Workflow声明的Output Owner、字段语义与当前Template；废弃字段不得残留。Template继续唯一拥有用户可见字段、顺序、必填性和排版。音色未显式投影时，常规STATE-08输出不得默认保留声音身份或“音色特征”字段。
-8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py --skill-root <skill-root>`执行可确定的结构与引用检查。
+8. **Reference Integrity Check**：验证所有显式文件、模块、Template、Knowledge与脚本路径真实存在且名称一致；新增资源已被合法路由发现；删除或改名后没有悬空引用。运行`scripts/validate_sd_film.py --skill-root <skill-root>`执行可确定的结构与引用检查。生产交付物校验由独立owner`scripts/validate_prompt_package.py`承担：它在STATE-08交付前对已编译的`# CLIP-X｜…` Package做确定性结构断言（全局字段存在与顺序、分镜或阶段编号连续且数量与声明一致、`REF-TAIL`用途声明、终段位置与固定无BGM句、未授权`音色特征：`）。两者职责互不替代：前者守护Skill自身，后者守护本次交付；后者不进入本Checklist的维护QA执行owner。
 9. **State / Continuity Compatibility Check**：确认STATE-00至STATE-09、Shot-State Memory、Accepted Take、Accepted Canon State、Reference Selection / Routing、REF-TAIL A Direct / B Reference-Only / C Not Required、Visual Anchor State / Blocking Signature、Spatial Blocking、资产锁、Revision与Checkpoint不被破坏；维护QA不得创建新主STATE或项目事实。
 10. **User Guide Sync Check**：如果修改改变用户该如何下指令、默认行为、用户可见输出结构、模块入口、opt-in边界或停止点，必须同步`USER_GUIDE.md`；仅内部知识或实现优化且不改变调用和输出时标记`NOT REQUIRED`，不得为机械同步复制内部规则。
 11. **Regression Check**：根据影响范围选择最少但有效的案例，并同时包含适用的正例和反例。路由变更验证正确模块与不触发路径；Prompt变更验证Schema与污染；连续性变更验证REF-TAIL三模式；音色变更验证未调用时省略、显式调用时进入Seed Audio；资产变更验证Core / Support与Reference Asset Eligibility。优先复用`references/regression_scenarios.md`与现有Validator / tests；如果自检同时修复了其他历史问题，必须为每个修复项增加对应的直接回归，不得因为它与原始请求无关而省略验证。
