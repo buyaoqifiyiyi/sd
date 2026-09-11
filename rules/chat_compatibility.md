@@ -2,7 +2,7 @@
 
 ## Purpose
 
-普通Chat不是缩减模式。除状态持久化位置和项目输入来源不同外，它必须执行与Work/Codex相同的STATE-00至STATE-09 Pipeline、Workflow、Completion Gate、资产确认闭环、Director Decision Layer、Knowledge Reflection、Clip规则和Template合同。
+普通Chat不是缩减模式。除状态持久化位置和项目输入来源不同外，它在生产运行时必须执行与Work/Codex相同的STATE-00至STATE-09 Pipeline、Workflow、Completion Gate、资产确认闭环、Director Decision Layer、Knowledge Reflection、Clip规则和Template合同。
 
 ## Inputs
 

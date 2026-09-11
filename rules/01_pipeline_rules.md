@@ -72,7 +72,7 @@ Clip Production
 
 当前输入命中`rules/runtime_reload.md`的Trigger时，必须先完成该规则定义的重载与状态报告，再解析项目或Workflow。本规则不维护重载词、读取顺序或Reload Status的竞争副本。
 
-普通Chat不是简化模式，必须完整执行STATE-00至STATE-09。状态来源与本机资源不可用时的行为统一服从`rules/state_source.md`与`rules/chat_compatibility.md`；历史聊天中的Skill规则、Pipeline或Workflow描述不得作为状态源。
+普通Chat不是简化模式，生产运行必须完整执行STATE-00至STATE-09。状态来源与本机资源不可用时的行为统一服从`rules/state_source.md`与`rules/chat_compatibility.md`；历史聊天中的Skill规则、Pipeline或Workflow描述不得作为状态源。
 
 如果可访问项目身份无法唯一确认：
 
