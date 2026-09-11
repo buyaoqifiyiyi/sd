@@ -69,7 +69,7 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 ### Image Model Selection Gate
 
-在任何环境Prompt之前，必须按`modules/image-model-selection.md`完成当前环境资产批次的图像模型路由。已确认项目默认项时直接继承；默认项缺失、不可用或用户明确要求例外模型时才展示`Image Model Selection Proposal`并停止；不得默认内置Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
+在任何环境Prompt之前，必须按`modules/image-model-selection.md`完成当前环境资产批次的图像模型路由。已确认项目默认项时直接继承；默认项缺失、不可用或用户明确要求例外模型时才展示`Image Model Selection Proposal`并停止；不得默认GPT Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
 
 执行前必须读取STATE-02的Asset Tiering Decision：
 
@@ -234,7 +234,7 @@ Core环境必须包含：
 环境资产按`rules/02_asset_rules.md`的`Asset Batch Delivery`分批交付：同一Asset Tier、同一生产形态与同一已选模型归为一批，整批出Prompt、整批出图、整批确认，不逐环境停顿。先完成环境定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/05_environment_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
 - 主参考图Prompt（Main Reference Image Prompt）：通常为Wide Shot；适用空间重建时为`ENV-01 Master Establishing View`，完整建立环境身份、空间骨架、主要动线、建筑/地形关系、材质、实用光源与综合色彩。
-- 必要多视角Prompt（Required Multi-View Prompts）：先依空间重建Decision决定`Full / Partial / Not Required`。Full按`ENV-01 → ENV-02`、`ENV-01 + ENV-02 → ENV-03`、`ENV-01 + ENV-02 + ENV-03 → ENV-04`使用已确认多参考累积约束；不得采用纯单链漂移。Partial只输出有明确拍摄/连续性用途的View；不需要时写`Not Required`及依据。
+- 必要多视角Prompt（Required Multi-View Prompts）：先依空间重建Decision决定`Full / Partial / Not Required`。Full按`knowledge/environment_multi_view_reconstruction.md`使用已确认多参考的累积约束逐张推进，不得采用纯单链漂移；View命名、方向锚点契约与下游引用资格由该Knowledge唯一拥有，本Workflow只保留指针、不复述形态。Partial只输出有明确拍摄/连续性用途的View；不需要时写`Not Required`及依据。
 - 关键区域/细节Prompt：对剧情交互区、关键材质、标志性结构或尺度锚点输出独立可执行Prompt。
 
 以上独立Prompt Package只适用于Core环境。
@@ -259,7 +259,7 @@ Support环境参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 # 8. Image Generation And Confirmation
 
-Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择Built-in Image且当前环境实际可用时可调用内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core生成独立环境图片；Support生成整张Support Environment Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
+Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择GPT Image且当前环境实际可用时可调用GPT Image 生成；Midjourney只交付外部生成Prompt，不调用GPT Image 生成。Core生成独立环境图片；Support生成整张Support Environment Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 
@@ -306,6 +306,8 @@ Workflow负责空间、材质、状态变化与一致性判断；Template独占�
 □ Active Version与Canonical References已登记
 
 □ Full / Partial / Not Required判定有依据；Full的ENV-01～04采用累积多参考约束并通过Spatial Consistency Check
+
+□ Core环境在ENV-01之前已写定按方位的360°空间锚点，ENV-02/03按对应方位重建，ENV-04只用于校验
 
 □ 任何Spatial Lock都有已确认View Set、Major Spatial Anchors与Registry记录；冲突资产先修复，未继续扩展
 

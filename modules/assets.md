@@ -12,13 +12,13 @@
 
 ### Image Model Selection Gate
 
-新建或重编资产Prompt前必须读取`modules/image-model-selection.md`。已确认`Project Image Model Default`且无当前批次例外时，直接将它投影为当前`Selected Image Model`，不重复提问；同一次路由还必须把`Image Delivery Mode`投影为当前批次的`Image Delivery Route`：`DIRECT_IMAGE`且当前执行环境确有出图能力时按`Built-in Candidate Generation`，否则按`External Prompt Only`；`AUTO`按当前环境的真实能力二选一，不得用历史推断；能力不可用时必须标注而不得伪造生成结果。项目默认项与当前批次均为`UNSELECTED`时，先展示该Module的`Image Model Selection Proposal`并停止；不得默认选择Built-in Image、Midjourney或任何第三方服务，也不得生成或展示某个模型格式的资产Prompt。用户在当前请求明确指定图像模型时，仍先展示对应单一Proposal；在该明确检查点说“下一步 / 继续”等即确认该选择。
+新建或重编资产Prompt前必须读取`modules/image-model-selection.md`。已确认`Project Image Model Default`且无当前批次例外时，直接将它投影为当前`Selected Image Model`，不重复提问；同一次路由还必须把`Image Delivery Mode`投影为当前批次的`Image Delivery Route`：`DIRECT_IMAGE`且当前执行环境确有出图能力时按`Built-in Candidate Generation`，否则按`External Prompt Only`；`AUTO`按当前环境的真实能力二选一，不得用历史推断；能力不可用时必须标注而不得伪造生成结果。项目默认项与当前批次均为`UNSELECTED`时，先展示该Module的`Image Model Selection Proposal`并停止；不得默认选择GPT Image、Midjourney或任何第三方服务，也不得生成或展示某个模型格式的资产Prompt。用户在当前请求明确指定图像模型时，仍先展示对应单一Proposal；在该明确检查点说“下一步 / 继续”等即确认该选择。
 
 选择确认后，只读取唯一匹配Adapter和它声明的独立`prompt_output_template`：
 
-- `Built-in Image`：读取`adapters/built-in-image.md`和`templates/24_builtin_image_asset_prompt.md`。当前环境实际可生成时，在既有Prompt确认后生成Candidate Image；不能生成时只交付Prompt并诚实标记不可用。
-- `Midjourney`：读取`adapters/midjourney.md`和`templates/14_midjourney_asset_prompt.md`。始终只交付外部Prompt，不调用内置`image_gen`；用户在Midjourney生成并回传结果后，才登记Candidate Reference。
-- 明确指定其他图像模型：只有其已验证Adapter和独立`prompt_output_template`都存在，才可成为选择项；否则说明尚未适配，请用户选择现有模型或明确要求模型中立的外部Prompt。不得借用Built-in Image、Midjourney或任一视频模型格式。对已有图像的局部编辑，只在真实输入图可用时采用最小`CHANGE`与完整`PRESERVE`逻辑；不把编辑Prompt或外部平台能力伪称为生成结果。
+- `GPT Image`：读取`adapters/gpt-image.md`和`templates/24_gpt_image_asset_prompt.md`。当前环境实际可生成时，在既有Prompt确认后生成Candidate Image；不能生成时只交付Prompt并诚实标记不可用。
+- `Midjourney`：读取`adapters/midjourney.md`和`templates/14_midjourney_asset_prompt.md`。始终只交付外部Prompt，不调用`GPT Image`；用户在Midjourney生成并回传结果后，才登记Candidate Reference。
+- 明确指定其他图像模型：只有其已验证Adapter和独立`prompt_output_template`都存在，才可成为选择项；否则说明尚未适配，请用户选择现有模型或明确要求模型中立的外部Prompt。不得借用GPT Image、Midjourney或任一视频模型格式。对已有图像的局部编辑，只在真实输入图可用时采用最小`CHANGE`与完整`PRESERVE`逻辑；不把编辑Prompt或外部平台能力伪称为生成结果。
 
 图像模型选择不等于Prompt或图片确认。任何Candidate Image仍须按`rules/02_asset_rules.md`的资产检查点确认语义才可成为Canonical Reference / Active Version；在已展示的当前Candidate检查点，“下一步 / 继续”即为该确认。模型选择只作用当前资产批次，不创建Video Model Lock、Clip或视频Prompt。
 

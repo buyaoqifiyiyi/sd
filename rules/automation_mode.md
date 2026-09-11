@@ -15,7 +15,7 @@
 在输入完整、上游事实已确认且当前QA通过时，FAST可以：
 
 - 自动继续STATE-04、STATE-05的内部设计与合法下一阶段；
-- 在STATE-00已确认项目图像模型默认项、当前资产批次已继承且选择Built-in Image时，自动确认STATE-03的当前Prompt Revision，并使用当前环境实际可用的内置图像工具生成当前资产批次；同一资产类型的Candidate References汇总为一次用户批量审阅，而不是逐Prompt停下；`Image Delivery Mode: DIRECT_IMAGE`（由`modules/image-model-selection.md`拥有）在同一资格条件下同样适用本条授权——两个触发指向同一条款，不叠加出新授权，且都不授权自动批准Candidate Image；
+- 在STATE-00已确认项目图像模型默认项、当前资产批次已继承且选择GPT Image时，自动确认STATE-03的当前Prompt Revision，并使用当前环境实际可用的GPT Image生成当前资产批次；同一资产类型的Candidate References汇总为一次用户批量审阅，而不是逐Prompt停下；`Image Delivery Mode: DIRECT_IMAGE`（由`modules/image-model-selection.md`拥有）在同一资格条件下同样适用本条授权——两个触发指向同一条款，不叠加出新授权，且都不授权自动批准Candidate Image；
 - 在STATE-06和STATE-07的既有Checklist、Preflight和状态写回均通过时，自动接受Detailed Shot Design与Clip Production Plan；
 - 在STATE-08完成必需的Final Visual Blocking Assessment后，同轮继续编译当前Clip Prompt。`REF-SKETCH`仍必须通过既有验证，且不得成为Canonical Asset。
 - 当前已锁定视频模型与执行Profile、所有相关Execution Clip均已Confirmed且无未决风险时，按Clip顺序自动编译完整视频Prompt；在单轮交付容量不足时，只能在完整Clip之间分批，下一次普通推进直接续交下一批而不再索取内部确认。

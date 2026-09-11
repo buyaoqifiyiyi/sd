@@ -69,7 +69,7 @@
 
 每个Template文件独占其用户可见Schema，其他文件不得复制完整字段骨架。STATE-08最终Schema按Selected Model唯一拥有：Seedance 2.0为`templates/10_video_prompt.md`，Seedance 2.5为`templates/12_seedance_25_video_prompt.md`，MiniMax H3为`templates/13_minimax_h3_video_prompt.md`；未来视频模型未建立独立Template不得接入；`templates/11_image_to_video_prompt.md`只提供参考帧Source Data与边界约束。
 
-STATE-03的资产类别Template继续拥有资产定义与确认闭环；任何新Image Prompt前必须经`modules/image-model-selection.md`确认当前资产批次的图像模型，不默认内置Image。模型Adapter声明的独立`prompt_output_template`唯一拥有该模型的最终Prompt正文：Built-in Image为`templates/24_builtin_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型未先建立独立Adapter与最终提示词模板，不得作为可选模型接入；不得污染内置Image、Midjourney或视频模型模板。
+STATE-03的资产类别Template继续拥有资产定义与确认闭环；任何新Image Prompt前必须经`modules/image-model-selection.md`确认当前资产批次的图像模型，不默认GPT Image。模型Adapter声明的独立`prompt_output_template`唯一拥有该模型的最终Prompt正文：GPT Image为`templates/24_gpt_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型未先建立独立Adapter与最终提示词模板，不得作为可选模型接入；不得污染GPT Image、Midjourney或视频模型模板。
 
 ## Loading Defaults
 

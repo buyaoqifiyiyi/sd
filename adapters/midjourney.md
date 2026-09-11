@@ -2,7 +2,7 @@
 
 ## Contract
 
-仅在STATE-03资产创作中，用户当前明确指定`Midjourney`时调用。本Adapter读取已确认资产定义、资产类别、画幅/交付规格、当前Prompt Revision和既有Canonical约束；只输出可直接粘贴的 Midjourney Prompt。它不调用内置`image_gen`、不生成或上传图片、不创建Candidate Reference，也不改变Prompt确认与图片确认Gate。
+仅在STATE-03资产创作中，用户当前明确指定`Midjourney`时调用。本Adapter读取已确认资产定义、资产类别、画幅/交付规格、当前Prompt Revision和既有Canonical约束；只输出可直接粘贴的 Midjourney Prompt。它不调用`GPT Image`、不生成或上传图片、不创建Candidate Reference，也不改变Prompt确认与图片确认Gate。
 
 `prompt_output_template: templates/14_midjourney_asset_prompt.md`
 

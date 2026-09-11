@@ -355,7 +355,7 @@ Project Initialized
 
 读取`modules/image-model-selection.md`和`modules/model-selection.md`，在同一个`Project Model Selection Proposal`中展示：
 
-- 项目图像模型默认项：Built-in Image / Midjourney，以及各自Adapter、最终资产Prompt Template与交付路线；
+- 项目图像模型默认项：GPT Image / Midjourney，以及各自Adapter、最终资产Prompt Template与交付路线；
 - 图像交付形态：`AUTO`（按当前执行环境能力自动路由）/ `DIRECT_IMAGE`（直接出图）/ `PROMPT_ONLY`（只交付Prompt）；用户当前请求已明确指定时只展示该唯一候选；
 - 项目视频模型偏好：Seedance 2.0 / Seedance 2.5 / MiniMax H3，以及已验证的时长与参考输入能力摘要；
 - 已由用户当前请求指定的模型只展示为唯一候选；未指定时不得默认选择。

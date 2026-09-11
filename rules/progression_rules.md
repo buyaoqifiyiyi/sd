@@ -45,7 +45,7 @@
 - 跳过当前Completion Gate
 - 重做已接受且未受影响的Artifact
 
-若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；当前确认检查点的纯推进输入按本规则的`Confirmation Input Semantics`处理。`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、内置/外部图像批次、STATE-06/07自动接受、同轮`REF-SKETCH`后Prompt编译和完整Clip之间的Prompt批量交付除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
+若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；当前确认检查点的纯推进输入按本规则的`Confirmation Input Semantics`处理。`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、GPT Image/外部图像批次、STATE-06/07自动接受、同轮`REF-SKETCH`后Prompt编译和完整Clip之间的Prompt批量交付除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
 
 STATE-08的Before-Single-Clip-Prompt Gate是本规则的窄范围例外：用户请求指定Clip或说“下一个 / 下一步 / 继续”时，已授权系统执行该Clip的Final Visual Blocking Anchor Assessment。Final=`REQUIRED`时，生成并验证一张受限`REF-SKETCH`属于当前Prompt的自动内部生产步骤，不等同于STATE-03资产生图、Storyboard激活或Candidate确认；无需另行把纯推进命令解释为资产Prompt确认。`STANDARD`本轮停在草图、注册与用途说明，下一次推进才输出Prompt；`FAST`在草图验证、注册和用途说明后同轮编译，并按Continuous Chain继续其余符合资格的Clip。任何角色 / 环境 / 道具 / FX资产图、Formal Keyframe或非Gate图片仍服从原授权边界。
 

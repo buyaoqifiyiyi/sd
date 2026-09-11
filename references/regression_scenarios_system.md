@@ -270,7 +270,7 @@ FAIL：替用户选择模型、代投Midjourney或视频服务、把Prompt写成
 
 ### R31-A Asset Run Keeps One Valid Candidate And Removes Extras
 
-输入：CHAR-001正式资产Prompt预期一张四区角色设定图；本次内置生成返回三张：C01正确、C02为重复画布、C03是错误角色且带水印。三个未确认输出均位于当前运行可验证的临时目录。
+输入：CHAR-001正式资产Prompt预期一张五区角色设定图；本次GPT Image 生成返回三张：C01正确、C02为重复画布、C03是错误角色且带水印。三个未确认输出均位于当前运行可验证的临时目录。
 
 PASS：视觉核验后只将C01登记并展示为`KEEP` Candidate，报告“保留 C01，仍待图片确认”；C02 / C03标为`DISCARD`、报告最短原因、从Candidate References / Registry / 下游参考移除并删除其已核验临时文件。不得要求用户从错误或重复图中选择，C01也不得因此自动Canonical / Active。
 
@@ -346,9 +346,9 @@ FAIL：只写孤立风格标签、将风格藏在第二行后、增加H3顶级`�
 
 ### R34-A Project Model Choice Is Early, Clip Capability Is Late-Bound
 
-输入：新项目在STATE-00确认`Built-in Image + MiniMax H3`；STATE-03新建角色与环境资产；后续CLIP-04为H3 Start-End模式且Final=`REQUIRED`。
+输入：新项目在STATE-00确认`GPT Image + MiniMax H3`；STATE-03新建角色与环境资产；后续CLIP-04为H3 Start-End模式且Final=`REQUIRED`。
 
-PASS：STATE-03直接继承Built-in Image而不逐批重复提问；STATE-06/07复核H3 Start-End无法提交Required草图，只给出改为H3 All-Reference、改选兼容模型或返回上游降低Blocking的最小路径。不得为了兑现项目偏好把`REF-SKETCH`伪装为首/尾帧，也不得重做剧本、资产或导演设计。
+PASS：STATE-03直接继承GPT Image而不逐批重复提问；STATE-06/07复核H3 Start-End无法提交Required草图，只给出改为H3 All-Reference、改选兼容模型或返回上游降低Blocking的最小路径。不得为了兑现项目偏好把`REF-SKETCH`伪装为首/尾帧，也不得重做剧本、资产或导演设计。
 
 ### R34-B Required Sketch Is A Real Submitted Input For Every Compatible Model
 

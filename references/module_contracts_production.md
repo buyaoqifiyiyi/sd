@@ -52,7 +52,7 @@ Module Type：STATE-03 Character / Environment / Prop主资产Workflow与正式F
 
 Two-Tier执行：STATE-02为每个CHAR、ENV、PROP拥有Asset Tiering Decision。Core满足主角/固定角色、跨场景或跨Clip复用、强剧情/角色/品牌识别、高一致性、关键场景或剧情关键道具之一，并在STATE-03独立制作；Support为一次性配角/群演、群体背景角色、同类家具与环境小物、氛围装饰、低频道具等，按同一资产类型与相近用途进入Support Reference Board。该分层是STATE-02/03内部决策，不创建新STATE，不替代Primary / Secondary / Background优先级，也不改变正式FX路由。
 
-Support Board建议4—9个对象，必须具有稳定Board ID与逐项Item ID，统一风格但明确轮廓、服饰/材质、颜色、比例和功能差异；不得跨CHAR / ENV / PROP混板，不得逐项制作完整三视图或独立资产套图。下游引用使用`<Board Name> / <Board ID> / <Item ID>`。
+Support Board建议4—9个对象，必须具有稳定Board ID与逐项Item ID，统一风格但明确轮廓、服饰/材质、颜色、比例和功能差异；不得跨CHAR / ENV / PROP混板，不得逐项制作完整正式角色资产图或独立资产套图。下游引用使用`<Board Name> / <Board ID> / <Item ID>`。
 
 Required Inputs及唯一来源：资产身份与剧情功能来自STATE-01/02、Project Bible、Active Asset Version和用户明确确认；Visual Direction只能提供项目级风格约束，不得改写资产身份。
 

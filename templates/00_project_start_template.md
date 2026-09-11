@@ -149,7 +149,7 @@ Project Root：
 
 项目图像模型默认项：
 
-□ Built-in Image
+□ GPT Image
 
 □ Midjourney
 

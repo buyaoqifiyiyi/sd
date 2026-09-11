@@ -392,7 +392,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 STATE-02必须为每个CHAR、ENV、PROP执行Asset Tiering Decision；Asset Tier与Primary / Secondary / Background优先级相互独立。
 
-满足任一条件即优先`Core`：主角或固定角色、跨场景或跨Clip反复出现、承担强剧情/角色/品牌识别、需要高一致性、关键场景、剧情关键道具。Core角色先生成一张外观参考图供用户确认角色外观；该图只用于设计决策，不能成为Canonical资产。用户确认后，才独立制作一张正式角色资产设定图：同一画布内固定包含面部特写与正面、严格侧面、背面全身三视图；必要状态变体另作独立图。Core环境独立制作主参考图/多视角/关键区域图；Core道具独立制作主参考图/必要状态或细节图。
+满足任一条件即优先`Core`：主角或固定角色、跨场景或跨Clip反复出现、承担强剧情/角色/品牌识别、需要高一致性、关键场景、剧情关键道具。Core角色先生成一张外观参考图供用户确认角色外观；该图只用于设计决策，不能成为Canonical资产。用户确认后，才独立制作一张正式角色资产设定图（形态由`templates/04_character_asset_prompt.md`拥有）；必要状态变体另作独立图。Core环境独立制作主参考图/多视角/关键区域图；Core道具独立制作主参考图/必要状态或细节图。
 
 不满足Core条件的一次性配角/群演、群体背景角色、同类家具与环境小物、氛围装饰、低频道具通常为`Support`。Support不得逐个制作完整独立资产包，必须按同一资产类型和相近用途形成Support Reference Board；角色、环境、道具不得跨类型混板。
 
@@ -478,7 +478,7 @@ Asset Design
 
 ## Image Gate
 
-- 已确认选择`Built-in Image`且当前agent具备直接图片生成能力时，在当前Prompt Revision按既有规则确认后生成Candidate Image；选择`Midjourney`或其他外部模型时只交付Prompt，外部图片回传后才进入Image Generated。不得因环境可生成而跳过图像模型选择或Prompt确认。
+- 已确认选择`GPT Image`且当前agent具备直接图片生成能力时，在当前Prompt Revision按既有规则确认后生成Candidate Image；选择`Midjourney`或其他外部模型时只交付Prompt，外部图片回传后才进入Image Generated。不得因环境可生成而跳过图像模型选择或Prompt确认。
 - 图片生成后先执行本节的`Candidate Output Triage`；只有保留项才写`Image Generated`并把文件或受控外部ID登记为Candidate References。
 - Image Generated时同步状态必须为`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`。
 - 未经全局确认语义定义的用户确认图片，不得写Canonical References、Active Version、`Status: Active`或`Asset Confirmed`。
@@ -509,6 +509,16 @@ Asset Design
 3. 只有在原图确实不可用时，才从最近一次仍然干净的版本分叉，并把已确认正确的局部重新合成回来。
 
 控制强度按用途选择，不做统一默认：自由探索用于气氛、蒙太奇与非关键覆盖；中等控制用于单人表演与普通对白；强控制用于多人关系、关键连续性、机械步骤、道具状态与地理信息。强控制会减少意外创造，只锁定必须一致的内容，给模型保留产生好镜头的空间。
+
+### Reference Neutrality｜参考画面中性化
+
+`Reference Provenance And Degradation`约束的是**输入**参考带进来的信息；本节约束的是**产出**参考图自身携带的信息。角色与道具参考图会成为下游的Canonical Reference，它携带的光线、背景与画面元素不随场景改变，因此会被当作资产自身属性，在后续每一代生成中重复出现——画面越"好看"的参考图，污染越强。
+
+- **光线必须中性**：均匀柔和的整体照明，不得使用方向性主光、轮廓光、边缘光或光晕，不得出现硬阴影与过曝高光。带造型光或边缘光的角色参考图会把该光带入每一个场景，并使角色对场景内的真实光线不产生反应。
+- **背景必须中性**：使用连续平整的中性单色背景，不得出现地平线、墙角、景深层次或环境暗示。
+- **画面只含资产本身**：不得出现物件、设备、家具、支架、灯具、文字与水印。物品各自是独立资产，不得作为另一资产的画面元素出现；角色双手不得持物。
+- **否定表述必须环境化**：不得用设备或场所名词做否定（例如"不要工作室""不要影棚"），此类否定会激活其对应概念与默认视觉模板；改为否定环境本身，例如"没有墙、没有设备、没有地面"。判据与`rules/03_prompt_rules.md`的`Negative Pollution`、`Semantic Trigger Pollution`一致。
+- **适用范围**：本节适用于`Character`与`Prop`资产。**不适用于`Environment`资产**——光源方向、光质、天气与时间状态是环境资产的身份组成部分，必须按`workflows/05_environment_asset_workflow.md`正常指定，不得中性化。
 
 ## Tool Availability
 

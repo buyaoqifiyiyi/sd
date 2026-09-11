@@ -260,7 +260,7 @@ STATE-08内部转换链固定为：
 
 每个Clip在Clip Preflight与Before-Single-Clip-Prompt Gate通过后才可建立参考清单。Final Visual Blocking Assessment=`REQUIRED`时，只有实际生成 / 接收、通过Sketch Validation且Blocking Signature匹配的Confirmed `REF-SKETCH`才可进入；未完成时本轮停止，不编译Prompt。Final=`NONE`不生成或预留草图；普通Prompt Rewrite复用现有Anchor。随后读取并执行`knowledge/reference_budget.md`：先删除当前World-State不适用、当前Clip无关与重复项；A/B无论尾帧是否已上传都预留1个Projected位，并直接列出统一`REF-TAIL`名称、用途和真实状态；未提供时为“待用户提供/待上传、未确认”，不计入已提交图片数。C不加入或预留旧尾帧。Seedance 2.5按30图、10视频、10音频、合计50项及各自30秒时长审计；2.0与H3按其Adapter的当前有效上限审计。
 
-当前Clip每个核心角色的独立三视图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
+当前Clip每个核心角色的独立角色资产图/角色锁定图必须分别保留，动作/互动图不得替代外貌基准。整合仅限环境多视角、道具组、空间关系、动作/互动关系与使用示意等非角色信息。独立资产更清晰且总数未超限时继续独立使用；已有总图不构成强制替换理由。
 
 最终参考字段逐项写资产ID或名称、真实引用或明确待补充状态、用途与锁定约束。除A/B所需`REF-TAIL`与STATE-07已选择的`Project Color Reference（非资产）`外，只能序列化真实存在且已确认的资产/帧；不得输出未生成/未确认的总图、空间关系图或动作关系图。色卡条目必须标明真实来源、唯一Primary Role及“只控制综合色相 / 明度 / 饱和度 / 强调色占比”，不得伪装为Canonical资产或控制角色、环境、道具、构图、光源、镜头或最终画风。Final=`REQUIRED`的Confirmed `REF-SKETCH`必须消耗实际图片输入：2.0在`参考资产：`写真实文件/受控ID及“实际提交图片输入”；2.5在`多模态参考资产：`写真实`@图片N`；H3仅All-Reference的`参考素材说明：`写真实`@图片N`。H3首/尾帧或Video Edit模式不得把草图当作普通/帧图片输入。草图只控制Blocking / Pose / Axis / Camera / Action Path，不控制身份、服装、年龄、材质、色彩、灯光或最终画风。Seedance Video Extension的实际`REF-VIDEO`只作为受控延展输入，叠加而不取代Canonical、首尾帧与End-State。MiniMax H3的实际视频输入则必须按其唯一动作/运镜/编辑用途标注，不替代Canonical、首尾帧与End-State。A/B尾帧统一命名为`REF-TAIL-XX｜CLIP-XX尾帧参考`，缺图时仍列名但必须同时写“待用户提供/待上传、未确认”，不得写假路径或冒充图片已经存在；任何`REF-TAIL`都必须标明“同镜头连续承接用途”或“空间/站位/景别参考用途”。预算审计保留在STATE-07 Clip Plan与内部Projection Ledger，不新增最终字段。
 

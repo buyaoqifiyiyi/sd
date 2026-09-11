@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.11-r70
+Skill Version: 2026.09.11-r71
 
-Build ID: sd-film-2026.09.11-r70
+Build ID: sd-film-2026.09.11-r71
 
 ## Core
 
@@ -53,7 +53,7 @@ STATE-00先确认项目级图像模型默认项与视频模型偏好；STATE-03�
 - `adapters/minimax-h3.md`：4–15 秒；支持首/尾帧、全能多模态参考和已有视频编辑，按官方三段式提示词编译；不继承 Seedance 专属的时码式 Targeted Edit 或长时长能力。
 - `adapters/other-models.md`：未验证模型不继承 Seedance 能力。
 
-资产创作的图像路由不属于视频Adapter：STATE-00由`modules/image-model-selection.md`一次确认项目图像模型默认项，STATE-03在每个资产批次直接继承；仅用户明确要求例外模型、默认项不可用或当前批次需改用模型时才重新确认。当前可选Built-in Image（`adapters/built-in-image.md` + `templates/24_builtin_image_asset_prompt.md`）或Midjourney（`adapters/midjourney.md` + `templates/14_midjourney_asset_prompt.md`）；未来模型必须先有独立Adapter和最终提示词模板。它不影响视频模型偏好、STATE-07 Clip或STATE-08视频 Prompt。
+资产创作的图像路由不属于视频Adapter：STATE-00由`modules/image-model-selection.md`一次确认项目图像模型默认项，STATE-03在每个资产批次直接继承；仅用户明确要求例外模型、默认项不可用或当前批次需改用模型时才重新确认。当前可选GPT Image（`adapters/gpt-image.md` + `templates/24_gpt_image_asset_prompt.md`）或Midjourney（`adapters/midjourney.md` + `templates/14_midjourney_asset_prompt.md`）；未来模型必须先有独立Adapter和最终提示词模板。它不影响视频模型偏好、STATE-07 Clip或STATE-08视频 Prompt。
 
 ## Global invariants
 

@@ -17,12 +17,21 @@
 
 | View | Semantic responsibility | Must establish |
 |---|---|---|
-| `ENV-01` Master Establishing View | 最高优先级母参考 | 美术风格、空间尺度、结构、墙/门/窗、大型家具/固定物、主光方向、材质、色彩、时间/天气与主要视觉特征 |
+| `ENV-01` Master Establishing View | 最高优先级母参考，位于主光轴方向的平视 | 美术风格、空间尺度、结构、墙/门/窗、大型家具/固定物、主光方向、材质、色彩、时间/天气与主要视觉特征 |
 | `ENV-02` Reverse View | 相对ENV-01约180°的回望平视补全 | 同一真实空间的背向区域、门窗/家具/材质/光线逻辑；不得生成风格相似但结构不同的房间 |
-| `ENV-03` Oblique Overhead View | 默认约45°，允许30°–60° | 前后左右、墙体关系、家具间距、通道、活动区、纵深与门窗/家具相对位置 |
-| `ENV-04` Top-Down Spatial View | 90°正俯视的环境Canonical布局视角 | 墙、门、窗、大型家具、固定道具、通道、活动范围与可用摄影机区域；不要求CAD精度 |
+| `ENV-03` Lateral View | 相对ENV-01主光轴约90°的侧向平视，视高与ENV-01/ENV-02一致 | 侧墙结构与纵深、侧面门窗/家具、通道宽窄、并排两人或多人可用的横向空间；不得生成风格相似但结构不同的房间 |
+| `ENV-04` Top-Down Spatial View | 90°正俯视的环境Canonical布局视角；只作空间校验用途 | 墙、门、窗、大型家具、固定道具、通道、活动范围与可用摄影机区域；不要求CAD精度 |
 
-仅在镜头、进出口、关键物件区或活动区确有具体用途时，才可追加`ENV-05+`（例如Left / Right / Entrance / Exit / Activity Zone / Key Object Area）。数量本身不是价值。
+仅在镜头、进出口、关键物件区或活动区确有具体用途时，才可追加`ENV-05+`（例如Oblique Overhead（约30°–60°斜俯）/ Opposite Lateral / Entrance / Exit / Activity Zone / Key Object Area）。约45°斜俯由默认必出项降为按需扩展：它同时携带空间与视点信息，作为画面参考时最易把下游机位带高。数量本身不是价值。
+
+## Direction Anchor Contract｜方向锚点契约
+
+单一视角只能表达一个视锥，无法完整表达360°空间；背向与侧向区域在`ENV-01`中根本不存在信息，若仅以“看图模仿”补全，模型只能虚构，而虚构结果会直接成为Canonical Reference。因此在生成`ENV-01`**之前**，必须先按方位写定完整空间锚点表：北墙/东墙/南墙/西墙各自的门、窗、通道与固定大型物件，中央物件，以及主要活动区。
+
+- 该表就是`Major Spatial Anchors`的事前写法，不新增Registry字段、不新增确认Gate、不改变双确认闭环。
+- `ENV-01`、`ENV-02`、`ENV-03`各自按表中对应方位重建，不得以另一张图的可见区域外推盲区。
+- `ENV-04`按该表校验其余View：墙位、家具间距、通道与活动区是否自洽。
+- 表中未写定的大型结构不得在任一View中首次出现；确需新增时按Spatial Revision处理。
 
 ## Multi-Reference Constraint Rule
 
@@ -72,5 +81,5 @@ Spatial Lock: Unlocked / Locked
 先锁空间、后植入角色：`Environment Master → applicable Multi-View Reconstruction → Spatial Lock → Character Asset / Blocking → Storyboard → Shot → Clip → Video Generation`。未锁定环境不得被大量人物镜头反向定义。
 
 - Storyboard和STATE-06读取Active ENV Version、Spatial Lock、适用View Set、Major Spatial Anchors和活动区；每镜把ENV、Camera Zone / Direction、人物位置/朝向、关键背景结构及与上一镜的空间关系投影到既有字段。STATE-06仍拥有当下站位、路径、轴线与Planning Map。
-- STATE-07/08在当前Clip实际方向、景别、活动区、背景结构与连续性风险下，从已确认View Set选择**最相关2–4张**真实环境Canonical References：通常保留ENV-01作整体母参考，并按需加入对应朝向的ENV-02、布局/距离风险的ENV-03、俯视结构风险的ENV-04或有明确用途的Extension；再按既有规则加入角色、道具和A/B尾帧。不是把四图机械全投喂。
+- STATE-07/08在当前Clip实际方向、景别、活动区、背景结构与连续性风险下，从已确认View Set选择**最相关2–4张**真实环境Canonical References：通常保留ENV-01作整体母参考，并按需加入反打朝向的ENV-02、侧向朝向与横向可用宽度的ENV-03或有明确用途的Extension；再按既有规则加入角色、道具和A/B尾帧。`ENV-04`默认不进入画面参考位——它的职责是按方位校验其余View的几何自洽，只在当前Clip摄影机高度确实落在高位俯视区间时才可入选。不是把四图机械全投喂。
 - 每张入选环境图按`references/asset_lock_contract.md`的Primary Responsibility声明其解决的空间/布局/朝向/材质或状态风险；文字Spatial Truth和STATE-06 Planning Map仍不进入`参考资产：`。

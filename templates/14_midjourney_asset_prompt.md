@@ -37,8 +37,8 @@
 
 ### Character
 
-- Appearance Reference：先锁定单一角色的年龄感、脸部比例、肤质、发际线/发型、体态轮廓、主要服装、自然表情与头肩或半身构图；不写三视图、拼版或状态变体。
-- Combined Character Asset Sheet：明确同一角色、同一版本、同一服装与发型；写出三个等比例全身区（front / strict side / back）和一个头肩特写区的区域关系。不要把四区写成四个不同人物，也不拆成独立基础资产Prompt。
+- Appearance Reference：先锁定单一角色的年龄感、脸部比例、肤质、发际线/发型、体态轮廓、主要服装、自然表情与头肩或半身构图；不写多视图、拼版或状态变体。
+- Combined Character Asset Sheet：明确同一角色、同一版本、同一服装与发型；写出上排三个等宽等高的全身区（front / strict side / back）与下排两个更大的头肩特写区（中性表情 / 微笑表情）的区域关系。front 全身区不呈现头部、面部与头发，肩线位于画幅内部且其上保留约一个头部高度的中性背景；两张特写是该角色面部与发落的唯一权威来源。不要把五区写成五个不同人物，也不拆成独立基础资产Prompt。
 - State Variant：先写必须保持的身份与外观锚点，再写唯一获确认的状态变化；不重述无关剧情。
 
 ### Environment
@@ -54,6 +54,14 @@
 ### Support Board
 
 明确Board内对象数量、各Item的可见差异、排布/留白和标签可读性；避免主体互相遮挡、混脸、串服装或把不同资产融合成一个对象。不得为了凑数虚构资产。
+
+## Background And Lighting By Asset Category
+
+背景与光线按资产类别分流；判据本体见`rules/02_asset_rules.md`的`Reference Neutrality｜参考画面中性化`，本节只声明本模板的槽位落法。
+
+- `Character` / `Prop`：必须中性化——均匀柔和的整体照明，不得出现方向性主光、轮廓光、边缘光、硬阴影或过曝；背景为连续平整的中性单色，不得出现地平线、墙角、景深层次或环境暗示；画面只含资产本身，不出现物件、设备、家具、支架、灯具、文字与水印，角色双手不持物。槽位`[environment or controlled background]`与`[source-grounded lighting and material evidence]`在此约束下填写：材质证据指资产自身的肤质、材质与结构，不是场景光源的造型作用。否定表述必须环境化（写`no wall, no equipment`，不写`no studio`）。
+- `Environment`：**不得中性化**。光源方向、光质、天气与时间状态是环境资产的身份组成部分，按环境事实正常指定。
+- `Support Board`：按其承载的资产类别适用上述任一条。
 
 ## Parameter And Syntax Discipline
 

@@ -27,10 +27,10 @@
 
 | Model | Adapter | Final prompt template | Delivery |
 |---|---|---|---|
-| Built-in Image | `adapters/built-in-image.md` | `templates/24_builtin_image_asset_prompt.md` | 当前环境实际可用时可直接生成；不可用时只交付Prompt |
+| GPT Image | `adapters/gpt-image.md` | `templates/24_gpt_image_asset_prompt.md` | 当前环境实际可用时可直接生成；不可用时只交付Prompt |
 | Midjourney | `adapters/midjourney.md` | `templates/14_midjourney_asset_prompt.md` | External — only Prompt delivery |
 
-不得默认选择Built-in Image、Midjourney或其他模型。未来模型只有在已验证Adapter和独立`prompt_output_template`均存在后才能加入此表；未适配的模型名不是可选项，也不得借用现有模型模板。
+不得默认选择GPT Image、Midjourney或其他模型。未来模型只有在已验证Adapter和独立`prompt_output_template`均存在后才能加入此表；未适配的模型名不是可选项，也不得借用现有模型模板。
 
 ### Selection Proposal And Confirmation
 
@@ -41,7 +41,7 @@
 - Available Choices：当前可用模型
 - Awaiting User Confirmation：`Image Model Selection`
 
-用户明确说“用Midjourney / 用内置Image”等选择后，或当前请求已指定模型时，Proposal只有该一个`Proposed Image Model`。在这个已经展示的单一Proposal检查点，`下一步`、`下一个`、`继续`及等义推进表达按`rules/progression_rules.md`确认该选择；在`UNSELECTED`状态下，纯推进表达不凭空选模型，必须要求用户指定一个可用模型。
+用户明确说“用Midjourney / 用GPT Image”等选择后，或当前请求已指定模型时，Proposal只有该一个`Proposed Image Model`。在这个已经展示的单一Proposal检查点，`下一步`、`下一个`、`继续`及等义推进表达按`rules/progression_rules.md`确认该选择；在`UNSELECTED`状态下，纯推进表达不凭空选模型，必须要求用户指定一个可用模型。
 
 STATE-00确认后写入State Contract的`Project Image Model Default`与选择状态；STATE-03继承时再写当前批次的`Selected Image Model`、`Image Adapter Profile`、`Image Prompt Output Template`、`Image Model Selection Status: SELECTED`和Scope，然后才可调用对应资产Workflow的Prompt Generation。项目默认项不是图片/资产确认，也不授权外部提交。
 
@@ -68,7 +68,7 @@ STATE-00确认后写入State Contract的`Project Image Model Default`与选择�
 |---|---|
 | `AUTO`（默认） | 按**当前执行环境的真实图像生成能力**路由：能直接出图则按`DIRECT_IMAGE`行为，不能则按`PROMPT_ONLY`行为 |
 | `DIRECT_IMAGE` | 始终尝试直接生成；当前环境无能力时降级为`PROMPT_ONLY`行为并明确标注能力不可用，不得伪造生成结果 |
-| `PROMPT_ONLY` | 始终只交付Prompt，不调用内置生成；适用于用户要在其他平台自行出图 |
+| `PROMPT_ONLY` | 始终只交付Prompt，不调用GPT Image 生成；适用于用户要在其他平台自行出图 |
 
 `AUTO`不是猜测：判据是当前执行环境在**本轮**是否存在可实际调用的图像生成能力。不得用历史会话、其他平台或上一次运行的能力推断本轮环境，也不得因为曾经生成过就假设当前可生成。
 

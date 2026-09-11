@@ -111,7 +111,7 @@ Confirmed Status：No / Yes
 
 ### Image Model Selection Prerequisite
 
-在本Template的任何Prompt Draft之前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出角色Prompt或Candidate Image。选择Built-in Image也必须先走下列Prompt Draft与确认步骤；Midjourney保持外部Prompt交付。
+在本Template的任何Prompt Draft之前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出角色Prompt或Candidate Image。选择GPT Image也必须先走下列Prompt Draft与确认步骤；Midjourney保持外部Prompt交付。
 
 本Template不是一次性填写全部区块。每轮只输出当前合法阶段：
 
@@ -123,7 +123,7 @@ Confirmed Status：No / Yes
 
 不得在`Prompt Draft`同轮直接生成图片；不得在`Image Generated`同轮自动把Candidate Reference升级为Canonical Reference。
 
-Core与Support共用上述双确认Gate。Core使用一张独立的正式角色资产设定图：同一画布内包含面部特写与正面、严格侧面、背面全身三视图；不得将其拆为独立三视图或独立面部特写Candidate Reference。Support按Board制作，不得逐个生成完整三视图或独立面部特写。Board图片确认前，Board及任何Item的`Confirmed Status`都必须为`No`。
+Core与Support共用上述双确认Gate。Core使用一张独立的正式角色资产设定图：同一画布内固定为五个区域——上排三个等宽等高的全身区（正面、严格侧面、背面，共用同一人物尺度与水平基准线），下排两个更大的头肩特写区（中性表情、微笑表情）。不得将其拆为独立分区图、独立面部特写或独立表情图Candidate Reference。Support按Board制作，不得逐个生成完整正式角色资产图或独立面部特写。Board图片确认前，Board及任何Item的`Confirmed Status`都必须为`No`。
 
 ## Character Definition
 
@@ -151,8 +151,8 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 - Image Model Selection Status：`SELECTED`
 - Image Adapter Profile：
 - Asset Image Route：
-- Image Prompt Output Template：Built-in Image写`templates/24_builtin_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
-- Generation Parameters：画幅、分辨率、背景控制及工具必需参数；未知平台时使用平台中性的可执行规格。
+- Image Prompt Output Template：GPT Image写`templates/24_gpt_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
+- Generation Parameters：画幅、分辨率、背景控制及工具必需参数；未知平台时使用平台中性的可执行规格。角色与道具资产的背景、光线与画面元素必须按`rules/02_asset_rules.md`的`Reference Neutrality`中性化。
 
 本Template继续拥有角色资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
 
@@ -162,11 +162,29 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 
 #### Appearance Reference Prompt
 
-仅在尚未确认外观时输出一条可独立复制执行的完整Prompt，用一张单人头肩或半身自然肖像让用户确认脸型、五官比例、肤质、年龄感、发际线、发型、体态轮廓、主要服装与项目视觉风格。必须包含构图、视角、自然表情、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数；不要求三视图、拼版或状态变体。生成后写`Awaiting User Confirmation: Appearance Reference`并停止。该图只用于设计决策：不得登记为Candidate / Canonical Reference、Active Version、Confirmed Asset或下游视觉输入。
+仅在尚未确认外观时输出一条可独立复制执行的完整Prompt，用一张单人头肩或半身自然肖像让用户确认脸型、五官比例、肤质、年龄感、发际线、发型、体态轮廓、主要服装与项目视觉风格。必须包含构图、视角、自然表情、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数；不要求多视图、拼版或状态变体。生成后写`Awaiting User Confirmation: Appearance Reference`并停止。该图只用于设计决策：不得登记为Candidate / Canonical Reference、Active Version、Confirmed Asset或下游视觉输入。
 
 #### Combined Character Asset Sheet Prompt
 
-仅在用户确认外观参考图后输出一条可独立复制执行的完整Prompt，且该Prompt只生成一张基础正式资产。画面固定为一个清晰的四分区角色设定图：三个等比例全身区域依次呈现正面、严格侧面、背面；第四区为正面或轻微三分之二视角的头肩面部特写。四区必须继承已确认外观，且是同一角色、同一版本、同一服装、同一发型、同一年龄感与同一视觉风格，不得让特写另成角色或改变服装/发型。Prompt必须写全主体、四区构图与区域关系、视角、姿态、表情基线、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数，不使用“同上/参考前述”。禁止输出或调用独立的Three-View Prompt、Face Close-Up Prompt，禁止基础正式资产分两张生成。
+仅在用户确认外观参考图后输出一条可独立复制执行的完整Prompt，且该Prompt只生成一张基础正式资产。画面固定为一个清晰的五区域角色设定图：
+
+**媒介适用条件**：该五区结构服务于画面由光生成的媒介（`live_action` / `3d_animation`），其"正面区交出面部与头发"的前提是下游图像模型的身份采样。媒介为`2d_anime`时**不适用**：2D角色资产由设定集与画风锚承担，正面区必须完整含头部与面部，不得套用面部单源逻辑。媒介判定与三档分化规则见`knowledge/medium_profiles.md`。
+
+**上排三个等宽等高的全身区**，依次为正面、严格侧面、背面。三区共用同一人物尺度与同一水平基准线：肩线、腰线、髋线与膝线在三区中处于同一水平高度，身体各部位尺寸一致，可直接叠合比对。
+
+- **正面区**：不呈现头部、面部与头发。肩线位于画幅内部，其上保留约一个头部高度的空白背景，该区域为连续的中性背景，画内不出现头部，也不出现任何头发。呈现双肩、躯干、双臂、双腿与双脚。
+- **严格侧面区**：完整含头部，严格90度正侧，呈现鼻梁、下颌线、后脑轮廓与发量。
+- **背面区**：完整含头部，呈现后视发型、后脑、颈后、肩线与服装背面。
+
+**下排两个更大的头肩特写区**：分别为中性表情与微笑表情；两区必须使用完全相同的视角、构图、光线、皮肤与毛发处理，仅表情不同。微笑区必须明确呈现牙齿与下颌形态，且不得使脸型、年龄感、颧骨或下颌宽度发生漂移。
+
+五区必须继承已确认外观，且是同一角色、同一版本、同一服装、同一发型、同一年龄感。视觉风格必须写成**可执行的渲染锚**——统一的皮肤质感与次表面散射、漫反射过渡、毛发的丝状质感与体积感、五区出自同一次渲染——不得只写“同一画风”这类没有执行项的抽象表述。
+
+**面部唯一来源**：面向观察者的面部只有一个来源，即下排两个特写区；上排严格侧面区保留其自身的侧面轮廓，其余区域不出现正面视角的面部五官。**发落的权威载体**是严格侧面区、背面区与`references/asset_lock_contract.md`的`Immutable Traits`文本定义；正面区不承担任何头发信息，其肩线以上必须是连续中性背景。
+
+该五区结构是按信息分工的**有意选择**，不是遗漏：正面区交出面部与头发，正是因为尺寸偏小的正面头部会被下游当作采样来源，而使面部与发落各自只有唯一权威来源。任何下游阶段、重生请求或QA都**不得把正面区缺少头部与头发判定为出图失败并补齐**——补齐会引入无生长点的漂浮发丝，并把错误固化为Canonical Reference。正面区真正的QA标准是肩线以上为连续中性背景。
+
+Prompt必须写全主体、五区构图与区域关系、视角、姿态、表情基线、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数，不使用“同上/参考前述”。禁止输出或调用独立的Three-View Prompt、Face Close-Up Prompt、Expression Sheet Prompt，禁止基础正式资产分两张或以上生成。
 
 #### Required State Variant Prompts
 
@@ -182,7 +200,7 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 - Object Count：建议4—9；少于4说明不虚构填充的理由，超过9拆板
 - Shared Style Lock：时代、画风、光影、背景、画幅与标签体系统一
 - Per-Item Distinction Anchors：逐项明确轮廓、脸部类别、服饰、颜色、比例与功能差异
-- Board Prompt：一条可独立复制执行的完整Prompt；对象完整可见、标签清晰、不互相遮挡、不混脸、不串服装，不要求逐项三视图或独立面部特写
+- Board Prompt：一条可独立复制执行的完整Prompt；对象完整可见、标签清晰、不互相遮挡、不混脸、不串服装，不要求逐项多视图或独立面部特写
 - Downstream Reference Syntax：`<Board Name> / <Board ID> / <Item ID>`
 
 ### Prompt Review Checkpoint
@@ -203,7 +221,7 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 - Confirmed Prompt Revision：
 - Prompt Confirmation / Confirmed By / Confirmed At：
 - Candidate References：逐项记录路径或受控外部ID、用途、绑定Version、生成工具/模型、参数、来源与授权。
-- Image QA：基础正式资产是否为同一张含面部特写 + 正面、严格侧面、背面全身三视图的角色设定图；身份、脸型、身体比例、发型、服装、四区一致性、面部细节与状态变体边界。若特写与三视图被拆为独立Candidate Reference，判定失败并重生。
+- Image QA：基础正式资产是否为同一张含上排三区全身（正面、严格侧面、背面）与下排两区头肩特写（中性、微笑）的五区角色设定图；身份、脸型、身体比例、发型、服装、五区一致性、面部细节与状态变体边界。正面区必须为肩线以上连续中性背景且无头部、无头发；上排三区必须共用同一人物尺度与水平基准线，肩线、腰线、髋线与膝线不得错位；微笑区不得使脸型、年龄感或下颌宽度漂移。若正面区出现头部、面部或任何头发（含无生长点的漂浮发丝），或任一分区被拆为独立Candidate Reference，判定失败并重生。
 - Support Board QA：仅Support适用；核对Board ID、Item ID、对象数量、标签、轮廓/服饰/颜色/比例/功能差异及无对象混淆。
 - Awaiting User Confirmation：`Generated Images`
 - Prohibited Registry Upgrade：图片确认前不得写Canonical References、Active Version或`Status: Active`。

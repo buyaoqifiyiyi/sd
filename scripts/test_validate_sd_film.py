@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r70 SD Film validator."""
+"""Regression tests for the r71 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -161,18 +161,18 @@ class R34RegressionTests(unittest.TestCase):
     def test_asset_image_model_selection_has_no_default_and_isolates_templates(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
         selection = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
-        builtin_adapter = (ROOT / "adapters/built-in-image.md").read_text(encoding="utf-8-sig")
-        builtin_template = (ROOT / "templates/24_builtin_image_asset_prompt.md").read_text(encoding="utf-8-sig")
+        gpt_image_adapter = (ROOT / "adapters/gpt-image.md").read_text(encoding="utf-8-sig")
+        gpt_image_template = (ROOT / "templates/24_gpt_image_asset_prompt.md").read_text(encoding="utf-8-sig")
         midjourney = (ROOT / "adapters/midjourney.md").read_text(encoding="utf-8-sig")
         template = (ROOT / "templates/14_midjourney_asset_prompt.md").read_text(encoding="utf-8-sig")
         video_selection = (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")
-        self.assertIn("不得默认选择Built-in Image、Midjourney或任何第三方服务", assets)
+        self.assertIn("不得默认选择GPT Image、Midjourney或任何第三方服务", assets)
         self.assertIn("## Available Choices", selection)
-        self.assertIn("不得默认选择Built-in Image、Midjourney或其他模型", selection)
-        self.assertIn("prompt_output_template: templates/24_builtin_image_asset_prompt.md", builtin_adapter)
-        self.assertIn("## Built-in Image Prompt Package", builtin_template)
+        self.assertIn("不得默认选择GPT Image、Midjourney或其他模型", selection)
+        self.assertIn("prompt_output_template: templates/24_gpt_image_asset_prompt.md", gpt_image_adapter)
+        self.assertIn("## GPT Image Prompt Package", gpt_image_template)
         self.assertIn("只输出可直接粘贴的 Midjourney Prompt", midjourney)
-        self.assertIn("不调用内置`image_gen`", midjourney)
+        self.assertIn("不调用`GPT Image`", midjourney)
         self.assertIn("prompt_output_template: templates/14_midjourney_asset_prompt.md", midjourney)
         self.assertIn("## Midjourney Prompt Package", template)
         self.assertIn("## Asset-Specific Compilation", template)
@@ -218,12 +218,12 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("记录可见的物理驱动", workflow)
         self.assertIn("FX State Ledger在每个边界记录可继承状态", workflow)
 
-    def test_builtin_image_requires_selection_and_actual_generation_capability(self) -> None:
+    def test_gpt_image_requires_selection_and_actual_generation_capability(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
         character = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
         rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
         self.assertNotIn("Direct Image Default", assets)
-        self.assertIn("仅已选择Built-in Image且当前环境实际可用时", character)
+        self.assertIn("仅已选择GPT Image且当前环境实际可用时", character)
         self.assertIn("不得因环境可生成而跳过图像模型选择或Prompt确认", rules)
 
     def test_project_models_are_selected_once_early_then_clip_capability_is_verified(self) -> None:
@@ -293,7 +293,7 @@ class R34RegressionTests(unittest.TestCase):
     def test_core_prop_main_reference_is_a_single_horizontal_four_panel_sheet(self) -> None:
         workflow = (ROOT / "workflows/06_prop_asset_workflow.md").read_text(encoding="utf-8-sig")
         template = (ROOT / "templates/06_prop_asset_prompt.md").read_text(encoding="utf-8-sig")
-        builtin = (ROOT / "templates/24_builtin_image_asset_prompt.md").read_text(encoding="utf-8-sig")
+        builtin = (ROOT / "templates/24_gpt_image_asset_prompt.md").read_text(encoding="utf-8-sig")
         midjourney = (ROOT / "templates/14_midjourney_asset_prompt.md").read_text(encoding="utf-8-sig")
         scenarios = regression_corpus()
         self.assertIn("Main 1", workflow)
@@ -320,7 +320,7 @@ class R34RegressionTests(unittest.TestCase):
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
         guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
         self.assertIn("明确指定其他图像模型", assets)
-        self.assertIn("不得默认选择Built-in Image、Midjourney或任何第三方服务", assets)
+        self.assertIn("不得默认选择GPT Image、Midjourney或任何第三方服务", assets)
         self.assertIn("不假设平台能力", guide)
 
     def test_legacy_recovery_matrix_static_contract(self) -> None:
@@ -470,6 +470,55 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("Spatial Reconstruction: Full / Partial / Not Required", workflow)
         self.assertIn("### Environment Spatial Lock", lock)
         self.assertIn("ENV-04是STATE-03已确认的Environment Canonical布局视角", blocking)
+
+    def test_environment_view_set_covers_lateral_eye_level_and_demotes_oblique(self) -> None:
+        """ENV-03 必须覆盖最常用的侧向平视；约45°斜俯由默认必出项降为按需扩展。
+
+        根因：原基础集里平视只有0°与180°，而真实拍摄的主镜常来自垂直于关系轴线的侧向机位；
+        两张俯视占用了必出名额，且俯视作为画面参考会把下游机位带高。
+        """
+        reconstruction = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/05_environment_asset_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("`ENV-03` Lateral View", reconstruction)
+        self.assertIn("侧向平视", reconstruction)
+        self.assertIn("`ENV-03｜Lateral View", template)
+        self.assertIn("侧向平视", template)
+        self.assertNotIn("`ENV-03` Oblique Overhead View", reconstruction)
+        self.assertNotIn("Oblique Overhead View（默认约45°）", template)
+        self.assertIn("约45°斜俯由默认必出项降为按需扩展", reconstruction)
+        self.assertIn("约45°斜俯不是默认项", template)
+
+    def test_environment_direction_anchor_contract_precedes_env01(self) -> None:
+        """背向与侧向区域在 ENV-01 中不存在信息：必须先把360°方位锚点写成文本契约再逐View重建。
+
+        该契约是 `Major Spatial Anchors` 的事前写法，不新增 Registry 字段、不新增确认 Gate。
+        """
+        reconstruction = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/05_environment_asset_prompt.md").read_text(encoding="utf-8-sig")
+        workflow = (ROOT / "workflows/05_environment_asset_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Direction Anchor Contract｜方向锚点契约", reconstruction)
+        self.assertIn("在生成`ENV-01`**之前**", reconstruction)
+        self.assertIn("不新增Registry字段、不新增确认Gate", reconstruction)
+        self.assertIn("按方位写定完整360°空间锚点", template)
+        self.assertIn("360°空间锚点", workflow)
+
+    def test_environment_topdown_is_verification_not_frame_reference(self) -> None:
+        """ENV-04 只作几何校验；默认不得进入下游画面参考位，避免把机位带高。"""
+        reconstruction = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")
+        budget = (ROOT / "knowledge/reference_budget.md").read_text(encoding="utf-8-sig")
+        self.assertIn("只作空间校验用途", reconstruction)
+        self.assertIn("`ENV-04`默认不进入画面参考位", reconstruction)
+        self.assertIn("`ENV-04`默认不进入画面参考位", budget)
+        self.assertIn("摄影机高度确实落在高位俯视区间", budget)
+
+    def test_environment_view_form_is_not_restated_outside_its_owner(self) -> None:
+        """环境View形态只在 environment_multi_view_reconstruction.md 定义；流程层只允许指针。"""
+        forbidden = ("Lateral View", "Oblique Overhead", "Top-Down Spatial View", "Reverse View")
+        workflow = (ROOT / "workflows/05_environment_asset_workflow.md").read_text(encoding="utf-8-sig")
+        for token in forbidden:
+            self.assertNotIn(token, workflow, f"workflows/05 复述了环境View形态：{token}")
+        owner = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")
+        self.assertIn("`ENV-03` Lateral View", owner)
 
     def test_prompt_quality_rules_strengthen_existing_owners_without_new_style_system(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")
@@ -1800,6 +1849,189 @@ class DeliveryModeTests(unittest.TestCase):
         self.assertIn("Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY", state)
         self.assertIn("`Automation Policy: FAST`或`Image Delivery Mode: DIRECT_IMAGE`", rules)
         self.assertIn("不得伪造生成结果", rules)
+
+
+class R71CharacterSheetNeutralityTests(unittest.TestCase):
+    """正式角色资产设定图的五区结构，以及资产参考画面中性化的单一 owner。"""
+
+    def test_character_sheet_is_five_panels_with_a_neutral_front_panel(self) -> None:
+        template = (ROOT / "templates/04_character_asset_prompt.md").read_text(encoding="utf-8-sig")
+        workflow = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertIn("五区域角色设定图", template)
+        self.assertIn("**正面区**", template)
+        self.assertIn("共用同一人物尺度", template)
+        self.assertIn("面部唯一来源", template)
+        self.assertIn("发落的权威载体", template)
+        self.assertIn("可执行的渲染锚", template)
+        self.assertIn("Expression Sheet Prompt", template)
+        self.assertIn("不得把正面区缺少头部与头发判定为出图失败并补齐", template)
+        self.assertNotIn("四分区", template)
+        self.assertNotIn("四个区域", template)
+        self.assertIn("`templates/04_character_asset_prompt.md`为唯一权威", workflow)
+        self.assertIn("不是出图遗漏", guide)
+
+    def test_asset_form_is_not_restated_outside_its_owner(self) -> None:
+        """资产的区域形态只在 templates/04 定义；流程层与规则层只允许指针，不得复述形态。"""
+        forbidden = ("上排三区", "下排双", "上排三个等宽", "下排两个更大", "五区角色资产图（")
+        checkers = (
+            "workflows/04_character_asset_workflow.md",
+            "workflows/03_asset_discovery_workflow.md",
+            "rules/02_asset_rules.md",
+        )
+        for rel in checkers:
+            text = (ROOT / rel).read_text(encoding="utf-8-sig")
+            for token in forbidden:
+                self.assertNotIn(token, text, f"{rel} 复述了资产形态：{token}")
+        owner = (ROOT / "templates/04_character_asset_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("**上排三个等宽等高的全身区**", owner)
+        self.assertIn("**下排两个更大的头肩特写区**", owner)
+
+    def test_adapter_templates_track_the_owner_form(self) -> None:
+        """编译层（Midjourney / GPT Image）必须与 owner 的五区形态同步，不得回退到四区旧形态。"""
+        stale = ("四个区域", "四区写成", "头肩特写区和一个", "三视图 + 面部特写")
+        for rel in ("templates/14_midjourney_asset_prompt.md",
+                    "templates/24_gpt_image_asset_prompt.md"):
+            text = (ROOT / rel).read_text(encoding="utf-8-sig")
+            self.assertIn("上排三个", text, f"{rel} 未同步五区上排")
+            self.assertIn("下排两个", text, f"{rel} 未同步五区下排")
+            for token in stale:
+                self.assertNotIn(token, text, f"{rel} 残留旧形态：{token}")
+
+    def test_three_view_terminology_is_retired(self) -> None:
+        """流程是 外观参考图 -> 正式角色资产图；「三视图」不再是本Skill的产物，全库不得再引用。"""
+        skip_dirs = {"tmp", ".workbuddy", ".git"}
+        offenders = []
+        for path in sorted(ROOT.rglob("*.md")):
+            rel = path.relative_to(ROOT)
+            if set(rel.parts) & skip_dirs or path.suffix == ".backup":
+                continue
+            if path.name.endswith(".backup"):
+                continue
+            if "三视图" in path.read_text(encoding="utf-8-sig", errors="ignore"):
+                offenders.append(str(rel))
+        self.assertEqual(offenders, [], f"残留「三视图」旧称：{offenders}")
+
+    def test_neutrality_reaches_both_compile_layer_templates(self) -> None:
+        """中性化必须抵达两个编译层模板：它们是最终Prompt正文 owner，规则到不了就等于没写。
+
+        同时确认两模板都把 Environment 排除在中性化之外，避免把场景身份也中性化掉。
+        """
+        for rel in ("templates/14_midjourney_asset_prompt.md",
+                    "templates/24_gpt_image_asset_prompt.md"):
+            text = (ROOT / rel).read_text(encoding="utf-8-sig")
+            self.assertIn("## Background And Lighting By Asset Category", text, f"{rel} 缺类别分流节")
+            self.assertIn("Reference Neutrality", text, f"{rel} 未指向判据 owner")
+            self.assertIn("必须中性化", text, f"{rel} 未声明 CHAR/PROP 需中性化")
+            self.assertIn("不得中性化", text, f"{rel} 未排除 Environment")
+            self.assertIn("均匀柔和", text, f"{rel} 未给出可执行光线表述")
+            self.assertIn("环境化", text, f"{rel} 未声明否定表述须环境化")
+        # 判据本体仍只有 rules/02 一个 owner，编译层不得复制其完整正文
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        self.assertEqual(rules.count("### Reference Neutrality｜参考画面中性化"), 1)
+        for rel in ("templates/14_midjourney_asset_prompt.md",
+                    "templates/24_gpt_image_asset_prompt.md"):
+            text = (ROOT / rel).read_text(encoding="utf-8-sig")
+            self.assertNotIn("### Reference Neutrality｜参考画面中性化", text)
+
+    def test_neutrality_keywords_stay_in_sync_across_layers(self) -> None:
+        """编译层投影了判据要点，存在漂移风险：判据被改写而编译层未同步时必须报警。
+
+        这里只做要点级同步检查，不要求措辞一致；命中失败即提示人工复核两处是否需要一起改。
+        """
+        keywords = ("均匀柔和", "中性单色", "环境化")
+        layers = ("rules/02_asset_rules.md",
+                  "templates/14_midjourney_asset_prompt.md",
+                  "templates/24_gpt_image_asset_prompt.md")
+        for rel in layers:
+            text = (ROOT / rel).read_text(encoding="utf-8-sig")
+            for kw in keywords:
+                self.assertIn(kw, text, f"{rel} 缺失中性化要点「{kw}」——判据与编译层可能已漂移")
+
+    def test_reference_neutrality_is_single_owner_and_environment_exempt(self) -> None:
+        asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        lock = (ROOT / "references/asset_lock_contract.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
+        heading = "### Reference Neutrality｜参考画面中性化"
+        self.assertEqual(asset_rules.count(heading), 1)
+        self.assertIn("**不适用于`Environment`资产**", asset_rules)
+        self.assertIn("否定表述必须环境化", asset_rules)
+        self.assertIn("没有墙、没有设备、没有地面", asset_rules)
+        self.assertIn("发落分布", lock)
+        self.assertIn("禁止给正面区补画头部或头发", scenarios)
+
+    def test_five_panel_sheet_is_scoped_to_light_generated_media(self) -> None:
+        """五区结构只适用于画面由光生成的媒介；2D 绘制媒介被明确排除。"""
+        template = (ROOT / "templates/04_character_asset_prompt.md").read_text(encoding="utf-8-sig")
+        profiles = (ROOT / "knowledge/medium_profiles.md").read_text(encoding="utf-8-sig")
+        self.assertIn("**媒介适用条件**", template)
+        self.assertIn("`live_action` / `3d_animation`", template)
+        self.assertIn("媒介为`2d_anime`时**不适用**", template)
+        self.assertIn("不得套用面部单源逻辑", template)
+        self.assertIn("资产形态也随媒介分化", profiles)
+        self.assertIn("`2d_anime` **不套用**该结构", profiles)
+        self.assertIn("本文件只声明适用档位", profiles)
+
+
+class GptImageNamingTests(unittest.TestCase):
+    """图像模型名已改用 GPT Image：文件与引用须同步，且旧名不得回潮。"""
+
+    # 拆分书写，避免本文件自身被自己的检查模式命中（自指）。
+    LEGACY_TOKENS = (
+        "Built" + "-in Image",
+        "内置" + "Image",
+        "内置" + "图像",
+        "内置" + "图片",
+        "built" + "-in-image",
+        "24_" + "builtin",
+        "builtin" + "_image",
+    )
+
+    LEGACY_ADAPTER = "adapters/built" + "-in-image.md"
+    LEGACY_TEMPLATE = "templates/24_" + "builtin" + "_image_asset_prompt.md"
+
+    def test_legacy_model_name_is_fully_retired(self) -> None:
+        skip_dirs = {"tmp", ".workbuddy", ".git"}
+        offenders = []
+        for path in sorted(ROOT.rglob("*")):
+            if not path.is_file():
+                continue
+            rel = path.relative_to(ROOT)
+            if set(rel.parts) & skip_dirs or ".backup" in path.name:
+                continue
+            if path.suffix not in {".md", ".py", ".json", ".yaml"}:
+                continue
+            text = path.read_text(encoding="utf-8-sig", errors="ignore")
+            for token in self.LEGACY_TOKENS:
+                if token in text:
+                    offenders.append(f"{rel} :: {token}")
+        self.assertEqual(offenders, [], f"旧模型名残留：{offenders}")
+
+    def test_adapter_and_template_are_renamed_and_linked(self) -> None:
+        self.assertTrue((ROOT / "adapters/gpt-image.md").exists())
+        self.assertTrue((ROOT / "templates/24_gpt_image_asset_prompt.md").exists())
+        self.assertFalse((ROOT / self.LEGACY_ADAPTER).exists())
+        self.assertFalse((ROOT / self.LEGACY_TEMPLATE).exists())
+        adapter = (ROOT / "adapters/gpt-image.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/24_gpt_image_asset_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("prompt_output_template: templates/24_gpt_image_asset_prompt.md", adapter)
+        self.assertIn("## GPT Image Prompt Package", template)
+        self.assertIn("`adapters/gpt-image.md`", template)
+
+    def test_verified_capability_boundary_is_recorded(self) -> None:
+        """GPT Image 的分辨率能力随版本分化；16:9 与 2K/4K 的可行性必须可从 Skill 内查到。"""
+        adapter = (ROOT / "adapters/gpt-image.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Verified Capability Boundary", adapter)
+        self.assertIn("gpt-image-2", adapter)
+        self.assertIn("3840", adapter)
+        self.assertIn("做不了16:9", adapter)
+        self.assertIn("2026-04-21", adapter)
+
+    def test_delivery_route_enum_keeps_its_own_name(self) -> None:
+        """`Built-in Candidate Generation` 是 Image Delivery Route 枚举，不是模型名，不随改名变动。"""
+        state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Built-in Candidate Generation", state)
+        self.assertIn("GPT Image", state)
 
 
 if __name__ == "__main__":

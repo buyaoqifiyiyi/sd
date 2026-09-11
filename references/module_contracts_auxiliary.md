@@ -193,7 +193,7 @@ Module Type：显式opt-in的Rule；不创建主STATE、项目事实、独立确
 
 Owner：`rules/automation_mode.md`。触发只能来自用户当前明确的自动推进指令；状态合同只镜像`Automation Policy`。`rules/progression_rules.md`消费其已确认的Eligible Work，`rules/completion_gate.md`只在本合同允许的范围内接受自动接受证据。
 
-FAST可以压缩已继承项目Built-in Image默认项的当前Prompt确认与内置图片生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor完成真实输入绑定后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次确认或更改项目图像/视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
+FAST可以压缩已继承项目GPT Image默认项的当前Prompt确认与GPT Image 生成批次、STATE-06/07的已通过QA设计工件与同轮Visual Blocking Anchor完成真实输入绑定后的Prompt编译；它不得锁定Production Script Proposal、自动确认Candidate Image、首次确认或更改项目图像/视频模型、调用外部服务或写Review PASS。任何自动接受都必须保留Artifact / Version History证据，并在冲突时返回当前事实owner。
 
 允许读取：当前用户指令、Selected State Source、当前Workflow、已确认上游事实和既有QA。允许写入：状态合同中的`Automation Policy`及既有Artifact / Version History中的自动接受证据。不得改写Production-Locked Script、Canonical Asset、用户确认、主Pipeline、最终Template Schema或外部授权。
 

@@ -30,7 +30,7 @@
 
 ## Image Model Prompt Template Isolation
 
-图像模型不进入视频Model Selection：STATE-00由`modules/image-model-selection.md`拥有项目图像模型默认项的选择，STATE-03由它为当前资产批次继承默认项或处理明确例外，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。Built-in Image固定使用`templates/24_builtin_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
+图像模型不进入视频Model Selection：STATE-00由`modules/image-model-selection.md`拥有项目图像模型默认项的选择，STATE-03由它为当前资产批次继承默认项或处理明确例外，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。GPT Image固定使用`templates/24_gpt_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
 
 ---
 

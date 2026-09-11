@@ -21,7 +21,7 @@
 - 非当前 Clip 出场角色、未使用环境、未使用道具、未使用动作图、当前分镜World-State不适用的资产及与当前生成无关的资产必须在计数前删除。完全位于转换后世界的Clip不得保留转换前世界的环境或道具形态；只有当前Clip正在执行已确认状态转换时，转换前后资产才可按各自阶段同时作为候选。
 - 上一Clip尾帧是否必需由Preflight的A/B/C决定，不由图片当前是否存在决定。A【同镜头连续承接】与B【新镜头参考型】均为`Tail Frame Required = YES`并预留1个Projected连续性图片位；【参考资产】必须直接列出`REF-TAIL-XX｜CLIP-XX尾帧参考`、对应用途类型与真实状态。未提供时写“待用户提供/待上传、未确认”，不得写假路径、不得冒充已上传/已确认图片，也不得计入已提交图片数；实际存在、可访问并已确认后才进入已提交图片清单。C【新镜头且无需尾帧】为`NO`，不得加入或预留上一尾帧。
 - Storyboard、多格分镜板、拼图、接触表、Scene Top-down Blocking Map与设计表截图继续服从既有禁用规则，不因预算紧张而获得引用资格。唯一例外是按`knowledge/clip_preflight_check.md`为单一Clip生成 / 接收、通过Sketch Validation与Template Content Leakage Check、已注册Confirmed且只承担Clip Blocking / Visual Blocking Authority的`REF-SKETCH-XX`；它不是Storyboard、Planning Map或Canonical Asset，并按实际图片数计位。`REF-SKETCH-MASTER`不属于这个例外的最终视频输入层。
-- 已锁定多视角环境的ENV-01～04或Extension是独立的Environment Canonical候选；只有当前Clip确实需要其整体空间、对应朝向、布局/距离或关键区域时才按`knowledge/environment_multi_view_reconstruction.md`选择2–4张。ENV-04不得与STATE-06的Top-down Blocking Map混淆；后者仍没有视频参考资格。
+- 已锁定多视角环境的ENV-01～04或Extension是独立的Environment Canonical候选；只有当前Clip确实需要其整体空间、对应朝向、布局/距离或关键区域时才按`knowledge/environment_multi_view_reconstruction.md`选择2–4张。`ENV-04`默认不进入画面参考位——它的职责是按方位校验其余View的几何自洽，只在当前Clip摄影机高度确实落在高位俯视区间时才可入选。ENV-04不得与STATE-06的Top-down Blocking Map混淆；后者仍没有视频参考资格。
 
 ## Conditional Trigger Thresholds
 
@@ -38,7 +38,7 @@
 
 ## Core Character Independence Hard Gate
 
-当前 Clip 中每个核心角色必须各自保留独立的三视图或角色锁定图。多个核心角色不得为了节省参考位合并成一张角色总表，也不得互相共享同一个角色外貌参考位。
+当前 Clip 中每个核心角色必须各自保留独立的角色资产图或角色锁定图。多个核心角色不得为了节省参考位合并成一张角色总表，也不得互相共享同一个角色外貌参考位。
 
 角色动作图、姿势图、表情图或互动图只负责动作、姿态、表情或关系信息；它们不得替代、覆盖或重新定义独立角色图的脸型、五官、年龄感、发型、服装、体型、物种与身体结构。预算裁剪时，核心角色独立外貌基准不可被动作图替代。
 
@@ -75,7 +75,7 @@
 
 发生超限且去重/整合后仍需裁剪时，按以下从高到低的保留优先级执行：
 
-1. 当前 Clip 出场核心角色的独立三视图/角色锁定图
+1. 当前 Clip 出场核心角色的独立角色资产图/角色锁定图
 2. 当前主要环境
 3. 当前关键道具
 4. 当前Final Assessment=`REQUIRED`的Confirmed Visual Blocking Anchor与当前关键动作/互动关系
@@ -113,7 +113,7 @@ STATE-07 在`templates/20_clip_plan.md`现有 Clip Detail Card 内记录预算�
 | B. 候选8张，已确认无额外帧需求 | 不整合，最终8张 |
 | C. 候选9张，另需上一Clip尾帧 | 真实需求10张，主动去重/整合/裁剪并至少释放1位，最终≤9 |
 | D. 候选12张 | 自动删除无关项、去重、整合同类非角色信息，仍超限则按优先级裁剪，最终≤9 |
-| E. 多核心角色场景 | 每个核心角色仍保留各自独立三视图/角色锁定图，不合并角色总表 |
+| E. 多核心角色场景 | 每个核心角色仍保留各自独立角色资产图/角色锁定图，不合并角色总表 |
 | F. A同镜头连续承接但无实际尾帧图 | Projected Final Count预留1位；【参考资产】直接列`REF-TAIL`、同镜头连续承接用途与“待用户提供/待上传、未确认”；不计入已提交图片；Prompt可交付，实际提交生成前补图 |
 | G. B新镜头参考型但无实际尾帧图 | Projected Final Count预留1位；【参考资产】直接列`REF-TAIL`、空间/站位/景别参考用途与“待用户提供/待上传、未确认”；不计入已提交图片；不得误写Direct |
 | H. C新镜头且无需尾帧 | 不加入或预留上一尾帧图片位，不要求用户截图；依靠Canonical基础资产、Spatial Blocking与文字空间规则建立新首帧 |

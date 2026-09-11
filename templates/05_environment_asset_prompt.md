@@ -50,7 +50,7 @@ Spatial Reconstruction：Full / Partial / Not Required
 
 Environment View Set：
 
-Major Spatial Anchors：
+Major Spatial Anchors：按方位写定完整360°空间锚点（北/东/南/西墙各自的门、窗、通道与固定大型物件、中央物件、主要活动区）；这是ENV-01生成前必须写定的几何契约，ENV-02/03按表中对应方位重建，ENV-04据此校验
 
 Character Activity Zones：
 
@@ -87,7 +87,7 @@ Confirmed Status：No / Yes
 封套只组织交付与确认的切片：批内每个ENV仍逐项保留完整字段、Prompt Revision与Prompt / Image / Confirmed状态，不得用合并表头、摘要或“同上”代替任何单项内容，也不得因批量省略单项QA。用户按`rules/progression_rules.md`的`Exception-Based Batch Confirmation`挑拣时，被指出的ENV退回其自身最小Return Route，同批其余ENV保持已确认状态。Core与Support不得混入同一批次；单个Core环境的View Set（ENV-01～04）属于同一环境的内部交付，不拆成多个批。
 
 
-任何环境Prompt Draft前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出环境Prompt或Candidate Image；选择Built-in Image也不跳过Prompt确认。图片确认仍不可跳过。
+任何环境Prompt Draft前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出环境Prompt或Candidate Image；选择GPT Image也不跳过Prompt确认。图片确认仍不可跳过。
 
 ## Phased Output Contract
 
@@ -120,7 +120,7 @@ Confirmed Status：No / Yes
 - Image Model Selection Status：`SELECTED`
 - Image Adapter Profile：
 - Asset Image Route：
-- Image Prompt Output Template：Built-in Image写`templates/24_builtin_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
+- Image Prompt Output Template：GPT Image写`templates/24_gpt_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
 - Generation Parameters：画幅、分辨率、背景/人物控制及工具必需参数。
 
 本Template继续拥有环境资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
@@ -137,7 +137,7 @@ Confirmed Status：No / Yes
 
 #### Required Multi-View Prompts
 
-根据拍摄与行动需求逐项输出独立完整Prompt；Full固定评估`ENV-02｜Reverse View`、`ENV-03｜Oblique Overhead View（默认约45°）`、`ENV-04｜Top-Down Spatial View（90°）`，Partial只输出有明确用途的View。每条写View ID、用途、所用已确认多参考、不可变Major Spatial Anchors与当前视点任务；顺序必须为`ENV-01 → ENV-02`、`ENV-01 + ENV-02 → ENV-03`、`ENV-01 + ENV-02 + ENV-03 → ENV-04`，不得纯单链漂移。每条不得使用“同上/参考前述”。
+根据拍摄与行动需求逐项输出独立完整Prompt；Full固定评估`ENV-02｜Reverse View`、`ENV-03｜Lateral View（相对主光轴约90°侧向平视，视高与ENV-01/ENV-02一致）`、`ENV-04｜Top-Down Spatial View（90°，只作空间校验）`，Partial只输出有明确用途的View。约45°斜俯不是默认项，只在确有镜头用途时按扩展View追加。每条写View ID、用途、所用已确认多参考、不可变Major Spatial Anchors与当前视点任务；顺序必须为`ENV-01 → ENV-02`、`ENV-01 + ENV-02 → ENV-03`、`ENV-01 + ENV-02 + ENV-03 → ENV-04`，不得纯单链漂移。每条不得使用“同上/参考前述”。
 
 #### Key Area / Detail Prompts
 
@@ -160,7 +160,7 @@ Confirmed Status：No / Yes
 
 - Prompt Completeness Check：
 - Spatial Consistency Check：
-- Spatial Reconstruction QA：几何、Anchor、方向（含180°回望）、光线/风格、叙事活动能力；严重冲突时停止扩展并返回受影响View修复。
+- Spatial Reconstruction QA：几何、Anchor、方向（含180°回望与90°侧向）、光线/风格、叙事活动能力；ENV-04按方向锚点表校验其余View的墙位、家具间距与通道是否自洽；严重冲突时停止扩展并返回受影响View修复。
 - Awaiting User Confirmation：`Image Prompts`
 - Prohibited Next Action：当前Prompt Revision确认前不得生成图片。
 
@@ -267,4 +267,4 @@ Asset ID、Version、Status、Asset Tier、Board ID、Item ID、Visual Productio
 
 可拍摄空间。
 
-禁止只输出环境“长什么样”。在已选择图像模型后，交付完整可直接生图的Prompt并等待确认；只有选择Built-in Image且当前环境实际可用时，Prompt确认后才生成Candidate Image。未经图片确认不得登记confirmed asset。
+禁止只输出环境“长什么样”。在已选择图像模型后，交付完整可直接生图的Prompt并等待确认；只有选择GPT Image且当前环境实际可用时，Prompt确认后才生成Candidate Image。未经图片确认不得登记confirmed asset。

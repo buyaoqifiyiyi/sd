@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r70 structural, routing and readability validation for SD Film."""
+"""Deterministic r71 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -10,10 +10,10 @@ REQUIRED = (
     "SKILL.md", "core/pipeline.md", "core/runtime-state.md", "core/rule-priority.md",
     "modules/screenwriter.md", "modules/director.md", "modules/spatial-blocking.md",
     "modules/clip-planning.md", "modules/model-selection.md", "modules/image-model-selection.md", "modules/prompt-generation.md", "modules/assets.md",
-    "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/minimax-h3.md", "adapters/built-in-image.md", "adapters/midjourney.md",
+    "adapters/seedance-2.0.md", "adapters/seedance-2.5.md", "adapters/minimax-h3.md", "adapters/gpt-image.md", "adapters/midjourney.md",
     "knowledge/prompt_compilation/minimax_h3_compilation.md",
     "workflows/01_project_setup_workflow.md", "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
-    "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
+    "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_gpt_image_asset_prompt.md",
     "templates/25_look_frame_prompt.md",
     "references/module_contracts.md",
     "references/module_contracts_production.md",
@@ -493,9 +493,9 @@ def validate_skill(root: Path) -> list[str]:
     adapter_h3 = read(root, "adapters/minimax-h3.md")
     compiler_h3 = read(root, "knowledge/prompt_compilation/minimax_h3_compilation.md")
     midjourney = read(root, "adapters/midjourney.md")
-    builtin_image = read(root, "adapters/built-in-image.md")
+    gpt_image = read(root, "adapters/gpt-image.md")
     midjourney_template = read(root, "templates/14_midjourney_asset_prompt.md")
-    builtin_image_template = read(root, "templates/24_builtin_image_asset_prompt.md")
+    gpt_image_template = read(root, "templates/24_gpt_image_asset_prompt.md")
     camera_router = read(root, "knowledge/camera_language/shot_language_router.md")
     visual_styles = read(root, "knowledge/visual_styles/index.md")
     visual_workflow = read(root, "workflows/07_visual_development_workflow.md")
@@ -588,18 +588,18 @@ def validate_skill(root: Path) -> list[str]:
         (reference_budget, "Submission Compatibility=`FAIL`"),
         (assets, "本模块是STATE-03图像工具路由与提示词适配的唯一owner"),
         (assets, "### Image Model Selection Gate"),
-        (assets, "不得默认选择Built-in Image、Midjourney或任何第三方服务"),
-        (assets, "`Built-in Image`：读取`adapters/built-in-image.md`"),
+        (assets, "不得默认选择GPT Image、Midjourney或任何第三方服务"),
+        (assets, "`GPT Image`：读取`adapters/gpt-image.md`"),
         (assets, "`Midjourney`：读取`adapters/midjourney.md`"),
         (assets, "明确指定其他图像模型"),
         (assets, "最小`CHANGE`与完整`PRESERVE`逻辑"),
         (image_selection, "## Available Choices"),
-        (image_selection, "不得默认选择Built-in Image、Midjourney或其他模型"),
+        (image_selection, "不得默认选择GPT Image、Midjourney或其他模型"),
         (image_selection, "下一步`、`下一个`、`继续`"),
         (image_selection, "Image Model Selection Scope"),
-        (state, "Selected Image Model: Built-in Image / Midjourney / UNSELECTED"),
-        (builtin_image, "prompt_output_template: templates/24_builtin_image_asset_prompt.md"),
-        (builtin_image_template, "## Built-in Image Prompt Package"),
+        (state, "Selected Image Model: GPT Image / Midjourney / UNSELECTED"),
+        (gpt_image, "prompt_output_template: templates/24_gpt_image_asset_prompt.md"),
+        (gpt_image_template, "## GPT Image Prompt Package"),
         (automation, "## FAST Eligible Work"),
         (automation, "## FAST Continuous Chain"),
         (automation, "尽量少确认"),
@@ -621,7 +621,7 @@ def validate_skill(root: Path) -> list[str]:
         (projection, "**Risk-driven Execution Locks**"),
         (shot_qa, "### Risk-driven Prompt Evidence"),
         (midjourney, "只输出可直接粘贴的 Midjourney Prompt"),
-        (midjourney, "不调用内置`image_gen`"),
+        (midjourney, "不调用`GPT Image`"),
         (midjourney, "prompt_output_template: templates/14_midjourney_asset_prompt.md"),
         (midjourney_template, "## Midjourney Prompt Package"),
         (midjourney_template, "## Parameter And Syntax Discipline"),
@@ -637,7 +637,7 @@ def validate_skill(root: Path) -> list[str]:
         (prop_template, "Image Prompt Output Template"),
         (prop_template, "1×4横版道具设定图"),
         (prop_template, "covered by Main 1×4 Prop Sheet"),
-        (builtin_image_template, "four-panel prop sheet"),
+        (gpt_image_template, "four-panel prop sheet"),
         (midjourney_template, "four-panel prop sheet"),
         (fx_template, "Image Prompt Output Template"),
         (fx_template, "## Reference Assets And Visual Variant Policy"),
@@ -664,6 +664,11 @@ def validate_skill(root: Path) -> list[str]:
         (environment_reconstruction, "ENV-01 + ENV-02 → ENV-03"),
         (environment_reconstruction, "ENV-01 + ENV-02 + ENV-03 → ENV-04"),
         (environment_reconstruction, "最相关2–4张"),
+        (environment_reconstruction, "`ENV-03` Lateral View"),
+        (environment_reconstruction, "## Direction Anchor Contract｜方向锚点契约"),
+        (environment_reconstruction, "约45°斜俯由默认必出项降为按需扩展"),
+        (environment, "方向锚点"),
+        (reference_budget, "`ENV-04`默认不进入画面参考位"),
         (asset_lock, "### Environment Spatial Lock"),
         (spatial_blocking, "ENV-04是STATE-03已确认的Environment Canonical布局视角"),
         (assets, "### Prompt Evidence Ordering"),
@@ -802,11 +807,11 @@ def validate_skill(root: Path) -> list[str]:
     for text, label in ((state, "state contract"), (plan, "clip template")):
         if "Model Compilation Template" in text or "Model Execution Lock Status" in text:
             errors.append(f"legacy compiler field remains active in {label}")
-    if "Midjourney" in selection or "Built-in Image" in selection:
+    if "Midjourney" in selection or "GPT Image" in selection:
         errors.append("video model selection must not own asset image routing")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
-        if re.search(r"Midjourney|Built-in Image|image_gen", text, re.I):
+        if re.search(r"Midjourney|GPT Image|image_gen", text, re.I):
             errors.append(f"upstream module contains asset image routing: {relative}")
     entry_lines = skill.count("\n")
     if entry_lines > SKILL_ENTRY_MAX_LINES:
@@ -866,7 +871,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r70 structural, routing and readability validation")
+    print("PASS: r71 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

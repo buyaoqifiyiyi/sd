@@ -6,7 +6,7 @@
 
 它不是STATE-08 Clip-based Video Prompt / Video Generation Template，不得替代templates/10_video_prompt.md。
 
-任何FX Image Prompt前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出FX Prompt或Candidate Image；选择Built-in Image也不跳过Prompt确认。图片确认仍不可跳过。
+任何FX Image Prompt前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出FX Prompt或Candidate Image；选择GPT Image也不跳过Prompt确认。图片确认仍不可跳过。
 
 ---
 
@@ -36,7 +36,7 @@ Image Adapter Profile:
 
 Asset Image Route:
 
-Image Prompt Output Template: Built-in Image uses `templates/24_builtin_image_asset_prompt.md`; Midjourney uses `templates/14_midjourney_asset_prompt.md`.
+Image Prompt Output Template: GPT Image uses `templates/24_gpt_image_asset_prompt.md`; Midjourney uses `templates/14_midjourney_asset_prompt.md`.
 
 This Template retains the FX asset fields and confirmation state; the final model Prompt body must be compiled only by the selected `Image Prompt Output Template`.
 
@@ -166,4 +166,4 @@ Negative Constraints:
 
 ## Visual Production Checkpoint
 
-图像模型选择后，固定顺序为`Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。只有选择Built-in Image且当前环境实际可用时，Prompt Confirmed后生成Candidate Image；外部模型等待回传。FX Image Prompt必须完整包含Effect身份、Trigger/Source、Lifecycle、材质行为、交互、光影、构图/视角、一致性、必要负面限制与生成参数。生成图在用户确认前仅为Candidate References；未经图片确认不得登记Canonical References、Active Version或confirmed asset。
+图像模型选择后，固定顺序为`Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。只有选择GPT Image且当前环境实际可用时，Prompt Confirmed后生成Candidate Image；外部模型等待回传。FX Image Prompt必须完整包含Effect身份、Trigger/Source、Lifecycle、材质行为、交互、光影、构图/视角、一致性、必要负面限制与生成参数。生成图在用户确认前仅为Candidate References；未经图片确认不得登记Canonical References、Active Version或confirmed asset。

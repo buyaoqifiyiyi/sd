@@ -61,7 +61,7 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 ### Image Model Selection Gate
 
-在任何道具Prompt之前，必须按`modules/image-model-selection.md`完成当前道具资产批次的图像模型路由。已确认项目默认项时直接继承；默认项缺失、不可用或用户明确要求例外模型时才展示`Image Model Selection Proposal`并停止；不得默认内置Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
+在任何道具Prompt之前，必须按`modules/image-model-selection.md`完成当前道具资产批次的图像模型路由。已确认项目默认项时直接继承；默认项缺失、不可用或用户明确要求例外模型时才展示`Image Model Selection Proposal`并停止；不得默认GPT Image或直接生成。选择确认后，按该模型的独立Prompt Template输出Prompt；图片确认仍是不可跳过的Hard Gate。
 
 执行前必须读取STATE-02的Asset Tiering Decision：
 
@@ -214,7 +214,7 @@ Support道具参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 # 8. Image Generation And Confirmation
 
-Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择Built-in Image且当前环境实际可用时可调用内置图片生成；Midjourney只交付外部生成Prompt，不调用内置生成。Core首先生成一张`1×4横版道具设定图`；Support按已确认Board Prompt生成整张Support Prop Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
+Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择GPT Image且当前环境实际可用时可调用GPT Image 生成；Midjourney只交付外部生成Prompt，不调用GPT Image 生成。Core首先生成一张`1×4横版道具设定图`；Support按已确认Board Prompt生成整张Support Prop Reference Board。实际获得图片后才写`Visual Production Status: Image Generated`、`Prompt Status: Confirmed`、`Image Status: Candidate`、`Confirmed Status: No`，登记Candidate References、使用的Prompt Revision、工具/模型、关键参数、来源与授权，并停止等待用户确认图片。
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 

@@ -76,7 +76,7 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 | Formal FX（条件） | `workflows/15_fx_asset_workflow.md` | `templates/13_fx_asset_prompt.md` + 显式外部图像模型的已选最终提示词模板 |
 
 - Authority：资产生产Gate、确认闭环、Active Version和Canonical Reference由对应Workflow、`rules/02_asset_rules.md`与`references/asset_lock_contract.md`定义。
-- 图像模型Prompt正文：STATE-00由`modules/image-model-selection.md`确认项目图像模型默认项；任何新Image Prompt前当前资产批次直接继承它，只有默认项缺失、不可用或当前批次例外时才停止要求新选择，绝不默认内置Image。选择后由`modules/assets.md`读取该Adapter声明的独立最终提示词模板：Built-in Image为`templates/24_builtin_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`；新模型必须先建立独立Adapter和模板，不能复用现有图像或视频模型正文。
+- 图像模型Prompt正文：STATE-00由`modules/image-model-selection.md`确认项目图像模型默认项；任何新Image Prompt前当前资产批次直接继承它，只有默认项缺失、不可用或当前批次例外时才停止要求新选择，绝不默认GPT Image。选择后由`modules/assets.md`读取该Adapter声明的独立最终提示词模板：GPT Image为`templates/24_gpt_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`；新模型必须先建立独立Adapter和模板，不能复用现有图像或视频模型正文。
 - Completion boundary：当前项目所需资产全部通过对应Completion Checklist，或对应类别已合法记录Not Applicable。
 
 ### STATE-04 Visual Development

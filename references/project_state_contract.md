@@ -55,7 +55,7 @@ Updated At
 STATE-00完成前必须在`## State Control`保存一次确认的项目模型偏好；它只减少后续重复选择，不是资产、Clip或外部提交授权：
 
 ```text
-- Project Image Model Default: Built-in Image / Midjourney / UNSELECTED
+- Project Image Model Default: GPT Image / Midjourney / UNSELECTED
 - Project Image Model Selection Status: UNSELECTED / SELECTED
 - Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY
 - Project Video Model Preference: Seedance 2.0 / Seedance 2.5 / MiniMax H3 / UNSELECTED
@@ -67,10 +67,10 @@ STATE-00完成前必须在`## State Control`保存一次确认的项目模型偏
 当`Current State`为STATE-03且当前资产批次需要新建或重编Image Prompt时，必须在`## State Control`保存该批次唯一的图像执行Profile：
 
 ```text
-- Selected Image Model: Built-in Image / Midjourney / UNSELECTED
-- Image Adapter Profile: adapters/built-in-image.md / adapters/midjourney.md / UNSELECTED
+- Selected Image Model: GPT Image / Midjourney / UNSELECTED
+- Image Adapter Profile: adapters/gpt-image.md / adapters/midjourney.md / UNSELECTED
 - Image Model Selection Status: UNSELECTED / SELECTED
-- Image Prompt Output Template: templates/24_builtin_image_asset_prompt.md / templates/14_midjourney_asset_prompt.md / UNSELECTED（必须与Selected Image Model匹配）
+- Image Prompt Output Template: templates/24_gpt_image_asset_prompt.md / templates/14_midjourney_asset_prompt.md / UNSELECTED（必须与Selected Image Model匹配）
 - Image Delivery Route: Built-in Candidate Generation / External Prompt Only / Unavailable / UNSELECTED
 - Image Model Selection Scope: <current Asset ID / Board ID / Item ID / asset batch>
 ```
