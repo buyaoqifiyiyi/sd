@@ -6,6 +6,8 @@
 
 执行入口、维护链顺序与报告格式由`references/maintenance_self_check.md`拥有。本文件不重复定义执行流程，也不定义任何模块合同（那是`references/module_contracts.md`）或Skill体量阈值（那是`references/context_budget.md`）。
 
+**本协议是纯文本、人工可执行的。**每条判据都写成可由任何Agent或人直接对照文件完成的判断，不依赖`scripts/`下的验证器、不依赖特定平台、不依赖网络。`scripts/`只是某些环境下的可选加固；换到没有这些工具的环境时，按本文件逐条人工执行即可，不得以“缺少工具”为由降低检查强度——能被工具挡住的错误，也必须能被读者挡住。
+
 本文件属于Skill维护层，不是影视制作Pipeline的STATE，不写入项目状态，不进入用户视频Prompt，也不得被复制成另一套并行检查规范。
 
 ## Change Classification

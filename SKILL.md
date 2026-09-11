@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.11-r54
+Skill Version: 2026.09.11-r55
 
-Build ID: sd-film-2026.09.11-r54
+Build ID: sd-film-2026.09.11-r55
 
 ## Core
 
@@ -16,6 +16,20 @@ Build ID: sd-film-2026.09.11-r54
 主流程：STATE-00 Project Setup → STATE-01 Script → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → Model Selection（内部）→ STATE-07 Clip Production → STATE-08 Video Prompt / Generation → STATE-09 Review。
 
 已确认且未受影响的工件不得重做；用户的“下一步/继续/重做/返回/重新调用”由 Runtime State 和当前 Completion Gate 路由。Storyboard、Audio、Music、Sequence、Poster、Editing、Series 是辅助能力，不创建主 STATE。
+
+## Self-Maintenance
+
+本Skill自维护。**任何新增、修改、删除、移动或重命名本Skill内容的操作——不论由谁执行、在哪个平台、用什么工具——都属于正式修改**，必须先读完本节再动手。
+
+写入前必须完成三项判定（判据见`references/maintenance_self_check.md`的`Before You Write`，不得只凭直觉）：
+
+- **归属判定**：默认把内容补进既有owner；只有确认没有合适位置才新增文件。新文件不得超过30 KB。
+- **体量判定**：不得让任一文件超过单文件Target，也不得把已在Target以上的文件再推高10%。越界必须在**同一次变更内**处理，不得先写后登记。
+- **减法判定**：每次新增都要判断它是否使某条既有规则过时、被覆盖或可合并。`Additive By Default`保护既有字段与已确认行为，**不保护规则总量**。
+
+写入后必须执行完整自检：`references/maintenance_self_check.md`的15项与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；体量阈值、文件类别与Size Ledger的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
+
+**本协议是纯文本的，不依赖任何脚本、工具或外部服务即可手工执行。**`scripts/validate_sd_film.py`只是某些环境下的可选加固；环境里没有它、或没有Python、或换了别的Agent，都不构成跳过自检的理由——按短卡逐项人工判定即可。正式修改后同步递增`Skill Version`与`Build ID`。
 
 ## Modules
 
@@ -51,4 +65,3 @@ STATE-00先确认项目级图像模型默认项与视频模型偏好；STATE-03�
 - 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界。
 - 固定且连续性敏感的环境在STATE-03按需读取`knowledge/environment_multi_view_reconstruction.md`：它扩展既有Environment Asset与Canonical Lock，不创建新STATE；STATE-06/07/08只继承已锁定的空间事实和按风险选择的环境参考。
 
-每次正式修改同步递增 Version / Build，并执行 `references/maintenance_self_check.md` 的15项Self-Check与两个Guard（判据真源：`references/maintenance_self_check_protocol.md`）。

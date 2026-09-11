@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r54 structural, routing and context-budget validation for SD Film."""
+"""Deterministic r55 structural, routing and context-budget validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -485,7 +485,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r54 structural, routing and context-budget validation")
+    print("PASS: r55 structural, routing and context-budget validation")
     return 0
 
 if __name__ == "__main__":

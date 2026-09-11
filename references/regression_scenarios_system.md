@@ -647,3 +647,37 @@ FAIL：把体量约束只写成文档要求而不落进Validator，使是否遵�
 PASS：`Duplicate Rule Check`除查重复外，还显式判定是否存在可合并或可退役的既有规则，并写明依据；结论为“无”时同样记录判断依据。`merge_existing`与`deprecate/remove`是可用且被评估过的变更分类。
 
 FAIL：把`Additive By Default`解释成规则总量只增不减；连续多个周期只出现`optimize_existing`与`add_new`，却从未评估过任何一条既有规则是否已被覆盖、吸收或不再有触发条件。历史上51个提交的内容型变更增删比在6:1至190:1之间、全部deletions都是搬家或重写，即属本项FAIL的实测样本。
+
+## R55 Tool-Independent Self-Maintenance Regression
+
+### R55-A The Rule Lives In The Skill, Not In The Environment
+
+输入：把SD Film Skill交给另一个Agent、另一台机器，或一个没有Python、没有`scripts/`、没有定时任务的环境。
+
+PASS：`SKILL.md`的`Self-Maintenance`节在前置位置声明本Skill自维护，给出写入前三项判定与写入后的完整自检入口；`references/maintenance_self_check.md`的15项与两个Guard全部可由人按文件逐条核对；协议成立与否不引用任何脚本的运行结果。
+
+FAIL：把自检仅实现为`scripts/validate_sd_film.py`、周期性任务或某个宿主的功能，使换环境后Skill退化为无约束的文档；或在判据中把“运行脚本”写成必要条件。
+
+### R55-B Writing Is Guarded Before, Not Only Audited After
+
+输入：一次新增或写入Skill内容的操作。
+
+PASS：动手前先完成归属／体量／减法三项判定；越界在同一次变更内处理；写入后再执行完整自检。
+
+FAIL：只做事后审计——内容先落盘，靠事后报告发现问题。
+
+### R55-C Missing Tooling Never Lowers The Bar
+
+输入：当前环境没有Python、没有`scripts/`或没有网络。
+
+PASS：按`references/maintenance_self_check.md`的Required Verification左列，逐项人工执行结构、引用、体量与两个Guard，结论与有工具时同强度。
+
+FAIL：以“本机没有验证器”为由跳过固定基线，或把未验证的变更标成`PASS`。
+
+### R55-D Version Discipline Is Portable
+
+输入：一次正式修改。
+
+PASS：同步递增`Skill Version`与`Build ID`。这是纯文本可完成的操作，因此不因换执行者而豁免。
+
+FAIL：改动内容但不递增版本，使外部无法判断Skill是否已变更。

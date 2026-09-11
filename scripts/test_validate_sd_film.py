@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r54 SD Film validator."""
+"""Regression tests for the r55 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -932,6 +932,56 @@ class R53LongTermBudgetMaintenanceTests(unittest.TestCase):
             ),
             [],
         )
+
+
+class R55ToolIndependentSelfMaintenanceTests(unittest.TestCase):
+    """The self-check has to travel with the skill files, not with the machine:
+    another agent, another platform, no Python, no cron — the rules must still
+    be readable and executable by hand."""
+
+    def test_skill_entry_declares_self_maintenance_up_front(self) -> None:
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Self-Maintenance", skill)
+        self.assertLess(skill.index("## Self-Maintenance"), skill.index("## Modules"))
+        for marker in ("归属判定", "体量判定", "减法判定", "纯文本的", "Skill Version"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, skill)
+
+    def test_run_card_guards_writing_before_it_audits_after(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Before You Write", card)
+        self.assertLess(card.index("## Before You Write"), card.index("## Trigger"))
+        for marker in ("确认这是正式修改", "归属判定", "体量判定", "减法判定",
+                       "读文件即可完成的人工判断"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, card)
+
+    def test_verification_separates_manual_baseline_from_optional_tooling(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        for marker in ("手工执行（任何环境都必须做）", "有工具时的加固",
+                       "左列在任何环境下都必须完成；右列只是本机可选加固"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, card)
+
+    def test_protocol_is_declared_manually_executable(self) -> None:
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(encoding="utf-8-sig")
+        for marker in ("本协议是纯文本、人工可执行的", "不得以“缺少工具”为由降低检查强度"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, criteria)
+
+    def test_chain_puts_judgement_before_the_edit(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Before You Write: ownership / size / subtraction judgement", card)
+        self.assertLess(
+            card.index("Before You Write: ownership"),
+            card.index("Apply minimal change"),
+        )
+
+    def test_self_maintenance_is_not_delegated_to_tooling(self) -> None:
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        section = skill[skill.index("## Self-Maintenance"):skill.index("## Modules")]
+        self.assertIn("不依赖任何脚本、工具或外部服务即可手工执行", section)
+        self.assertIn("换了别的Agent", section)
 
 
 if __name__ == "__main__":
