@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r67 structural, routing and readability validation for SD Film."""
+"""Deterministic r68 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -47,6 +47,35 @@ SELF_CHECK_DIMENSIONS = (
     "Reference Integrity Check", "State / Continuity Compatibility Check", "User Guide Sync Check",
     "Regression Check", "Change Classification Check", "Runtime Claim / Legacy Recovery Check",
     "Standalone Skill Discovery Check", "Context Budget Check",
+)
+
+MAIN_WORKFLOWS = (
+    ("01_project_setup_workflow.md", "STATE-00"),
+    ("02_script_analysis_workflow.md", "STATE-01"),
+    ("03_asset_discovery_workflow.md", "STATE-02"),
+    ("04_character_asset_workflow.md", "STATE-03"),
+    ("05_environment_asset_workflow.md", "STATE-03"),
+    ("06_prop_asset_workflow.md", "STATE-03"),
+    ("07_visual_development_workflow.md", "STATE-04"),
+    ("08_scene_breakdown_workflow.md", "STATE-05"),
+    ("09_shot_design_workflow.md", "STATE-06"),
+    ("10_clip_production_workflow.md", "STATE-07"),
+    ("11_video_generation_workflow.md", "STATE-08"),
+    ("13_review_workflow.md", "STATE-09"),
+    ("15_fx_asset_workflow.md", "STATE-03"),
+)
+
+WORKFLOW_STATE_RE = re.compile(r"^当前阶段：\n+\s*(STATE-\d\d)", re.M)
+WORKFLOW_POSITION_RE = re.compile(r"^# Workflow Position\s*$", re.M)
+WORKFLOW_ROUTE_FIELDS = ("下一阶段：", "对应下一Workflow：")
+WORKFLOW_ROUTE_OWNER = "workflows/workflow_map.md"
+MAIN_STATE_COUNT = 10
+PIPELINE_RESTATEMENT_RE = re.compile(r"^#\s(Next Workflow|Workflow Relationship)\s*$", re.M)
+FINAL_PRINCIPLE_RE = re.compile(r"^#\sFinal Principle\s*$", re.M)
+FINAL_PRINCIPLE_MAX_BYTES = 150
+INTERNAL_PATH_REF_RE = re.compile(
+    r"(?:templates|references|knowledge|rules|workflows|core|modules|adapters|scripts|agents)"
+    r"/[A-Za-z0-9_./\-]+\.(?:md|py|json|yaml)"
 )
 
 def read(root: Path, relative: str) -> str:
@@ -231,6 +260,83 @@ def check_read_entries(rows) -> list[str]:
             continue
         if not _column(row, "read").strip():
             errors.append(f"a size index entry must state its read entry: {relative}")
+    return errors
+
+def section_after(text: str, match: "re.Match[str]") -> str:
+    """The body of a matched heading, up to the next level-1 heading."""
+    following = re.search(r"^# ", text[match.end():], re.M)
+    if following:
+        return text[match.end():match.end() + following.start()]
+    return text[match.end():]
+
+def check_workflow_routing(root: Path) -> list[str]:
+    """Routing Integrity Check: a workflow file declares which STATE it belongs to
+    and nothing else. Stage order, predecessor and next workflow belong to
+    workflows/workflow_map.md, so a second copy here can only drift."""
+    errors: list[str] = []
+    workflows = root / "workflows"
+    covered: set[str] = set()
+    for name, declared in MAIN_WORKFLOWS:
+        path = workflows / name
+        if not path.is_file():
+            errors.append(f"main workflow is missing: workflows/{name}")
+            continue
+        text = path.read_text(encoding="utf-8-sig")
+        match = WORKFLOW_STATE_RE.search(text)
+        found = match.group(1) if match else None
+        if found != declared:
+            errors.append(
+                f"workflows/{name} must self-declare 当前阶段 {declared}, found {found or 'nothing'}"
+            )
+        if found:
+            covered.add(found)
+        position = WORKFLOW_POSITION_RE.search(text)
+        if not position:
+            errors.append(f"workflows/{name} is missing its Workflow Position block")
+        else:
+            for field in WORKFLOW_ROUTE_FIELDS:
+                if field in section_after(text, position):
+                    errors.append(
+                        f"workflows/{name} must not restate {field} inside Workflow Position; "
+                        f"{WORKFLOW_ROUTE_OWNER} is the single route owner"
+                    )
+        if WORKFLOW_ROUTE_OWNER not in text:
+            errors.append(
+                f"workflows/{name} must route to {WORKFLOW_ROUTE_OWNER} "
+                "instead of restating the next workflow"
+            )
+        for restatement in PIPELINE_RESTATEMENT_RE.finditer(text):
+            errors.append(
+                f"workflows/{name} must not restate the pipeline order or the next workflow: "
+                f"{restatement.group(1)}"
+            )
+        for motto in FINAL_PRINCIPLE_RE.finditer(text):
+            measured = len(section_after(text, motto).encode("utf-8"))
+            if measured > FINAL_PRINCIPLE_MAX_BYTES:
+                errors.append(
+                    f"workflows/{name} Final Principle must stay a one-line motto "
+                    f"({measured} > {FINAL_PRINCIPLE_MAX_BYTES} bytes)"
+                )
+    for index in range(MAIN_STATE_COUNT):
+        state = f"STATE-{index:02d}"
+        if state not in covered:
+            errors.append(f"main pipeline state {state} has no self-declaring workflow")
+    return errors
+
+def check_internal_references(root: Path) -> list[str]:
+    """Reference Integrity Check: every skill-root path a document points at has to
+    exist, otherwise the read path it describes is already broken."""
+    errors: list[str] = []
+    for path in sorted(root.rglob("*.md")):
+        relative = path.relative_to(root)
+        if relative.parts[0] in NON_SKILL_DIRS:
+            continue
+        text = path.read_text(encoding="utf-8-sig")
+        for reference in sorted(set(INTERNAL_PATH_REF_RE.findall(text))):
+            if not (root / reference).exists():
+                errors.append(
+                    f"dangling internal reference: {reference} (in {relative.as_posix()})"
+                )
     return errors
 
 def validate_skill(root: Path) -> list[str]:
@@ -612,6 +718,8 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_context_budget(entries, ledger))
     errors.extend(check_read_entries(read_size_ledger_rows(root)))
     errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
+    errors.extend(check_workflow_routing(root))
+    errors.extend(check_internal_references(root))
     return errors
 
 def main() -> int:
@@ -629,7 +737,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r67 structural, routing and readability validation")
+    print("PASS: r68 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

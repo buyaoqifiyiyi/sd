@@ -91,6 +91,7 @@ Read current rules
 | 项 | 手工执行（任何环境都必须做） | 有工具时的加固 |
 |---|---|---|
 | 结构与引用完整性 | 逐个打开被引用的路径，确认存在且名称一致 | `scripts/validate_sd_film.py --skill-root <skill-root>` |
+| 阶段自证与路由唯一 owner | 逐个确认每个主 Workflow 自证所属 STATE，且未复述阶段顺序或下一 Workflow | 同上（Validator 的 `check_workflow_routing`） |
 | 可达性预算 | 用字节数对照`references/context_budget.md`的复核线／Ceiling与Size Index | 同上（Validator 还检查读取入口、索引一致性与 NON_RUNTIME 自证） |
 | `LR-R1—LR-R10` | 按`references/recovery_guards.md`逐条核对 | `scripts/test_validate_sd_film.py` |
 | `SD-R1—SD-R5` | 按`references/recovery_guards.md`逐条核对 | 同上 |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r67 SD Film validator."""
+"""Regression tests for the r68 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -1447,6 +1447,179 @@ class R61AestheticJudgementAtReviewTests(unittest.TestCase):
         self.assertIn("与`# 10 Style Review`的一致性检查正交", review)
         owner = self._owner()
         self.assertIn("与「一致性检查」的区别", owner)
+
+
+def workflow_body(state: str) -> str:
+    return (
+        "# Workflow Position\n\n"
+        f"当前阶段：\n{state}\n\n"
+        "前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：\n"
+        "`workflows/workflow_map.md`\n"
+    )
+
+def write_main_workflows(root: Path, overrides: dict[str, str] | None = None) -> None:
+    overrides = overrides or {}
+    for name, state in validator.MAIN_WORKFLOWS:
+        path = root / "workflows" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(overrides.get(name, workflow_body(state)), encoding="utf-8")
+
+class R68WorkflowRoutingIntegrityTests(unittest.TestCase):
+    """r65 unified the Workflow Position blocks and r67 removed the tail restatement.
+    These tests hold that line, and each one proves a new validator check fires."""
+
+    def test_active_skill_passes_both_new_checks(self) -> None:
+        self.assertEqual(validator.check_workflow_routing(ROOT), [])
+        self.assertEqual(validator.check_internal_references(ROOT), [])
+
+    def test_every_main_workflow_self_declares_its_state(self) -> None:
+        for name, state in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            match = validator.WORKFLOW_STATE_RE.search(text)
+            self.assertIsNotNone(match, f"{name} has no 当前阶段 declaration")
+            self.assertEqual(match.group(1), state, name)
+
+    def test_route_owner_is_the_single_declared_source(self) -> None:
+        for name, _ in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            self.assertIn(validator.WORKFLOW_ROUTE_OWNER, text, name)
+
+    def test_position_blocks_carry_no_route_fields(self) -> None:
+        for name, _ in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            position = validator.WORKFLOW_POSITION_RE.search(text)
+            self.assertIsNotNone(position, name)
+            block = validator.section_after(text, position)
+            for field in validator.WORKFLOW_ROUTE_FIELDS:
+                self.assertNotIn(field, block, f"{name} restates {field}")
+
+    def test_workflows_do_not_restate_the_pipeline_order(self) -> None:
+        for name, _ in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            self.assertIsNone(validator.PIPELINE_RESTATEMENT_RE.search(text), name)
+
+    def test_remaining_final_principles_are_one_line_mottos(self) -> None:
+        kept: list[str] = []
+        for name, _ in validator.MAIN_WORKFLOWS:
+            text = (ROOT / "workflows" / name).read_text(encoding="utf-8-sig")
+            for motto in validator.FINAL_PRINCIPLE_RE.finditer(text):
+                section = validator.section_after(text, motto)
+                self.assertLessEqual(
+                    len(section.encode("utf-8")),
+                    validator.FINAL_PRINCIPLE_MAX_BYTES,
+                    f"{name} Final Principle is no longer a motto",
+                )
+                kept.append(name)
+        self.assertEqual(
+            sorted(kept),
+            sorted([
+                "05_environment_asset_workflow.md",
+                "06_prop_asset_workflow.md",
+                "13_review_workflow.md",
+            ]),
+            "only the three stage-level mottos may keep a Final Principle section",
+        )
+
+    def test_fixture_is_clean_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_main_workflows(root)
+            self.assertEqual(validator.check_workflow_routing(root), [])
+
+    def test_wrong_state_declaration_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_main_workflows(
+                root, {"11_video_generation_workflow.md": workflow_body("STATE-07")}
+            )
+            self.assertIn(
+                "workflows/11_video_generation_workflow.md must self-declare "
+                "当前阶段 STATE-08, found STATE-07",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_missing_state_declaration_leaves_a_pipeline_gap(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_main_workflows(root, {"10_clip_production_workflow.md": "# Clip Production\n"})
+            errors = validator.check_workflow_routing(root)
+            self.assertIn(
+                "workflows/10_clip_production_workflow.md must self-declare "
+                "当前阶段 STATE-07, found nothing",
+                errors,
+            )
+            self.assertIn("main pipeline state STATE-07 has no self-declaring workflow", errors)
+
+    def test_route_field_inside_position_block_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-04") + "\n下一阶段：\nSTATE-05 Scene Breakdown\n"
+            write_main_workflows(root, {"07_visual_development_workflow.md": body})
+            errors = validator.check_workflow_routing(root)
+            self.assertTrue(
+                any("must not restate 下一阶段：" in error and "07_visual" in error for error in errors),
+                errors,
+            )
+
+    def test_missing_route_owner_pointer_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = "# Workflow Position\n\n当前阶段：\nSTATE-05\n"
+            write_main_workflows(root, {"08_scene_breakdown_workflow.md": body})
+            self.assertIn(
+                "workflows/08_scene_breakdown_workflow.md must route to "
+                "workflows/workflow_map.md instead of restating the next workflow",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_missing_position_block_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = "当前阶段：\nSTATE-06\n\n`workflows/workflow_map.md`\n"
+            write_main_workflows(root, {"09_shot_design_workflow.md": body})
+            self.assertIn(
+                "workflows/09_shot_design_workflow.md is missing its Workflow Position block",
+                validator.check_workflow_routing(root),
+            )
+
+    def test_restated_pipeline_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-04") + "\n# Workflow Relationship\n\nScript Analysis\n"
+            write_main_workflows(root, {"07_visual_development_workflow.md": body})
+            errors = validator.check_workflow_routing(root)
+            self.assertTrue(any("Workflow Relationship" in error for error in errors), errors)
+
+    def test_oversized_final_principle_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            body = workflow_body("STATE-09") + "\n# Final Principle\n\n" + "复述。" * 80 + "\n"
+            write_main_workflows(root, {"13_review_workflow.md": body})
+            errors = validator.check_workflow_routing(root)
+            self.assertTrue(
+                any("Final Principle must stay a one-line motto" in error for error in errors),
+                errors,
+            )
+
+    def test_dangling_internal_reference_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "rules").mkdir()
+            (root / "rules" / "sample.md").write_text(
+                "见 `templates/does_not_exist.md`。\n", encoding="utf-8"
+            )
+            self.assertEqual(
+                validator.check_internal_references(root),
+                ["dangling internal reference: templates/does_not_exist.md (in rules/sample.md)"],
+            )
+
+    def test_scratch_directories_are_not_scanned_for_references(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            scratch = root / "tmp"
+            scratch.mkdir()
+            (scratch / "note.md").write_text("见 `rules/gone.md`。\n", encoding="utf-8")
+            self.assertEqual(validator.check_internal_references(root), [])
 
 
 if __name__ == "__main__":
