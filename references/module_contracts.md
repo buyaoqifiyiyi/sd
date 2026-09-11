@@ -835,6 +835,7 @@ Read current rules
 12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。
 13. **Runtime Claim / Legacy Recovery Check**：核对Runtime Skill Reload、Workflow Re-entry与Legacy Project Recovery仍由唯一owner定义；Skill Source / Project State Source独立；历史Skill永不成为Current authority；Claim Gate诚实；Work只在真实必要时escalate；Legacy Intent Backfill只增补不重做；STATE-08从current owner entry重进；普通`下一步`不触发全量恢复。必须运行`references/regression_scenarios.md`中的`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`及现有Validator / tests。
 14. **Standalone Skill Discovery Check**：核对当前运行时用户级权威副本位于`$HOME/.codex/skills/sd-film`、同名`sd-film`没有第二份用户级副本、`SKILL.md` frontmatter保留启动别名、`agents/openai.yaml`与Skill名称一致、`policy.allow_implicit_invocation`为`true`，且用户文档只把Codex `$sd-film`作为本机独立Skill的确定性显式入口。在当前用户客户端中，普通Chat的`@`选择器只显示Plugin；不得宣称本机独立Skill可通过`@`加显示名调用，也不得把网页/移动端读取本机Skill误写为受支持能力。
+15. **Context Budget Check**：`references/context_budget.md`是体量阈值与Size Ledger的唯一owner，本节只引用它，不复制数值。核对`SKILL.md`仍在Entry阈值内且未复制细粒度规则；本次变更没有使任何文件超过Target而漏登记；已瘦身到Target以下的文件已从Ledger摘牌；没有任何文件达到Ceiling。超长不是格式问题而是失效风险：高频必读文件越长，中段规则的遵循率越低，检索命中率越低。因此本项判定为`FIXED`时修复的是行为失效，不是排版。
 
 ### Skill-Wide Detection And Risk-Based Repair
 
@@ -907,6 +908,7 @@ Duplicate Rules: PASS / FIXED / WARN
 Conflict Rules: PASS / FIXED / WARN
 Terminology: PASS / FIXED / WARN
 Rule Ownership: PASS / FIXED / WARN
+Context Budget: PASS / FIXED / WARN
 Prompt Pollution: PASS / FIXED / WARN
 Routing: PASS / FIXED / WARN
 Template Sync: PASS / FIXED / WARN

@@ -1477,6 +1477,40 @@ PASS：`主风格`仍保留可核查的光比结构、色彩对抗关系与构�
 
 FAIL：把“已由视觉开发锁定”当作省略理由，导致后续Clip的`主风格`只剩风格标签、`画面描述`只剩动作；或每镜机械重复整段项目Visual Bible。
 
+## R51 Skill Context Budget Regression
+
+### R51-A Oversized File Must Be Registered Or Split
+
+输入：一次变更使某个Workflow、Rule或Knowledge文件继续增长，越过单文件Target阈值。
+
+PASS：在同一次变更中把该文件登记进`references/context_budget.md`的Size Ledger，写明Owner、当前行数、留存理由与复审日期；或直接拆分到阈值以内。`scripts/validate_sd_film.py`对超Target未登记的文件报告失败。
+
+FAIL：让文件静默增长；用“内容确实重要”代替登记理由；把登记当作永久豁免；或为了压行数删除已确认的规则、字段归属、Template字段或回归场景。
+
+### R51-B Shrunk File Must Be Unregistered
+
+输入：某文件经拆分或压缩后降到Target以下，但Size Ledger仍保留其条目。
+
+PASS：同一次变更中移除该条目，Validator随即通过。
+
+FAIL：保留已达标条目，使Ledger退化为长期豁免名单，下一次增长不再触发任何检查。
+
+### R51-C Ceiling Is Not Waivable
+
+输入：某文件达到或超过Ceiling阈值。
+
+PASS：判定为结构性失控，先拆分为多个单一职责文件，同步更新全部引用与路由后再提交；拆分后重新核对文件引用完整性。
+
+FAIL：在Ledger中登记后照常提交；或以“本轮只改文案、与超长无关”为由延期。
+
+### R51-D Budget Does Not Justify New Files
+
+输入：一次优化中发现多个文件超长，考虑通过新增文件降低单文件行数。
+
+PASS：先按`Rule Ownership Check`确认现有权威位置；只有拆分确实需要新的单一职责载体时才新增，并同步更新所有引用、路由与回归。
+
+FAIL：以“降低行数”为由新增平行规则文件，形成第二套并行检查规范或竞争owner。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1505,4 +1539,5 @@ FAIL：把“已由视觉开发锁定”当作省略理由，导致后续Clip的
 - R48-A至R48-H验证交付物校验器与Skill维护校验器职责互不替代、未授权音色字段被拒、Review台账逐镜逐边界全覆盖且不得留空、`画幅：`分镜总数声明与实际数量一致、大全景尺度可由现实关系复算、人物必须响应环境光区、参考代际劣化按顺序处理且不放开线稿/Storyboard禁令，以及经验必须带P/O/C分类与触发条件、步骤、失效信号、例外、反例且耦合来源不得升级为P或不作措辞级结论；STATE-08固定Schema、R11预算硬门槛与Voice opt-in保持不变。
 - R49-A至R49-C验证STATE-04 Aesthetic Decision Lock在四个维度各要求排他性选择与被放弃的选项、无取舍的默认做法不构成决定、决定沿STATE-06与STATE-08继承并由Prompt Scorecard Hard Gate审计；四项决定不新增Project Bible竞争区域、平行Schema或STATE-08字段，逐镜参数仍由STATE-06拥有。
 - R50-A至R50-B验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；不新增任何Prompt字段。
+- R51-A至R51-D验证Skill体量预算：超Target未登记、超Ceiling、僵尸台账条目、指向不存在文件的台账条目均使Validator失败；已登记且未超Ceiling的超Target文件通过；`SKILL.md`保持在Entry行数预算内；预算本身不构成新增文件的理由，也不与`rules/resource_loading.md`的运行时读取规则重叠。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

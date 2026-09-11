@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r49 structural and routing validation for SD Film."""
+"""Deterministic r50 structural, routing and context-budget validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -16,11 +16,66 @@ REQUIRED = (
     "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
+    "references/context_budget.md",
     "scripts/validate_prompt_package.py",
 )
 
+BUDGET_TARGET_LINES = 800
+BUDGET_CEILING_LINES = 3000
+SKILL_ENTRY_MAX_LINES = 120
+NON_SKILL_DIRS = {".git", ".workbuddy", "tmp", "__pycache__", ".venv", "node_modules"}
+
 def read(root: Path, relative: str) -> str:
     return (root / relative).read_text(encoding="utf-8-sig")
+
+def count_lines(path: Path) -> int:
+    return path.read_bytes().count(b"\n")
+
+def scan_markdown(root: Path) -> list[tuple[str, int]]:
+    """Every markdown file that ships with the skill, excluding local-only dirs."""
+    entries: list[tuple[str, int]] = []
+    for path in sorted(root.rglob("*.md")):
+        relative = path.relative_to(root)
+        if any(part in NON_SKILL_DIRS for part in relative.parts[:-1]):
+            continue
+        entries.append((relative.as_posix(), count_lines(path)))
+    return entries
+
+def read_size_ledger(root: Path) -> set[str]:
+    registered: set[str] = set()
+    for line in read(root, "references/context_budget.md").splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if cells and cells[0].endswith(".md"):
+            registered.add(cells[0])
+    return registered
+
+def check_context_budget(entries, registered) -> list[str]:
+    """A file that outgrows the target must be registered; a registered file that
+    shrinks back within target must be unregistered. Both drifts are reported."""
+    errors: list[str] = []
+    counts = dict(entries)
+    registered = set(registered)
+    for relative, lines in entries:
+        if lines > BUDGET_CEILING_LINES:
+            errors.append(
+                f"file reached the context budget ceiling ({lines} > {BUDGET_CEILING_LINES} lines), split it: {relative}"
+            )
+        elif lines > BUDGET_TARGET_LINES and relative not in registered:
+            errors.append(
+                f"file exceeds the context budget target ({lines} > {BUDGET_TARGET_LINES} lines) "
+                f"but is not registered in references/context_budget.md: {relative}"
+            )
+    for relative in sorted(registered):
+        if relative not in counts:
+            errors.append(f"context budget ledger points at a missing markdown file: {relative}")
+        elif counts[relative] <= BUDGET_TARGET_LINES:
+            errors.append(
+                f"context budget ledger entry is stale ({counts[relative]} lines, back within target), remove it: {relative}"
+            )
+    return errors
 
 def validate_skill(root: Path) -> list[str]:
     errors: list[str] = []
@@ -270,6 +325,17 @@ def validate_skill(root: Path) -> list[str]:
         text = read(root, relative)
         if re.search(r"Midjourney|Built-in Image|image_gen", text, re.I):
             errors.append(f"upstream module contains asset image routing: {relative}")
+    entry_lines = skill.count("\n")
+    if entry_lines > SKILL_ENTRY_MAX_LINES:
+        errors.append(
+            f"SKILL.md must stay a compact routing entrypoint ({entry_lines} > {SKILL_ENTRY_MAX_LINES} lines)"
+        )
+    contracts = read(root, "references/module_contracts.md")
+    if "Context Budget Check" not in contracts:
+        errors.append("Skill Update Self-Check is missing the Context Budget Check dimension")
+    if "references/context_budget.md" not in contracts:
+        errors.append("Skill Update Self-Check must route the context budget to its single owner")
+    errors.extend(check_context_budget(scan_markdown(root), read_size_ledger(root)))
     return errors
 
 def main() -> int:
@@ -281,7 +347,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r49 structural and routing validation")
+    print("PASS: r50 structural, routing and context-budget validation")
     return 0
 
 if __name__ == "__main__":

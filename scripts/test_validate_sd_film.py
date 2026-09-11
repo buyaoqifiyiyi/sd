@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r49 SD Film validator."""
+"""Regression tests for the r50 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -637,6 +637,66 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
             self.assertIn("validate_prompt_package.py", text, relative)
         contracts = (ROOT / "references" / "module_contracts.md").read_text(encoding="utf-8")
         self.assertIn("validate_prompt_package.py", contracts)
+
+
+class R50ContextBudgetTests(unittest.TestCase):
+    """The skill must not silently outgrow its readable budget: a file past the
+    target has to be registered, and a registered file that shrinks back has to
+    be unregistered, so the ledger never decays into a standing exemption list."""
+
+    def test_active_skill_stays_within_budget(self) -> None:
+        findings = validator.check_context_budget(
+            validator.scan_markdown(ROOT), validator.read_size_ledger(ROOT)
+        )
+        self.assertEqual(findings, [])
+
+    def test_ledger_registers_exactly_the_oversized_files(self) -> None:
+        registered = validator.read_size_ledger(ROOT)
+        oversized = {
+            relative
+            for relative, lines in validator.scan_markdown(ROOT)
+            if lines > validator.BUDGET_TARGET_LINES
+        }
+        self.assertEqual(oversized, registered)
+
+    def test_skill_entry_stays_compact(self) -> None:
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        self.assertLessEqual(skill.count("\n"), validator.SKILL_ENTRY_MAX_LINES)
+
+    def test_unregistered_oversized_file_is_rejected(self) -> None:
+        findings = validator.check_context_budget([("huge/thing.md", 900)], set())
+        self.assertTrue(any("not registered" in item for item in findings))
+
+    def test_registered_oversized_file_is_accepted(self) -> None:
+        self.assertEqual(
+            validator.check_context_budget([("huge/thing.md", 900)], {"huge/thing.md"}), []
+        )
+
+    def test_ceiling_violation_is_rejected_even_when_registered(self) -> None:
+        findings = validator.check_context_budget([("huge/thing.md", 3001)], {"huge/thing.md"})
+        self.assertTrue(any("ceiling" in item for item in findings))
+
+    def test_stale_ledger_entry_is_rejected(self) -> None:
+        findings = validator.check_context_budget([("small/thing.md", 120)], {"small/thing.md"})
+        self.assertTrue(any("stale" in item for item in findings))
+
+    def test_ledger_entry_pointing_at_a_missing_file_is_rejected(self) -> None:
+        findings = validator.check_context_budget([], {"gone/thing.md"})
+        self.assertTrue(any("missing" in item for item in findings))
+
+    def test_self_check_dimension_and_its_single_owner_are_wired(self) -> None:
+        contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Context Budget Check", contracts)
+        self.assertIn("references/context_budget.md", contracts)
+        self.assertIn("Context Budget: PASS / FIXED / WARN", contracts)
+        self.assertIn("## Size Ledger", budget)
+        self.assertIn("Ceiling", budget)
+
+    def test_budget_does_not_justify_parallel_rule_files(self) -> None:
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        self.assertIn("本预算不构成新增文件的理由", budget)
+        self.assertIn("rules/resource_loading.md", budget)
 
 
 if __name__ == "__main__":
