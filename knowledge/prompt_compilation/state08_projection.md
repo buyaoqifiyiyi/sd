@@ -201,6 +201,7 @@ Field Ownership QA逐条提问：
 - 同一标签在同一Prompt中只解释一次，不在`主风格`、一致性字段和逐镜正文反复展开；逐镜只写当前动作、光态、色态、摄影机或表演变化。
 - 如果后续Clip没有可访问的正式Style Source，或当前Clip改变了标签含义、媒介、光色、表演尺度或摄影逻辑，就不能假装State已被携带，必须重新展开受影响部分。
 - 动作复杂Clip先保护主体、动作、空间、时间顺序、摄影机路径、道具状态、Endpoint与Handoff；风格解释自动压缩为1—3个或更少的最高价值carriers。标签可在仍有锚定价值时保留，也可因完全冗余而省略，但不得为保留标签牺牲执行信息。
+- Aesthetic Decision Lock锁定的反差与光比结构、色彩对抗关系与构图主张属于项目级承诺，不因`Source Carries State`而默认省略：后续Clip即使只写Delta，也必须在`主风格`保留可核查的锚点，并在本镜真实发生光比、色彩或构图变化时写明变化，而不是把“已锁定”当作省略理由。视觉母题按已确认的出现、变化或反转轨迹推进；未到其节点时不重复，到节点时必须出现。
 
 ### Positive Specification And Negative Prompt Placement
 
@@ -288,6 +289,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 |---|---|---|
 | Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
 | Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
+| Aesthetic Decision Lock（STATE-04） | 主风格；画面描述；环境一致性 | 反差与光比结构的程度及其变化节点、色彩对抗关系与占比、构图主张、视觉母题与变化轨迹；四项是整片承诺，逐镜只投影本镜相对锁定值的可见Delta；不新增字段 |
 | Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor | Selected Template的参考字段 | Seedance 2.5按30图 / 10视频 / 10音频 / 合计50及各自30秒审计，每项有唯一Primary Role；2.0/H3按各自Adapter限制。除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
 | Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
 | Clip End State / Next Clip | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
@@ -316,7 +318,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 
 ## Serialization Rules
 
-Color、Lighting、Focal Length、Composition、Camera Movement和Director Pattern必须拆成固定字段中的具体执行语义，不得只保留“电影感”“冷色调”“85mm”“压迫构图”“缓慢推进”等标签。
+Color、Lighting、Focal Length、Composition、Camera Movement和Director Pattern必须拆成固定字段中的具体执行语义，不得只保留“电影感”“冷色调”“85mm”“压迫构图”“缓慢推进”等标签。Aesthetic Decision Lock的四项决定同样必须落成固定字段中的可见语义，不得在STATE-08另起一套临时审美，也不得只在`主风格`重复风格标签而不写光比程度、色彩对抗关系与构图主张。
 
 最终Prompt不得输出CLR编号、CMG编号、FLN编号或其他内部模式ID。`反向提示词：`首句永久固定为“禁止生成背景音乐、配乐、BGM、主题音乐、氛围音乐，只保留台词、环境声、动作音效和必要的自然声音。”。
 

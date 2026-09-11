@@ -9,6 +9,7 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 - `modules/prompt-generation.md`
 - 当前 Selected Adapter
 - `knowledge/director_decision_layer.md`（当前Clip的1—3个已确认导演优先级）
+- `project_bible.md` 的已确认 Aesthetic Decision Lock（反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹）
 - `knowledge/prompt_compilation/state08_projection.md`
 - 当前 Model Compilation Template（MiniMax H3 时为 `knowledge/prompt_compilation/minimax_h3_compilation.md`）
 - 当前Clip使用Spatial Lock环境时：`knowledge/environment_multi_view_reconstruction.md`

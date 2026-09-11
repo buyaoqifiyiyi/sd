@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r48 SD Film validator."""
+"""Regression tests for the r49 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -491,6 +491,20 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("不新增竞争区域或平行Schema", visual)
         self.assertIn("缺少被放弃的选项视为尚未做出决定", bible)
         self.assertIn("不能替代人工审美判断", scorecard)
+
+    def test_aesthetic_decision_lock_reaches_state08_projection(self) -> None:
+        projection = (ROOT / "knowledge/prompt_compilation/state08_projection.md").read_text(encoding="utf-8-sig")
+        prompt = (ROOT / "workflows/11_video_generation_workflow.md").read_text(encoding="utf-8-sig")
+        scenarios = (ROOT / "references/regression_scenarios.md").read_text(encoding="utf-8-sig")
+        self.assertIn("| Aesthetic Decision Lock（STATE-04） | 主风格；画面描述；环境一致性 |", projection)
+        self.assertIn("反差与光比结构的程度及其变化节点", projection)
+        self.assertIn("Aesthetic Decision Lock的四项决定同样必须落成固定字段中的可见语义", projection)
+        self.assertIn("不因`Source Carries State`而默认省略", projection)
+        self.assertIn(
+            "Aesthetic Decision Lock（反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹）",
+            prompt,
+        )
+        self.assertIn("R50 Aesthetic Decision Lock Projection Regression", scenarios)
 
 class R47PromptPackageValidatorTests(unittest.TestCase):
     """The delivered STATE-08 Prompt Package validator must accept conformant

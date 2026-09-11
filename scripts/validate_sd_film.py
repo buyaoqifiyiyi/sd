@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r48 structural and routing validation for SD Film."""
+"""Deterministic r49 structural and routing validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -250,10 +250,13 @@ def validate_skill(root: Path) -> list[str]:
         (project_bible, "Aesthetic Decision Lock"),
         (project_bible, "视觉母题与变化轨迹（"),
         (scorecard, "Aesthetic Decision Lock"),
+        (projection, "Aesthetic Decision Lock"),
+        (projection, "反差与光比结构的程度及其变化节点"),
+        (prompt, "Aesthetic Decision Lock"),
     )
     for text, marker in required_markers:
         if marker not in text:
-            errors.append(f"missing r48 routing marker: {marker}")
+            errors.append(f"missing r49 routing marker: {marker}")
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -278,7 +281,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r48 structural and routing validation")
+    print("PASS: r49 structural and routing validation")
     return 0
 
 if __name__ == "__main__":

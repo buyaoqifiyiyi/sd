@@ -1459,6 +1459,24 @@ PASS：STATE-06在Composition Strategy中保留已锁定构图主张；STATE-08 
 
 FAIL：用“更好看”“更有电影感”在STATE-08另起一套临时审美；让Scorecard只按文字华丽程度给摄影与光影两项高分；把Lock写成逐镜参数或在STATE-04提前产出Shot List。
 
+## R50 Aesthetic Decision Lock Projection Regression
+
+### R50-A Lock Reaches The Prompt Compiler
+
+输入：一个已在STATE-04锁定四项美学决定的项目推进到STATE-08，当前Clip只携带1—3条导演优先级。
+
+PASS：STATE-08的Required Resources包含`project_bible.md`的已确认Aesthetic Decision Lock；Prompt Compiler在Global Projection Matrix中按`Aesthetic Decision Lock（STATE-04）→ 主风格；画面描述；环境一致性`投影；`主风格`写出光比程度与色彩对抗关系，逐镜`画面描述`写出本镜相对锁定值的构图与母题Delta。
+
+FAIL：STATE-08只拿到导演优先级而没有美学决策入口；把四项决定写成风格标签；在STATE-08另起一套临时审美。
+
+### R50-B Lock Is Not Erased By Delta Compression
+
+输入：项目风格已由Visual Direction锁定，第二个及之后的连续Clip按`Source Carries State, Prompt Carries Delta`只写差异。
+
+PASS：`主风格`仍保留可核查的光比结构、色彩对抗关系与构图主张锚点；本镜真实发生光比、色彩或构图变化时写明变化；视觉母题在已确认的出现、变化或反转节点上出现，未到节点不重复。
+
+FAIL：把“已由视觉开发锁定”当作省略理由，导致后续Clip的`主风格`只剩风格标签、`画面描述`只剩动作；或每镜机械重复整段项目Visual Bible。
+
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -1486,4 +1504,5 @@ FAIL：用“更好看”“更有电影感”在STATE-08另起一套临时审�
 - R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
 - R48-A至R48-H验证交付物校验器与Skill维护校验器职责互不替代、未授权音色字段被拒、Review台账逐镜逐边界全覆盖且不得留空、`画幅：`分镜总数声明与实际数量一致、大全景尺度可由现实关系复算、人物必须响应环境光区、参考代际劣化按顺序处理且不放开线稿/Storyboard禁令，以及经验必须带P/O/C分类与触发条件、步骤、失效信号、例外、反例且耦合来源不得升级为P或不作措辞级结论；STATE-08固定Schema、R11预算硬门槛与Voice opt-in保持不变。
 - R49-A至R49-C验证STATE-04 Aesthetic Decision Lock在四个维度各要求排他性选择与被放弃的选项、无取舍的默认做法不构成决定、决定沿STATE-06与STATE-08继承并由Prompt Scorecard Hard Gate审计；四项决定不新增Project Bible竞争区域、平行Schema或STATE-08字段，逐镜参数仍由STATE-06拥有。
+- R50-A至R50-B验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；不新增任何Prompt字段。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。
