@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r60 structural, routing and readability validation for SD Film."""
+"""Deterministic r61 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -14,6 +14,7 @@ REQUIRED = (
     "knowledge/prompt_compilation/minimax_h3_compilation.md",
     "workflows/01_project_setup_workflow.md", "workflows/10_clip_production_workflow.md", "workflows/11_video_generation_workflow.md",
     "templates/00_project_start_template.md", "templates/20_clip_plan.md", "templates/10_video_prompt.md", "templates/12_seedance_25_video_prompt.md", "templates/13_minimax_h3_video_prompt.md", "templates/14_midjourney_asset_prompt.md", "templates/24_builtin_image_asset_prompt.md",
+    "templates/25_look_frame_prompt.md",
     "references/module_contracts.md",
     "references/module_contracts_production.md",
     "references/module_contracts_auxiliary.md",
@@ -27,6 +28,7 @@ REQUIRED = (
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
     "references/regression_scenarios_system.md",
+    "references/regression_scenarios_maintenance.md",
     "references/recovery_guards.md",
     "scripts/validate_prompt_package.py",
 )
@@ -294,6 +296,11 @@ def validate_skill(root: Path) -> list[str]:
     shot_template = read(root, "templates/08_shot_design_prompt.md")
     sequence_planning = read(root, "workflows/16_sequence_planning_workflow.md")
     framing_scale = read(root, "knowledge/camera_language/lens_language/framing_and_scale.md")
+    visual_workflow_r61 = read(root, "workflows/07_visual_development_workflow.md")
+    look_frame_template = read(root, "templates/25_look_frame_prompt.md")
+    output_rules = read(root, "rules/05_output_rules.md")
+    prompt_rules = read(root, "rules/03_prompt_rules.md")
+    contracts_framework = read(root, "references/module_contracts.md")
     budget_doc = read(root, "references/context_budget.md")
     required_markers = (
         (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
@@ -495,6 +502,22 @@ def validate_skill(root: Path) -> list[str]:
         (director_layer, "供条件性Sequence Planning与STATE-06消费"),
         (sequence_planning, "`templates/07_scene_design_prompt.md`的`Scene Directing Brief`"),
         (shot_template, "旁路而不是升级档"),
+        (visual_workflow_r61, "# Look Frame Gate"),
+        (visual_workflow_r61, "草案成形之后、正式锁定之前"),
+        (visual_workflow_r61, "那不是决定，是赌注"),
+        (visual_workflow_r61, "非生产视觉材料"),
+        (visual_workflow_r61, "不得声称做过试片"),
+        (look_frame_template, "非生产视觉材料"),
+        (look_frame_template, "与 REF-SKETCH 的边界"),
+        (look_frame_template, "不得进入 STATE-08【参考资产】"),
+        (look_frame_template, "判断必须由用户给出"),
+        (output_rules, "Look Frame试片帧"),
+        (prompt_rules, "Look Frame试片帧"),
+        (scorecard, "### Aesthetic Criteria｜两项审美维度的评分依据"),
+        (scorecard, "视觉重心唯一"),
+        (scorecard, "本评分仍不能替代人工审美判断"),
+        (director_layer, "四维度从草案到锁定之间允许执行一次可选`Look Frame`"),
+        (contracts_framework, "STATE-04的`Aesthetic Decision Lock`与其可选`Look Frame`由Director层拥有"),
     )
     for text, marker in required_markers:
         if marker not in text:
@@ -568,7 +591,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r60 structural, routing and readability validation")
+    print("PASS: r61 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

@@ -275,6 +275,34 @@ Visual Grammar Baseline回答"这个世界的稳定视觉倾向是什么"；Aest
 
 ---
 
+# Look Frame Gate
+
+Look Frame 是 STATE-04 内部的可选试片环节，位置固定在 `Aesthetic Decision Lock` **草案成形之后、正式锁定之前**。
+
+锁定要求四维度各做出一次排他性选择；但在看不到画面的情况下，那不是决定，是赌注。Look Frame 补的就是这一步：用已确认资产把草案拍成 1—3 张静态画面，看一眼，再决定锁定哪一边。
+
+执行顺序：
+
+1. 先形成 `Aesthetic Decision Lock` 草案四维度（选择 / 被放弃的选项 / 依据 / 可见后果），此时状态为 `Draft`。
+2. 从四维度中挑出**最不确定的 1—3 个**，每个各出一张试片帧，使用 `templates/25_look_frame_prompt.md`；一张只回答一个美学问题。
+3. 用户看图后给出判断：保留、调整参数，或换到被放弃的那一边。
+4. 按判断修正草案；四维度全部确定后，才写入 Project Bible 并进入 Step 6 Cinematic Parameter Definition。
+
+强制边界：
+
+- Look Frame 属于**非生产视觉材料**，与 Storyboard 视觉材料同类：不得登记为 Canonical Asset、不得进入 STATE-08【参考资产】、不得作为 STATE-05 之后任何阶段的输入、不写入项目状态、不新增工件 ID 或 STATE。
+- 外观只能来自已确认的 Character / Environment / Prop 资产；不得借试片重新设计人物、环境、道具或美术。
+- 不得写成 Storyboard 画格、漫画格、九宫格、接触表或分镜板。
+- 与 `REF-SKETCH` 严格分家：`REF-SKETCH` 是 STATE-08 的无性别技术调度人偶，只验空间与机位；Look Frame 在 STATE-04、带真实外观、只验光色与构图主张。两者不得共用模板或互相替代。
+- 判断必须由用户给出，系统不得代为判定好不好看。
+- 工具不可用或用户不想出图时，记录原因并跳过，`Aesthetic Decision Lock` 仍按原四维度完成；不得声称做过试片或已确认画面效果。
+
+Look Frame 不新增 Project Bible 区域、不改变四维度定义、不改变 STATE-08 Template 字段。
+
+
+
+---
+
 # Step 1: Visual Analysis
 
 
@@ -1918,6 +1946,7 @@ STATE-04禁止输出：
 
 □ 视觉母题具有至少三次可出现、变化或反转的轨迹，不是装饰性重复
 
+□ Look Frame执行时已在锁定之前完成，或已记录跳过原因；试片结论只作用于Aesthetic Decision Lock，没有生成Storyboard视觉材料、没有登记为Canonical Asset、也没有写入STATE-08参考资产
 
 □ Cinematography Direction已经建立
 
@@ -2074,6 +2103,7 @@ Scene Breakdown
 禁止：
 
 提前生成Clip Production Plan或任何Storyboard视觉材料。
+Look Frame 试片帧不属于 Storyboard 视觉材料：它只在 `Aesthetic Decision Lock` 锁定之前按 `# Look Frame Gate` 执行。生成任何其他提前视觉材料（分镜画格、Clip Production Plan、Video / Seedance Prompt）仍在本禁令之内。
 
 
 禁止：

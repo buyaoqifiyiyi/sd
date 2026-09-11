@@ -2,13 +2,14 @@
 
 ## Regression File Index
 
-为控制单次读取成本，本回归集按编号族拆为四个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
+为控制单次读取成本，本回归集按编号族拆为五个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
 
 | File | 覆盖范围 | 用途 |
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
 | `references/regression_scenarios_craft.md` | R15—R23 | Prompt 编译、表演、阻断、剧本与导演端到端 |
-| `references/regression_scenarios_system.md` | R24、R27—R35、R48—R59 | 写作、Runtime、模型适配、FAST、交付校验、美学锁、维护与分镜拆解覆盖 |
+| `references/regression_scenarios_system.md` | R24、R27—R35 | 写作、Runtime、模型适配、FAST 与交付管线 |
+| `references/regression_scenarios_maintenance.md` | R48—R60 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
 ## Purpose
@@ -360,4 +361,5 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R56-A至R56-C验证维护体系已整合：每条规则正文只有一处完整定义（写入前判定只在`Before You Write`）、体量文件不拥有体系框架、执行清单的`Maintenance System Map`列出全部成员与角色并声明其为分层而非并行。
 - R57-A至R57-C验证媒介剖面与Genre正交、2D档禁止套用实拍光学参数、未确认媒介不得默认真人剧；R58-A至R58-D验证越过复核线不是违规、`INTEGRAL`条目必须有读取入口、非运行时文件不在管辖内、Size Index不会腐化成固定名单。
 - R59-A至R59-D验证分镜拆解的三处覆盖：景别只有一个owner且`workflows/09`的内联清单与`framing_and_scale.md`一致（含中近景与大特写）、`Rhythm Intent`在`templates/07`有记录落点且由STATE-05投影、节奏投影不得预定镜头数量、Storyboard始终是旁路而非分镜表的升级档。
+- R60-A至R60-D验证「好看」这一环不再悬空：STATE-04在Aesthetic Decision Lock锁定之前允许一次可选Look Frame试片（`templates/25_look_frame_prompt.md`），试片帧属非生产视觉材料、不进资产链、与REF-SKETCH严格分家、判断必须由用户给出；`prompt_scorecard.md`的两项审美维度改按可见取舍评分（视觉重心、明暗层级、色彩主从、取舍可见、不平均）并要求可见证据，权重不变，且仍诚实声明不能替代人工审美判断。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

@@ -195,7 +195,7 @@ STATE-07阶段：
 
 禁止：
 
-把Storyboard图片、分镜板、漫画格、接触表、拼图、Scene Top-down Blocking Map或多画面材料用作Clip/STATE-08输入；也禁止Clip Production替代Detailed Shot Design。经Before-Single-Clip-Prompt Gate确认的单Clip `REF-SKETCH`只作为Visual Blocking Reference严格例外，不开放其他线稿或Planning材料。
+把Storyboard图片、分镜板、漫画格、接触表、拼图、Scene Top-down Blocking Map、Look Frame试片帧（`templates/25_look_frame_prompt.md`）或多画面材料用作Clip/STATE-08输入；也禁止Clip Production替代Detailed Shot Design。经Before-Single-Clip-Prompt Gate确认的单Clip `REF-SKETCH`只作为Visual Blocking Reference严格例外，不开放其他线稿或Planning材料。
 
 
 禁止：
@@ -229,7 +229,7 @@ STATE-08阶段：
 - Confirmed Detailed Shot Design（仅生产数据）
 - Confirmed Clip Production Plan（Clip级生成合同）
 - 经Before-Single-Clip-Prompt Gate验证并绑定当前Blocking Signature的Confirmed `REF-SKETCH`（仅在Final Assessment=`REQUIRED`时作为受限Visual Blocking Reference）
-- 禁止Storyboard图片、分镜板、拼图、Scene Top-down Blocking Map或多画面参考；不得把未验证草图混入上述例外
+- 禁止Storyboard图片、分镜板、拼图、Look Frame试片帧、Scene Top-down Blocking Map或多画面参考；不得把未验证草图混入上述例外
 
 
 

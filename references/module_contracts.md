@@ -128,7 +128,7 @@ Owner：`knowledge/director_decision_layer.md`。Camera Language核心子能力o
 
 传递链：`Writer → Director Handoff → STATE-00/01 Director Baseline / Scene Director Intent → STATE-04 Visual Dramaturgy → STATE-05 Scene Camera Strategy → STATE-06 Director Decision Notes / Camera Language Decision → STATE-07 Dramatic Execution Unit → STATE-08 Director Intent Preservation + Model Translation → Editing / STATE-09 Director's Cut Review`。
 
-不变量：Director Intent先于Knowledge选择；Camera choice是Shot Purpose与Audience Attention的后果；Camera Movement有Trigger / Stop；Packet保持内部；最终Seedance Schema不变；Voice仍opt-in；Spatial Blocking、Pose Hierarchy、Relationship Topology、Delta Blocking、Action PREVIS、Accepted Take Canon、Shot-State Memory、REF-SKETCH与REF-TAIL继续由原owner负责。
+不变量：Director Intent先于Knowledge选择；Camera choice是Shot Purpose与Audience Attention的后果；Camera Movement有Trigger / Stop；Packet保持内部；最终Seedance Schema不变；Voice仍opt-in；Spatial Blocking、Pose Hierarchy、Relationship Topology、Delta Blocking、Action PREVIS、Accepted Take Canon、Shot-State Memory、REF-SKETCH与REF-TAIL继续由原owner负责。STATE-04的`Aesthetic Decision Lock`与其可选`Look Frame`由Director层拥有：Look Frame使用`templates/25_look_frame_prompt.md`，属非生产视觉材料，只服务四维度的取舍判断，不登记工件、不写入项目状态、不进入任何下游，也不得作为STATE-08参考资产。
 
 ### Additive By Default
 

@@ -295,7 +295,7 @@ Prompt必须锁定并继承：脸型、五官、年龄感、发型、头饰、�
 
 场景视觉开发。
 
-合法的单一首帧/尾帧；禁止Storyboard图片、分镜板、拼图、Scene Top-down Blocking Map或多画面参考。只有`knowledge/clip_preflight_check.md`的Before-Single-Clip-Prompt Gate判定REQUIRED、通过Sketch Validation并注册为当前Clip Confirmed Visual Anchor的中性单图`REF-SKETCH`，可作为受限Blocking / Pose / Axis / Camera / Action Path参考；它不是Storyboard、Canonical Asset或最终画风参考。
+合法的单一首帧/尾帧；禁止Storyboard图片、分镜板、拼图、Look Frame试片帧、Scene Top-down Blocking Map或多画面参考。只有`knowledge/clip_preflight_check.md`的Before-Single-Clip-Prompt Gate判定REQUIRED、通过Sketch Validation并注册为当前Clip Confirmed Visual Anchor的中性单图`REF-SKETCH`，可作为受限Blocking / Pose / Axis / Camera / Action Path参考；它不是Storyboard、Canonical Asset或最终画风参考。
 
 
 图片Prompt重点描述：

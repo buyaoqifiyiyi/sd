@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r60 SD Film validator."""
+"""Regression tests for the r61 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -29,11 +29,12 @@ REGRESSION_FILES = (
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
     "references/regression_scenarios_system.md",
+    "references/regression_scenarios_maintenance.md",
     "references/recovery_guards.md",
 )
 
 def regression_corpus() -> str:
-    """The regression set is split across four files; assertions target the set."""
+    """The regression set is split across five files; assertions target the set."""
     return "\n".join(
         (ROOT / relative).read_text(encoding="utf-8-sig") for relative in REGRESSION_FILES
     )
@@ -1253,6 +1254,109 @@ class R59ShotDesignBreakdownTests(unittest.TestCase):
         self.assertIn("默认分镜表", guide)
         self.assertIn("完整版专业分镜", guide)
         self.assertIn("Storyboard 视觉分镜板", guide)
+
+
+class R60LookFrameTests(unittest.TestCase):
+    """A decision made without ever seeing the result is a bet, not a decision.
+    The look frame adds the missing step: try a few frames, look, then lock.
+    Its whole safety property is that it must never enter the asset chain."""
+
+    def _gate(self) -> str:
+        return (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+
+    def _template(self) -> str:
+        return (ROOT / "templates/25_look_frame_prompt.md").read_text(encoding="utf-8-sig")
+
+    def test_look_frame_sits_between_draft_and_lock(self) -> None:
+        gate = self._gate()
+        self.assertIn("# Look Frame Gate", gate)
+        self.assertIn("草案成形之后、正式锁定之前", gate)
+        self.assertIn("那不是决定，是赌注", gate)
+        self.assertLess(
+            gate.index("# Aesthetic Decision Lock Gate"),
+            gate.index("# Look Frame Gate"),
+        )
+
+    def test_look_frame_never_enters_the_asset_chain(self) -> None:
+        template = self._template()
+        self.assertIn("非生产视觉材料", template)
+        self.assertIn("不得进入 STATE-08【参考资产】", template)
+        self.assertIn("登记为 Canonical Asset", template)
+        gate = self._gate()
+        self.assertIn("不写入项目状态", gate)
+        self.assertIn("不新增工件 ID 或 STATE", gate)
+
+    def test_look_frame_stays_separate_from_ref_sketch(self) -> None:
+        template = self._template()
+        self.assertIn("与 REF-SKETCH 的边界", template)
+        self.assertIn("无性别技术调度人偶", template)
+        self.assertIn("不得共用模板", template)
+
+    def test_look_frame_budget_is_capped(self) -> None:
+        template = self._template()
+        self.assertIn("1—3 张", template)
+        self.assertIn("超过 3 张视为未做取舍", template)
+
+    def test_look_frame_never_lets_the_system_judge_beauty(self) -> None:
+        for text in (self._template(), self._gate()):
+            with self.subTest(source="closure"):
+                self.assertIn("判断必须由用户给出", text)
+        self.assertIn("不得声称做过试片", self._template())
+
+    def test_forbidden_actions_no_longer_block_the_look_frame(self) -> None:
+        gate = self._gate()
+        self.assertIn("Look Frame 试片帧不属于 Storyboard 视觉材料", gate)
+        self.assertIn("生成任何其他提前视觉材料", gate)
+
+    def test_generation_prohibitions_name_the_look_frame(self) -> None:
+        output_rules = (ROOT / "rules/05_output_rules.md").read_text(encoding="utf-8-sig")
+        prompt_rules = (ROOT / "rules/03_prompt_rules.md").read_text(encoding="utf-8-sig")
+        self.assertEqual(output_rules.count("Look Frame试片帧"), 2)
+        self.assertIn("Look Frame试片帧", prompt_rules)
+
+    def test_director_layer_and_contract_own_it(self) -> None:
+        director = (ROOT / "knowledge/director_decision_layer.md").read_text(encoding="utf-8-sig")
+        contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        self.assertIn("四维度从草案到锁定之间允许执行一次可选`Look Frame`", director)
+        self.assertIn("与其可选`Look Frame`由Director层拥有", contracts)
+
+
+class R60AestheticJudgementTests(unittest.TestCase):
+    """Two of the hundred points used to ask only whether the Lock was copied.
+    Copying a rule is not the same as making a choice visible."""
+
+    def _scorecard(self) -> str:
+        return (ROOT / "knowledge/quality/prompt_scorecard.md").read_text(encoding="utf-8-sig")
+
+    def test_aesthetic_dimensions_ask_for_visible_choices(self) -> None:
+        card = self._scorecard()
+        self.assertIn("### Aesthetic Criteria｜两项审美维度的评分依据", card)
+        for criterion in ("视觉重心唯一", "明暗有层级", "色彩有主从", "取舍可见", "不平均"):
+            with self.subTest(criterion=criterion):
+                self.assertIn(criterion, card)
+
+    def test_restating_the_lock_is_not_enough(self) -> None:
+        card = self._scorecard()
+        self.assertIn("取舍在Prompt里是否可见", card)
+        self.assertIn("不得只复述Lock的措辞", card)
+
+    def test_hard_gate_requires_visible_tradeoff_evidence(self) -> None:
+        card = self._scorecard()
+        self.assertIn("未写出可见取舍证据", card)
+
+    def test_the_honest_limit_is_still_declared(self) -> None:
+        """Scoring still cannot judge taste; the remaining half belongs to the
+        look frame and to human review, and saying so is the point."""
+        card = self._scorecard()
+        self.assertIn("本评分仍不能替代人工审美判断", card)
+        self.assertIn("由STATE-04的`Look Frame`与STATE-09的人工Review承担", card)
+
+    def test_weights_are_unchanged(self) -> None:
+        card = self._scorecard()
+        self.assertIn("| Story / Shot Purpose Fidelity | 15 |", card)
+        self.assertIn("| Spatial / Action / Boundary Continuity | 20 |", card)
+        self.assertIn("| Seedance Stability And Risk Downgrade | 15 |", card)
+        self.assertIn("| Template / Semantic Projection Discipline | 5 |", card)
 
 
 if __name__ == "__main__":

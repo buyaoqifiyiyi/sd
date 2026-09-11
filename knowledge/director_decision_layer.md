@@ -161,6 +161,8 @@ Screenwriter Module先控制Dramatic Intent、Character Objective、Relationship
 
 Visual Grammar Baseline之后必须完成`Aesthetic Decision Lock`：在反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹四个维度各做出一次排他性决定。Baseline只描述世界的稳定倾向，Lock必须给出选择、被放弃的选项、事实依据与可见后果。没有放弃项的表述是描述而不是决定，不得写入Project Bible。四项决定共用`Mandatory Director Questions`的判定纪律：只能用风格标签、技巧名称、器材参数或“为了电影感”回答时，项目级决策与Shot级决策同样不合格。四项决定是项目级承诺，不是逐镜参数；具体焦段、机位、运镜与逐镜光态仍由STATE-06决定。
 
+四维度从草案到锁定之间允许执行一次可选`Look Frame`：用已确认资产出1—3张试片帧，把最不确定的美学问题落到画面上，由用户判断后修正并锁定。Look Frame属于**非生产视觉材料**，不登记为工件、不写入项目状态、不进入STATE-05之后任何阶段，也不得作为STATE-08参考资产；它不新增Project Bible区域，不改变四维度定义，判断必须由用户给出。工具不可用或用户不想出图时记录原因跳过，不得声称做过试片或已确认画面效果。
+
 ### STATE-05 Scene Breakdown
 
 先消费Writer Beat Map、Scene Value / Relationship / Information Change、Setup / Payoff Function与Scene Exit State；Director不重写这些Beat，而是以Visual Grammar Baseline为底补充Performance Beat、Scene / Dramatic Geography、当前空间的戏剧功能、必要Scene Delta、Spatial Evolution、Reveal / Withhold呈现与Beat-to-beat Rhythm。每场形成轻量`Scene Camera Strategy`：观察 / 跟随 / 隐藏 / 揭示 / 压住 / 释放，以及Audience Position和何处Hold；不得写具体焦段、机位或运镜路径。已确认的`Rhythm Intent`同时投影为`templates/07_scene_design_prompt.md`的`Scene Directing Brief`字段，与`Scene Camera Strategy`并列，供条件性Sequence Planning与STATE-06消费；它只描述节奏意图，不预定镜头数量，也不写景别、焦段、机位或运镜路径。未确认时写`Pending`，不得由Writer Beat数量反推。
