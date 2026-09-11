@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r53 SD Film validator."""
+"""Regression tests for the r54 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -917,6 +917,13 @@ class R53LongTermBudgetMaintenanceTests(unittest.TestCase):
             [("big/thing.md", 80 * 1024)], {"big/thing.md": 50.0}
         )
         self.assertTrue(any("stale" in item for item in findings))
+
+    def test_duplicate_rule_check_also_requires_consolidation_judgement(self) -> None:
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(encoding="utf-8-sig")
+        for marker in ("必须显式判定是否存在可合并或可退役的既有规则",
+                       "merge_existing", "deprecate/remove", "Additive By Default"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, criteria)
 
     def test_current_ledger_sizes_are_accurate(self) -> None:
         self.assertEqual(

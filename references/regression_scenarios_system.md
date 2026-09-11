@@ -639,3 +639,11 @@ FAIL：把体检当作唯一防线，或让Ledger记录的体量长期与实测�
 PASS：字节阈值、文件类别合法性、Ledger一致性、`NON_RUNTIME`自证全部由`scripts/validate_sd_film.py`确定性执行，不依赖维护者是否记得读规则。
 
 FAIL：把体量约束只写成文档要求而不落进Validator，使是否遵守取决于自觉。
+
+### R54-E Subtraction Channel Is Exercised, Not Just Declared
+
+输入：一次正式修改新增了规则或机制。
+
+PASS：`Duplicate Rule Check`除查重复外，还显式判定是否存在可合并或可退役的既有规则，并写明依据；结论为“无”时同样记录判断依据。`merge_existing`与`deprecate/remove`是可用且被评估过的变更分类。
+
+FAIL：把`Additive By Default`解释成规则总量只增不减；连续多个周期只出现`optimize_existing`与`add_new`，却从未评估过任何一条既有规则是否已被覆盖、吸收或不再有触发条件。历史上51个提交的内容型变更增删比在6:1至190:1之间、全部deletions都是搬家或重写，即属本项FAIL的实测样本。

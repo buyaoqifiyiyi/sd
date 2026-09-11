@@ -21,6 +21,7 @@
 ## Dimension Criteria
 
 1. **Duplicate Rule Check**：搜索语义相同但措辞不同的并行规则，以及本应由单一来源拥有却复制到`SKILL.md`、Rule、Workflow、Knowledge、Template、Reference或Validator的规范。保留一个权威来源，其他位置只保留必要路由、引用或不变量，不复制完整协议或Schema。
+   本项还**必须显式判定是否存在可合并或可退役的既有规则**：本次新增是否使某条既有规则过时、被覆盖、被吸收或不再有触发条件；结论为“无”时必须写明依据。`Additive By Default`保护的是既有字段与已确认行为不被破坏，**不是规则总量可以无限增长**——`merge_existing`与`deprecate/remove`是既有变更分类，若长期从未被使用，说明本项已退化为“只查重复、不查冗余”，这一点本身必须作为发现项上报。
 2. **Conflict Check**：核对Pipeline、STATE编号、Gate、优先级、默认行为与辅助模块边界。重点排除显式调用与默认必经并存、Storyboard Auxiliary与固定STATE并存、Shot/Clip/Prompt单位关系冲突，以及同一Template字段被不同文件定义。
 3. **Terminology Drift Check**：复用当前正式术语与ID，包括Shot、Clip、Prompt、Voice Profile、Accepted Take、Accepted Canon State、Shot-State Memory、Reference Selection / Routing、REF-TAIL、Visual Blocking Anchor、Visual Anchor State与Blocking Signature。新名称只有在代表新概念且不会形成同义命名时才允许。
 4. **Rule Ownership Check**：按本文件Authority Matrix检查归属。`SKILL.md`只保留身份、版本、入口、主路由、全局硬规则和索引；详细算法、门槛、知识、Schema与合同分别留在Workflow、Rules、Knowledge、Templates和References。不得为提高可见性而在入口复制细粒度规则或Template字段。
