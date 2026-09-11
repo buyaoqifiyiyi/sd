@@ -100,6 +100,13 @@ Confirmed Status：No / Yes
 
 # Required Output
 
+### Asset Batch Envelope
+
+本Template按`rules/02_asset_rules.md`的`Asset Batch Delivery`成批交付。批次封套至少写出`Batch ID`、`Included CHAR IDs`及其Asset Tier与生产形态、已选图像模型与Scope。同一生产形态内整批走两轮：先整批输出各CHAR的完整Prompt Package并停止等待批次确认，再整批生成并把保留项一次性作为Candidate展示、停止等待批次确认。
+
+封套只组织交付与确认的切片：批内每个CHAR仍逐项保留完整字段、Prompt Revision与Prompt / Image / Confirmed状态，不得用合并表头、摘要或“同上”代替任何单项内容，也不得因批量省略单项QA。用户按`rules/progression_rules.md`的`Exception-Based Batch Confirmation`挑拣时，被指出的CHAR退回其自身最小Return Route，同批其余CHAR保持已确认状态。Core与Support不得混入同一批次，外观参考图与正式资产图不得混为一批。
+
+
 ## Phased Output Contract
 
 ### Image Model Selection Prerequisite

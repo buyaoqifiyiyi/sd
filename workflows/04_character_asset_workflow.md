@@ -98,7 +98,7 @@ Board ID与Item ID（Support必填；Core为`Not Applicable`）。
 
 ## Visual Production Sequence
 
-角色视觉资产固定执行。Support角色使用标准双确认闭环；Core角色额外先通过外观参考确认：
+角色视觉资产按`rules/02_asset_rules.md`的`Asset Batch Delivery`分批交付：同一Asset Tier、同一生产形态与同一已选图像模型归为一批，整批出Prompt、整批出图、整批确认，不逐角色停顿。Support角色使用标准双确认闭环；Core角色额外先通过外观参考确认：
 
 ```text
 Asset Design
@@ -139,8 +139,8 @@ Core的外观参考图是正式资产前的设计确认，不进入Asset Registr
 
 进入制作前必须读取STATE-02的Asset Tiering Decision，不得在STATE-03凭方便重分层：
 
-- `Asset Tier: Core`：对该CHAR独立执行角色定义 → 外观参考图Prompt → 用户确认外观参考Prompt → 生成外观参考图 → 用户确认外观 → 正式角色资产设定图Prompt（同一画布内的面部特写 + 正面、严格侧面、背面全身三视图）→ 必要状态变体提示词 → 用户确认正式资产Prompt → 生成正式资产图 → 用户确认正式资产图 → 登记。基础正式资产不得拆成独立三视图图和独立面部特写图，外观参考图不得替代正式资产。
-- `Asset Tier: Support`：按STATE-02分配的同类型Board ID与Item ID进入Support Character Reference Board；不得为每个Support角色制作完整三视图、独立面部特写或完整独立资产包。Board建议包含4—9个对象，统一项目风格，同时用轮廓、服饰、颜色、比例和功能差异清楚区分每个Item。
+- `Asset Tier: Core`：批次内对该CHAR独立执行角色定义 → 外观参考图Prompt → 用户确认外观参考Prompt → 生成外观参考图 → 用户确认外观 → 正式角色资产设定图Prompt（同一画布内的面部特写 + 正面、严格侧面、背面全身三视图）→ 必要状态变体提示词 → 用户确认正式资产Prompt → 生成正式资产图 → 用户确认正式资产图 → 登记。基础正式资产不得拆成独立三视图图和独立面部特写图，外观参考图不得替代正式资产。
+- `Asset Tier: Support`：批次内按STATE-02分配的同类型Board ID与Item ID进入Support Character Reference Board；不得为每个Support角色制作完整三视图、独立面部特写或完整独立资产包。Board建议包含4—9个对象，统一项目风格，同时用轮廓、服饰、颜色、比例和功能差异清楚区分每个Item。
 
 Core与Support都必须执行同一双确认闭环。Support Board图片确认前，Board及其Item均不得标记confirmed；部分Item未获明确批准时，不得用对整板的含糊确认替代。
 
@@ -319,7 +319,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 - `Confirmed Status: No`
 - `Awaiting User Confirmation: Image Prompts`
 
-到此必须停止并等待当前Prompt Revision确认；选择Built-in Image也不得跳过该Prompt确认。
+到此必须停止并等待当前批次Prompt Revision确认；同批角色在同一轮交付，不逐角色停止。选择Built-in Image不得跳过该Prompt确认；仅当`Image Delivery Mode: DIRECT_IMAGE`、当前执行环境确实具备出图能力且QA通过时，才按`rules/02_asset_rules.md`的Prompt Gate在同一轮自行确认本批Prompt Revision并继续生成，Prompt仍完整留档。
 
 
 ---
@@ -366,7 +366,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 
 # 09 Image Confirmation Gate
 
-Core外观参考图生成后，用户必须先明确确认外观或要求修改；确认外观只允许进入正式资产Prompt Draft，不得将外观参考图、角色视觉资产或CHAR Version视为confirmed asset。正式资产图生成后，用户必须明确批准具体Candidate Reference。Support分支还必须能核对Board ID、Item ID与图中对应对象；批准前不得将角色视觉资产、Board或Item视为confirmed asset。
+Core外观参考图生成后，用户必须先明确确认外观或要求修改；确认外观只允许进入正式资产Prompt Draft，不得将外观参考图、角色视觉资产或CHAR Version视为confirmed asset。正式资产图生成后，用户必须按批次明确批准该批具体Candidate Reference；按其挑拣时，被指出的角色只退该角色，同批其余角色保持确认。Support分支还必须能核对Board ID、Item ID与图中对应对象；批准前不得将角色视觉资产、Board或Item视为confirmed asset。
 
 图片被拒绝时：仅重生则回到`Prompt Confirmed`；需要修改Prompt则返回`Prompt Draft`并重新走Prompt Confirmation Gate。
 

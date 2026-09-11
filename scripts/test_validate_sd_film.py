@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r69 SD Film validator."""
+"""Regression tests for the r70 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -1620,6 +1620,186 @@ class R68WorkflowRoutingIntegrityTests(unittest.TestCase):
             scratch.mkdir()
             (scratch / "note.md").write_text("见 `rules/gone.md`。\n", encoding="utf-8")
             self.assertEqual(validator.check_internal_references(root), [])
+
+
+class BatchDeliveryTests(unittest.TestCase):
+    """Batched asset delivery: one owner for the definition, one for the confirmation semantics."""
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        relatives = set(validator.BATCH_DELIVERY_CONSUMERS)
+        relatives |= set(validator.BATCH_DELIVERY_NON_OWNERS)
+        relatives |= set(validator.CONFIRMATION_NON_OWNERS)
+        relatives.add(validator.BATCH_DELIVERY_OWNER)
+        relatives.add(validator.CONFIRMATION_OWNER)
+        for relative in relatives:
+            text = overrides.get(relative)
+            if text is None:
+                if relative == validator.BATCH_DELIVERY_OWNER:
+                    text = validator.BATCH_DELIVERY_SECTION + "\n"
+                elif relative == validator.CONFIRMATION_OWNER:
+                    text = validator.CONFIRMATION_SECTION + "\n"
+                else:
+                    text = "Asset Batch Delivery\n"
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+    def test_fixture_is_clean_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_batch_delivery_ownership(root), [])
+
+    def test_missing_owner_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {validator.BATCH_DELIVERY_OWNER: "no section here\n"})
+            self.assertIn(
+                f"{validator.BATCH_DELIVERY_OWNER} must own the "
+                f"{validator.BATCH_DELIVERY_SECTION} section",
+                validator.check_batch_delivery_ownership(root),
+            )
+
+    def test_consumer_without_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            target = "workflows/05_environment_asset_workflow.md"
+            self._fixture(root, {target: "no batch routing here\n"})
+            self.assertIn(
+                f"batch delivery must route to its owner: {target}",
+                validator.check_batch_delivery_ownership(root),
+            )
+
+    def test_second_owner_of_the_batch_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            target = "workflows/04_character_asset_workflow.md"
+            self._fixture(
+                root,
+                {target: "Asset Batch Delivery\n" + validator.BATCH_DELIVERY_SECTION + "\n"},
+            )
+            self.assertIn(
+                f"Asset Batch Delivery must not be re-owned: {target}",
+                validator.check_batch_delivery_ownership(root),
+            )
+
+    def test_reowned_confirmation_semantics_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {"rules/02_asset_rules.md": validator.CONFIRMATION_SECTION + "\n"})
+            self.assertIn(
+                "confirmation semantics must stay with their owner: rules/02_asset_rules.md",
+                validator.check_batch_delivery_ownership(root),
+            )
+
+    def test_active_skill_splits_batch_definition_from_confirmation(self) -> None:
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
+        self.assertIn(validator.BATCH_DELIVERY_SECTION, rules)
+        self.assertIn(validator.CONFIRMATION_SECTION, progression)
+        self.assertNotIn(validator.CONFIRMATION_SECTION, rules)
+        self.assertIn("Prompt Draft不得触发图片生成", rules)
+        self.assertIn("未经批次展示的Candidate不得因用户沉默", rules)
+
+    def test_asset_workflows_and_templates_carry_the_batch_envelope(self) -> None:
+        for relative in (
+            "workflows/04_character_asset_workflow.md",
+            "workflows/05_environment_asset_workflow.md",
+            "workflows/06_prop_asset_workflow.md",
+            "workflows/15_fx_asset_workflow.md",
+        ):
+            self.assertIn("分批交付", (ROOT / relative).read_text(encoding="utf-8-sig"), relative)
+        for relative in (
+            "templates/04_character_asset_prompt.md",
+            "templates/05_environment_asset_prompt.md",
+            "templates/06_prop_asset_prompt.md",
+        ):
+            self.assertIn(
+                "### Asset Batch Envelope",
+                (ROOT / relative).read_text(encoding="utf-8-sig"),
+                relative,
+            )
+
+
+class DeliveryModeTests(unittest.TestCase):
+    """Image Delivery Mode: one owner for the mode, capability-based routing everywhere else."""
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        relatives = {relative for relative, _ in validator.DELIVERY_MODE_CONSUMERS}
+        relatives |= set(validator.DELIVERY_MODE_NON_OWNERS)
+        relatives.add(validator.DELIVERY_MODE_OWNER)
+        for relative in relatives:
+            text = overrides.get(relative)
+            if text is None:
+                markers = [
+                    marker
+                    for consumer, marker in validator.DELIVERY_MODE_CONSUMERS
+                    if consumer == relative
+                ]
+                if relative == validator.DELIVERY_MODE_OWNER:
+                    text = validator.DELIVERY_MODE_SECTION + "\n"
+                elif markers:
+                    text = "\n".join(markers) + "\n"
+                else:
+                    text = "unrelated content\n"
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+    def test_fixture_is_clean_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_delivery_mode_ownership(root), [])
+
+    def test_missing_owner_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {validator.DELIVERY_MODE_OWNER: "no mode section\n"})
+            self.assertIn(
+                f"{validator.DELIVERY_MODE_OWNER} must own the "
+                f"{validator.DELIVERY_MODE_SECTION} section",
+                validator.check_delivery_mode_ownership(root),
+            )
+
+    def test_consumer_without_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            target = "core/runtime-state.md"
+            self._fixture(root, {target: "no delivery mode view\n"})
+            self.assertIn(
+                f"image delivery mode must route to its owner: {target}",
+                validator.check_delivery_mode_ownership(root),
+            )
+
+    def test_second_owner_of_the_mode_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            target = "rules/02_asset_rules.md"
+            self._fixture(
+                root,
+                {target: "Image Delivery Mode\n" + validator.DELIVERY_MODE_SECTION + "\n"},
+            )
+            self.assertIn(
+                f"Image Delivery Mode must not be re-owned: {target}",
+                validator.check_delivery_mode_ownership(root),
+            )
+
+    def test_active_skill_routes_the_mode_from_setup_to_batch(self) -> None:
+        mode = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
+        setup = (ROOT / "workflows/01_project_setup_workflow.md").read_text(encoding="utf-8-sig")
+        state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        self.assertIn("`AUTO`（默认）", mode)
+        self.assertIn("`DIRECT_IMAGE`", mode)
+        self.assertIn("`PROMPT_ONLY`", mode)
+        self.assertIn("不得用历史会话、其他平台或上一次运行的能力推断本轮环境", mode)
+        self.assertIn("Image Delivery Mode", setup)
+        self.assertIn("Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY", state)
+        self.assertIn("`Automation Policy: FAST`或`Image Delivery Mode: DIRECT_IMAGE`", rules)
+        self.assertIn("不得伪造生成结果", rules)
 
 
 if __name__ == "__main__":

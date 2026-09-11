@@ -48,6 +48,8 @@ Module Type：STATE-03 Character / Environment / Prop主资产Workflow与正式F
 
 所属位置：STATE-03 Asset Development内部，固定顺序为`Asset Design → Image Prompt Generation → 用户确认提示词 → Image Generation → 用户确认图片 → Asset Registry`。
 
+批次交付：STATE-03以批次为默认生产与确认单位，当前批次交付图片还是交付Prompt由STATE-00的`Image Delivery Mode`经`modules/image-model-selection.md`投影为`Image Delivery Route`决定；批次构成、分批与两轮交付由`rules/02_asset_rules.md`的`Asset Batch Delivery`唯一拥有；挑拣退回、整体否决与推进表达的含义由`rules/progression_rules.md`的`Exception-Based Batch Confirmation`拥有。本层只声明不变量：批次不得改变四态生命周期、单项Prompt / Image确认、Canonical绑定或Support的Board ID / Item ID映射，不得让未展示项因用户沉默而确认，也不得让同批其他项的确认掩盖被退回项的Hard Gate。
+
 Two-Tier执行：STATE-02为每个CHAR、ENV、PROP拥有Asset Tiering Decision。Core满足主角/固定角色、跨场景或跨Clip复用、强剧情/角色/品牌识别、高一致性、关键场景或剧情关键道具之一，并在STATE-03独立制作；Support为一次性配角/群演、群体背景角色、同类家具与环境小物、氛围装饰、低频道具等，按同一资产类型与相近用途进入Support Reference Board。该分层是STATE-02/03内部决策，不创建新STATE，不替代Primary / Secondary / Background优先级，也不改变正式FX路由。
 
 Support Board建议4—9个对象，必须具有稳定Board ID与逐项Item ID，统一风格但明确轮廓、服饰/材质、颜色、比例和功能差异；不得跨CHAR / ENV / PROP混板，不得逐项制作完整三视图或独立资产套图。下游引用使用`<Board Name> / <Board ID> / <Item ID>`。

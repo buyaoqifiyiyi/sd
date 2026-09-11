@@ -231,7 +231,7 @@ Core环境必须包含：
 
 # 6. Image Prompt Generation
 
-先完成环境定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/05_environment_asset_prompt.md`输出完整可直接生图的Prompt Package：
+环境资产按`rules/02_asset_rules.md`的`Asset Batch Delivery`分批交付：同一Asset Tier、同一生产形态与同一已选模型归为一批，整批出Prompt、整批出图、整批确认，不逐环境停顿。先完成环境定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/05_environment_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
 - 主参考图Prompt（Main Reference Image Prompt）：通常为Wide Shot；适用空间重建时为`ENV-01 Master Establishing View`，完整建立环境身份、空间骨架、主要动线、建筑/地形关系、材质、实用光源与综合色彩。
 - 必要多视角Prompt（Required Multi-View Prompts）：先依空间重建Decision决定`Full / Partial / Not Required`。Full按`ENV-01 → ENV-02`、`ENV-01 + ENV-02 → ENV-03`、`ENV-01 + ENV-02 + ENV-03 → ENV-04`使用已确认多参考累积约束；不得采用纯单链漂移。Partial只输出有明确拍摄/连续性用途的View；不需要时写`Not Required`及依据。
@@ -245,7 +245,7 @@ Support环境参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 白天、夜晚、雨天等变化状态只有在Asset Discovery或剧本确认需要时才建立；它们必须继承Immutable Spatial Traits。
 
-首次输出写`Visual Production Status: Prompt Draft`、`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`、`Prompt Revision`与`Awaiting User Confirmation: Image Prompts`，然后停止等待用户确认。
+首次输出写`Visual Production Status: Prompt Draft`、`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`、`Prompt Revision`与`Awaiting User Confirmation: Image Prompts`；`PROMPT_ONLY`、或`AUTO`且当前环境无出图能力时，在此停止等待批次确认，同批资产在同一轮交付、不逐项停止；`DIRECT_IMAGE`且当前执行环境确实具备出图能力、QA通过时，按`rules/02_asset_rules.md`的Prompt Gate在同一轮自行确认本批Prompt Revision并继续生成，Prompt仍完整留档。
 
 
 ---
@@ -263,7 +263,7 @@ Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 
-只有用户明确批准具体Candidate Reference后，才进入Asset Registry。Support还必须核对Board ID、Item ID与图中对象对应关系；未明确批准的Item不得confirmed。图片被拒绝时，仅重生返回`Prompt Confirmed`；修改Prompt返回`Prompt Draft`并重新确认。
+只有用户按批次明确批准该批具体Candidate Reference后，才进入Asset Registry；按其挑拣时，被指出的项只退该项，同批其余项保持确认。Support还必须核对Board ID、Item ID与图中对象对应关系；未明确批准的Item不得confirmed。图片被拒绝时，仅重生返回`Prompt Confirmed`；修改Prompt返回`Prompt Draft`并重新确认。
 
 
 

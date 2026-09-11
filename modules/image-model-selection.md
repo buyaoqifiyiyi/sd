@@ -4,6 +4,8 @@
 
 位置：STATE-00确认项目图像模型默认项；STATE-03中，当前资产批次的资产定义已可读、任何新Image Prompt编译之前，直接继承该默认项或处理明确例外。它不创建主STATE，也不属于视频模型选择。
 
+本模块同时拥有项目级**图像交付形态**（`Image Delivery Mode`）的选择与路由：模型选择回答“用哪个工具”，交付形态回答“这一轮交付图片还是交付Prompt”，两者相互独立、不得互相推断。
+
 ### Trigger
 
 1. STATE-00新项目初始化：必须提出一次`Project Model Selection Proposal`，其中含项目图像模型默认项与视频模型偏好；用户已指定图像模型时直接作为唯一候选，展示后等待确认。
@@ -55,3 +57,36 @@ STATE-00确认后写入State Contract的`Project Image Model Default`与选择�
 本Module只拥有项目图像默认项、当前批次例外选择、Adapter / Template路由和选择写回；资产定义、Prompt / Image确认、Candidate、Canonical和Registry仍分别由资产Workflow、`rules/02_asset_rules.md`、资产类别Template与`references/asset_lock_contract.md`拥有。
 
 允许写入：State Contract中的Image Model Selection字段和当前Asset Prompt Package的Target / Template / Delivery记录。禁止写入视频Model Lock、Clip、视频Prompt或主STATE。每个`SELECTED`模型必须有唯一、存在且匹配Adapter声明的最终提示词模板。
+
+## Image Delivery Mode
+
+模型选择回答“用哪个工具”，交付形态回答“这一轮交付图片还是交付Prompt”。两者独立：不得由模型反推交付形态，也不得由交付形态反推模型。
+
+### 三档形态
+
+| Mode | 行为 |
+|---|---|
+| `AUTO`（默认） | 按**当前执行环境的真实图像生成能力**路由：能直接出图则按`DIRECT_IMAGE`行为，不能则按`PROMPT_ONLY`行为 |
+| `DIRECT_IMAGE` | 始终尝试直接生成；当前环境无能力时降级为`PROMPT_ONLY`行为并明确标注能力不可用，不得伪造生成结果 |
+| `PROMPT_ONLY` | 始终只交付Prompt，不调用内置生成；适用于用户要在其他平台自行出图 |
+
+`AUTO`不是猜测：判据是当前执行环境在**本轮**是否存在可实际调用的图像生成能力。不得用历史会话、其他平台或上一次运行的能力推断本轮环境，也不得因为曾经生成过就假设当前可生成。
+
+### Trigger
+
+1. STATE-00初始化：`Project Model Selection Proposal`必须同时包含图像模型默认项与`Image Delivery Mode`。
+2. 用户当前请求明确指定时（例如“直接出图”“不要给我Prompt”“只要Prompt”），直接设为对应形态并展示一次确认，不重复询问。
+3. 用户随时可以改：说“以后直接出图”写`DIRECT_IMAGE`；说“只要Prompt / 我在别处出图”写`PROMPT_ONLY`；说“你按环境来 / 你自己看着办”写`AUTO`。改动只影响之后的批次，不追溯改写已确认资产与既有生成记录。
+4. 未设置时为`AUTO`，不阻塞任何资产流程。
+
+### 与 STATE-03 的关系
+
+交付形态只决定当前批次的两轮怎么走，不改变资产定义、Asset Tier、Prompt / Image双确认的实质或任何Hard Stop：
+
+- `PROMPT_ONLY`：批次Prompt轮照常停止等待确认；图片来自用户外部生成后的回传。
+- `DIRECT_IMAGE`且当前环境确有出图能力：批次Prompt轮仍必须输出完整Prompt并留档，但在输入完整、不触`rules/automation_mode.md`的Hard Stop且当前QA通过时，可在同一轮自行确认该Prompt Revision并按`Asset Batch Delivery`继续生成整批，不再为Prompt额外停一轮。该授权**复用`rules/automation_mode.md`的既有条款**，不新立一套。
+- 无论哪种形态，图片确认都是Hard Gate，仍按`Exception-Based Batch Confirmation`整批判读；`DIRECT_IMAGE`不授权自动批准图片，也不得把未确认图片登记为Canonical / Active。
+
+### 写回
+
+STATE-00确认后写入State Contract的`Image Delivery Mode`；STATE-03在批次Profile中把它投影为既有的`Image Delivery Route`并按该Route执行。它不创建STATE、不改写`Selected Image Model`、不授权外部提交。

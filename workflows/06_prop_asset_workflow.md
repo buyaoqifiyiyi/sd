@@ -187,7 +187,7 @@ Asset Tier、Tier Decision Basis、Board ID与Item ID。
 
 # 6. Image Prompt Generation
 
-先完成道具定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/06_prop_asset_prompt.md`输出完整可直接生图的Prompt Package：
+道具资产按`rules/02_asset_rules.md`的`Asset Batch Delivery`分批交付：同一Asset Tier、同一生产形态与同一已选模型归为一批，整批出Prompt、整批出图、整批确认，不逐道具停顿。先完成道具定义，再完成`modules/image-model-selection.md`的选择确认；按`modules/assets.md`的Asset Image Route、已选模型Template、Asset Tier和`templates/06_prop_asset_prompt.md`输出完整可直接生图的Prompt Package：
 
 - 主参考图Prompt（Main Reference Image Prompt）：生成一张`1×4横版道具设定图`，从左至右固定为正面、侧面、背面、关键细节；四格必须是同一道具、同一版本、同一材质与状态，清楚锁定整体形态、比例、结构与关键识别细节。
 - 必要状态Prompt（Required State Variant Prompts）：只为剧本确认的开合、点亮、破损、沾污、装填、耗尽等状态输出；不需要时写`Not Required`及依据。
@@ -200,7 +200,7 @@ Support道具参考板Prompt按一个Board输出一条完整可执行Prompt，�
 
 每条Prompt必须完整包含道具主体、尺度参照、结构、材质、表面状态、视点/构图、光影、背景控制、项目视觉风格、一致性限制、必要负面限制与当前图像工具所需参数。不得只写外观说明，也不得使用脱离上下文后不可执行的“同上/参考前述”。
 
-首次输出写`Visual Production Status: Prompt Draft`、`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`、`Prompt Revision`与`Awaiting User Confirmation: Image Prompts`，然后停止等待用户确认。
+首次输出写`Visual Production Status: Prompt Draft`、`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`、`Prompt Revision`与`Awaiting User Confirmation: Image Prompts`；`PROMPT_ONLY`、或`AUTO`且当前环境无出图能力时，在此停止等待批次确认，同批资产在同一轮交付、不逐项停止；`DIRECT_IMAGE`且当前执行环境确实具备出图能力、QA通过时，按`rules/02_asset_rules.md`的Prompt Gate在同一轮自行确认本批Prompt Revision并继续生成，Prompt仍完整留档。
 
 
 ---
@@ -218,7 +218,7 @@ Prompt Confirmed后按`modules/assets.md`的已记录路由执行：仅已选择
 
 如果当前环境不能直接生成图片，明确写`Image Generation Availability: Unavailable`并保持STATE-03 `IN_PROGRESS`；用户可用已确认Prompt外部生成并回传，完成来源记录后进入`Image Generated`。
 
-只有用户明确批准具体Candidate Reference后，才进入Asset Registry。Support还必须核对Board ID、Item ID与图中对象对应关系；未明确批准的Item不得confirmed。图片被拒绝时，仅重生返回`Prompt Confirmed`；修改Prompt返回`Prompt Draft`并重新确认。
+只有用户按批次明确批准该批具体Candidate Reference后，才进入Asset Registry；按其挑拣时，被指出的项只退该项，同批其余项保持确认。Support还必须核对Board ID、Item ID与图中对象对应关系；未明确批准的Item不得confirmed。图片被拒绝时，仅重生返回`Prompt Confirmed`；修改Prompt返回`Prompt Draft`并重新确认。
 
 
 ---

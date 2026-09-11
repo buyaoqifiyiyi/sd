@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r69 structural, routing and readability validation for SD Film."""
+"""Deterministic r70 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -339,6 +339,102 @@ def check_internal_references(root: Path) -> list[str]:
                 )
     return errors
 
+BATCH_DELIVERY_OWNER = "rules/02_asset_rules.md"
+BATCH_DELIVERY_SECTION = "### Asset Batch Delivery"
+BATCH_DELIVERY_CONSUMERS = (
+    "workflows/04_character_asset_workflow.md",
+    "workflows/05_environment_asset_workflow.md",
+    "workflows/06_prop_asset_workflow.md",
+    "workflows/15_fx_asset_workflow.md",
+    "templates/04_character_asset_prompt.md",
+    "templates/05_environment_asset_prompt.md",
+    "templates/06_prop_asset_prompt.md",
+    "modules/assets.md",
+)
+BATCH_DELIVERY_NON_OWNERS = (
+    "workflows/04_character_asset_workflow.md",
+    "workflows/05_environment_asset_workflow.md",
+    "workflows/06_prop_asset_workflow.md",
+    "templates/04_character_asset_prompt.md",
+    "templates/05_environment_asset_prompt.md",
+    "templates/06_prop_asset_prompt.md",
+    "modules/assets.md",
+    "rules/automation_mode.md",
+    "references/module_contracts_production.md",
+)
+CONFIRMATION_OWNER = "rules/progression_rules.md"
+CONFIRMATION_SECTION = "### Exception-Based Batch Confirmation"
+CONFIRMATION_NON_OWNERS = (
+    "rules/02_asset_rules.md",
+    "rules/automation_mode.md",
+    "references/module_contracts_production.md",
+    "templates/04_character_asset_prompt.md",
+    "workflows/04_character_asset_workflow.md",
+)
+
+
+DELIVERY_MODE_OWNER = "modules/image-model-selection.md"
+DELIVERY_MODE_SECTION = "## Image Delivery Mode"
+DELIVERY_MODE_CONSUMERS = (
+    ("modules/assets.md", "Image Delivery Mode"),
+    ("rules/02_asset_rules.md", "Image Delivery Mode"),
+    ("rules/automation_mode.md", "Image Delivery Mode"),
+    ("references/project_state_contract.md", "Image Delivery Mode"),
+    ("references/module_contracts_production.md", "Image Delivery Mode"),
+    ("workflows/01_project_setup_workflow.md", "图像交付形态"),
+    ("workflows/04_character_asset_workflow.md", "Image Delivery Mode"),
+    ("workflows/05_environment_asset_workflow.md", "DIRECT_IMAGE"),
+    ("workflows/06_prop_asset_workflow.md", "DIRECT_IMAGE"),
+    ("workflows/15_fx_asset_workflow.md", "Image Delivery Mode"),
+    ("templates/00_project_start_template.md", "图像交付形态"),
+    ("core/runtime-state.md", "IMAGE_DELIVERY_MODE"),
+    ("USER_GUIDE.md", "DIRECT_IMAGE"),
+)
+DELIVERY_MODE_NON_OWNERS = (
+    "rules/02_asset_rules.md",
+    "modules/assets.md",
+    "rules/automation_mode.md",
+    "references/project_state_contract.md",
+    "references/module_contracts_production.md",
+    "workflows/01_project_setup_workflow.md",
+    "USER_GUIDE.md",
+)
+
+
+def check_delivery_mode_ownership(root: Path) -> list[str]:
+    """Image delivery mode is a project-level choice owned by one module and routed everywhere else."""
+    errors: list[str] = []
+    owner_text = read(root, DELIVERY_MODE_OWNER)
+    if DELIVERY_MODE_SECTION not in owner_text:
+        errors.append(f"{DELIVERY_MODE_OWNER} must own the {DELIVERY_MODE_SECTION} section")
+    for relative, marker in DELIVERY_MODE_CONSUMERS:
+        if marker not in read(root, relative):
+            errors.append(f"image delivery mode must route to its owner: {relative}")
+    for relative in DELIVERY_MODE_NON_OWNERS:
+        if DELIVERY_MODE_SECTION in read(root, relative):
+            errors.append(f"Image Delivery Mode must not be re-owned: {relative}")
+    return errors
+
+
+def check_batch_delivery_ownership(root: Path) -> list[str]:
+    """Batch delivery has one owner for its definition and one for its confirmation semantics."""
+    errors: list[str] = []
+    if BATCH_DELIVERY_SECTION not in read(root, BATCH_DELIVERY_OWNER):
+        errors.append(f"{BATCH_DELIVERY_OWNER} must own the {BATCH_DELIVERY_SECTION} section")
+    for relative in BATCH_DELIVERY_CONSUMERS:
+        if "Asset Batch Delivery" not in read(root, relative):
+            errors.append(f"batch delivery must route to its owner: {relative}")
+    for relative in BATCH_DELIVERY_NON_OWNERS:
+        if BATCH_DELIVERY_SECTION in read(root, relative):
+            errors.append(f"Asset Batch Delivery must not be re-owned: {relative}")
+    if CONFIRMATION_SECTION not in read(root, CONFIRMATION_OWNER):
+        errors.append(f"{CONFIRMATION_OWNER} must own the {CONFIRMATION_SECTION} section")
+    for relative in CONFIRMATION_NON_OWNERS:
+        if CONFIRMATION_SECTION in read(root, relative):
+            errors.append(f"confirmation semantics must stay with their owner: {relative}")
+    return errors
+
+
 def validate_skill(root: Path) -> list[str]:
     errors: list[str] = []
     for relative in REQUIRED:
@@ -417,6 +513,7 @@ def validate_skill(root: Path) -> list[str]:
     knowledge_index = read(root, "knowledge/00_knowledge_index.md")
     script_analysis = read(root, "workflows/02_script_analysis_workflow.md")
     contracts_knowledge = read(root, "references/module_contracts_knowledge.md")
+    contracts_production = read(root, "references/module_contracts_production.md")
     shot_design = read(root, "workflows/09_shot_design_workflow.md")
     scene_breakdown = read(root, "workflows/08_scene_breakdown_workflow.md")
     scene_template = read(root, "templates/07_scene_design_prompt.md")
@@ -662,10 +759,42 @@ def validate_skill(root: Path) -> list[str]:
         (review_template, "## Aesthetic Judgement（对照STATE-04 Aesthetic Decision Lock）"),
         (review_template, "系统不得代填本项"),
         (review_template, "审美不合格也按根因分流，**不新增Failure Class**"),
+        (asset_rules, "### Asset Batch Delivery"),
+        (asset_rules, "同一资产类别（CHAR / ENV / PROP / FX）"),
+        (asset_rules, "不逐个资产停顿"),
+        (progression, "### Exception-Based Batch Confirmation"),
+        (progression, "不得以“用户没有提出异议”替代展示"),
+        (character, "Asset Batch Delivery"),
+        (environment, "Asset Batch Delivery"),
+        (prop, "Asset Batch Delivery"),
+        (fx, "Asset Batch Delivery"),
+        (character_template, "### Asset Batch Envelope"),
+        (environment_template, "### Asset Batch Envelope"),
+        (prop_template, "### Asset Batch Envelope"),
+        (assets, "批次是路由与交付的默认单位"),
+        (contracts_production, "批次交付：STATE-03以批次为默认生产与确认单位"),
+        (automation, "本节只拥有FAST下的聚合展示触发"),
+        (image_selection, "## Image Delivery Mode"),
+        (image_selection, "`AUTO`不是猜测"),
+        (state, "Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY"),
+        (runtime, "IMAGE_DELIVERY_MODE"),
+        (project_start_template, "图像交付形态："),
+        (project_setup, "图像交付形态：`AUTO`"),
+        (asset_rules, "`Image Delivery Mode: DIRECT_IMAGE`"),
+        (automation, "由`modules/image-model-selection.md`拥有"),
+        (assets, "Image Delivery Route"),
+        (character, "Image Delivery Mode: DIRECT_IMAGE"),
+        (environment, "DIRECT_IMAGE"),
+        (prop, "DIRECT_IMAGE"),
+        (fx, "Image Delivery Mode: DIRECT_IMAGE"),
+        (user_guide, "DIRECT_IMAGE"),
+        (user_guide, "PROMPT_ONLY"),
     )
     for text, marker in required_markers:
         if marker not in text:
             errors.append(f"missing r49 routing marker: {marker}")
+    errors.extend(check_batch_delivery_ownership(root))
+    errors.extend(check_delivery_mode_ownership(root))
     for relative in ("modules/screenwriter.md", "modules/director.md", "modules/storyboard.md"):
         text = read(root, relative)
         if re.search(r"Seedance|Kling|Timeline|4.?15|4.?30", text, re.I):
@@ -737,7 +866,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r69 structural, routing and readability validation")
+    print("PASS: r70 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

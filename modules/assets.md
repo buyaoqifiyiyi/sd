@@ -6,11 +6,13 @@
 
 ## Asset Image Route
 
+批次是路由与交付的默认单位：同一资产类别、同一Asset Tier、同一生产形态与同一已选图像模型构成一批，其构成、两轮交付与挑拣回退由`rules/02_asset_rules.md`的`Asset Batch Delivery`拥有。本模块只按该批次写入`Target Image Tool / Model`与交付记录，不为批内每个资产单独重开模型路由。
+
 本模块是STATE-03图像工具路由与提示词适配的唯一owner。读取STATE-00已确认的项目图像模型默认项、已确认的资产定义、当前Prompt Revision、画幅/交付要求和用户当前明确例外选择；只写当前Asset Prompt Package中的`Target Image Tool / Model`、提示词形态及生成记录。它不创建Video Model Lock、Clip、视频Prompt或项目主STATE，不改写资产事实、Template字段与双确认Gate。冲突返回当前资产Workflow；视频模型只由`modules/model-selection.md`的项目偏好与后续能力复核处理。
 
 ### Image Model Selection Gate
 
-新建或重编资产Prompt前必须读取`modules/image-model-selection.md`。已确认`Project Image Model Default`且无当前批次例外时，直接将它投影为当前`Selected Image Model`，不重复提问；项目默认项与当前批次均为`UNSELECTED`时，先展示该Module的`Image Model Selection Proposal`并停止；不得默认选择Built-in Image、Midjourney或任何第三方服务，也不得生成或展示某个模型格式的资产Prompt。用户在当前请求明确指定图像模型时，仍先展示对应单一Proposal；在该明确检查点说“下一步 / 继续”等即确认该选择。
+新建或重编资产Prompt前必须读取`modules/image-model-selection.md`。已确认`Project Image Model Default`且无当前批次例外时，直接将它投影为当前`Selected Image Model`，不重复提问；同一次路由还必须把`Image Delivery Mode`投影为当前批次的`Image Delivery Route`：`DIRECT_IMAGE`且当前执行环境确有出图能力时按`Built-in Candidate Generation`，否则按`External Prompt Only`；`AUTO`按当前环境的真实能力二选一，不得用历史推断；能力不可用时必须标注而不得伪造生成结果。项目默认项与当前批次均为`UNSELECTED`时，先展示该Module的`Image Model Selection Proposal`并停止；不得默认选择Built-in Image、Midjourney或任何第三方服务，也不得生成或展示某个模型格式的资产Prompt。用户在当前请求明确指定图像模型时，仍先展示对应单一Proposal；在该明确检查点说“下一步 / 继续”等即确认该选择。
 
 选择确认后，只读取唯一匹配Adapter和它声明的独立`prompt_output_template`：
 

@@ -406,11 +406,26 @@ Core与Support执行同一双确认闭环。`Automation Policy: FAST`仅可按`r
 
 # 10 Visual Asset Production Gate
 
+### Asset Batch Delivery｜批次交付
+
+STATE-03的资产生产与确认以**批次**为默认单位，不逐个资产停顿。一个批次同时满足：同一资产类别（CHAR / ENV / PROP / FX）× 同一Asset Tier × 同一生产形态（外观参考图 / 正式资产图 / 环境主参考图与适用View / 道具设定图 / Support Reference Board）× 同一已选图像模型。每批使用稳定`Batch ID`，并列出全部`Included Asset IDs`与顺序。
+
+批次在一个生产形态内固定走两轮交付，不随资产数量放大：
+
+1. **批次Prompt轮**：整批资产的Prompt一次性输出，逐项保留各自完整Prompt与状态字段，然后停止等待批次确认；不逐资产停止。
+2. **批次Image轮**：批次Prompt确认后按已记录路由整批生成或整批交付外部Prompt；先对整批执行`Candidate Output Triage`，再把保留项一次性展示并停止等待批次确认。
+
+两轮的确认都按`rules/progression_rules.md`的`Confirmation Input Semantics`及其`Exception-Based Batch Confirmation`判读：用户挑出的项只退该项——仅需重生回到`Prompt Confirmed`，需要改Prompt则回到`Prompt Draft`并重新确认——同批其余已确认项保持确认，不回退、不重做。
+
+批次只改变交付与确认的切片，不改变任何Prompt / Image Hard Gate：Prompt Draft不得触发图片生成；未经批次展示的Candidate不得因用户沉默升级为Canonical Reference或Active Version；`Asset Confirmed`仍必须具有可核对的批次或逐项确认记录、当前Prompt Revision、Candidate References与Canonical绑定。单资产批次与多资产批次使用同一语义，不为单个资产另立流程。
+
+分批按生产形态进行，不跨形态混装：外观参考图与正式资产图不得合并为同一批次，因为后者依赖前者的确认结果；Core与Support也不得混入同一批次。单批建议不超过12个资产，超出时拆为多个`Batch ID`并各自独立确认，不因批量降低单项QA。
+
 ### Asset Checkpoint Confirmation Semantics
 
 STATE-03的资产确认仍是可审计的Gate；确认输入语义由`rules/progression_rules.md`的`Confirmation Input Semantics`唯一拥有。资产确认检查点包括当前Prompt Revision、当前Candidate Image / Candidate Reference（包括用户外部回传的图片与Existing Asset Fast Path），以及Core角色的当前外观参考图。该确认必须写入相应的Prompt Confirmation、Image Confirmation或Appearance Confirmation及时间、Revision、Candidate / Board / Item范围。
 
-对同一轮清楚列出的Candidate批次，按该全局语义确认该批次中的全部列出对象；Support Board仍须能核对Board ID、Item ID与图中区域/标签。资产记录不得放宽全局规则中的未展示、版本或对象不清、互斥选择、外部提交及Hard Stop边界。
+对同一轮清楚列出的Candidate批次，按该全局语义确认该批次中的全部列出对象，并按其中的`Exception-Based Batch Confirmation`处理挑拣：用户指出的具体项退回该资产的最小Return Route，同批其余项保持确认。Support Board仍须能核对Board ID、Item ID与图中区域/标签。资产记录不得放宽全局规则中的未展示、版本或对象不清、互斥选择、外部提交及Hard Stop边界。
 
 ### Existing Asset Fast Path
 
@@ -456,7 +471,7 @@ Asset Design
 - 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型路由：优先继承STATE-00已确认的`Project Image Model Default`，只有默认项或当前批次为`UNSELECTED`、当前批次例外或默认项不可用时才提出新选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。
 - Image Prompt必须是完整、可直接生图的执行文本，不得只输出外观说明、关键词清单或“用于后续生成”的参考要求。
 - Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、项目视觉风格、一致性限制、必要负面限制与适用生成参数。
-- `Visual Production Status: Prompt Draft`时必须停止在当前Prompt Confirmation Checkpoint；用户的确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续内置图片生成。
+- `Visual Production Status: Prompt Draft`时必须停止在当前Prompt Confirmation Checkpoint；用户的确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`或`Image Delivery Mode: DIRECT_IMAGE`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续当前批次生成；`DIRECT_IMAGE`下仍必须完整输出并留档当前批次Prompt，且仅当当前执行环境确实具备图像生成能力时成立——无能力时按`PROMPT_ONLY`交付并标注`Image Generation Availability: Unavailable`，不得伪造生成结果。
 - 同步状态必须为`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`。
 - 当前Prompt Revision获得全局确认语义定义的确认后，才可写`Prompt Confirmed`并按已记录的工具路由继续；`Automation Policy: FAST`的合格资产可由`rules/automation_mode.md`记录自动确认后继续。对外部图像服务，该确认只记录Prompt Confirmed，不构成外部提交授权。
 - Prompt发生任何实质修改后返回`Prompt Draft`，旧确认不得自动继承。
