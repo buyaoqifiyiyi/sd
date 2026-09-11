@@ -2,7 +2,7 @@
 
 > **非生产视觉材料。** 本模板只在 `workflows/07_visual_development_workflow.md` 的 `Look Frame Gate` 内、`Aesthetic Decision Lock` 正式锁定**之前**调用：用已确认资产把美学决定草案落到画面上，供导演做一次取舍判断。
 >
-> 它不是 Storyboard，不是 Canonical Asset，不登记为任何工件，不写入项目状态，不进入 STATE-05 之后任何阶段，也不得作为 STATE-08 参考资产。生成结果用完即可丢弃；它的价值在于**改变了 Aesthetic Decision Lock 的内容**，而不是它本身。
+> 它不是 Storyboard，不是 Canonical Asset，不登记为任何工件，不写入项目状态，不进入 STATE-05 至 STATE-08 任何阶段，也不得作为 STATE-08 参考资产。生成结果用完即可丢弃；它的价值在于**改变了 Aesthetic Decision Lock 的内容**，而不是它本身。唯一例外见下方 Rule：STATE-09 Review 可以把它当作对照参照读取。
 
 ## 与 REF-SKETCH 的边界
 
@@ -55,7 +55,8 @@
 - 不得新增剧情、动作结果、空间关系或连续性事实。
 - 不得写成 Storyboard 画格、漫画格、九宫格、接触表、分镜板或多画面材料；本模板每张只回答一个美学问题，不承担镜头顺序叙事。
 - 不得输出时间码、运镜、景别编号、镜号或 Shot ID。
-- 生成结果**不得**登记为 Canonical Asset、不得进入 STATE-08【参考资产】、不得作为 STATE-05 之后任何阶段的输入。
+- 生成结果**不得**登记为 Canonical Asset、不得进入 STATE-08【参考资产】、不得作为 STATE-05 至 STATE-08 任何阶段的输入。
+- **唯一例外**：STATE-09 Review 可以把它作为**当初美学决定的对照参照**读取——用于判断成片是不是当初看到的那一种。该例外只授权"读取比对"，不得据此重新生成资产、改写任何已确认事实，也不得把它当作任何生成输入。
 - 判断结论只作用于 `Aesthetic Decision Lock` 本身（选择 / 被放弃的选项 / 依据 / 可见后果），不新增 Project Bible 区域、不新增 STATE、不新增 ID。
 
 ## 生成门槛

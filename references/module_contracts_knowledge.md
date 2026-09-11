@@ -268,6 +268,8 @@ Module Type：STATE-06至STATE-09辅助Knowledge。
 
 必须执行Shot QA、相邻镜QA、Execution Risk和适用的Prompt Scorecard。禁止用分数覆盖Hard Gate、把QA字段写入STATE-08 Prompt或用审美偏好改写剧情事实。
 
+审美判据与判定纪律的唯一owner是`knowledge/quality/aesthetic_judgement.md`：它只覆盖"取舍是否可见"这一半，系统只输出观察证据，**审美结论必须由用户给出**，且"判据全过"不得当作"好看"的证明。`prompt_scorecard.md`（STATE-08，对象为Prompt文本）与`workflows/13_review_workflow.md`（STATE-09，对象为成片）只引用它，两处都不得复制其判据正文，也不得合并两处。
+
 ---
 
 ## Medium Profile Knowledge Contract

@@ -702,9 +702,28 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 
 □ Director Decision Notes是否保持内部：正式Seedance Prompt没有出现Notes标题、十三维度、内部问答、候选/拒绝理由、Knowledge文件名或“因为导演决策所以……”等元说明
 
+## Aesthetic Judgement
+
+一致性检查问「有没有执行已确认的设定」，答对了也可能难看。本组问的是「**取舍在画面里是否可见**」，与`# 10 Style Review`的一致性检查正交。
+
+判据、合格与不合格的分界、以及判定纪律，唯一由`knowledge/quality/aesthetic_judgement.md`拥有；本节只负责在Review中执行，不复制其正文。
+
+检查：
+
+□ 按`knowledge/quality/aesthetic_judgement.md`的六条判据逐条给出观察结论与可观察证据；不适用写`N/A`并写明理由，不得留空
+
+□ 对照问句：Aesthetic Decision Lock里“被放弃的那一边”，在成片里能不能看出确实被放弃了；看不出，等于当初没有做决定
+
+□ STATE-04曾执行`Look Frame`时，对照试片帧判断成片是不是当初看到的那一种：一致 / 偏离（写明具体位置）/ Not Executed
+
+□ 系统只输出观察，不输出审美结论；审美结论必须由用户给出，未获得时记`PENDING_USER`，且Overall Result不得判为`PASS`
+
+□ 六条全过不等于好看，不得据此跳过用户判断，也不得用风格标签、器材名称或“符合Project Bible”代替证据
+
 
 ## Director QA Return Route
 
+- Aesthetic Decision Lock本身被判定不成立或选错（不是没执行，是决定错）：返回STATE-04重做该维度，可选择性重跑Look Frame；只复核依赖该决定的STATE-05至STATE-08产物，不重做不受影响的事实。
 - Narrative Objective、Audience Experience、Character Relationship、Blocking或总体视听方向错误/缺失：返回STATE-06，只修Affected SHOT / Shot Group及相邻边界。
 - 导演方向正确，但Clip主导镜头语言、节奏、调度、视觉高潮/留白或复杂度组织错误：返回STATE-07，只修Affected Clip。
 - STATE-07保持正确，但Knowledge策略选择、执行转译或内部Notes泄漏：返回STATE-08，只修Affected Clip Prompt。

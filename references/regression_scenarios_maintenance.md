@@ -2,7 +2,7 @@
 
 本文件是回归集的一部分，由`references/regression_scenarios.md`的 Regression File Index 统一索引；本文件内部编号保持连续，可按编号直接定位，不整集通读。
 
-覆盖范围：R48—R60 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖。
+覆盖范围：R48—R61 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断。
 
 ---
 
@@ -459,3 +459,39 @@ FAIL：用试片帧验证空间调度，或用REF-SKETCH验证外观与美学；
 PASS：`prompt_scorecard.md`的两项审美维度按`### Aesthetic Criteria`评分，要求给出可观察证据——视觉重心唯一、明暗有层级、色彩有主从、取舍可见、不平均、景深清晰度有意图；只复述Lock措辞不得满分；未写出可见取舍证据时Hard Gate不通过。评分权重不变，且仍声明不能替代人工审美判断。
 
 FAIL：把"是否执行了Lock"当作审美评分依据，使100分打满而画面依然平均；或把可被文字检验的六条冒充为完整的审美判断。
+
+---
+
+## R61 Aesthetic Judgement At Review Regression
+
+### R61-A The Criteria Live In Exactly One Place
+
+输入：审美判据需要同时服务STATE-08的Prompt评分与STATE-09的成片Review。
+
+PASS：判据、合格与不合格的分界、判定纪律唯一由`knowledge/quality/aesthetic_judgement.md`拥有；`prompt_scorecard.md`与`workflows/13_review_workflow.md`只引用它，两处都不复制其判据正文（Review清单写"按该文件的六条判据"，不重新列举条目名）。两处对象不同——一处审Prompt文本、一处审成片——因此不合并。
+
+FAIL：在两个消费点各留一份完整判据副本，使改动只同步一处；或因对象不同就分别发明两套判据。
+
+### R61-B Review Can Finally Say The Decision Was Wrong
+
+输入：成片的美学方向本身不成立——不是没执行Aesthetic Decision Lock，而是当初那个决定选错了。
+
+PASS：`Director QA`下的`Aesthetic Judgement`作出判断后，`Director QA Return Route`提供返回STATE-04重做该维度的路径，可选择性重跑Look Frame；只复核依赖该决定的STATE-05至STATE-08产物。审美不合格按根因分流——决定错记DIRECTING FAILURE、没做到记GENERATION FAILURE、素材可救记EDITING FAILURE——**不新增Failure Class**。
+
+FAIL：只能发现"没执行已确认的决定"、无法发现"决定本身错了"，逼用户在Prompt层反复补救；或为审美单独新增一个Failure Class，使既有正交分类分叉。
+
+### R61-C The System Never Judges Beauty
+
+输入：六条判据全部通过，Agent考虑直接给出`PASS`。
+
+PASS：系统只输出观察结论与可观察证据；审美结论必须由用户给出。未获得时记`PENDING_USER`，此时即使其余检查全部通过，Overall Result也不得判为`PASS`；系统不得代填该项，也不得把六条结论当作该项的替代。**"六条全过"不等于"好看"。**
+
+FAIL：由系统自行判定审美并给出PASS；或用"判据全部通过"充当用户审美结论。
+
+### R61-D The Look Frame Becomes The Review Baseline
+
+输入：STATE-04曾执行`Look Frame`，STATE-09要判断成片是不是当初看到的那一种。
+
+PASS：`templates/25_look_frame_prompt.md`保留"不得进入STATE-05至STATE-08任何阶段"的禁令，同时开出唯一例外——STATE-09 Review可以把试片帧作为**当初美学决定的对照参照**读取；该例外只授权读取比对，不得据此重新生成资产、改写已确认事实或用作任何生成输入。
+
+FAIL：让试片帧成为常规下游输入、被登记为资产、或反过来用成片去改写当初的美学基线。

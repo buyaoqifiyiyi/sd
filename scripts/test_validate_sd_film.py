@@ -1328,12 +1328,15 @@ class R60AestheticJudgementTests(unittest.TestCase):
     def _scorecard(self) -> str:
         return (ROOT / "knowledge/quality/prompt_scorecard.md").read_text(encoding="utf-8-sig")
 
-    def test_aesthetic_dimensions_ask_for_visible_choices(self) -> None:
+    def test_scorecard_points_at_the_single_owner_instead_of_copying_it(self) -> None:
+        """The criteria now live in one place; the scorecard must reference it,
+        not keep a second full copy that can drift."""
         card = self._scorecard()
         self.assertIn("### Aesthetic Criteria｜两项审美维度的评分依据", card)
+        self.assertIn("唯一由`knowledge/quality/aesthetic_judgement.md`拥有；本文件只引用，不复制其正文", card)
         for criterion in ("视觉重心唯一", "明暗有层级", "色彩有主从", "取舍可见", "不平均"):
             with self.subTest(criterion=criterion):
-                self.assertIn(criterion, card)
+                self.assertNotIn(criterion, card)
 
     def test_restating_the_lock_is_not_enough(self) -> None:
         card = self._scorecard()
@@ -1346,10 +1349,10 @@ class R60AestheticJudgementTests(unittest.TestCase):
 
     def test_the_honest_limit_is_still_declared(self) -> None:
         """Scoring still cannot judge taste; the remaining half belongs to the
-        look frame and to human review, and saying so is the point."""
+        look frame and to the user at review, and saying so is the point."""
         card = self._scorecard()
         self.assertIn("本评分仍不能替代人工审美判断", card)
-        self.assertIn("由STATE-04的`Look Frame`与STATE-09的人工Review承担", card)
+        self.assertIn("由STATE-04的`Look Frame`与STATE-09的用户Review承担", card)
 
     def test_weights_are_unchanged(self) -> None:
         card = self._scorecard()
@@ -1357,6 +1360,80 @@ class R60AestheticJudgementTests(unittest.TestCase):
         self.assertIn("| Spatial / Action / Boundary Continuity | 20 |", card)
         self.assertIn("| Seedance Stability And Risk Downgrade | 15 |", card)
         self.assertIn("| Template / Semantic Projection Discipline | 5 |", card)
+
+
+class R61AestheticJudgementAtReviewTests(unittest.TestCase):
+    """Review could find "you did not follow the decision" but never "the
+    decision was wrong". It also had no aesthetic criterion at all - the word
+    appeared once, and only to forbid keeping a shot for looking good."""
+
+    def _owner(self) -> str:
+        return (ROOT / "knowledge/quality/aesthetic_judgement.md").read_text(encoding="utf-8-sig")
+
+    def _review(self) -> str:
+        return (ROOT / "workflows/13_review_workflow.md").read_text(encoding="utf-8-sig")
+
+    def test_criteria_have_exactly_one_owner(self) -> None:
+        owner = self._owner()
+        for criterion in ("视觉重心唯一", "明暗有层级", "色彩有主从", "取舍可见", "不平均", "景深 / 清晰度有意图"):
+            with self.subTest(criterion=criterion):
+                self.assertIn(criterion, owner)
+        for other in ("knowledge/quality/prompt_scorecard.md",
+                      "workflows/13_review_workflow.md"):
+            text = (ROOT / other).read_text(encoding="utf-8-sig")
+            with self.subTest(other=other):
+                self.assertIn("knowledge/quality/aesthetic_judgement.md", text)
+                self.assertNotIn("视觉重心唯一", text)
+                self.assertNotIn("明暗有层级", text)
+
+    def test_the_system_never_judges_beauty(self) -> None:
+        for name, text in (
+            ("owner", self._owner()),
+            ("review workflow", self._review()),
+            ("review template", (ROOT / "templates/16_review_report.md").read_text(encoding="utf-8-sig")),
+        ):
+            with self.subTest(source=name):
+                self.assertIn("系统只输出观察", text)
+                self.assertIn("用户", text)
+
+    def test_passing_the_criteria_is_not_proof_of_beauty(self) -> None:
+        self.assertIn("六条全过不等于好看", self._owner())
+        self.assertIn("六条全过不等于好看", self._review())
+
+    def test_review_gains_a_return_path_to_state04(self) -> None:
+        review = self._review()
+        self.assertIn("## Aesthetic Judgement", review)
+        self.assertIn("返回STATE-04重做该维度", review)
+        self.assertLess(
+            review.index("## Aesthetic Judgement"),
+            review.index("## Director QA Return Route"),
+        )
+
+    def test_aesthetics_does_not_add_a_failure_class(self) -> None:
+        """The existing classes are already orthogonal; a new one would fork
+        the whole failure taxonomy for one dimension."""
+        template = (ROOT / "templates/16_review_report.md").read_text(encoding="utf-8-sig")
+        self.assertIn("不新增Failure Class", template)
+        self.assertIn("美学决定本身被判定不成立或选错时记DIRECTING FAILURE", template)
+
+    def test_review_template_blocks_pass_without_the_user_verdict(self) -> None:
+        template = (ROOT / "templates/16_review_report.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Aesthetic Judgement（对照STATE-04 Aesthetic Decision Lock）", template)
+        self.assertIn("`PENDING_USER`", template)
+        self.assertIn("Overall Result也不得判为`PASS`", template)
+        self.assertIn("系统不得代填本项", template)
+
+    def test_review_is_the_only_reader_allowed_back_into_the_look_frame(self) -> None:
+        template = (ROOT / "templates/25_look_frame_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("**唯一例外**", template)
+        self.assertIn("STATE-09 Review 可以把它作为**当初美学决定的对照参照**读取", template)
+        self.assertIn("不得据此重新生成资产", template)
+
+    def test_consistency_review_stays_separate_from_judgement(self) -> None:
+        review = self._review()
+        self.assertIn("与`# 10 Style Review`的一致性检查正交", review)
+        owner = self._owner()
+        self.assertIn("与「一致性检查」的区别", owner)
 
 
 if __name__ == "__main__":

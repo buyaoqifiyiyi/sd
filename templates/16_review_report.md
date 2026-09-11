@@ -44,7 +44,7 @@ Story Review Summary（Causality / Motivation / Scene Value / Writer Beat / Conf
 
 Technical Review Summary：
 
-Director's Cut Review Summary（Intent vs Result / Audience Attention / Performance Truth / Relationship Readability / Information Timing / Shot Necessity / Rhythm / Emotional Residue）：
+Director's Cut Review Summary（Intent vs Result / Audience Attention / Performance Truth / Relationship Readability / Information Timing / Shot Necessity / Rhythm / Emotional Residue / Aesthetic Judgement）：
 
 ---
 
@@ -98,6 +98,29 @@ Boundaries：
 
 ---
 
+## Aesthetic Judgement（对照STATE-04 Aesthetic Decision Lock）
+
+判据、合格与不合格的分界、以及判定纪律，唯一由`knowledge/quality/aesthetic_judgement.md`拥有；本表只记录结论与证据，不复制判据正文。
+
+| 受审对象 | 视觉重心唯一 | 明暗有层级 | 色彩有主从 | 取舍可见 | 不平均 | 景深清晰度有意图 | 可观察证据 | Result |
+|---|---|---|---|---|---|---|---|---|
+
+每一行对应一个受审Clip或Shot Group，必须逐行列全；六条判据必须在每行给出结论，通过写`PASS`，不适用写`N/A`并写明理由，**不得留空**。与一致性检查（`# 10 Style Review`）正交：一致性通过不等于取舍可见，取舍可见也不能豁免一致性。
+
+**本表只记录可观察事实，不构成审美结论。系统只输出观察，不输出审美结论。**
+
+Aesthetic Decision Lock 对照——当初「被放弃的那一边」在成片里能否看出确实被放弃了：
+
+Look Frame 对照（STATE-04曾执行试片时填写）：一致 / 偏离（写明具体位置）/ Not Executed
+
+**用户审美结论（必填）**：保留 / 局部返修 / 重做 / PENDING_USER
+
+用户审美结论影响的处置：
+
+未获得用户审美结论时记`PENDING_USER`；此时即使其余检查全部通过，Overall Result也不得判为`PASS`。**系统不得代填本项，也不得把本表的六条结论当作该项的替代。**
+
+---
+
 ## Problems And Corrective Actions
 
 | Issue ID | Severity | Affected IDs | Fact Owner | Problem | Minimum Necessary Fix | Return Workflow | Recheck Scope |
@@ -106,6 +129,8 @@ Boundaries：
 Severity：P0 Blocker / P1 Major / P2 Minor。
 
 技术连续性正确但人物行为无动机属于WRITING FAILURE；Writer事实正确而情绪/信息呈现提前属于DIRECTING FAILURE；现有素材可通过剪辑恢复时选择EDITING FAILURE + RE-EDIT，否则按根因选择REGENERATE或REDIRECT，不得选择KEEP。
+
+审美不合格也按根因分流，**不新增Failure Class**：美学决定本身被判定不成立或选错时记DIRECTING FAILURE并返回STATE-04重做该维度；决定正确而模型没做到时记GENERATION FAILURE并只重试Affected Clip；素材可恢复时记EDITING FAILURE + RE-EDIT。
 
 ---
 

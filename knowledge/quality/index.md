@@ -14,6 +14,7 @@ Quality Knowledge不拥有STATE、不修改上游事实、不定义STATE-08最�
 - `continuity_pair_qa.md`：所有相邻镜头的边界与继承检查。
 - `execution_risk.md`：跨动作、摄影、表演、对白、FX、群体与光学的L1–L4风险分级。
 - `prompt_scorecard.md`：STATE-08最终Prompt的硬门槛和100分内部评分。
+- `aesthetic_judgement.md`：审美判据与判定纪律的唯一owner；覆盖"取舍是否可见"的六条判据，由STATE-08评分与STATE-09 Review共同引用，两处都不得复制其正文。
 
 ---
 
@@ -21,8 +22,8 @@ Quality Knowledge不拥有STATE、不修改上游事实、不定义STATE-08最�
 
 - STATE-06：Shot QA设计前检查与Execution Risk。
 - STATE-07：可见证据与相邻镜边界预演。
-- STATE-08：Prompt编译前后检查与Scorecard。
-- STATE-09：使用templates/16_review_report.md形成正式Review证据。
+- STATE-08：Prompt编译前后检查与Scorecard（审美维度按`aesthetic_judgement.md`评分）。
+- STATE-09：使用templates/16_review_report.md形成正式Review证据，并按`aesthetic_judgement.md`做审美判断；系统只输出观察证据，审美结论由用户给出。
 
 ---
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r61 structural, routing and readability validation for SD Film."""
+"""Deterministic r62 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -21,6 +21,7 @@ REQUIRED = (
     "references/module_contracts_knowledge.md",
     "references/project_state_contract.md", "rules/automation_mode.md", "rules/02_asset_rules.md",
     "knowledge/environment_multi_view_reconstruction.md", "knowledge/clip_preflight_check.md", "knowledge/reference_budget.md",
+    "knowledge/quality/aesthetic_judgement.md",
     "knowledge/medium_profiles.md",
     "references/context_budget.md",
     "references/maintenance_self_check.md",
@@ -301,6 +302,9 @@ def validate_skill(root: Path) -> list[str]:
     output_rules = read(root, "rules/05_output_rules.md")
     prompt_rules = read(root, "rules/03_prompt_rules.md")
     contracts_framework = read(root, "references/module_contracts.md")
+    aesthetic = read(root, "knowledge/quality/aesthetic_judgement.md")
+    review_workflow = read(root, "workflows/13_review_workflow.md")
+    review_template = read(root, "templates/16_review_report.md")
     budget_doc = read(root, "references/context_budget.md")
     required_markers = (
         (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
@@ -514,10 +518,24 @@ def validate_skill(root: Path) -> list[str]:
         (output_rules, "Look Frame试片帧"),
         (prompt_rules, "Look Frame试片帧"),
         (scorecard, "### Aesthetic Criteria｜两项审美维度的评分依据"),
-        (scorecard, "视觉重心唯一"),
+        (scorecard, "唯一由`knowledge/quality/aesthetic_judgement.md`拥有；本文件只引用，不复制其正文"),
         (scorecard, "本评分仍不能替代人工审美判断"),
+        (scorecard, "由STATE-04的`Look Frame`与STATE-09的用户Review承担"),
         (director_layer, "四维度从草案到锁定之间允许执行一次可选`Look Frame`"),
         (contracts_framework, "STATE-04的`Aesthetic Decision Lock`与其可选`Look Frame`由Director层拥有"),
+        (aesthetic, "审美判据与判定纪律的唯一owner"),
+        (aesthetic, "系统只输出观察，不输出审美结论"),
+        (aesthetic, "六条全过不等于好看"),
+        (aesthetic, "## 两个消费点（同一个owner，两个对象）"),
+        (review_workflow, "## Aesthetic Judgement"),
+        (review_workflow, "一致性检查问「有没有执行已确认的设定」，答对了也可能难看"),
+        (review_workflow, "对照问句：Aesthetic Decision Lock里"),
+        (review_workflow, "系统只输出观察，不输出审美结论"),
+        (review_workflow, "未获得时记`PENDING_USER`"),
+        (review_workflow, "返回STATE-04重做该维度，可选择性重跑Look Frame"),
+        (review_template, "## Aesthetic Judgement（对照STATE-04 Aesthetic Decision Lock）"),
+        (review_template, "系统不得代填本项"),
+        (review_template, "审美不合格也按根因分流，**不新增Failure Class**"),
     )
     for text, marker in required_markers:
         if marker not in text:
@@ -591,7 +609,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r61 structural, routing and readability validation")
+    print("PASS: r62 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":
