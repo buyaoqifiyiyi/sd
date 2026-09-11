@@ -37,7 +37,7 @@
 12. **Change Classification Check**：复核最终分类与实际操作一致，并记录为什么不是其他类别；新增文件前必须能说明现有权威位置为何不合适。
 13. **Runtime Claim / Legacy Recovery Check**：核对Runtime Skill Reload、Workflow Re-entry与Legacy Project Recovery仍由唯一owner定义；Skill Source / Project State Source独立；历史Skill永不成为Current authority；Claim Gate诚实；Work只在真实必要时escalate；Legacy Intent Backfill只增补不重做；STATE-08从current owner entry重进；普通`下一步`不触发全量恢复。必须运行`references/recovery_guards.md`中的`Legacy Recovery Regression Matrix (LR-R1—LR-R10)`及现有Validator / tests。
 14. **Standalone Skill Discovery Check**：核对当前运行时用户级权威副本位于`$HOME/.codex/skills/sd-film`、同名`sd-film`没有第二份用户级副本、`SKILL.md` frontmatter保留启动别名、`agents/openai.yaml`与Skill名称一致、`policy.allow_implicit_invocation`为`true`，且用户文档只把Codex `$sd-film`作为本机独立Skill的确定性显式入口。在当前用户客户端中，普通Chat的`@`选择器只显示Plugin；不得宣称本机独立Skill可通过`@`加显示名调用，也不得把网页/移动端读取本机Skill误写为受支持能力。
-15. **Context Budget Check**：`references/context_budget.md`是体量阈值、文件类别与Size Ledger的唯一owner，本项只引用它，不复制数值。按它定义的三层执行：
+15. **Context Budget Check**：`references/context_budget.md`是体量阈值、文件类别与Size Ledger的唯一owner，本项只引用它，不复制数值。按`Maintenance System Map`定义的三层节奏执行本项：
     - **事前（Prevent）**：新增内容先归位到既有owner，不因“方便”而新建文件；本次变更若使任一文件超过Target，或把已在Target以上的文件再推高10%以上，必须在同一次变更内处理；新建Markdown不得超过Target的60%（30 KB）。
     - **事中（Enforce）**：`SKILL.md`仍在Entry阈值内且未复制细粒度规则；没有文件超Target而漏登记；已瘦身到Target以下的文件已从Ledger摘牌；没有任何文件达到Ceiling；Ledger的`Size`列与实测差异不超过20%。
     - **事后（Audit）**：`Review By`到期的条目必须重估；`COMPOSITE`条目是待拆队列，不得长期挂账；周期性全库体检只负责发现累积，不替代前两层。

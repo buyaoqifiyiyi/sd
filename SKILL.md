@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.11-r56
+Skill Version: 2026.09.11-r57
 
-Build ID: sd-film-2026.09.11-r56
+Build ID: sd-film-2026.09.11-r57
 
 ## Core
 
@@ -21,7 +21,7 @@ Build ID: sd-film-2026.09.11-r56
 
 本Skill自维护。本节是既有的`Skill Update Self-Check / Change Safety Checklist`的**执行入口**——只是把它的入口前置到本文件，**不构成第二套检查体系**，也不得被复制成并行副本。**任何新增、修改、删除、移动或重命名本Skill内容的操作——不论由谁执行、在哪个平台、用什么工具——都属于正式修改**，必须先读完本节再动手。
 
-写入前必须完成三项判定（判据见`references/maintenance_self_check.md`的`Before You Write`，不得只凭直觉）：
+写入前必须完成三项判定（本节只列**不变量**，完整判据与执行顺序见`references/maintenance_self_check.md`的`Before You Write`及其`Maintenance System Map`列出的各判据owner）：
 
 - **归属判定**：默认把内容补进既有owner；只有确认没有合适位置才新增文件。新文件不得超过30 KB。
 - **体量判定**：不得让任一文件超过单文件Target，也不得把已在Target以上的文件再推高10%。越界必须在**同一次变更内**处理，不得先写后登记。

@@ -689,3 +689,29 @@ FAIL：改动内容但不递增版本，使外部无法判断Skill是否已变�
 PASS：原名称`Skill Update Self-Check / Change Safety Checklist`在owner清单、报告模板与执行入口中保持可检索；新的入口节显式声明自己**只是入口、不构成第二套体系**；全库只有一个检查体系入口。
 
 FAIL：搬家或改名后旧名不再被提及，且没有任何地方声明新旧是同一体系——读者会以为出现了两套并行检查，或以为原有检测层已被替换。
+
+## R56 Maintenance System Consolidation Regression
+
+### R56-A Each Rule Body Has Exactly One Owner
+
+输入：一次维护改动同时涉及`SKILL.md`、执行清单、判据真源与体量文件。
+
+PASS：每一条规则正文只有一处完整定义。“写入前的判定”只在执行清单的`Before You Write`完整描述；`SKILL.md`只列不变量并给路由；体量文件只拥有阈值与台账，不重述体系框架。
+
+FAIL：同一套判定在两处以上各写一遍完整版本（如体量文件再写一遍Prevent四条的正文），使改动必须多点同步。
+
+### R56-B The Budget File Does Not Own The Maintenance System
+
+输入：需要说明维护体系的层次与节奏。
+
+PASS：层次与节奏由执行清单的`Maintenance System Map`拥有；`context_budget.md`只拥有体量判据与台账，并在需要时引用维护体系，不自己定义Prevent／Enforce／Audit。
+
+FAIL：把体系框架写在体量文件里，使读者从体量文件进入时以为维护体系只有体量一件事。
+
+### R56-C The System Map Exposes One System
+
+输入：读者从任一份维护文件进入。
+
+PASS：执行清单的`Maintenance System Map`列出全部成员文件、各自角色与读取时机，并声明它们是**分层关系、不是并行副本**。
+
+FAIL：成员分散且没有任何一处说明它们的关系，读者需要自己拼出体系全貌。

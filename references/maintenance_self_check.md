@@ -8,6 +8,25 @@
 
 生产系统的**模块接口合同**由`references/module_contracts.md`拥有，本文件不重复定义任何模块合同；Skill自身体量的**数值阈值与Size Ledger**由`references/context_budget.md`拥有，本文件只引用其一。
 
+## Maintenance System Map
+
+本Skill的维护是**一个体系，不是一个文件**。下列文件各是一个角色，合起来构成一次完整自检；它们是分层关系，不是并行副本——任何一层都不得复制另一层的规则正文。
+
+| 文件 | 角色 | 读它的时机 |
+|---|---|---|
+| `SKILL.md` 的 `Self-Maintenance` | 入口与不变量摘要 | 任何写入**之前**（必读） |
+| 本文件 | 执行清单：顺序、判定项、报告格式 | 任何写入**之后**（必读） |
+| `maintenance_self_check_protocol.md` | 判据真源：每项的完整定义、边界与反例 | 需要判据时 |
+| `context_budget.md` | 体量阈值、文件类别与Size Ledger | 做体量判定时 |
+| `recovery_guards.md` | 两个固定Guard矩阵（LR-R1—R10 / SD-R1—SD-R5） | 固定基线，每次必跑 |
+| `module_contracts.md` | 模块归属的唯一owner（本体系只引用，不复制） | 做归属判定时 |
+
+体系按三层节奏执行，缺任何一层都会退化：
+
+- **Prevent｜写之前**：下方`Before You Write`的四项判定。判据分散在上面各owner里，本节只负责“什么时候做哪一项”，不重述判据。
+- **Enforce｜改的时候**：静态Validator按各owner的规则做确定性检查，不依赖维护者自觉。检查内容仍归各owner，本体系不重复定义；没有工具的环境按`Required Verification`左列人工执行。
+- **Audit｜周期性**：按固定节奏做全库体量与结构体检，只负责**发现累积**，不替代前两层；发现项按风险分级在当轮修复。
+
 ## Before You Write
 
 本节是**前置门**：任何新增、修改、删除、移动或重命名本Skill内容的操作，在动手之前先做完这四件事。事后才补、或跳过它，视为未执行自检。

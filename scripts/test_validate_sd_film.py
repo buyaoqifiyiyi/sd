@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r56 SD Film validator."""
+"""Regression tests for the r57 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -899,13 +899,6 @@ class R53LongTermBudgetMaintenanceTests(unittest.TestCase):
             with self.subTest(section=section):
                 self.assertIn(section, corpus)
 
-    def test_budget_states_prevent_enforce_and_audit(self) -> None:
-        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
-        for marker in ("## Long-Term Maintenance", "### 1. Prevent", "### 2. Enforce",
-                       "### 3. Audit", "### 4. Debt Policy", "先归位，再新增", "不得先加后登"):
-            with self.subTest(marker=marker):
-                self.assertIn(marker, budget)
-
     def test_periodic_audit_report_is_produced(self) -> None:
         report = validator.build_report(ROOT)
         for marker in ("SD Film Context Budget Report", "largest files", "over target", "review by"):
@@ -1002,6 +995,51 @@ class R55ToolIndependentSelfMaintenanceTests(unittest.TestCase):
         contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
         self.assertNotIn("### Check Dimensions", contracts)
         self.assertNotIn("### Required Self-Check Summary", contracts)
+
+
+class R56MaintenanceConsolidationTests(unittest.TestCase):
+    """One maintenance system, one owner per rule body. The judgement set that
+    must happen before writing is described once — not three times."""
+
+    def test_system_map_exposes_every_member(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## Maintenance System Map", card)
+        for member in ("SKILL.md", "maintenance_self_check_protocol.md",
+                       "context_budget.md", "recovery_guards.md", "module_contracts.md"):
+            with self.subTest(member=member):
+                self.assertIn(member, card)
+        self.assertIn("分层关系，不是并行副本", card)
+
+    def test_budget_file_no_longer_owns_the_maintenance_layers(self) -> None:
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        self.assertNotIn("## Long-Term Maintenance", budget)
+        for leaked in ("### 1. Prevent", "### 2. Enforce", "### 3. Audit", "### 4. Debt Policy"):
+            with self.subTest(leaked=leaked):
+                self.assertNotIn(leaked, budget)
+        self.assertIn("## Budget Discipline", budget)
+        self.assertIn("不得先加后登", budget)
+
+    def test_write_time_judgement_has_a_single_full_description(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        for marker in ("归属判定", "体量判定", "减法判定"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, card)
+        # 体量文件不得再写一遍完整的归属／重复判定正文
+        self.assertNotIn("先归位，再新增", budget)
+        self.assertNotIn("正文不复制", budget)
+
+    def test_the_three_layers_live_in_the_run_card(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        for layer in ("Prevent｜写之前", "Enforce｜改的时候", "Audit｜周期性"):
+            with self.subTest(layer=layer):
+                self.assertIn(layer, card)
+
+    def test_skill_entry_positions_itself_as_summary_only(self) -> None:
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        section = skill[skill.index("## Self-Maintenance"):skill.index("## Modules")]
+        self.assertIn("本节只列**不变量**", section)
+        self.assertIn("Maintenance System Map", section)
 
 
 if __name__ == "__main__":
