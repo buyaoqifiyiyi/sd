@@ -20,6 +20,28 @@
 
 用户明确说“开启自动推进”“快速制作模式”“Fast Mode”“尽量少确认”“只在关键节点停”或“自动完成可逆步骤”等无歧义表达时，在State Source合法解析后读取`rules/automation_mode.md`并启用`Automation Policy: FAST`。该表达不等于剧本锁定、外部生成提交、图片Canonical确认、首次模型选择或Review PASS授权；关闭指令恢复`STANDARD`。
 
+## Dry Run Activation
+
+用户明确说“跑流程测试”“演练一遍流程”“dry run”“空跑”“测试路由”或“走一遍流程不要产物”等无歧义表达时，进入`DRY RUN`。
+
+`DRY RUN`是运行目的，不是`Automation Policy`的取值；该字段的允许值不变。它表示本次运行的目的不是生产，而是验证流程本身：不改变任何生产门槛，不新增STATE，也不放宽任何Gate。它与`rules/01_pipeline_rules.md`的“生产运行必须完整执行STATE-00至STATE-09”不冲突，因为`DRY RUN`不是生产运行。
+
+`DRY RUN`必须：
+
+- 按主Pipeline顺序对当前请求覆盖的STATE逐个执行路由判定；未指定范围时覆盖STATE-00至STATE-09。
+- 用合成输入代替缺失的上游产物，并标明哪一部分是合成的；合成输入不是资产、不是确认，不得登记为Candidate / Canonical / Active。
+- 逐STATE核验：Workflow合法、Entry Gate判据可取得、Required Reads可解析、Completion判据可判定、Next Workflow合法。
+- 全程可判定时不产出任何交付物，只给出一句走通确认；只有出现断点时才输出最小断点报告，指出具体STATE、缺失证据与最近合法Checkpoint。
+
+`DRY RUN`禁止：
+
+- 创建、读取或写回任何真实项目状态；不得建立Active Project Root，也不得改写`portable_project_status.md`。
+- 产出任何Template交付物（剧本、资产、Scene、Shot、Clip、Prompt、海报等）；`DRY RUN`的产物是判定，不是文件。
+- 声称任何Artifact已生成、已确认、已锁定或已进入Canonical / Active。
+- 调用外部生成、提交外部服务或使用未知凭据。
+
+未命中显式表达时，普通制作请求不得被解释为`DRY RUN`。一次`DRY RUN`结束后的下一次请求默认回到正常生产路由。
+
 ## Intent Is Goal, Not Current State
 
 用户提到“视频Prompt”“Seedance”“海报”“Storyboard”等通常描述目标，不证明前置阶段已经完成。激活后必须先按`rules/state_source.md`确认当前State，并按主Pipeline补齐Completion Gate，不能依据关键词直接跳转。

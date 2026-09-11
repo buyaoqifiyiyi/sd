@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.11-r65
+Skill Version: 2026.09.11-r66
 
-Build ID: sd-film-2026.09.11-r65
+Build ID: sd-film-2026.09.11-r66
 
 ## Core
 
@@ -63,4 +63,5 @@ STATE-00先确认项目级图像模型默认项与视频模型偏好；STATE-03�
 - A/B/C 尾帧、资产双确认、连续性、Voice opt-in 与视频 Prompt 永久无 BGM 继续由各自现有 owner 执行。
 - Runtime Reload：`rules/runtime_reload.md`；State Source：`rules/state_source.md`；推进：`rules/progression_rules.md`；激活：`rules/activation_rules.md`；资源按需读取：`rules/resource_loading.md`。
 - 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界。
+- 空跑测试：只有用户明确说“跑流程测试 / 演练 / dry run / 空跑”时才进入 `DRY RUN`；它只验证 STATE 路由与 Gate 可判定性，不产出交付物、不读写项目状态。规则由 `rules/activation_rules.md` 拥有。
 - 固定且连续性敏感的环境在STATE-03按需读取`knowledge/environment_multi_view_reconstruction.md`：它扩展既有Environment Asset与Canonical Lock，不创建新STATE；STATE-06/07/08只继承已锁定的空间事实和按风险选择的环境参考。
