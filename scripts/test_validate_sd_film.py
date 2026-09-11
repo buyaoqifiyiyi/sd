@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r55 SD Film validator."""
+"""Regression tests for the r56 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import unittest
@@ -982,6 +982,26 @@ class R55ToolIndependentSelfMaintenanceTests(unittest.TestCase):
         section = skill[skill.index("## Self-Maintenance"):skill.index("## Modules")]
         self.assertIn("不依赖任何脚本、工具或外部服务即可手工执行", section)
         self.assertIn("换了别的Agent", section)
+
+    def test_original_check_layer_identity_survives_the_move(self) -> None:
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        section = skill[skill.index("## Self-Maintenance"):skill.index("## Modules")]
+        self.assertIn("Skill Update Self-Check / Change Safety Checklist", section)
+        self.assertIn("不构成第二套检查体系", section)
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Skill Update Self-Check / Change Safety Checklist", card)
+        self.assertIn("唯一权威来源", card)
+
+    def test_there_is_only_one_check_system_entry(self) -> None:
+        owners = [p for p in (
+            "references/maintenance_self_check.md",
+            "references/maintenance_self_check_protocol.md",
+        ) if (ROOT / p).is_file()]
+        self.assertEqual(len(owners), 2)
+        # 旧位置不得再保留一份可执行的并行副本
+        contracts = (ROOT / "references/module_contracts.md").read_text(encoding="utf-8-sig")
+        self.assertNotIn("### Check Dimensions", contracts)
+        self.assertNotIn("### Required Self-Check Summary", contracts)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-本文件是Skill维护QA的**执行入口与每次正式修改的必读清单**。它拥有**执行顺序、检查项与判定输出格式**；每一项的完整判据、边界、反例与处置要求由`references/maintenance_self_check_protocol.md`拥有。两者冲突时，判据以protocol为准。
+本文件是既有`Skill Update Self-Check / Change Safety Checklist`的**执行入口与每次正式修改的必读清单**（2026-09-11从`references/module_contracts.md`原节抽出，判据内容不变，仅为缩短必读路径）。它拥有**执行顺序、检查项与判定输出格式**；每一项的完整判据、边界、反例与处置要求由`references/maintenance_self_check_protocol.md`拥有。两者冲突时，判据以protocol为准。本节名称变化不改变归属：本体系仍是Skill维护QA的唯一权威来源。
 
 它属于Skill维护层：不是影视制作Pipeline的STATE，不写入项目状态，不进入用户视频Prompt，也不得被复制成另一套并行检查规范。
 

@@ -356,4 +356,5 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R54-A至R54-D验证长期体量维护方案的三层可执行：事前不新增无归属文件、不先加后登、新文件不超Target的60%；事中由Validator独立强制字节阈值、类别与Ledger一致性；事后按周期产出体检报告并对过期台账判失败；`COMPOSITE`是待拆队列而非豁免。
 - R54-E验证“减”的通道必须被实际评估：`Duplicate Rule Check`除查重复外还要判定是否存在可合并或可退役的既有规则，`Additive By Default`不得被解释成规则总量只增不减。
 - R55-A至R55-D验证自检属于Skill本体而非执行环境：`SKILL.md`前置声明自维护与写入前三项判定、协议纯文本可人工逐条执行、缺工具不得降低检查强度、版本纪律对任何执行者同样适用。
+- R55-E验证既有检测层的身份在搬家与改名后仍然连续：原名称`Skill Update Self-Check / Change Safety Checklist`保持可检索，新入口显式声明只是入口、不构成第二套体系，全库只有一个检查体系入口。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。
