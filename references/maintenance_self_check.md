@@ -95,11 +95,14 @@ Read current rules
 |---|---|---|
 | 结构与引用完整性 | 逐个打开被引用的路径，确认存在且名称一致 | `scripts/validate_sd_film.py --skill-root <skill-root>` |
 | 阶段自证与路由唯一 owner | 逐个确认每个主 Workflow 自证所属 STATE，且未复述阶段顺序或下一 Workflow | 同上（Validator 的 `check_workflow_routing`） |
+| 孤儿内容与不可达文件 | 从`SKILL.md` / `config.md`出发，逐个问“谁会读这个文件”：答不出来的就是不可读内容——路由它、声明`Skill维护层`或删除它；并列出被豁免项及其依据 | 同上（Validator 的 `check_reachability`；`--report`另外列出“不可达但已声明豁免”的清单） |
 | 可达性预算 | 用字节数对照`references/context_budget.md`的复核线／Ceiling与Size Index | 同上（Validator 还检查读取入口、索引一致性与 NON_RUNTIME 自证） |
 | `LR-R1—LR-R10` | 按`references/recovery_guards.md`逐条核对 | `scripts/test_validate_sd_film.py` |
 | `SD-R1—SD-R5` | 按`references/recovery_guards.md`逐条核对 | 同上 |
 
 **左列在任何环境下都必须完成；右列只是本机可选加固。**没有Python、没有这些脚本、或换到别的Agent运行，都不构成跳过左列的理由。
+
+**孤儿内容与不可达文件**是两项必做的反向判定之一（另一项是可达性预算）：正向检查问“这个引用指向的文件在不在”，反向检查问“这个文件有没有人读”。只有正向检查时，内容可以安静地攒成没人读的历史遗留——本Skill 已经发生过两次（项目登记表与 13 个史前概览），因此它现在是固定基线，不是可选项。豁免只有两类且必须显式：`USER_GUIDE.md`这类**非运行时文档**，以及自己声明了`Skill维护层`的文件；豁免清单必须可见，否则“跳过”与“漏掉”无法区分。
 
 脚本只负责确定性结构、不变量与引用检查；语义判据由维护者实际阅读比较完成，**脚本通过不等于全部维度自动PASS**。
 

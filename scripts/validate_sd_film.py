@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r78 structural, routing and readability validation for SD Film."""
+"""Deterministic r79 structural, routing and readability validation for SD Film."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
@@ -196,6 +196,52 @@ def check_ledger_sizes(entries, declared, tolerance: float = 0.20) -> list[str]:
             )
     return errors
 
+def _shipped_text_files(root: Path) -> list[str]:
+    shipped: list[str] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in REACHABILITY_TEXT_SUFFIXES:
+            continue
+        relative = path.relative_to(root)
+        if any(part in NON_SKILL_DIRS for part in relative.parts):
+            continue
+        if ".pre-" in path.name or "backup" in path.name.lower():
+            continue
+        shipped.append(relative.as_posix())
+    return shipped
+
+
+def unreachable_shipped_files(root: Path) -> list[str]:
+    """Shipped files outside every read path, exemptions excluded.
+
+    Returns the same set `check_reachability` would fail on, so the periodic
+    audit can show the backlog instead of only the blocking case.
+    """
+    shipped = _shipped_text_files(root)
+    reachable = _reachable_files(root, shipped)
+    return [
+        relative for relative in sorted(set(shipped) - reachable)
+        if relative not in REACHABILITY_ALLOWED_UNREACHABLE
+        and not declares_maintenance(root / relative)
+    ]
+
+
+def exempt_unreachable_files(root: Path) -> list[tuple[str, str]]:
+    """Unreachable files that are exempt on purpose, with the reason.
+
+    Reported alongside the blocking list so a green run still shows what was
+    skipped -- an exemption nobody can see is indistinguishable from a miss.
+    """
+    shipped = _shipped_text_files(root)
+    reachable = _reachable_files(root, shipped)
+    out: list[tuple[str, str]] = []
+    for relative in sorted(set(shipped) - reachable):
+        if relative in REACHABILITY_ALLOWED_UNREACHABLE:
+            out.append((relative, "non-runtime doc"))
+        elif declares_maintenance(root / relative):
+            out.append((relative, MAINTENANCE_MARKER))
+    return out
+
+
 def build_report(root: Path) -> str:
     entries = sorted(scan_markdown(root), key=lambda item: -item[1])
     ledger = read_size_ledger(root)
@@ -227,6 +273,20 @@ def build_report(root: Path) -> str:
         lines += ["", "  review by"]
         for relative, when in sorted(reviews.items()):
             lines.append(f"    {when:12s} {relative}")
+
+    # Orphan content: exists, ships, and no read path can reach it. The validator
+    # fails on these; the report also lists the exemptions so the periodic audit
+    # can see what was skipped on purpose rather than trusting a green run.
+    orphans = unreachable_shipped_files(root)
+    lines += ["", f"  unreachable (no read path): {len(orphans)}"
+                 "   (blocking when non-zero)"]
+    for relative in orphans:
+        lines.append(f"    {(root / relative).stat().st_size / 1024:7.1f} KB  {relative}")
+    allowed = exempt_unreachable_files(root)
+    if allowed:
+        lines += ["", f"  unreachable but declared exempt: {len(allowed)}"]
+        for relative, reason in allowed:
+            lines.append(f"    {reason:20s} {relative}")
     return "\n".join(lines)
 
 def check_context_budget(entries, ledger) -> list[str]:
@@ -1167,7 +1227,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r78 structural, routing and readability validation")
+    print("PASS: r79 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

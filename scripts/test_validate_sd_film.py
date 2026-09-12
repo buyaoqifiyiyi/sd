@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r78 SD Film validator."""
+"""Regression tests for the r79 SD Film validator."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util
@@ -2830,6 +2830,55 @@ class R78ReachabilityTests(unittest.TestCase):
                 text = (ROOT / relative).read_text(encoding="utf-8-sig")
                 self.assertNotIn(validator.MAINTENANCE_MARKER, text)
                 self.assertIn("运行时资源", text)
+
+    def test_run_card_carries_the_orphan_check_as_a_required_item(self) -> None:
+        """死文件检查是维护层的固定基线，不是"跑脚本时顺带"。
+
+        只有正向检查时，内容会安静地攒成没人读的历史遗留——本Skill 已发生过两次。
+        """
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("| 孤儿内容与不可达文件 |", card)
+        self.assertIn("check_reachability", card)
+        self.assertIn("豁免清单必须可见", card)
+        self.assertIn("已经发生过两次", card)
+        protocol = (ROOT / "references/maintenance_self_check_protocol.md").read_text(
+            encoding="utf-8-sig"
+        )
+        self.assertIn("孤儿检查同样适用于文件，且每次必做", protocol)
+
+    def test_report_lists_orphans_and_their_exemptions(self) -> None:
+        """报告要同时给出阻断清单与豁免清单：只看绿灯分不清跳过和漏掉。"""
+        report = validator.build_report(ROOT)
+        self.assertIn("unreachable (no read path)", report)
+        self.assertIn("blocking when non-zero", report)
+        self.assertIn("unreachable but declared exempt", report)
+        self.assertIn("USER_GUIDE.md", report)
+        self.assertEqual(validator.unreachable_shipped_files(ROOT), [])
+        exempt = dict(validator.exempt_unreachable_files(ROOT))
+        self.assertEqual(exempt.get("USER_GUIDE.md"), "non-runtime doc")
+
+    def test_report_lists_a_planted_orphan(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            (root / "references").mkdir()
+            (root / "SKILL.md").write_text("# entry\n", encoding="utf-8")
+            (root / "config.md").write_text(
+                "# config\n\n- Context Budget: `references/context_budget.md`\n",
+                encoding="utf-8",
+            )
+            # build_report also reads the size ledger, so the fixture carries it.
+            (root / "references" / "context_budget.md").write_text(
+                "# Context Budget\n\n## Size Index\n\n"
+                "| File | Class | Size (r60) | Read Entry | Review By |\n"
+                "|---|---|---|---|---|\n",
+                encoding="utf-8",
+            )
+            (root / "knowledge" / "dead.md").write_text("# dead\n", encoding="utf-8")
+            self.assertEqual(validator.unreachable_shipped_files(root), ["knowledge/dead.md"])
+            report = validator.build_report(root)
+            self.assertIn("unreachable (no read path): 1", report)
+            self.assertIn("knowledge/dead.md", report)
 
 
 if __name__ == "__main__":
