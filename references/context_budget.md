@@ -61,7 +61,7 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 | File | Class | Size (r60) | Read Entry | Review By |
 |---|---|---|---|---|
 | knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 57.3 KB | STATE-08每个Clip只读当前Clip相关的Projection Matrix行与Serialization Rules；Applicability Gate在编译前读 | 2026-10-11 |
-| workflows/09_shot_design_workflow.md | INTEGRAL | 52.0 KB | 按Step读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
+| workflows/09_shot_design_workflow.md | INTEGRAL | 52.3 KB | 按Step读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
 
 `USER_GUIDE.md`已移出：它是`NON_RUNTIME`，不参与运行时读取，不属于本纪律的管辖范围。
 
@@ -96,6 +96,41 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 - `INTEGRAL`条目必须写明“按章节读”的入口；不写入口的`INTEGRAL`视同未登记，Validator会失败。
 - `COMPOSITE`条目是**待拆队列**，不是长期状态；连续两次复审仍未拆分，按未处理项上报。
+
+## 体量改动的方法｜Measure Before You Move
+
+本节只服务维护：**改变任何读取范围、读取顺序或文件体量之前，先按本节建立证据。** 判据是测量，不是直觉——实测中四个“显然能省”的方向有三个是错的，凭直觉动手会改错地方。
+
+### 读取足迹的两个口径
+
+| 口径 | 含义 |
+|---|---|
+| **并集口径** | 一个流程碰到的全部文件（每个算一次）。这是**最坏情况**——把所有领域都用上的项目 |
+| **典型口径** | 并集扣掉 `rules/resource_loading.md` 的 `Project Scope Gate` 明确可跳过的领域 |
+
+报告与结论**必须写明用的是哪个口径**，不得混用。r73 实测基线：并集 105 文件 / 1,075.7 KB；典型 83 文件 / 928.4 KB。
+（换算为token时，本库中文为主的语料约 2.3–3.25 KB / 1k token；这只是估值，**必须标注为投影**。）
+
+### 已实测排除的方向
+
+| 方向 | 实测 | 结论 |
+|---|---|---|
+| 跨文件重复内容 | 重复句占 2.1%，多付 17.1 KB | 已排除 |
+| “肥目标”文件 | 前 10 文件占 36%，最大单文件 5.3% | 已排除 |
+| 空行与行尾空白 | 可压 2.3 KB（0.2%）；45% 的空行是单个空行，是Markdown最小分隔符，删了会合并行、改变语义 | 已排除 |
+| 换行符 CR | 43 文件 / 14.0 KB，一次性 | 已清理，由`check_line_endings`守卫 |
+
+**重新提出上表任一方向者，必须给出与上表不同的新证据**，否则视为重复劳动。
+
+### 仍然有效的方向
+
+1. **读取指令过宽**：目录级“整树读”是否与同一文件里已有的精确 index 路由重复（`COMPOSITE` 未被应拆）。
+2. **条件资源被无条件读取**：条件不成立时不得读（`Project Scope Gate`）。
+3. **跨阶段重复读**：同一中枢文件被 N 个阶段整文件读 → 补 `# Read Scope`。
+
+### 度量工具
+
+测量脚本是工作区临时产物，**不随 Skill 发布**；按上述口径自建即可。工具在用于任何结论之前，必须先按 `references/maintenance_self_check_protocol.md` 的 `Claim / Evidence Credibility Check` 自证。
 
 ## Change Interaction
 

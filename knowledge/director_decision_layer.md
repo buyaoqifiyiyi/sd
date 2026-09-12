@@ -1,5 +1,21 @@
 # Director Module / Director Intelligence Layer
 
+# Read Scope
+
+本文件被 STATE-00 / 01 / 04 / 05 / 06 / 07 / 08、Editing 与 STATE-09 复用，**不得整文件通读**：按当前阶段只读对应小节。
+
+| 当前阶段 | 只读 |
+|---|---|
+| STATE-00 / STATE-01 | `## Module Contract`、`## Boundary With Screenwriter Module` |
+| STATE-04 | `## Required Decision Dimensions`、`## Mandatory Director Questions` |
+| STATE-05 / STATE-06 | `## Stage Responsibilities`、`## DIRECTOR INTENT PACKET` 中当前 Scene / Shot Group 相关字段、`## Internal Notes Shape` |
+| STATE-07 / STATE-08 | `## Director-to-Prompt Boundary`、`## Workflow Handoff`、`## Packet Persistence And Projection` |
+| STATE-09 / Editing / Review | `## Completion Check` |
+| 归属或可见性冲突时 | `## Boundary With Screenwriter Module`、`## Internal Visibility Rule` |
+| 不必在运行时读取 | `## Purpose` |
+
+---
+
 ## Purpose
 
 本文件是SD Film贯穿式Director Thinking、唯一的`Director Module / Director Intelligence Layer`连续性owner。它从STATE-00建立项目导演基线，在STATE-01接收Screenwriter Module的Story / Character / Scene Intent并形成呈现策略，在STATE-05投影为场景执行意图，在STATE-06具体化为Shot级Director Decision Notes，在STATE-07形成Clip级执行合同，在STATE-08由Prompt Compiler翻译，在Editing中保护剪辑观点，并在STATE-09执行Director's Cut Review。

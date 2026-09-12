@@ -30,10 +30,60 @@
 本节定义**运行期的少读纪律**。Skill自身的可达性判据与Size Index由`references/context_budget.md`拥有；本节不重复其数值，只规定运行时如何避免无效读取。文件长度本身不构成读取理由，文件越短也不成为跳读owner的借口。
 
 1. **优先读owner**：先读当前事项的唯一owner文件，不从多个文件拼装同一事实；其他位置只用于路由、引用或不变量核对。
-2. **长文件按章节读**：越过复核线的文件，只读与当前事项直接相关的章节，不整文件通读，不为“保险”预读全库。
+2. **长文件与中枢文件按章节读**：下列两类文件都只读与当前事项直接相关的章节，不整文件通读，不为“保险”预读全库：
+   - 越过`references/context_budget.md`复核线的文件；
+   - **被多个阶段重复引用的中枢文件**，例如`workflows/workflow_map.md`、`references/project_state_contract.md`、`knowledge/director_decision_layer.md`——它们体量可能远低于复核线，但每个阶段都读全量会把读取成本乘以阶段数。
+   定位方式：文件顶部有`# Read Scope`区块时，按它分配给当前事项的章节读；没有时，先只读该文件的章节标题清单，再定点读取命中章节。
 3. **短卡优先**：同一事项同时存在执行入口与判据真源时（例如维护自检的`references/maintenance_self_check.md`与其判据真源），先读短卡；只有需要完整判据、边界或反例时才继续读真源。
 4. **不读非运行时文档**：`USER_GUIDE.md`面向人阅读，是非运行时文件；不得把它当作规则、恢复、路由或Schema的来源。
 5. **被迫通读即报告**：如果完成当前事项确实需要通读一个超长文件，说明该文件需要拆分——按`references/context_budget.md`登记为债务，不在运行时用“多读一点”掩盖结构问题。
+
+### Project Scope Gate｜项目范围门
+
+条件性资源在**条件不成立时不得读取**——不是“少读一点”，是不读。这是本Skill最大的一项读取节省，且它不改变任何STATE、Gate或交付物。
+
+判定依据**只用既有已确认事实**，不新增状态字段、不新增项目工件：
+
+| 领域 | 读取条件（不成立即跳过） | 判定依据 |
+|---|---|---|
+| `knowledge/fx/`与正式FX资产 | 剧本存在FX义务或已登记FX需求 | Production-Locked Script / STATE-02 FX需求清单 |
+| `knowledge/sound_language/` | 当前镜头存在同期声设计需求 | 当前镜头事实；未激活AUDIO模块时不检查声音身份 |
+| `knowledge/sequence/` | 存在Confirmed Sequence Plan | STATE-05条件路由结论 |
+| `knowledge/transitions/` | 存在需要判定的跨镜边界 | 当前Scene / Clip的边界事实 |
+| `knowledge/performance/`、`knowledge/action_previs.md` | 当前镜头为Performance-dominant / Action-dominant / Mixed | STATE-06的镜头路由结论 |
+| `knowledge/visual_styles/` | 用户提供了明确视觉参考 | 本轮或已确认的参考输入 |
+| `knowledge/environment_multi_view_reconstruction.md` | 当前Active Core ENV存在Spatial Reconstruction | STATE-03环境资产记录 |
+| `knowledge/adaptation/`、`knowledge/script_adaptation.md`、`knowledge/screenwriting_optimization.md` | 当前为Existing Script / Material或改编 / 优化分支 | STATE-01入口路由 |
+| `knowledge/directorial_interpretation.md` | 当前为导演化 / 改编分支 | STATE-01入口路由 |
+| `knowledge/medium_profiles.md` | 项目为非默认媒介（短剧 / 广告 / MV等） | STATE-01媒介判定 |
+| `rules/automation_mode.md` | `Automation Policy: FAST` | 用户显式启用 |
+| `rules/runtime_reload.md` | 命中显式Reload触发 | `rules/runtime_reload.md`的触发词表 |
+| 未选中的视频模型Template与Adapter | 当前Clip选定该模型 | STATE-06的Selected Model |
+| 未制作的资产类别Template | 当前批次制作该类别 | STATE-02资产路由 |
+
+判定规则：
+
+- **不确定即读**。范围门只跳过“已确认事实明确不涉及”的领域；不得因“看起来用不上”而跳过任何Required Resource。
+- **跳过必须留痕**：内部读取记录写明跳过了哪个领域、依据哪条已确认事实。不写依据等于没有跳过。
+- 范围门**不改变**STATE、Completion Gate、Asset Lock或任何交付物Schema，也不得被用作跳读的借口。
+
+### Cross-Session Resume｜跨会话恢复的最小读取集
+
+跨会话、跨轮次或断点恢复既有项目时，本轮**缺省读取集只有四项**：
+
+1. Selected State Source 的 `## Required Status Header`（Project ID、Current State、State Status、Completed States、Next Workflow、Pending Decision、Revision ID）；
+2. 该 State Source 中**当前 STATE 相关**的 `## Active Artifacts` / `## Confirmed Assets` / `## Review Control` 行；
+3. 当前 Workflow 全文；
+4. 当前 Workflow 的 Required Resources，按各自 `# Read Scope` 定点读取。
+
+明确不读：
+
+- 已完成阶段的交付物正文（剧本、资产Prompt、Scene、Shot、Clip、最终Prompt）——它们已由Artifact ID与Revision代表；
+- 历史对话、旧轮次输出与上一版assistant结论；
+- 为“了解背景”而通读`project_bible.md`全文——只读Visual Direction Lock与当前事项直接相关的字段；
+- `Verified Reuse Register`不得作为跨会话证据，它只在同一runtime内有效。
+
+本节与`Loading Order`的`Current-Object Fast Path`不冲突：两者都只规定读取上限，同时适用时**取更小者**。命中`rules/runtime_reload.md`的显式Reload时不适用本节——显式Reload必须按该规则完整重读入口与基础owner pointers。
 
 ## Actual Read Gate
 

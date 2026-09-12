@@ -436,17 +436,12 @@ Visual Style Retrieval。
 
 调用：
 
-knowledge/visual_styles/
-
-
-优先读取：
-
 knowledge/visual_styles/index.md
 
 
 再读取：
 
-对应视觉风格文件。
+其索引命中的对应视觉风格 / 导演原子文件；未命中不读，不得整树通读该目录。
 
 对影片、短片、截图或多张视觉参考，先执行`knowledge/visual_styles/index.md`的`Reference-To-System Evidence Gate`：仅把可观察证据转为项目级Style Invariants与场景级Narrative Variants；创作提案保持待确认，未知或不可转移信息不得写成项目事实。本Workflow只消费该Gate的结论，最终Project Bible字段仍由`templates/01_project_bible_template.md`拥有。
 
@@ -972,7 +967,7 @@ ultra detailed。
 
 按需读取：
 
-knowledge/performance/
+knowledge/performance/index.md（先据index定位，只读建立项目级表演语法所需的原子文件；不整树通读）
 
 
 建立项目级表演语法：
@@ -1002,7 +997,7 @@ knowledge/performance/
 
 按需读取：
 
-knowledge/sound_language/
+knowledge/sound_language/index.md（先据index定位，只读建立项目级声音原则所需的原子文件；不整树通读）
 
 
 建立项目级声音原则：

@@ -1,5 +1,19 @@
 # SD Film Asset Lock Contract
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 登记 / 锁定资产 | `## Required Record`、`## Version Format`、`## Canonical Reference Rule` |
+| 角色外观锁定 | `## Canonical Character Appearance And Form Lock`、`## Immutable And Mutable Boundary` |
+| 变更或冲突 | `## Unified Priority`、`## Change Protocol` |
+| 校验 | `## Validation Invariants` |
+| 不必在运行时读取 | `## Purpose`、`## Authority`、`## Final Principle` |
+
+---
+
 ## Purpose
 
 本文件定义 `asset_registry.md` 中正式资产的Active Version、一致性锁、Canonical Reference和变更路由。

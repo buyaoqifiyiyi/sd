@@ -1,5 +1,19 @@
 # Spatial Blocking Layer
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 做 Spatial Blocking Decision | `## Module Contract`、`## Spatial Blocking Decision` |
+| 产出 Blocking 结果 | `## Spatial Blocking Result`、`## Projection Rules` |
+| 需要 Top-down Map | `## Top-down Blocking Map Prompt Gate` |
+| 校验 | `## Minimum Validation Examples` |
+| 不必在运行时读取 | `## Purpose` |
+
+---
+
 ## Purpose
 
 Spatial Blocking Layer 用“Scene Spatial Snapshot + Text Spatial Rules + Top-down Blocking Map（按复杂度启用）”在正式 Detailed Shot Design 之前锁定长期场景几何、角色站位、摄影机位置、关系轴、移动路径、关键道具和跨 Clip 边界，减少左右漂移、反轴、无动作换边、瞬移与首尾帧衔接错误。

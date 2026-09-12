@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r72 structural, routing and readability validation for SD Film."""
+"""Deterministic r73 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -47,6 +47,7 @@ SELF_CHECK_DIMENSIONS = (
     "Reference Integrity Check", "State / Continuity Compatibility Check", "User Guide Sync Check",
     "Regression Check", "Change Classification Check", "Runtime Claim / Legacy Recovery Check",
     "Standalone Skill Discovery Check", "Context Budget Check",
+    "Claim / Evidence Credibility Check",
 )
 
 MAIN_WORKFLOWS = (
@@ -365,6 +366,59 @@ def check_workflow_routing(root: Path) -> list[str]:
         state = f"STATE-{index:02d}"
         if state not in covered:
             errors.append(f"main pipeline state {state} has no self-declaring workflow")
+    return errors
+
+READ_SCOPE_HEADING_RE = re.compile(r"^# Read Scope\s*$", re.M)
+READ_SCOPE_BLOCK_END_RE = re.compile(r"^(?:---\s*$|#{1,6} )", re.M)
+READ_SCOPE_SECTION_RE = re.compile(r"`(#{1,3}) ([^`\n]+?)`")
+
+def _normalize_heading(text: str) -> str:
+    return " ".join(text.split())
+
+def check_read_scope_sections(root: Path) -> list[str]:
+    """A `# Read Scope` block is an index: every section it names has to exist in that
+    same file. Pointing at a section that no longer exists sends the reader nowhere —
+    the same failure class as a dangling file reference, so it gets the same guard."""
+    errors: list[str] = []
+    for path in sorted(root.rglob("*.md")):
+        relative = path.relative_to(root)
+        if relative.parts[0] in NON_SKILL_DIRS:
+            continue
+        text = path.read_text(encoding="utf-8-sig")
+        match = READ_SCOPE_HEADING_RE.search(text)
+        if not match:
+            continue
+        block = text[match.end():]
+        end = READ_SCOPE_BLOCK_END_RE.search(block)
+        if end:
+            block = block[:end.start()]
+        headings = {
+            _normalize_heading(line) for line in text.splitlines() if line.startswith("#")
+        }
+        for level, name in READ_SCOPE_SECTION_RE.findall(block):
+            target = _normalize_heading(f"{level} {name}")
+            if target not in headings:
+                errors.append(
+                    f"Read Scope points at a missing section: {target} "
+                    f"(in {relative.as_posix()})"
+                )
+    return errors
+
+TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml"}
+
+def check_line_endings(root: Path) -> list[str]:
+    """Line endings carry no rule but they are billed, and a mixed file turns one
+    edited line into a whole-file diff (measured: 30 real lines shown as 2,600).
+    Both are pure loss, so the corpus stays LF-only."""
+    errors: list[str] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in TEXT_SUFFIXES:
+            continue
+        relative = path.relative_to(root)
+        if set(relative.parts) & NON_SKILL_DIRS:
+            continue
+        if b"\r" in path.read_bytes():
+            errors.append(f"text file must use LF line endings: {relative.as_posix()}")
     return errors
 
 def check_internal_references(root: Path) -> list[str]:
@@ -898,6 +952,8 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
     errors.extend(check_workflow_routing(root))
     errors.extend(check_internal_references(root))
+    errors.extend(check_read_scope_sections(root))
+    errors.extend(check_line_endings(root))
     return errors
 
 def main() -> int:
@@ -915,7 +971,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r72 structural, routing and readability validation")
+    print("PASS: r73 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@
 
 1. **确认这是正式修改**：只要改到`SKILL.md`、Rules、Workflows、Knowledge、Templates、References、Adapters、Validator、测试或用户文档中任何一个字节，它就是正式修改——不论改动大小、是否只改文案或拼写、是否由人还是由Agent执行。
 2. **归属判定**：先找现有owner。默认把内容补进既有文件；只有确认现有权威位置都不合适才新增文件，且新文件不得超过30 KB。
-3. **可达性判定**：用**字节数**（不是行数）对照`references/context_budget.md`的复核线与Ceiling。越过复核线**不阻断**，但必须在同一次变更内说清它的读取入口，或拆分它；达到Ceiling必须先拆分。无论大小，新增内容都必须有消费者——没有消费者的内容等于已经丢了。
+3. **可达性判定**：用**字节数**（不是行数）对照`references/context_budget.md`的复核线与Ceiling。越过复核线**不阻断**，但必须在同一次变更内说清它的读取入口，或拆分它；达到Ceiling必须先拆分。无论大小，新增内容都必须有消费者——没有消费者的内容等于已经丢了。任何**读取范围、读取顺序或文件体量**的改动，还必须先按`references/context_budget.md`的`Measure Before You Move`建立**前后同尺度**基线：**直觉不是判据**，实测才是。
 4. **减法判定**：本次新增是否使某条既有规则过时、被覆盖或可合并？结论为“无”也要写下依据。`Additive By Default`保护既有字段与已确认行为，**不保护规则总量**。
 
 四项判定都是**读文件即可完成的人工判断**，不需要任何工具。
@@ -52,7 +52,7 @@ Read current rules
 → Classify existing coverage
 → Before You Write: ownership / size / subtraction judgement
 → Apply minimal change
-→ Run the 15 Check Dimensions below
+→ Run the 16 Check Dimensions below
 → Run Standalone Skill Discovery Guard
 → Run Unconditional Chat Runtime Startup And Recovery Guard
 → Classify and resolve every finding by risk
@@ -83,6 +83,7 @@ Read current rules
 | 13 | Runtime Claim / Legacy Recovery Check | Runtime Reload、Workflow Re-entry与Legacy Recovery是否仍由唯一owner定义 |
 | 14 | Standalone Skill Discovery Check | 独立Skill的发现入口、别名与单一用户级权威副本是否完好 |
 | 15 | Context Budget Check | 细节是否仍能读到：Entry / 复核线 / Ceiling，Size Index是否有读取入口且未腐化 |
+| 16 | Claim / Evidence Credibility Check | 判断改动是否成立的**证据本身**是否可信：宣称与实现射程是否一致，测量工具是否先自证，字节与二进制事实是否用权威来源核对，实测与投影是否分开标注，删除前是否普查过独有内容 |
 
 ## Required Verification
 
@@ -126,6 +127,7 @@ Template Sync: PASS / FIXED / WARN
 Reference Integrity: PASS / FIXED / WARN
 State / Continuity: PASS / FIXED / WARN
 Runtime Claim Integrity: PASS / FIXED / WARN
+Claim / Evidence Credibility: PASS / FIXED / WARN
 Legacy Recovery Regression: PASS / FAIL / WARN
 Chat Runtime Startup Guard: PASS / FAIL / WARN
 Standalone Skill Discovery: PASS / FAIL / WARN

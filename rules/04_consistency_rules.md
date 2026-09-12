@@ -1,5 +1,23 @@
 # Consistency Rules
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应 Rule。
+
+| 当前事项 | 只读 |
+|---|---|
+| Clip 生成前连续性判定 | `# Clip Preflight High-Priority Gate`、`# Character Consistency`、`# Environment Consistency`、`# Prop Consistency` |
+| 视觉风格一致性 | `# Visual Style Consistency` |
+| 镜头连续性与越轴 | `# Shot Continuity`、`# Relational Screen Geometry`、`# Shot Boundary Contract` |
+| 镜头边界与转场 | `# Transition Classification`、`# Boundary Priority And Conflict Resolution` |
+| 参考优先级、版本与修正 | `# Reference Priority`、`# Version Control`、`# Correction Rule` |
+| Sequence 覆盖与单元 | `# Sequence Coverage And Unit Contract` |
+| 边界校验 | `# Boundary Validation` |
+| 工作流边界冲突时 | `# Workflow Boundary` |
+| 不必在运行时读取 | `## Purpose`、`# AI影视项目一致性规则`、`# Final Principle` |
+
+---
+
 # AI影视项目一致性规则
 
 

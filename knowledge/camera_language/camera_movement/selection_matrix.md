@@ -1,5 +1,21 @@
 # Camera Movement Selection Matrix
 
+# Read Scope
+
+本文件被 STATE-06 与 STATE-09 复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 为当前镜头选主运镜 | `## Actual Retrieval Gate`、`## Selection Matrix`、`## Complexity Priority` |
+| 查原子的运镜知识 | `## Atomic Knowledge Map` |
+| 判断模型稳定性 | `## Seedance Stability Levels` |
+| 记录 Camera Language Decision | `## Camera Language Decision Record` |
+| 多运镜组合取舍 | `## Diverse, Not Chaotic` |
+| 翻译到 STATE-08 | `## STATE-08 Translation Rule` |
+| 不必在运行时读取 | `## Module Contract`、`## Purpose` |
+
+---
+
 ## Module Contract
 
 - **Module Name**：Camera Movement Selection Matrix

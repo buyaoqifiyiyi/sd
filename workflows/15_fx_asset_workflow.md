@@ -50,7 +50,7 @@ Formal FX Asset Development（条件）
 - rules/02_asset_rules.md
 - rules/04_consistency_rules.md
 
-涉及声音时按需读取knowledge/sound_language/。
+涉及声音时按需读取`knowledge/sound_language/index.md`，只读命中文件，不整树通读。
 
 ---
 

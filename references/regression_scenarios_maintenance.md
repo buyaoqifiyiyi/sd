@@ -156,7 +156,7 @@ FAIL：以“降低体量”为由新增平行规则文件，形成第二套并�
 
 输入：一次维护优化需要修改Skill，按`SKILL.md`入口执行维护自检。
 
-PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（15项检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到复核线以内并从Size Index移除。
+PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（16项检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到复核线以内并从Size Index移除。
 
 FAIL：维护自检仍只能通过通读一个超长合同文件才能找到；或抽取后`module_contracts.md`同时保留一份可执行的并行副本。
 
@@ -266,7 +266,7 @@ FAIL：把`Additive By Default`解释成规则总量只增不减；连续多个�
 
 输入：把SD Film Skill交给另一个Agent、另一台机器，或一个没有Python、没有`scripts/`、没有定时任务的环境。
 
-PASS：`SKILL.md`的`Self-Maintenance`节在前置位置声明本Skill自维护，给出写入前三项判定与写入后的完整自检入口；`references/maintenance_self_check.md`的15项与两个Guard全部可由人按文件逐条核对；协议成立与否不引用任何脚本的运行结果。
+PASS：`SKILL.md`的`Self-Maintenance`节在前置位置声明本Skill自维护，给出写入前三项判定与写入后的完整自检入口；`references/maintenance_self_check.md`的16项与两个Guard全部可由人按文件逐条核对；协议成立与否不引用任何脚本的运行结果。
 
 FAIL：把自检仅实现为`scripts/validate_sd_film.py`、周期性任务或某个宿主的功能，使换环境后Skill退化为无约束的文档；或在判据中把“运行脚本”写成必要条件。
 

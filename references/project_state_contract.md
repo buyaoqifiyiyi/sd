@@ -1,5 +1,19 @@
 # SD Film Project State Contract
 
+# Read Scope
+
+本文件被多个阶段重复引用（路由、写回、恢复），**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 路由判定 | `## Required Status Header` 与 `## Selected State Source Field Contract` |
+| 阶段写回 | `## State Mutation And Writeback Protocol`，以及 `## Required Sections` 中本次实际变更的那几节 |
+| 新项目初始化 | 加读 `# SD Film Portable Project Status` 的结构与 `## Persistence And Synchronization` |
+| 断点恢复 / 校验 | `## Checkpoint Rule`、`## Revision Rule`、`## Validation Invariants` |
+| 不必在运行时读取 | `## Purpose`、`## Authority`、`## Final Principle` |
+
+---
+
 ## Purpose
 
 本文件定义 `project_status.md` 与 `portable_project_status.md` 共用的持久状态合同，用于状态推进、项目恢复、Review退回和跨任务断点续作。

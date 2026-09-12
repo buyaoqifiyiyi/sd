@@ -109,12 +109,14 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 - knowledge/quality/execution_risk.md（所有正式SHOT）
 - knowledge/quality/continuity_pair_qa.md（所有相邻SHOT）
 
-- knowledge/performance/
-- knowledge/sound_language/
-- knowledge/fx/
-- knowledge/sequence/（存在Sequence Plan时）
-- knowledge/camera_language/（所有镜头的景别、角度、运镜、视点与剪辑语言）
-- knowledge/transitions/（所有相邻镜头的边界、转场技术、出入镜锚点与降级）
+- `knowledge/performance/index.md`（Performance-dominant / Mixed；先据index定位当前镜头的最小充分表演载体，只读命中文件）
+- `knowledge/sound_language/index.md`（仅本镜头存在同期声设计需求时；先据index定位，只读命中文件）
+- `knowledge/fx/index.md`（仅本镜头存在正式FX时）
+- `knowledge/sequence/index.md`（存在Sequence Plan时）
+- `knowledge/camera_language/index.md`（所有镜头；先据其分类索引定位当前镜头命中的景别 / 角度 / 运镜 / 视点 / 剪辑语言分类，只读命中分类的原子文件）
+- `knowledge/transitions/index.md`（所有相邻镜头；先判定Boundary Class再由Decision Engine选择一种主要技术，只读命中技术的原子文件）
+
+以上目录条目一律**先读其`index.md`定位，只读命中分支的原子文件**；目录只作为发现入口，**不得整树通读**，未命中不读。
 
 战斗、双主体、对峙、对话、追逐、相向运动或其他依赖双方空间关系的镜头，必须读取并执行`knowledge/camera_language/index.md`中的Relational Screen Geometry Contract；不得只用“面对彼此”描述朝向。
 

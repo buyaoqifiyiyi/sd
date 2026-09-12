@@ -1,5 +1,22 @@
 # SD Film Project Workspace
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 解析项目候选 | `## Project Root Contract`、`## Active Project Resolution` |
+| 新项目 | `## New Project Rule` |
+| 既有项目 | `## Existing Project Rule` |
+| Registry 核验 | `## Registry Rule` |
+| 与 State Source 衔接 | `## State Source Integration` |
+| 路径别名 | `## Path Alias Rule` |
+| 校验命令 | `## Validation Commands` |
+| 不必在运行时读取 | `## Purpose`、`## Runtime Skill Source`、`## Final Principle` |
+
+---
+
 ## Runtime Skill Source
 
 Runtime Reload是否触发、如何解析当前可访问Skill resources及如何报告只服从`rules/runtime_reload.md`，并在解析项目前执行。普通Chat先使用当前runtime实际可访问的installed / exposed Skill resources，不因Windows本机路径不可读默认切Work。Portable State只携带项目状态，不是Skill Definition。旧对话中的Skill描述不是权威Skill Source。Skill Definition解析完成后，再按`rules/state_source.md`为Project Context选择唯一来源。

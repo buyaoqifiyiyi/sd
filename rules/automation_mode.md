@@ -1,5 +1,19 @@
 # Fast Automation Mode
 
+# Read Scope
+
+本文件只在使用`Automation Policy: FAST`时读取，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 启用或判定 FAST | `## Activation And Persistence`、`## FAST Eligible Work` |
+| 连续推进与聚合交付 | `## FAST Continuous Chain`、`## Unified Delivery Packages` |
+| 边界与冲突 | `## Hard Stops`、`## Conflict And Return Route` |
+| 未启用 FAST 时 | **不读本文件**；激活判定由`rules/activation_rules.md`拥有 |
+| 不必在运行时读取 | `## Purpose And Owner` |
+
+---
+
 ## Purpose And Owner
 
 本规则是SD Film的唯一自动推进策略owner。它不创建主STATE、最终Template字段、独立项目事实或并行确认Schema；状态合同只保存当前`Automation Policy`，具体执行仍由既有Workflow、Completion Gate、Asset Lock和Review owner负责。

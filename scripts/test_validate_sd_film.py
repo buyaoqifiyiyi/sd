@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r72 SD Film validator."""
+"""Regression tests for the r73 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -2136,6 +2136,171 @@ class GptImageNamingTests(unittest.TestCase):
         state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
         self.assertIn("Built-in Candidate Generation", state)
         self.assertIn("GPT Image", state)
+
+
+class R73RouteMapEntryAndGuardScopeTests(unittest.TestCase):
+    """Two things the r73 change made explicit: the route owner states an entry boundary
+    for every stage it routes, and the routing guard's writeback rule is a name guard,
+    not a presence requirement."""
+
+    def test_route_map_declares_required_boundary_for_every_main_state(self) -> None:
+        """STATE-03 was the only stage whose entry had to be reconstructed from a
+        neighbour's Next route; the route owner now states all ten directly."""
+        text = (ROOT / "workflows/workflow_map.md").read_text(encoding="utf-8-sig")
+        sections = {}
+        current = None
+        for line in text.splitlines():
+            if line.startswith("### STATE-"):
+                current = line[len("### "):].split()[0]
+                sections[current] = []
+            elif current is not None:
+                sections[current].append(line)
+        states = {state for _, state in validator.MAIN_WORKFLOWS}
+        self.assertEqual(
+            states, set(sections), "route map STATE sections drifted from MAIN_WORKFLOWS"
+        )
+        for state in sorted(sections):
+            self.assertIn(
+                "- Required boundary：",
+                "\n".join(sections[state]),
+                f"{state} 缺 Required boundary：入口边界只能由路由唯一 owner 给出",
+            )
+
+    def test_writeback_rule_is_a_name_guard_not_a_presence_requirement(self) -> None:
+        """A full set of main workflows carrying no writeback block passes outright.
+        If this ever fails, the guard grew a presence requirement and the Routing
+        Integrity Check sentence in the protocol has to be widened with it."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_main_workflows(root)
+            self.assertEqual(validator.check_workflow_routing(root), [])
+
+
+class R73ReadScopeIndexTests(unittest.TestCase):
+    """`# Read Scope` is how a hub file stays readable without being read whole.
+    An index that points at a section which no longer exists is a broken read path,
+    so it is guarded exactly like a dangling file reference."""
+
+    HUB_FILES = (
+        "workflows/workflow_map.md",
+        "references/project_state_contract.md",
+        "knowledge/director_decision_layer.md",
+        "knowledge/screenplay_development.md",
+        "knowledge/clip_preflight_check.md",
+        "knowledge/reference_budget.md",
+        "references/asset_lock_contract.md",
+        "knowledge/spatial_blocking_layer.md",
+        "knowledge/medium_profiles.md",
+        "rules/automation_mode.md",
+        "rules/02_asset_rules.md",
+        "rules/04_consistency_rules.md",
+        "rules/progression_rules.md",
+        "knowledge/camera_language/camera_movement/selection_matrix.md",
+        "knowledge/environment_multi_view_reconstruction.md",
+        "references/project_workspace.md",
+    )
+
+    def test_every_read_scope_names_only_existing_sections(self) -> None:
+        self.assertEqual(validator.check_read_scope_sections(ROOT), [])
+
+    def test_the_reused_hub_files_all_declare_a_read_scope(self) -> None:
+        """These ten are each reused by three or more stages; every one of them has to
+        stay indexed, otherwise the read cost multiplies by the stage count again."""
+        for relative in self.HUB_FILES:
+            with self.subTest(hub=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8-sig")
+                self.assertIsNotNone(
+                    validator.READ_SCOPE_HEADING_RE.search(text),
+                    f"{relative} 缺 `# Read Scope`",
+                )
+
+    def test_read_scope_pointing_at_a_missing_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "hub.md").write_text(
+                "# Hub\n\n# Read Scope\n\n| 事项 | 只读 |\n|---|---|\n"
+                "| 路由 | `## Main Routing` |\n\n---\n\n## Main Routing\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(validator.check_read_scope_sections(root), [])
+            (root / "hub.md").write_text(
+                "# Hub\n\n# Read Scope\n\n| 事项 | 只读 |\n|---|---|\n"
+                "| 路由 | `## Renamed Section` |\n\n---\n\n## Main Routing\n",
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "Read Scope points at a missing section: ## Renamed Section (in hub.md)",
+                validator.check_read_scope_sections(root),
+            )
+
+
+    def test_read_budget_carries_a_project_scope_gate(self) -> None:
+        """条件性资源在条件不成立时不得读取——这是最大的一项读取节省，所以它必须
+        是一条可被指认的规则，而不是散落在各 Workflow 里的措辞。"""
+        loading = (ROOT / "rules/resource_loading.md").read_text(encoding="utf-8-sig")
+        self.assertIn("### Project Scope Gate｜项目范围门", loading)
+        for domain in (
+            "knowledge/fx/",
+            "knowledge/sound_language/",
+            "knowledge/sequence/",
+            "knowledge/transitions/",
+            "knowledge/performance/",
+            "knowledge/visual_styles/",
+            "knowledge/environment_multi_view_reconstruction.md",
+            "rules/automation_mode.md",
+            "rules/runtime_reload.md",
+        ):
+            with self.subTest(domain=domain):
+                self.assertIn(domain, loading)
+        self.assertIn("不确定即读", loading)
+
+
+    def test_shipped_text_files_use_lf(self) -> None:
+        """CR 不承载规则却按字节计费，而且混合换行符会把一处单行改动放大成整文件
+        diff（实测 30 行真改动显示成 2,600 行）。两者都是纯损耗。"""
+        self.assertEqual(validator.check_line_endings(ROOT), [])
+
+
+class R73EvidenceCredibilityDimensionTests(unittest.TestCase):
+    """维护层第 16 项：用来判断改动是否成立的**证据本身**必须可信。
+
+    它被加进来，是因为本轮出现了四个“显然能省 token”的判断、三个被实测否掉，
+    以及一个自身有缺陷却稳定报告“毫无变化”的测量工具。
+    """
+
+    def test_run_card_lists_sixteen_dimensions(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        for index in range(1, 17):
+            with self.subTest(index=index):
+                self.assertIn(f"\n| {index} | ", card)
+        self.assertNotIn("\n| 17 | ", card)
+
+    def test_summary_template_carries_the_new_line(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Claim / Evidence Credibility: PASS / FIXED / WARN", card)
+
+    def test_protocol_dimension_sixteen_names_its_four_checks(self) -> None:
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(
+            encoding="utf-8-sig"
+        )
+        self.assertIn("**Claim / Evidence Credibility Check**", criteria)
+        for marker in ("宣称 vs 实现", "测量工具先自证", "权威来源核对", "实测与投影必须分开标注"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, criteria)
+        self.assertIn("先普查它是否含有别处不存在的独有内容", criteria)
+
+    def test_size_method_is_owned_once_and_routed_from_the_card(self) -> None:
+        """体量改动的方法由 context_budget 拥有；短卡只路由，不复制步骤。"""
+        budget = (ROOT / "references/context_budget.md").read_text(encoding="utf-8-sig")
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        self.assertIn("## 体量改动的方法｜Measure Before You Move", budget)
+        self.assertIn("Measure Before You Move", card)
+        for section in ("### 读取足迹的两个口径", "### 已实测排除的方向", "### 仍然有效的方向"):
+            with self.subTest(section=section):
+                self.assertIn(section, budget)
+        # 排除清单若不写明“要重新提出就得给新证据”，就会退化成一份没人看的清单
+        self.assertIn("必须给出与上表不同的新证据", budget)
+        self.assertIn("不得混用", budget)
 
 
 if __name__ == "__main__":

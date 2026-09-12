@@ -1,5 +1,20 @@
 # SD Film Workflow Map
 
+# Read Scope
+
+本文件被全部主阶段引用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 常规路由（推进 / 下一步 / 继续） | `## Main Workflow Routing` 中当前 STATE 的那一行 + `## STATE Route Boundaries` 中当前 STATE 的小节 |
+| 新项目首次进入 / Runtime Reload | 加读 `## Core Production Pipeline` |
+| 用户显式请求 Storyboard / AUDIO / MUSIC | 只加读 `## Auxiliary Workflow Routing` 中对应的一行及其 Gate 小节 |
+| 旧项目恢复 | 加读 `## Legacy Compatibility` |
+| Review 退回或返修 | 加读 `## Resume And Revision Loop` |
+| 不必在运行时读取 | `## Purpose`、`## Ownership Boundaries` |
+
+---
+
 ## Purpose
 
 本文件只负责主Pipeline、STATE关系、Workflow / Template路由和辅助流程边界。它不拥有阶段算法、资源门槛、Completion Checklist或最终输出Schema。
@@ -67,6 +82,8 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 - Next route：按已确认需求进入对应STATE-03资产Workflow。
 
 ### STATE-03 Asset Development
+
+- Required boundary：消费STATE-02已分级并路由的CHAR / ENV / PROP / FX需求与Production-Locked Script。
 
 | Asset route | Workflow | Template |
 |---|---|---|

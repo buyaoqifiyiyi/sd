@@ -1,5 +1,19 @@
 # SD Film Medium Profiles
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前层级只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 剧本层 | `## The Three Profiles`、`## Selection And Ownership`、`## Screenwriter Layer` |
+| 导演层 | `## Director Layer`、`## Shared Invariants` |
+| 视觉层 | `## Aesthetic Layer`、`## Cross-Medium Asset Rule` |
+| 不适用 / 返回路由 | `## Non-Applicable Rule`、`## Return Routing`、`## Validator-Checkable Invariants` |
+| 不必在运行时读取 | `## Purpose And Boundary` |
+
+---
+
 ## Purpose And Boundary
 
 本Knowledge定义**媒介剖面**：同一套叙事内核在不同画面生成基础下必须如何分化。

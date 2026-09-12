@@ -1,5 +1,19 @@
 # Reference Budget / 参考资产预算控制
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 判定是否需要预算 | `## Contract`、`## Count Scope`、`## Conditional Trigger Thresholds` |
+| 实际计预算与削减 | `## Reference Budget Check`、`## Retention Priority` |
+| 角色独立性硬门 | `## Core Character Independence Hard Gate`、`## Integration Scope` |
+| 写审计记录 | `## Required Audit Record` |
+| 验收 | `## Acceptance Scenarios` |
+
+---
+
 ## Contract
 
 本规则是 STATE-07 Clip Production 与 STATE-08 Clip-based Video Prompt / Video Generation 共享的全局参考资产预算合同。Seedance 2.0与MiniMax H3按各自Adapter的图片限制执行。Seedance 2.5默认以30图、10视频、10音频、合计50项为容量边界，视频和音频各自总时长≤30秒；每个输入必须有唯一Primary Role。实际入口/网关明确给出较低限制时，才以`min(能力上限, 实际入口上限)`收缩对应类型；缺少素材职责或当前世界状态不适用的项必须删除，但不得以“稳定”为由自动回退9图。它必须在`knowledge/clip_preflight_check.md`完成Continuity Classification与World-State Check之后执行；预算不得反向决定连续性分类，也不得让不属于当前世界状态的资产因为“已有参考位”进入清单。

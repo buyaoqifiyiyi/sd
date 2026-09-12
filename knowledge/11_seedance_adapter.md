@@ -809,7 +809,7 @@ Editing用于分析：
 
 当前镜头与前后镜头如何连接。
 
-必须按需读取`knowledge/transitions/`。先使用rules/04_consistency_rules.md判定Boundary Class，再由Transition Decision Engine选择一种主要技术。
+必须按需读取`knowledge/transitions/index.md`：先据index定位命中技术，只读该原子文件。先使用rules/04_consistency_rules.md判定Boundary Class，再由Transition Decision Engine选择一种主要技术。
 
 
 分析内容包括：
@@ -837,7 +837,7 @@ Editing用于分析：
 
 推、拉、摇、移、跟、升降、环绕、甩镜、俯冲、贴地推进和变焦本身不是转场；没有明确切点和下一镜匹配条件时只作为镜头运动。
 
-当资料使用“中景→特写→环绕→拉远”等镜头顺序时，必须先读取`knowledge/camera_language/movement_combinations/`：多个景别、机位、视点或观察对象默认拆为Coverage Sequence；只有同一主体、同一目的、同向同轴且同平台的一次延续可保留为低复杂度复合路径。
+当资料使用“中景→特写→环绕→拉远”等镜头顺序时，必须先读取`knowledge/camera_language/movement_combinations/index.md`与`decision_engine.md`，只读命中分类的原子文件：多个景别、机位、视点或观察对象默认拆为Coverage Sequence；只有同一主体、同一目的、同向同轴且同平台的一次延续可保留为低复杂度复合路径。
 
 大多数转场属于后期剪辑。Seedance适配负责生成兼容的出镜/入镜把手，不得无依据要求单个镜头变形到另一个场景。
 

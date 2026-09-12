@@ -1,5 +1,19 @@
 # Progression And Anti-Duplication
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 收到纯推进命令 | `## Advance Gate` |
+| 判定用户确认语义 | `## Confirmation Input Semantics` |
+| 判定授权边界 | `## Authorization Boundary` |
+| Review 退回或断点恢复 | `## Revision And Resume` |
+| 不必在运行时读取 | `## Purpose` |
+
+---
+
 ## Purpose
 
 本规则处理“下一步”“继续”“下一个”“往后做”等纯推进命令，防止重复已完成工作或误触发生成行为。

@@ -829,7 +829,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 影响范围：<指定Workflow、STATE、Template或规则>。
 完成标准：<列出需要通过的正例、反例和回归场景>。
 
-正式修改后按SKILL.md的版本纪律同步更新Skill Version和Build ID，并自动执行`references/maintenance_self_check.md`中的15项`Skill Update Self-Check`与两个Guard（判据真源为`references/maintenance_self_check_protocol.md`）。如果用户调用方式、模块入口、Prompt输出结构、音色、连续性或Review等用户可见行为变化，同步更新USER_GUIDE.md。最后报告变更分类、修改文件、规则真源、重复/冲突/污染/路由/模板/引用检查、定向回归、USER_GUIDE同步状态和未解决Warning。
+正式修改后按SKILL.md的版本纪律同步更新Skill Version和Build ID，并自动执行`references/maintenance_self_check.md`中的16项`Skill Update Self-Check`与两个Guard（判据真源为`references/maintenance_self_check_protocol.md`）。如果用户调用方式、模块入口、Prompt输出结构、音色、连续性或Review等用户可见行为变化，同步更新USER_GUIDE.md。最后报告变更分类、修改文件、规则真源、重复/冲突/污染/路由/模板/引用检查、定向回归、USER_GUIDE同步状态和未解决Warning。
 ```
 
 **Skill 修改任务建议写清**
@@ -907,7 +907,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 ## 维护约定
 
-每次Skill正式修改完成后都必须执行`references/maintenance_self_check.md`中的15项`Skill Update Self-Check`、`Standalone Skill Discovery Guard`和`Unconditional Chat Runtime Startup And Recovery Guard`。即使只修改文案、Knowledge、Template或拼写，也必须运行普通Chat启动与旧项目恢复基线，以及独立Skill发现基线，避免后续优化使Chat无法正常调用、出现两份同名Skill或误要求Work。该Reference是维护QA的唯一权威来源；本说明书只说明用户可见的调用和报告方式，不复制完整检查细则。
+每次Skill正式修改完成后都必须执行`references/maintenance_self_check.md`中的16项`Skill Update Self-Check`、`Standalone Skill Discovery Guard`和`Unconditional Chat Runtime Startup And Recovery Guard`。即使只修改文案、Knowledge、Template或拼写，也必须运行普通Chat启动与旧项目恢复基线，以及独立Skill发现基线，避免后续优化使Chat无法正常调用、出现两份同名Skill或误要求Work。该Reference是维护QA的唯一权威来源；本说明书只说明用户可见的调用和报告方式，不复制完整检查细则。
 
 以后发生以下用户可见变化时，应同步更新本说明书：
 

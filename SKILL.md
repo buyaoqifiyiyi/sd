@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.11-r72
+Skill Version: 2026.09.12-r73
 
-Build ID: sd-film-2026.09.11-r72
+Build ID: sd-film-2026.09.12-r73
 
 ## Core
 
@@ -27,7 +27,7 @@ Build ID: sd-film-2026.09.11-r72
 - **可达性判定**：用字节数对照复核线与Ceiling；越过复核线不阻断，但必须说清它的读取入口或拆分它。新增内容必须有消费者，**没有消费者的内容等于已经丢了**。
 - **减法判定**：每次新增都要判断它是否使某条既有规则过时、被覆盖或可合并。`Additive By Default`保护既有字段与已确认行为，**不保护规则总量**。
 
-写入后必须执行完整自检：`references/maintenance_self_check.md`的15项与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；可达性判据、文件类别与Size Index的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
+写入后必须执行完整自检：`references/maintenance_self_check.md`的16项与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；可达性判据、文件类别与Size Index的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
 
 **本协议是纯文本的，不依赖任何脚本、工具或外部服务即可手工执行。**`scripts/validate_sd_film.py`只是某些环境下的可选加固；环境里没有它、或没有Python、或换了别的Agent，都不构成跳过自检的理由——按短卡逐项人工判定即可。正式修改后同步递增`Skill Version`与`Build ID`；**一次迭代等于一个对话累积的全部改动，不是每完成一个任务就升一版**。
 

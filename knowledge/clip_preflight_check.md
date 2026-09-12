@@ -1,5 +1,18 @@
 # Clip Preflight Check / Clip生成前检查
 
+# Read Scope
+
+本文件被 STATE-07 / STATE-08 / STATE-09 复用，单文件 44.7 KB，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| STATE-07 Clip Production | `## Five Global High-Priority Rules`、`## Execution Order`、`## Preflight Result And Failure Handling`，以及 A—H 八个检查中当前Clip适用的项 |
+| STATE-08 Video Prompt | `## Module Contract`、`## Five Global High-Priority Rules`、`## Visual Blocking Anchor Assessment / Before-Single-Clip-Prompt Gate` |
+| STATE-09 审核 | `## Preflight Result And Failure Handling`、`## Acceptance Scenarios（十三个Acceptance Scenarios）`、`## Validator Invariants` |
+| 不必在运行时读取 | A—H 中未命中当前Clip的检查项 |
+
+---
+
 ## Module Contract
 
 - Module Name：`Clip Preflight Check / Clip生成前检查`。

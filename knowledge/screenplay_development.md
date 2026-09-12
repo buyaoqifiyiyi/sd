@@ -1,5 +1,19 @@
 # Screenwriter Module / Writer Intelligence Layer
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| STATE-01 Creation Brief | `## Module Contract`、`## Minimum Project Intent Gate`、`## Director-first Story Development`、`## WRITER INTENT PACKET`、`## Writer Decision Engines`、`## Directable Screenplay QA`、`## Proposal And Revision Handoff`、`## Completion Check` |
+| STATE-01 Existing Script / Material | 加读 `## AIGC Directability Check`、`## Dialogue Principle` |
+| STATE-05 / STATE-06 | 只读 `## WRITER INTENT PACKET`、`## Writer → Director Handoff`、`## Cross-stage Projection`、`## Scene Director Intent Source Data` |
+| 归属冲突时 | `## Route Boundary` |
+| 不必在运行时读取 | `## Purpose` |
+
+---
+
 ## Purpose
 
 本文件是SD Film唯一的`Screenwriter Module / Writer Intelligence Layer` owner。它负责写故事及持续保护故事成立的原因：Premise、Theme、Dramatic Question、人物欲望与选择、场景目的、因果、Writer Beat、冲突与代价、潜台词、Setup / Payoff、信息进入故事的时机、人物与关系弧、结构节奏和故事层AIGC Directability。

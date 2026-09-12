@@ -16,7 +16,7 @@
 
 # 2. Trigger Condition
 
-执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`、当前有效Director Intent / Director Decision Notes、Confirmed Clip Plan、实际素材与适用的`knowledge/quality/`，确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
+执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`、当前有效Director Intent / Director Decision Notes、Confirmed Clip Plan、实际素材与适用的`knowledge/quality/index.md`（先据index定位，只读命中文件），确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
 
 
 当用户要求：
@@ -134,7 +134,7 @@ Editing同样不是重新编剧。它必须保护Writer Rhythm：Writer Beat ord
 
 读取：
 
-knowledge/transitions/
+knowledge/transitions/index.md（先据index定位，只读命中技术的原子文件）
 
 用户已显式调用MUSIC / SEED-MUSIC模块并提供Confirmed Music Package时，按该Artifact只读应用；否则不得自动加载音乐Knowledge或规划配乐
 

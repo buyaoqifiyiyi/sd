@@ -1,5 +1,21 @@
 # Asset Rules
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应 Rule。
+
+| 当前事项 | 只读 |
+|---|---|
+| 资产分级与必需要求 | `# 01 Asset First Rule`、`# 02 Required Asset Categories`、`# 09 Two-Tier Asset System Rule` |
+| 资产 ID 与登记 | `# 03 Asset ID Rule`、`# 04 Asset Registry Rule` |
+| 优先级与禁止重设计 | `# 05 Asset Priority Rule`、`# 06 No Redesign Rule` |
+| 资产生产与确认门 | `# 07 Asset Gate Rule`、`# 10 Visual Asset Production Gate` |
+| 资产绑定 | `# 08 Asset Binding Rule`、`## Reference Asset Eligibility Strengthening` |
+| 角色锁定继承 | `## Character Appearance / Form Hard Lock`、`## Downstream Character Lock Inheritance Gate` |
+| 不必在运行时读取 | `## Rule Purpose`、`# AI影视资产管理规则` |
+
+---
+
 # AI影视资产管理规则
 
 

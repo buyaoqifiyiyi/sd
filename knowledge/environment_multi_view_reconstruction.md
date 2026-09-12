@@ -1,5 +1,20 @@
 # Environment Multi-View Reconstruction / 环境多视角空间重建
 
+# Read Scope
+
+本文件被多个阶段复用，**不得整文件通读**：按当前事项只读对应小节。
+
+| 当前事项 | 只读 |
+|---|---|
+| 判定是否建立空间重建 | `## Contract`、`## Reconstruction Decision And View Set` |
+| 写方向锚点 | `## Direction Anchor Contract｜方向锚点契约` |
+| 多参考约束 | `## Multi-Reference Constraint Rule` |
+| 空间真相、Spatial Lock 与 Revision | `## Spatial Truth, Spatial Lock And Revision` |
+| 空间一致性校验 | `## Spatial Consistency Check` |
+| 下游继承与参考路由 | `## Downstream Inheritance And Reference Routing` |
+
+---
+
 ## Contract
 
 - **Type**：STATE-03 Environment Asset 的辅助 Knowledge；不是新模块、STATE、Registry 或最终 Prompt Schema。

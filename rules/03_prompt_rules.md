@@ -1127,7 +1127,7 @@ STATE-08默认执行`Source Carries State, Prompt Carries Delta`：角色声音�
 如何进入下一镜头。
 
 
-转场必须读取`knowledge/transitions/`并按Decision Engine自动判断：先判定Continuous Handoff、Motivated Discontinuity或Unresolved Handoff，再选择一种主要技术。
+转场必须读取`knowledge/transitions/index.md`并按Decision Engine自动判断，只读命中技术的原子文件：先判定Continuous Handoff、Motivated Discontinuity或Unresolved Handoff，再选择一种主要技术。
 
 默认使用Direct Cut。只有存在可验证的动作、视线、反应、构图、方向、尺度、同期声音、完整遮挡、光态或FX锚点时，才选择相应的Match、Sound Bridge、Occlusion、Dissolve、Fade、Flash或其他已确认技术。
 

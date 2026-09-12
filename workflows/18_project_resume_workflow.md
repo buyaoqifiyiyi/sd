@@ -28,6 +28,7 @@
 
 - `rules/runtime_reload.md`与Current Accessible Skill Definition（触发Runtime Reload时必须从本轮解析的Loaded Source重读）
 - config.md与当前路由适用的rules/
+- `rules/resource_loading.md`的`Cross-Session Resume｜跨会话恢复的最小读取集`（本Workflow的读取上限；命中显式Reload时按`rules/runtime_reload.md`完整重读入口与owner pointers）
 - references/project_workspace.md
 - references/project_state_contract.md
 - references/artifact_revision_contract.md
