@@ -1,5 +1,7 @@
 # Professional Detailed Shot Script｜最小完整示例
 
+> 本文件是运行时资源，由需要它的Workflow按其Required Resources读取；本节仅声明该读取关系。
+
 本示例只用于验证`templates/08_shot_design_prompt.md`的十八个正式字段、时间码与相邻边界是否可执行。它不是默认剧情、默认视觉风格或Canonical项目资产；不包含Director Decision Notes或Knowledge Reflection。
 
 - Scene：SCENE-001｜雨夜公交站重逢

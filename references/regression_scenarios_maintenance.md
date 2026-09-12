@@ -1,5 +1,7 @@
 # SD Film Regression Scenarios — Delivery, Aesthetic And Maintenance
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 本文件是回归集的一部分，由`references/regression_scenarios.md`的 Regression File Index 统一索引；本文件内部编号保持连续，可按编号直接定位，不整集通读。
 
 覆盖范围：R48—R61 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断。

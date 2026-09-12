@@ -1,5 +1,7 @@
 # SD Film Regression Scenarios
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 ## Regression File Index
 
 为控制单次读取成本，本回归集按编号族拆为五个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。

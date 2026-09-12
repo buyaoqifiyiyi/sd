@@ -1,5 +1,7 @@
 # SD Film Recovery Guards
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 本文件拥有每次正式修改都必须运行的固定基线：`Legacy Recovery Regression Matrix (LR-R1—LR-R10)` 与 `Standalone Skill Discovery Regression Matrix (SD-R1—SD-R5)`。
 
 ## R25 Legacy Recovery Regression Matrix (LR-R1—LR-R10)

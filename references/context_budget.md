@@ -1,5 +1,7 @@
 # SD Film Context Budget And Size Ledger
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 ## Purpose
 
 本文件是SD Film**自身体量纪律**的唯一权威来源。它只服务Skill维护，不是影视制作Pipeline的一部分：不创建STATE，不写入项目状态，不影响用户可见交付，也不得成为新Prompt字段或Template的依据。

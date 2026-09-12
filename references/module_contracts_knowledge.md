@@ -1,5 +1,7 @@
 # SD Film Module Contracts — Knowledge Contracts
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 本文件是模块接口合同的一部分；Authority Matrix 与 Stable Interface Rules 留在 `references/module_contracts.md`。本文件不拥有归属判定，也不得复制该框架。
 
 ## Performance Expression Knowledge Contract

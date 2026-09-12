@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Regression tests for the r77 SD Film validator."""
+"""Regression tests for the r78 SD Film validator."""
+# Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -2765,6 +2766,70 @@ class R77NoProjectRegistryTests(unittest.TestCase):
         for marker in ("R37-A", "R37-B"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, scenarios)
+
+
+class R78ReachabilityTests(unittest.TestCase):
+    """反向守卫：发布出去的内容必须能被读到，或者自己声明为什么不参与生产。
+
+    Reference Integrity 只查"指向不存在的文件"。这个查另一半：
+    文件存在但没有任何读取路径——`project_registry` 和 13 个史前概览就是这么攒出来的。
+    """
+
+    def test_active_skill_has_no_unreachable_file(self) -> None:
+        self.assertEqual(validator.check_reachability(ROOT), [])
+
+    def test_planted_orphan_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            (root / "SKILL.md").write_text("# entry\n", encoding="utf-8")
+            (root / "config.md").write_text("# config\n", encoding="utf-8")
+            (root / "knowledge" / "orphan.md").write_text("# orphan\n", encoding="utf-8")
+            errors = validator.check_reachability(root)
+            self.assertTrue(
+                any("knowledge/orphan.md" in item for item in errors), errors
+            )
+
+    def test_declared_maintenance_file_is_exempt(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            (root / "SKILL.md").write_text("# entry\n", encoding="utf-8")
+            (root / "config.md").write_text("# config\n", encoding="utf-8")
+            (root / "knowledge" / "declared.md").write_text(
+                f"# declared\n\n> {validator.MAINTENANCE_MARKER}：只在修改本Skill时读取，不参与影视生产。\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(validator.check_reachability(root), [])
+
+    def test_reachable_file_through_a_reference_is_not_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "rules").mkdir()
+            (root / "SKILL.md").write_text(
+                "# entry\n\n见 `rules/pointed_at.md`。\n", encoding="utf-8"
+            )
+            (root / "config.md").write_text("# config\n", encoding="utf-8")
+            (root / "rules" / "pointed_at.md").write_text("# target\n", encoding="utf-8")
+            self.assertEqual(validator.check_reachability(root), [])
+
+    def test_active_skill_declares_the_maintenance_layer(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        protocol = (ROOT / "references/maintenance_self_check_protocol.md").read_text(
+            encoding="utf-8-sig"
+        )
+        self.assertIn("只在修改本Skill时读取", card)
+        self.assertIn("check_reachability", protocol)
+        # 运行时资源不得被标成维护层
+        for relative in (
+            "references/artifact_revision_contract.md",
+            "references/skill_experience_contract.md",
+            "references/professional_detailed_shot_script_example.md",
+        ):
+            with self.subTest(relative=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8-sig")
+                self.assertNotIn(validator.MAINTENANCE_MARKER, text)
+                self.assertIn("运行时资源", text)
 
 
 if __name__ == "__main__":

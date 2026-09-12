@@ -1,5 +1,7 @@
 # SD Film Module Contracts
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 ## Module Contract File Index
 
 为控制单次读取成本，模块接口合同按类别拆为四个文件。各文件内部小节保持原有顺序与名称；**归属判定仍以本文件的 Authority Matrix 为准**，类别拆分不改变任何owner。

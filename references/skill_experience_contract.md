@@ -1,5 +1,7 @@
 # Skill Experience Contract
 
+> 本文件是运行时资源，由需要它的Workflow按其Required Resources读取；本节仅声明该读取关系。
+
 ## Module Identity
 
 - Module Name: `Skill Experience Module`

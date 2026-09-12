@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Deterministic r77 structural, routing and readability validation for SD Film."""
+"""Deterministic r78 structural, routing and readability validation for SD Film."""
+# Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
 import argparse
@@ -621,6 +622,82 @@ NO_PROJECT_REGISTRY_PATTERNS = (
     ("registry record fields", re.compile(r"每个登记项包含")),
 )
 
+REACHABILITY_ROOTS = ("SKILL.md", "config.md")
+MAINTENANCE_MARKER = "Skill维护层"
+# Declared exceptions: a file that is neither reachable nor a maintenance
+# declaration, but whose exclusion is itself documented.
+REACHABILITY_ALLOWED_UNREACHABLE = frozenset({"USER_GUIDE.md"})
+REACHABILITY_TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml"}
+REACHABILITY_INDEX_NAME_RE = re.compile(r"[A-Za-z0-9_\-./]+\.md")
+
+
+def declares_maintenance(path: Path) -> bool:
+    """A file that says of itself: read only when changing this skill."""
+    return MAINTENANCE_MARKER in path.read_text(encoding="utf-8-sig")
+
+
+def _reachable_files(root: Path, shipped: list[str]) -> set[str]:
+    """Walk the read graph from the entry points.
+
+    A path reference pulls in its target; an index file also publishes the bare
+    names it lists. The walk passes through a maintenance declaration -- we know
+    where it is, we just do not count it as evidence that *other* content is
+    reachable from production.
+    """
+    known = set(shipped)
+    reachable: set[str] = set()
+    frontier = [rel for rel in REACHABILITY_ROOTS if rel in known]
+    while frontier:
+        current = frontier.pop()
+        if current in reachable or current not in known:
+            continue
+        reachable.add(current)
+        text = (root / current).read_text(encoding="utf-8-sig", errors="replace")
+        found = set(INTERNAL_PATH_REF_RE.findall(text))
+        if "index" in Path(current).name:
+            base = Path(current).parent
+            for name in REACHABILITY_INDEX_NAME_RE.findall(text):
+                found.add((base / name).as_posix())
+                found.add((Path("knowledge") / name).as_posix())
+                found.add(name)
+        for reference in found:
+            reference = reference.lstrip("./")
+            if reference in known and reference not in reachable:
+                frontier.append(reference)
+    return reachable
+
+
+def check_reachability(root: Path) -> list[str]:
+    """Every shipped file must be findable, or say why it is exempt.
+
+    Reference Integrity catches a pointer to a missing file. This is the other
+    half: content that exists but no read path can reach. Unread content is lost
+    content, so it has to be either reachable or explicitly declared -- the
+    maintenance layer declares itself, and everything else is a finding.
+    """
+    errors: list[str] = []
+    shipped: list[str] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in REACHABILITY_TEXT_SUFFIXES:
+            continue
+        relative = path.relative_to(root)
+        if any(part in NON_SKILL_DIRS for part in relative.parts):
+            continue
+        if ".pre-" in path.name or "backup" in path.name.lower():
+            continue
+        shipped.append(relative.as_posix())
+    reachable = _reachable_files(root, shipped)
+    for relative in sorted(set(shipped) - reachable):
+        if relative in REACHABILITY_ALLOWED_UNREACHABLE:
+            continue
+        if declares_maintenance(root / relative):
+            continue
+        errors.append(
+            f"unreachable shipped file: {relative} has no read path; "
+            f"route it, declare it {MAINTENANCE_MARKER}, or remove it"
+        )
+    return errors
+
 
 def check_no_project_registry(root: Path) -> list[str]:
     """The skill is a tool, not a project repository: it holds no project index."""
@@ -1069,6 +1146,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_workflow_routing(root))
     errors.extend(check_reference_ownership(root))
     errors.extend(check_no_project_registry(root))
+    errors.extend(check_reachability(root))
     errors.extend(check_internal_references(root))
     errors.extend(check_read_scope_sections(root))
     errors.extend(check_line_endings(root))
@@ -1089,7 +1167,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r77 structural, routing and readability validation")
+    print("PASS: r78 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

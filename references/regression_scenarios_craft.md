@@ -1,5 +1,7 @@
 # SD Film Regression Scenarios — Craft
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 本文件是回归集的一部分；完整范围与其余文件见 `references/regression_scenarios.md` 的 Regression File Index。脚本仍只把本文件当作回归语料的一部分，不构成独立权威。覆盖 Prompt 编译、表演、视觉阻断、剧本与导演端到端（R15—R23）。
 
 ## R15 Prompt Attention / Translation / Physical Data

@@ -1,5 +1,7 @@
 # SD Film Regression Scenarios — System
 
+> Skill维护层：只在修改本Skill时读取，不参与影视生产。
+
 本文件是回归集的一部分；完整范围与其余文件见 `references/regression_scenarios.md` 的 Regression File Index。脚本仍只把本文件当作回归语料的一部分，不构成独立权威。覆盖写作、Runtime、模型适配、FAST、交付校验、美学锁与维护（R24、R27—R35、R48—R52）。
 
 ## R24 Screenwriter Module / Writer Intelligence End-to-End

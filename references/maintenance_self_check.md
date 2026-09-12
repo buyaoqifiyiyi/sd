@@ -4,6 +4,8 @@
 
 本文件是既有`Skill Update Self-Check / Change Safety Checklist`的**执行入口与每次正式修改的必读清单**（2026-09-11从`references/module_contracts.md`原节抽出，判据内容不变，仅为缩短必读路径）。它拥有**执行顺序、检查项与判定输出格式**；每一项的完整判据、边界、反例与处置要求由`references/maintenance_self_check_protocol.md`拥有。两者冲突时，判据以protocol为准。本节名称变化不改变归属：本体系仍是Skill维护QA的唯一权威来源。
 
+本层**只在修改本Skill时读取**：运行影视生产（STATE-00至STATE-09）不需要本文件或任何标有`Skill维护层`的文件，它们不参与剧情、资产、镜头、Clip或Prompt产出。
+
 它属于Skill维护层：不是影视制作Pipeline的STATE，不写入项目状态，不进入用户视频Prompt，也不得被复制成另一套并行检查规范。
 
 生产系统的**模块接口合同**由`references/module_contracts.md`拥有，本文件不重复定义任何模块合同；Skill自身的**可达性判据与Size Index**由`references/context_budget.md`拥有，本文件只引用其一。
