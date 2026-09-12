@@ -22,7 +22,6 @@
 2. [Decision Engine](decision_engine.md)
 3. [Combination Patterns](combination_patterns.md)
 4. [Continuity And Projection](continuity_and_projection.md)
-5. [Image Source Coverage](image_source_coverage.md)
 
 ## Activation Gate
 

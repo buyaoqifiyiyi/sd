@@ -16,7 +16,6 @@
 - [Foundations](foundations.md)：专业光影参数、边界与编译顺序。
 - [Source Patterns](source_patterns.md)：20种来源概念的规范化执行模式。
 - [Lighting Continuity](lighting_continuity.md)：跨镜、运动、介质与实用光源连续性。
-- [Image Source Coverage](image_source_coverage.md)：附件20条来源的去重映射。
 
 ## Final Principle
 

@@ -347,16 +347,3 @@ Camera Language必须按适用性覆盖：景别功能、构图功能、机位�
 
 ---
 
-## Source Coverage
-
-《镜头.docx》全部来源术语与规范知识文件的映射：
-
-[Source Coverage](source_coverage.md)
-
-[五张“导演级专业运镜术语”图片覆盖表](image_source_coverage.md)
-
-[五张“导演级专业镜头构图”图片覆盖表](composition_image_source_coverage.md)
-
-[三张“AI短剧焦段篇”图片覆盖表](lens_language/focal_length_image_source_coverage.md)
-
-[六张“AI漫剧常用运镜组合”图片覆盖表](movement_combinations/image_source_coverage.md)

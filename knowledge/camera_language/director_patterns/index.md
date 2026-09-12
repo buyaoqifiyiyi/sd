@@ -20,8 +20,6 @@
 - [Action Composition](action_composition.md)：动作路线、威胁方向、FX交互与高风险动作构图。
 - [Character Narrative Composition](character_composition.md)：人物站位、视线、距离与环境关系构图。
 - [Emotional Atmosphere Composition](atmosphere_composition.md)：反射、阴影、色块、玻璃与氛围构图。
-- [Image Source Coverage](../image_source_coverage.md)：五张来源图的逐项规范映射与去重记录。
-- [Composition Image Source Coverage](../composition_image_source_coverage.md)：五张构图来源图的逐项规范映射与去重记录。
 
 ## Selection Order
 

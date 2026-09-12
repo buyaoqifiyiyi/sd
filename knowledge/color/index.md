@@ -14,7 +14,6 @@
 - [Color Foundations](foundations.md)：色相、饱和度、明度、对比度、白平衡/偏色、肤色、中性色、光源和材质的职责边界。
 - [Tone Patterns](tone_patterns.md)：CLR-01至CLR-09九类附件色调的专业改写、适用条件和稳定降级。
 - [Color Continuity](color_continuity.md)：跨镜综合色彩、肤色、中性色、资产固有色和动态变化连续性。
-- [Image Source Coverage](image_source_coverage.md)：三张“AI电影色调”附件的逐图覆盖、纠错与去重结果。
 
 ## Shared Rule
 

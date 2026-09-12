@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r79 SD Film validator."""
+"""Regression tests for the r80 SD Film validator."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util
@@ -2879,6 +2879,33 @@ class R78ReachabilityTests(unittest.TestCase):
             report = validator.build_report(root)
             self.assertIn("unreachable (no read path): 1", report)
             self.assertIn("knowledge/dead.md", report)
+
+    def test_reference_guard_declares_its_blind_spot(self) -> None:
+        """删文件后不能只信 validator：裸文件名引用不在它的射程内。
+
+        r79 删除 8 个来源覆盖表时，正是一条反引号裸名引用靠人工 grep 才发现。
+        """
+        source = (ROOT / "scripts/validate_sd_film.py").read_text(encoding="utf-8-sig")
+        protocol = (ROOT / "references/maintenance_self_check_protocol.md").read_text(
+            encoding="utf-8-sig"
+        )
+        for marker in (
+            "Declared reach",
+            "deliberately out of scope",
+            "grep the corpus for the name by hand",
+            "shots/director_decision_notes.md",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, source)
+        for marker in ("射程必须写清", "裸文件名", "必须自己全库grep一次文件名"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, protocol)
+        # 删除后的覆盖表不得再被任何 index 按名字引用
+        index_text = "".join(
+            path.read_text(encoding="utf-8-sig") for path in (ROOT / "knowledge").rglob("index.md")
+        )
+        self.assertNotIn("image_source_coverage", index_text)
+        self.assertNotIn("source_coverage.md", index_text)
 
 
 if __name__ == "__main__":

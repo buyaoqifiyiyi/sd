@@ -400,7 +400,7 @@ FAIL：保留已达标条目或悬空条目，使索引变成一份越积越长�
 
 PASS：Step 3列出与`knowledge/camera_language/lens_language/framing_and_scale.md`一致的规范景别（含中近景与大特写）加局部镜头、细节插入镜头，并显式指向该owner；Required Knowledge在焦段路由旁给出景别路由；该owner已在`references/module_contracts_knowledge.md`登记合同。
 
-FAIL：内联清单短于规范景别，导致中近景与大特写选不出来，而下游`camera_language/image_source_coverage.md`与`director_patterns/emotional_patterns.md`（EMO-08固定中近景、EMO-15大特写/局部）仍在消费这两档。
+FAIL：内联清单短于规范景别，导致中近景与大特写选不出来，而下游`knowledge/camera_language/lens_language/framing_and_scale.md`（该owner本身）与`director_patterns/emotional_patterns.md`（EMO-08固定中近景、EMO-15大特写/局部）仍在消费这两档。
 
 ### R59-B Rhythm Intent Has A Recorded Field Before It Has A Consumer
 

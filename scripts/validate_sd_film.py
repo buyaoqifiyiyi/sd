@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r79 structural, routing and readability validation for SD Film."""
+"""Deterministic r80 structural, routing and readability validation for SD Film."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
@@ -486,7 +486,19 @@ def check_line_endings(root: Path) -> list[str]:
 
 def check_internal_references(root: Path) -> list[str]:
     """Reference Integrity Check: every skill-root path a document points at has to
-    exist, otherwise the read path it describes is already broken."""
+    exist, otherwise the read path it describes is already broken.
+
+    Declared reach (so the next maintainer knows what this does NOT cover): only
+    references carrying a skill directory prefix -- `rules/…`, `knowledge/…` and
+    the rest of `INTERNAL_PATH_REF_RE`. A **bare** file name (`foo.md`) is
+    deliberately out of scope, because a bare name never means a shipped skill
+    file: shipped references are always written with their directory. Bare names
+    in these documents mean project-root artifacts
+    (`shots/director_decision_notes.md`, `artifact_registry.md`), which exist only
+    inside a project and cannot be verified from the skill root. Consequence: after
+    deleting or renaming anything, grep the corpus for the name by hand -- a green
+    validator does not prove there is no dangling reference.
+    """
     errors: list[str] = []
     for path in sorted(root.rglob("*.md")):
         relative = path.relative_to(root)
@@ -1227,7 +1239,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r79 structural, routing and readability validation")
+    print("PASS: r80 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

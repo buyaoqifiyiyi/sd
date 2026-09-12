@@ -12,7 +12,6 @@
 2. `decision_engine.md`：自动判断顺序与降级规则。
 3. `transition_patterns.md`：标准化转场模式及适用条件。
 4. `transition_continuity.md`：出镜锚点、入镜锚点与跨镜状态。
-5. `image_source_coverage.md`：用户附件术语的去重、纠错与覆盖映射。
 
 ## Authority Boundary
 
