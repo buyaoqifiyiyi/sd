@@ -355,11 +355,11 @@ FAIL：把包当作新STATE或最终Prompt字段、把包写进`asset_registry.m
 
 ### R36-B Prompt References Map One-To-One Onto Packaged Files
 
-输入：存在已编译的CLIP片段，其`参考资产：`列出多个已确认资产文件名。
+输入：存在已编译的CLIP片段，其`参考资产：`列出多个已确认资产引用名。
 
-PASS：每个参考条目都能落到包内`02_assets/`的一张真实文件；包内每张被引用的资产图都能在该Clip的参考条目中找到；环境多视角按View Code区分，不被合并成一张。
+PASS：每个参考条目写成`@图片N：<Asset ID>｜<资产名>`（环境View补View Code，如`ENV-002｜面馆主视图_ENV-01`），以Asset ID为键落到包内`02_assets/`的一张真实文件；一个Asset ID对应多张Canonical图时，View Code或Purpose足以唯一确定是哪一张；包内每张被引用的资产图都能在该Clip的参考条目中找到；环境多视角按View Code区分，不被合并成一张；除按`knowledge/environment_multi_view_reconstruction.md`登记为默认不进入画面参考位的校验View（典型为`ENV-04`，须在`00_MANIFEST.md`写明用途）外，包内不出现无解释的孤儿图。
 
-FAIL：提示词引用了包内不存在的文件、同一文件被列为两个不同资产、只写资产名而不写锁定文件名、或把`REF-SKETCH` / Storyboard / 尾帧占位当成包内已确认资产文件。
+FAIL：提示词引用了包内不存在的文件、同一文件被列为两个不同资产、条目只写中文标签或平台附件位（如`林秀兰角色表`、`图片1`）而不写`<Asset ID>｜<资产名>`引用名、同一Asset ID对应多张图时未补View Code或Purpose、或把`REF-SKETCH` / Storyboard / 尾帧占位当成包内已确认资产文件。
 
 ### R36-C Off-Convention Or Missing Source Files Block The Package
 

@@ -146,6 +146,20 @@ LOCKED_FILENAME_RE = re.compile(
     re.I,
 )
 
+# The stable reference name as it appears in a compiled prompt's reference
+# field: `<Asset ID>｜<asset title>`, optionally followed by `_<View Code>`.
+# Full locked file names are matched by LOCKED_FILENAME_RE and removed from the
+# text before this pattern runs, so it only ever sees the short form. The asset
+# ID is the mapping key; a View Code tail is what disambiguates an asset ID that
+# owns several canonical images.
+REFERENCE_NAME_RE = re.compile(
+    r"((?:CHAR|ENV|PROP|FX|BOARD-[A-Za-z]+)-\d+)"
+    + re.escape(SEPARATOR)
+    + r"([^｜|/\\\s；;，,。、（）()\[\]]*)",
+    re.I,
+)
+VIEW_CODE_TAIL_RE = re.compile(r"_(ENV|EXT)-\d{2}$", re.I)
+
 
 class Asset:
     def __init__(self, asset_id: str, title: str) -> None:
@@ -569,15 +583,50 @@ class Builder:
             self.error(f"prompt file to check is not readable: {self.check_prompt}")
             return
         text = self.check_prompt.read_text(encoding="utf-8-sig")
-        packaged = {
-            Path(record["file"]).name
-            for record in self.records
-            if record["file"].startswith("02_assets/")
-        }
-        referenced = set(LOCKED_FILENAME_RE.findall(text))
-        for name in sorted(referenced - packaged):
+        packaged: dict[str, list[str]] = {}
+        for record in self.records:
+            if not record["file"].startswith("02_assets/"):
+                continue
+            name = Path(record["file"]).name
+            match = re.match(r"((?:CHAR|ENV|PROP|FX|BOARD-[A-Za-z]+)-\d+)", name, re.I)
+            if match:
+                packaged.setdefault(match.group(1).upper(), []).append(name)
+        packaged_files = {name for names in packaged.values() for name in names}
+
+        # Full locked file names quoted anywhere in the prompt.
+        referenced = {Path(name).name for name in LOCKED_FILENAME_RE.findall(text)}
+
+        # Short reference names: `<Asset ID>｜<title>[_<View Code>]`.
+        remainder = LOCKED_FILENAME_RE.sub(" ", text)
+        for asset_id, tail in REFERENCE_NAME_RE.findall(remainder):
+            key = asset_id.upper()
+            files = packaged.get(key, [])
+            if not files:
+                self.error(
+                    f"compiled prompt references an asset ID that is not in the package: {asset_id}"
+                )
+                continue
+            if len(files) == 1:
+                referenced.add(files[0])
+                continue
+            view_match = VIEW_CODE_TAIL_RE.search(tail)
+            chosen = (
+                [name for name in files if Path(name).stem.upper().endswith(view_match.group(0).upper())]
+                if view_match
+                else []
+            )
+            if len(chosen) == 1:
+                referenced.add(chosen[0])
+            else:
+                self.error(
+                    f"compiled prompt references {asset_id} without a View Code or Purpose, but the "
+                    f"package holds several files for it ({', '.join(sorted(files))}); "
+                    "the entry cannot be mapped to one file"
+                )
+
+        for name in sorted(referenced - packaged_files):
             self.error(f"compiled prompt references a file that is not in the package: {name}")
-        for name in sorted(packaged - referenced):
+        for name in sorted(packaged_files - referenced):
             self.warn(f"packaged asset file is not referenced by this prompt: {name}")
 
     def make_archive(self) -> str | None:

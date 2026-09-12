@@ -12,6 +12,7 @@
 - Chat State Target: complete Portable State in the response
 - Portable Baseline: `portable_project_status.md`
 - Default STATE-08 Delivery: one pending Clip per response
+- STATE-08 Prompt Delivery Form: 可独立复制的纯文本代码块；`@图片N / @视频N / @音频N`必须原样保留、不依赖宿主渲染，交付前逐条核对是否与实际上传顺序一致
 - STATE-08 Clip Duration: inherited from the locked Target Video Model and Confirmed Clip Production Plan; duration rules are owned by the Model Execution Lock contract
 - STATE-08 Reference Budget: Seedance 2.5默认按30图 / 10视频 / 10音频 / 合计50项能力上限规划并按需少用；Seedance 2.0与MiniMax H3按各自Adapter限制执行
 - Storyboard Activation: explicit only

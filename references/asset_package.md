@@ -103,7 +103,7 @@
 |---|---|---|---|
 | Script | `01_script/` | 用户确认过的Production-Locked剧本与剧本分析 | 项目无锁定剧本时不生成包 |
 | Assets | `02_assets/` | 资产登记表 + 每条`Asset Confirmed`的图片 | 无该类已确认资产时写`Not Applicable`并写明依据 |
-| Visual Development | `03_visual_development/` | 用户确认过的`Project Style Baseline` / Aesthetic Decision Lock / `Project Color Reference`；只由STATE-04内部持有、未经确认的方向性材料不进包 | 无该类已确认项时该目录写`Not Applicable`并写明依据 |
+| Visual Development | `03_visual_development/` | 用户确认过的`Project Style Baseline` / Aesthetic Decision Lock / `Project Color Reference`；只由STATE-04内部持有、未经确认的方向性材料不进包 | 无该类已确认项时该目录写`Not Applicable`并写明依据。该`Not Applicable`**只描述打包入选，不构成跳过STATE-04的依据**；STATE-04的建立与完成要求由`workflows/07_visual_development_workflow.md`拥有 |
 | Scenes | `04_scenes/` | 用户确认过的Scene Breakdown与适用Sequence Plan | 无该类已确认项时该目录写`Not Applicable`并写明依据 |
 | Shots | `05_shots/` | 用户确认过的Detailed Shot Design与适用Storyboard | 无该类已确认项时该目录写`Not Applicable`并写明依据 |
 | Clips | `06_clips/` | 用户确认过的Clip Production Plan | 未确认则不打包（见门条件） |
@@ -139,6 +139,7 @@
 - `Asset ID`：已登记的稳定实体ID（`CHAR-001`、`ENV-002`、`PROP-003`、`FX-004`）。Asset ID已含类别前缀，文件名不再重复类别前缀。
 - `Purpose`：该文件在Registry里登记的Canonical用途；枚举由`references/asset_lock_contract.md`的`Canonical Reference Rule`唯一拥有（Identity / Costume / Scale / Layout / Material / State / FX Phase）。文件名里写作`Identity`、`Costume`、`Scale`、`Layout`、`Material`、`State`、`FX Phase`。
 - `.ext`：图片真实格式（`.png`、`.jpg`、`.jpeg`、`.webp`）。
+- **一个环境空间只对应一个Environment Asset**：`ENV-01`…`ENV-04`是该Asset的多个Canonical Reference图，共用一个Asset ID，只由View Code区分（与下方`ENV-002｜Layout_ENV-01.png`的例子同源，正确形态为`ENV-002｜Layout_ENV-01.png`…`ENV-002｜Layout_ENV-04.png`）。不得为每个View另铸一个Asset ID，也不得让View Code与Asset ID的序号一一绑定；否则Environment View Set、Spatial Lock与逐View几何校验在下游都无法表达，且同一空间的资产身份被拆成互不相干的四个。
 - 环境View在Purpose后用下划线接View Code：`<Asset ID>｜<Purpose>_<View Code>.ext`，例如`ENV-002｜Layout_ENV-01.png`、`ENV-002｜Layout_ENV-03.png`。View Code继续使用`knowledge/environment_multi_view_reconstruction.md`既有的View ID（`ENV-01` Master Establishing / `ENV-02` Reverse / `ENV-03` Lateral / `ENV-04` Top-Down），适用扩展View写`EXT`；不得为文件名另造一套视角词汇。下划线是Purpose与View Code的专用分隔符，因此Purpose本身不得含下划线；多词Purpose（如`FX Phase`）用空格并整体匹配，不得塞进View位。
 - Support Board文件使用板与项：`<Board ID>｜<Item ID>.ext`，例如`BOARD-CHAR-001｜A-02.png`；它在Board内的Item ID与下游`<Board Name> / <Board ID> / <Item ID>`引用一致。
 - 版本号不进入文件名：版本继续由`asset_registry.md`的Active Version唯一拥有。同一Asset ID换Version即换内容，此时按`## Naming Lock And Rename`生成新文件，而不是原地改名。
@@ -177,10 +178,10 @@
 
 ## Final Prompt Correspondence
 
-最终视频Prompt的`参考资产：`（Seedance 2.5为`多模态参考资产：`，MiniMax H3为对应参考字段）为每个实际投喂的视觉条目写出本规范的图片文件名。对应关系必须是**一对一且可机械核验**：
+最终视频Prompt的`参考资产：`（Seedance 2.5为`多模态参考资产：`，MiniMax H3为对应参考字段）为每个实际投喂的视觉条目写出该资产的稳定引用名`<Asset ID>｜<资产名>`；环境View在其后以下划线补View Code（如`ENV-001｜面馆主视图_ENV-01`）。**以Asset ID为键**：每个引用名都必须能一对一落到`02_assets/`中的一张真实文件——一个Asset ID只对应一张Canonical图时写`<Asset ID>｜<资产名>`即可，一个Asset ID对应多张图（环境View、State、Costume、Material等）时必须补足以区分是哪一张的View Code或Purpose，否则视为不可机械核验。只写资产名、只写中文标签或写平台附件位（`图片1`）而不含Asset ID的条目一律不合格。对应关系必须是**一对一且可机械核验**：
 
 - 每个入选的已确认资产条目，其文件名与包内`02_assets/`中的真实文件一一对应；
-- 包内每张被列为Canonical的资产图，都能在引用它的Clip的`参考资产：`中找到对应条目；
+- 包内每张被列为Canonical的资产图，都能在引用它的Clip的`参考资产：`中找到对应条目；仅按`knowledge/environment_multi_view_reconstruction.md`登记为**按方位校验用途、默认不进入画面参考位**的View（典型为`ENV-04`俯视校验）豁免本项，但必须在`00_MANIFEST.md`写明其校验用途与“默认不进入参考位”的依据，不得静默留一张无解释的孤儿图；
 - 不虚构文件名，不使用未打包、未确认或来源不明的图片，不把同一文件重复列为两个不同资产；
 - 该对应只决定“条目落到哪个文件”，不改变Reference Selection / Routing、Reference Authority Map、Reference Budget或任何Prompt字段语义。
 

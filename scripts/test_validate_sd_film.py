@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r80 SD Film validator."""
+"""Regression tests for the r81 SD Film validator."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util

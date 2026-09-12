@@ -18,7 +18,7 @@
 画幅：
 
 多模态参考资产：
-- @图片1 / @视频1 / @音频1：<真实资产ID或用户实际素材>；用途：<唯一Primary Role>；锁定 / 保持：<仅其授权维度>。
+- @图片N：<资产ID>｜<资产名>；用途：<唯一Primary Role>；锁定 / 保持：<仅其授权维度>。
 
 参考素材职责与优先级：
 - 角色身份 / 环境结构 / 道具造型 / 动作与机位 / 音色 / 动作-口型-节奏驱动分别由哪项素材承担；发生冲突时以哪个Canonical资产或首尾帧为准。
@@ -73,6 +73,8 @@
 
 默认按2.5的能力边界审计：图片≤30、视频≤10、音频≤10、合计≤50，视频和音频各自总时长≤30秒；实际入口更低时遵从入口。能力上限是默认**容量限制**，不是强制填满额度。每一个实际提交素材必须有真实来源、唯一Primary Role、授权维度和当前Clip收益；无用途、重复或跨世界状态不适用的素材不得列入。纯音频驱动必须明确其只控制动作、口型或节奏中的哪一项。
 
+每一条的引用名固定写作`@图片N：<资产ID>｜<资产名>`（视频 / 音频同理）。环境View在其后以下划线补View Code，例如`ENV-001｜面馆主视图_ENV-01`；同一Asset ID对应多张Canonical Reference图（环境View、State、Costume、Material）时不补View Code或Purpose即视为不合格。`@图片N`是平台上传顺序标记，必须与实际上传顺序一致，且不得省略；冒号后只写中文标签（如`林秀兰角色表`）、只写名称或只写平台附件位都不合格。条目必须能按`references/asset_package.md`的`Final Prompt Correspondence`一对一落到包内真实文件；落不到、或同一Asset ID对应多个文件名时，按该文件的失效与报告规则处理，不得交付。
+
 角色外观、环境结构、道具造型仍优先服从Confirmed Canonical Assets；动作/机位视频、白模和临时草图不得覆盖它们。Final=`REQUIRED`且草图可访问、Signature匹配、预算有位时，写`- @图片N：REF-SKETCH-XX｜<真实文件或受控ID>；用途：实际提交的Clip Blocking / Visual Blocking；锁定 / 保持：仅Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path。`它计入图片与合计预算；不可提交时Prompt Pending，不得写成已使用。STATE-07按实际光色漂移风险选择的`Project Color Reference（非资产）`可以作为@图片输入，但唯一Primary Role只能是综合色相 / 明度 / 饱和度 / 强调色占比，且不得控制角色、环境、道具、构图、光源、镜头或最终画风。A/B尾帧和Video Extension的`REF-VIDEO`仍按既有合同写明用途和真实可用状态。
 
 ### 参考素材职责与优先级：
@@ -124,9 +126,10 @@
 
 ## Output QA
 
-保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.5`；该校验器只做确定性结构断言（字段存在与顺序、阶段递进无重叠、终段位置、无BGM固定句），未通过不得交付，通过也不替代下列语义检查。
+保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.5`；该校验器只做确定性结构断言（字段存在与顺序、阶段递进无重叠、终段位置、无BGM固定句），未通过不得交付，通过也不替代下列语义检查。参考条目与包内文件的一一对应不在该校验器的断言范围内，必须按`references/asset_package.md`的`Final Prompt Correspondence`单独完成。
 
 - 标题、时长、画幅、多模态参考资产、参考素材职责与优先级、首帧参考、尾帧限制、主风格、全局叙事与画面设定、全局一致性与执行约束、时间线、全局限制与反向提示词均存在且非空。
+- 每条参考条目均为`@图片N：<资产ID>｜<资产名>`形态，`@图片N`连续且与上传顺序一致；环境View已补View Code；每条都能一对一落到包内真实文件，无孤儿图、无同一Asset ID对应多个文件名。
 - 每项实际参考都有唯一Primary Role；计数符合图片≤30、视频≤10、音频≤10、合计≤50、视频/音频各自≤30秒以及实际入口限制；Final=`REQUIRED`时存在可访问、签名匹配且实际提交的`REF-SKETCH-XX @图片N`。
 - 时间线严格递进、无重叠、覆盖当前Clip的关键变化，且不超过确认时长；每阶段六项字段完整；时间线首行已声明阶段总数且与实际阶段数量一致，没有计划外阶段或镜头。
 - 不存在冲突参考、重复的资产长描述、未确认素材、虚构上传/标注/API参数或其他模型能力。

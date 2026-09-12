@@ -54,7 +54,7 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 | STATE-01 | Script Analysis | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Creation Brief生成或Existing Script诊断后确认的Production-Locked Directable Screenplay及分析结果 |
 | STATE-02 | Asset Discovery | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 已分类并可路由的CHAR / ENV / PROP / FX需求 |
 | STATE-03 | Asset Development | 对应资产Workflow | 对应资产Template | 已确认并登记的Canonical视觉资产 |
-| STATE-04 | Visual Development | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 已确认的可执行Visual Direction |
+| STATE-04 | Visual Development | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 已建立并经STATE-04内部Gate核验的可执行Visual Direction（默认不向用户展示确认，不等于需要用户确认的工件） |
 | STATE-05 | Scene Breakdown | `workflows/08_scene_breakdown_workflow.md` | `templates/07_scene_design_prompt.md` | Scene / Sequence / Unit生产拆解 |
 | STATE-06 | Detailed Shot Design | `workflows/09_shot_design_workflow.md` | `templates/08_shot_design_prompt.md` | Confirmed Professional Detailed Shot Script |
 | STATE-07 | Clip Production | `workflows/10_clip_production_workflow.md` | `templates/20_clip_plan.md` | Confirmed Clip Production Plan |
