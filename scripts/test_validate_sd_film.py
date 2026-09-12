@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r75 SD Film validator."""
+"""Regression tests for the r76 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -2340,6 +2340,367 @@ class R73EvidenceCredibilityDimensionTests(unittest.TestCase):
         # 排除清单若不写明“要重新提出就得给新证据”，就会退化成一份没人看的清单
         self.assertIn("必须给出与上表不同的新证据", budget)
         self.assertIn("不得混用", budget)
+
+
+PACKAGE_BUILDER_SPEC = importlib.util.spec_from_file_location(
+    "asset_package_builder", ROOT / "scripts" / "build_asset_package.py"
+)
+asset_package_builder = importlib.util.module_from_spec(PACKAGE_BUILDER_SPEC)
+assert PACKAGE_BUILDER_SPEC and PACKAGE_BUILDER_SPEC.loader
+PACKAGE_BUILDER_SPEC.loader.exec_module(asset_package_builder)
+
+
+class R76DeliveryPackageTests(unittest.TestCase):
+    """生产交付包：形态只有一个 owner，命名与“Prompt ↔ 包内文件”一一对应可机械核验。"""
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        relatives = {relative for relative, _ in validator.PACKAGE_CONSUMERS}
+        relatives |= set(validator.PACKAGE_NON_OWNERS)
+        relatives |= {relative for relative, _ in validator.REFERENCE_OWNER_MARKERS}
+        for relative in relatives:
+            text = overrides.get(relative)
+            if text is None:
+                markers = [
+                    marker
+                    for owner, marker in validator.REFERENCE_OWNER_MARKERS
+                    if owner == relative
+                ]
+                markers += [
+                    marker
+                    for consumer, marker in validator.PACKAGE_CONSUMERS
+                    if consumer == relative
+                ]
+                text = "\n".join(markers) + "\n" if markers else "unrelated content\n"
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+    def test_fixture_is_clean_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_reference_ownership(root), [])
+
+    def test_missing_owner_marker_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {"references/asset_package.md": "no naming contract here\n"})
+            self.assertIn(
+                "references/asset_package.md is missing the delivery package marker: "
+                "## Asset Image Naming",
+                validator.check_reference_ownership(root),
+            )
+
+    def test_consumer_without_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {"config.md": "unrelated content\n"})
+            self.assertIn(
+                "delivery package must route to its owner: config.md",
+                validator.check_reference_ownership(root),
+            )
+
+    def test_second_copy_of_the_naming_shape_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            target = "rules/02_asset_rules.md"
+            self._fixture(
+                root,
+                {target: "references/asset_package.md\n<Asset ID>｜<Purpose>.ext\n"},
+            )
+            self.assertIn(
+                f"asset image naming shape must stay with its owner: {target}",
+                validator.check_reference_ownership(root),
+            )
+
+    def test_active_skill_routes_the_package_to_one_owner(self) -> None:
+        owner = (ROOT / "references/asset_package.md").read_text(encoding="utf-8-sig")
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        gate = (ROOT / "rules/completion_gate.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertIn("参考资产", owner)
+        self.assertIn("一一对应", owner)
+        self.assertIn("包内**不含**最终视频Prompt", owner)
+        self.assertIn("references/asset_package.md", rules)
+        self.assertIn("命名在该时点锁定", rules)
+        self.assertIn("生产交付包由`references/asset_package.md`拥有", gate)
+        self.assertIn("生产交付包", guide)
+        # 命名形态不得被其他文件复述成第二份规范
+        self.assertNotIn("<Asset ID>｜<Purpose>", rules)
+        self.assertNotIn("<Asset ID>｜<Purpose>", gate)
+        # 该能力必须有覆盖正反例的回归场景，否则它只是“写了一条规定”
+        scenarios = regression_corpus()
+        self.assertIn("## R36 Production Delivery Package Regression", scenarios)
+        for marker in ("R36-A", "R36-B", "R36-C", "R36-D", "R36-E"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, scenarios)
+
+    def test_access_precondition_is_owned_once_and_routed(self) -> None:
+        """打包有环境前提：只有具备真实文件访问能力的 Work / Codex 本地环境才产包与zip。"""
+        owner = (ROOT / "references/asset_package.md").read_text(encoding="utf-8-sig")
+        gate = (ROOT / "rules/completion_gate.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        builder = (ROOT / "scripts/build_asset_package.py").read_text(encoding="utf-8-sig")
+        self.assertIn("## Access Precondition", owner)
+        self.assertIn("普通 Chat / Portable 模式", owner)
+        self.assertIn("判据是能力，不是平台名", owner)
+        self.assertIn("不产zip、不产包目录", owner)
+        self.assertIn("未打包", owner)
+        # 降级阶梯必须包含“不能读”的最弱一档，且永远不许伪造
+        self.assertIn("只交付命名映射表", owner)
+        self.assertIn("降级不是`BLOCKED`", owner)
+        self.assertIn("只在具备真实文件访问能力的Work / Codex本地环境执行", gate)
+        self.assertIn("普通Chat / Portable模式不产zip", gate)
+        self.assertIn("普通 Chat", guide)
+        # 前提形态不得被第二处复述成完整阶梯
+        self.assertNotIn("## Access Precondition", gate)
+        self.assertIn("precondition", builder.lower())
+
+
+class R76PackageBuilderTests(unittest.TestCase):
+    """可选构建器必须与资产包规范互操作：命名、清单、zip 与对应性检查。"""
+
+    PIXEL = bytes.fromhex(
+        "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
+        "0000000a49444154789c6360000002000100ffff03000006000557bfabd4000000"
+        "0049454e44ae426082"
+    )
+
+    REGISTRY = """# Asset Registry
+
+## CHAR-001 林夏
+
+Asset ID: CHAR-001
+Asset Tier: Core
+Status: Active
+Active Version: v001
+Canonical References: CHAR-001｜Identity.png（用途：Identity，绑定 v001）
+Visual Production Status: Asset Confirmed
+Confirmed Status: Yes
+Approved By / Approval Basis: User Confirmed
+Approved At: 2026-09-01
+
+## ENV-002 雨夜街头
+
+Asset ID: ENV-002
+Asset Tier: Core
+Status: Active
+Active Version: v003
+Canonical References: ENV-002｜Layout_ENV-01.png（用途：Layout，绑定 v003）
+Visual Production Status: Asset Confirmed
+Confirmed Status: Yes
+Approved By / Approval Basis: Auto-accepted under FAST
+
+## FX-004 雨幕
+
+Asset ID: FX-004
+Asset Tier: Not Applicable
+Status: Active
+Active Version: v001
+Canonical References: FX-004｜FX Phase.png（用途：FX Phase，绑定 v001）
+Visual Production Status: Asset Confirmed
+Confirmed Status: Yes
+Approved By / Approval Basis: User Confirmed
+
+## PROP-777 未确认道具
+
+Asset ID: PROP-777
+Asset Tier: Core
+Status: Candidate
+Active Version: v001
+Canonical References: PROP-777｜Material.png（用途：Material，绑定 v001）
+Visual Production Status: Image Generated
+Confirmed Status: No
+"""
+
+    PROMPT = """# CLIP-001｜雨夜重逢
+
+参考资产：
+- CHAR-001｜Identity.png｜锁定林夏身份
+- ENV-002｜Layout_ENV-01.png｜锁定空间结构
+- FX-004｜FX Phase.png｜锁定雨幕形态
+"""
+
+    def _project(self, root: Path) -> Path:
+        project = root / "PROJECT-DEMO-001"
+        (project / "assets").mkdir(parents=True)
+        (project / "asset_registry.md").write_text(self.REGISTRY, encoding="utf-8", newline="\n")
+        for name in ("CHAR-001｜Identity.png", "ENV-002｜Layout_ENV-01.png",
+                     "FX-004｜FX Phase.png", "PROP-777｜Material.png"):
+            (project / "assets" / name).write_bytes(self.PIXEL)
+        # Present but never confirmed: it must be reported, not packaged.
+        (project / "01_script_analysis_locked.md").write_text("# locked\n", encoding="utf-8", newline="\n")
+        (project / "07_clip_production_plan.md").write_text(
+            "# Clip Plan\n\nConfirmed Status: Yes\nApproved By / Approval Basis: User Confirmed\n",
+            encoding="utf-8", newline="\n",
+        )
+        return project
+
+    def _build(self, project: Path, prompt: Path | None = None) -> dict:
+        return asset_package_builder.Builder(
+            asset_package_builder.argparse.Namespace(
+                project_root=str(project),
+                registry=None,
+                project_id=None,
+                project_name="雨夜重逢",
+                version="001",
+                output=str(project.parent / "PROJECT-DEMO-001_packages" / "001"),
+                no_zip=False,
+                check_prompt=str(prompt) if prompt is not None else None,
+            )
+        ).run()
+
+    def test_builder_stages_every_confirmed_asset_under_its_locked_name(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._project(Path(temp_dir))
+            result = self._build(project)
+            self.assertEqual(result["errors"], [], result["errors"])
+            package = Path(str(result["package_root"]))
+            for name in ("CHAR-001｜Identity.png", "ENV-002｜Layout_ENV-01.png", "FX-004｜FX Phase.png"):
+                with self.subTest(name=name):
+                    self.assertTrue((package / "02_assets").rglob(name).__next__().is_file())
+            self.assertIn("CHAR-001｜Identity.png", (package / "02_assets/CHAR/_MANIFEST.md").read_text(encoding="utf-8"))
+            self.assertIn("ENV-002｜Layout_ENV-01.png", (package / "02_assets/ENV/_MANIFEST.md").read_text(encoding="utf-8"))
+            self.assertIn("FX-004｜FX Phase.png", (package / "02_assets/FX/_MANIFEST.md").read_text(encoding="utf-8"))
+            manifest = (package / "00_MANIFEST.md").read_text(encoding="utf-8")
+            self.assertIn("包内不含最终视频Prompt", manifest)
+            self.assertTrue(Path(str(result["archive"])).is_file())
+
+    def test_unconfirmed_work_is_reported_not_packaged(self) -> None:
+        """用户认可的才进包：Registry里存在不等于可以打包。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._project(Path(temp_dir))
+            result = self._build(project)
+            package = Path(str(result["package_root"]))
+            packaged = sorted(path.name for path in (package / "02_assets").rglob("*.png"))
+            # PROP-777 is present in the registry and on disk, but Confirmed Status: No.
+            self.assertNotIn("PROP-777｜Material.png", packaged)
+            self.assertTrue(
+                any("PROP-777" in item and "未确认" in item
+                    for item in result["excluded"]),
+                result["excluded"],
+            )
+            # A file that exists in the project root without any confirmation record.
+            self.assertTrue(
+                any("01_script/01_script_analysis_locked.md" in item
+                    and "缺确认记录" in item for item in result["excluded"]),
+                result["excluded"],
+            )
+            index = (package / "00_INDEX.md").read_text(encoding="utf-8")
+            self.assertIn("## 未确认／未打包", index)
+            self.assertIn("PROP-777", index)
+            self.assertFalse((package / "01_script/01_script_analysis_locked.md").exists())
+
+    def test_admission_marks_fast_auto_acceptance_separately(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._project(Path(temp_dir))
+            result = self._build(project)
+            package = Path(str(result["package_root"]))
+            manifest = (package / "00_MANIFEST.md").read_text(encoding="utf-8")
+            env_manifest = (package / "02_assets/ENV/_MANIFEST.md").read_text(encoding="utf-8")
+            self.assertIn("User Confirmed", manifest)
+            self.assertIn("Auto-accepted under FAST", manifest)
+            self.assertIn("Auto-accepted under FAST", env_manifest)
+
+    def test_batch_confirmation_without_objection_is_admitted(self) -> None:
+        """用户没提异议就是认可：已展示批次 + 未指出问题 = 确认，不需要“确认”措辞。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = self._project(root)
+            registry = (project / "asset_registry.md").read_text(encoding="utf-8")
+            registry = registry.replace(
+                "Approved By / Approval Basis: User Confirmed",
+                "Confirmation: Exception-Based Batch Confirmation — 用户未指出问题，按推进表达确认该批次",
+            )
+            (project / "asset_registry.md").write_text(registry, encoding="utf-8", newline="\n")
+            result = self._build(project)
+            self.assertEqual(result["errors"], [], result["errors"])
+            package = Path(str(result["package_root"]))
+            packaged = sorted(path.name for path in (package / "02_assets").rglob("*.png"))
+            self.assertIn("CHAR-001｜Identity.png", packaged)
+            self.assertIn("FX-004｜FX Phase.png", packaged)
+            self.assertNotIn("PROP-777｜Material.png", packaged)
+            manifest = (package / "00_MANIFEST.md").read_text(encoding="utf-8")
+            self.assertIn("Confirmed (batch, no objection)", manifest)
+            # The batch rule still needs the item to have been shown and confirmed.
+            self.assertTrue(
+                any("PROP-777" in item and "未确认" in item for item in result["excluded"]),
+                result["excluded"],
+            )
+
+    def test_unconfirmed_clip_table_blocks_the_package(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._project(Path(temp_dir))
+            (project / "07_clip_production_plan.md").write_text(
+                "# Clip Plan\n\nConfirmed Status: No\n", encoding="utf-8", newline="\n"
+            )
+            result = self._build(project)
+            self.assertTrue(
+                any("package gate not met" in item and "06_clips" in item
+                    for item in result["errors"]),
+                result["errors"],
+            )
+
+    def test_prompt_correspondence_accepts_a_matching_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = self._project(root)
+            prompt = root / "prompt.md"
+            prompt.write_text(self.PROMPT, encoding="utf-8", newline="\n")
+            result = self._build(project, prompt)
+            self.assertEqual(result["errors"], [], result["errors"])
+            # The fixture only contains script/clip sources, so the "no source file"
+            # notes are correct behaviour; the correspondence check itself must pass.
+            self.assertEqual(
+                [item for item in result["warnings"] if "not referenced by this prompt" in item],
+                [],
+                result["warnings"],
+            )
+
+    def test_prompt_correspondence_rejects_an_unpackaged_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = self._project(root)
+            prompt = root / "prompt.md"
+            prompt.write_text(
+                self.PROMPT + "- PROP-999｜Material.png｜不存在的文件\n",
+                encoding="utf-8", newline="\n",
+            )
+            result = self._build(project, prompt)
+            self.assertIn(
+                "compiled prompt references a file that is not in the package: PROP-999｜Material.png",
+                result["errors"],
+            )
+
+    def test_builder_blocks_an_off_convention_file_name(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = self._project(root)
+            (project / "assets" / "CHAR-001｜identity_shot.png").write_bytes(self.PIXEL)
+            (project / "asset_registry.md").write_text(
+                self.REGISTRY.replace(
+                    "Canonical References: CHAR-001｜Identity.png（用途：Identity，绑定 v001）",
+                    "Canonical References: CHAR-001｜identity_shot.png（用途：Identity，绑定 v001）",
+                ),
+                encoding="utf-8", newline="\n",
+            )
+            result = self._build(project)
+            self.assertTrue(
+                any("does not follow the naming contract" in item for item in result["errors"]),
+                result["errors"],
+            )
+
+    def test_builder_blocks_a_missing_reference_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = self._project(root)
+            (project / "assets" / "ENV-002｜Layout_ENV-01.png").unlink()
+            result = self._build(project)
+            self.assertTrue(
+                any("no readable file in the project root" in item for item in result["errors"]),
+                result["errors"],
+            )
 
 
 if __name__ == "__main__":

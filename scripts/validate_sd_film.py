@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r75 structural, routing and readability validation for SD Film."""
+"""Deterministic r76 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -24,6 +24,7 @@ REQUIRED = (
     "knowledge/quality/aesthetic_judgement.md",
     "knowledge/medium_profiles.md",
     "references/context_budget.md",
+    "references/asset_package.md",
     "references/maintenance_self_check.md",
     "references/maintenance_self_check_protocol.md",
     "references/regression_scenarios.md",
@@ -32,6 +33,7 @@ REQUIRED = (
     "references/regression_scenarios_maintenance.md",
     "references/recovery_guards.md",
     "scripts/validate_prompt_package.py",
+    "scripts/build_asset_package.py",
 )
 
 BUDGET_TARGET_BYTES = 50 * 1024
@@ -534,6 +536,65 @@ def check_batch_delivery_ownership(root: Path) -> list[str]:
     return errors
 
 
+REFERENCE_OWNER_MARKERS = (
+    ("references/asset_package.md", "## Package Timing And Delivery"),
+    ("references/asset_package.md", "## Package Admission｜只收已认可的"),
+    ("references/asset_package.md", "不作为入选证据"),
+    ("references/asset_package.md", "不得事后补确认"),
+    ("references/asset_package.md", "## Access Precondition"),
+    ("references/asset_package.md", "普通 Chat / Portable 模式"),
+    ("references/asset_package.md", "## Asset Image Naming"),
+    ("references/asset_package.md", "## Final Prompt Correspondence"),
+    ("references/asset_package.md", "## Package Location And Source Rule"),
+    ("references/asset_package.md", "## Optional Interoperable Tooling"),
+    ("references/asset_package.md", "`_MANIFEST.md`"),
+)
+
+PACKAGE_CONSUMERS = (
+    ("config.md", "references/asset_package.md"),
+    ("rules/02_asset_rules.md", "references/asset_package.md"),
+    ("rules/completion_gate.md", "references/asset_package.md"),
+    ("references/project_workspace.md", "references/asset_package.md"),
+    ("references/module_contracts_production.md", "references/asset_package.md"),
+    ("modules/assets.md", "references/asset_package.md"),
+)
+
+PACKAGE_NON_OWNERS = (
+    "rules/02_asset_rules.md",
+    "rules/completion_gate.md",
+    "references/project_workspace.md",
+    "references/module_contracts_production.md",
+    "modules/assets.md",
+)
+
+PACKAGE_NAMING_SHAPE_RE = re.compile(r"<Asset ID>｜<Purpose>")
+
+
+def check_reference_ownership(root: Path) -> list[str]:
+    """Two distinct ownership guards for the production delivery package.
+
+    1. The package's shape (naming form, package tree, correspondence rules)
+       lives in exactly one file: `references/asset_package.md`. Everywhere
+       else keeps a pointer, never a second copy of the shape.
+    2. The single required reference file is reachable from the project
+       runtime entrypoints, so it cannot become orphaned content.
+    """
+    errors: list[str] = []
+    for relative, marker in REFERENCE_OWNER_MARKERS:
+        if marker not in read(root, relative):
+            errors.append(f"{relative} is missing the delivery package marker: {marker}")
+    for relative, marker in PACKAGE_CONSUMERS:
+        if marker not in read(root, relative):
+            errors.append(f"delivery package must route to its owner: {relative}")
+    for relative in PACKAGE_NON_OWNERS:
+        text = read(root, relative)
+        if PACKAGE_NAMING_SHAPE_RE.search(text):
+            errors.append(f"asset image naming shape must stay with its owner: {relative}")
+        if re.search(r"^#+ .*Production Delivery Package", text, re.M):
+            errors.append(f"production delivery package section must stay with its owner: {relative}")
+    return errors
+
+
 def validate_skill(root: Path) -> list[str]:
     errors: list[str] = []
     for relative in REQUIRED:
@@ -902,6 +963,12 @@ def validate_skill(root: Path) -> list[str]:
         (fx, "Image Delivery Mode: DIRECT_IMAGE"),
         (user_guide, "DIRECT_IMAGE"),
         (user_guide, "PROMPT_ONLY"),
+        (asset_rules, "命名在该时点锁定，不得原地改名"),
+        (asset_rules, "未绑定文件名的图片不得进入最终视频Prompt的参考条目"),
+        (completion, "生产交付包由`references/asset_package.md`拥有"),
+        (assets, "## Asset Naming And Delivery Package"),
+        (contracts_production, "交付包：已确认生产物的分类打包"),
+        (contracts_production, "每个Clip的`参考资产：`（或对应模型的参考字段）为每个实际投喂的视觉条目写出"),
     )
     for text, marker in required_markers:
         if marker not in text:
@@ -961,6 +1028,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_read_entries(read_size_ledger_rows(root)))
     errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
     errors.extend(check_workflow_routing(root))
+    errors.extend(check_reference_ownership(root))
     errors.extend(check_internal_references(root))
     errors.extend(check_read_scope_sections(root))
     errors.extend(check_line_endings(root))
@@ -981,7 +1049,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r75 structural, routing and readability validation")
+    print("PASS: r76 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

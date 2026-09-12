@@ -322,6 +322,49 @@ FAIL：因为用户要求合并展示就绕过Confirmation Input Semantics、Com
 
 ---
 
+
+## R36 Production Delivery Package Regression
+
+### R36-A Confirmed Work Is Packaged By Category Before The Final Prompt
+
+输入：Production-Locked Script、全部CHAR / ENV / PROP / FX已`Asset Confirmed`并绑定了稳定文件名，Clip表已确认；用户要求打包。当前环境具备文件访问能力。
+
+PASS：在Clip表确认后、最终视频Prompt之前，按`references/asset_package.md`生成一个包含`01_script`、`02_assets`、`03_visual_development`、`04_scenes`、`05_shots`、`06_clips`六类的包与zip；每类只收真实已确认文件，资产图片使用`<Asset ID>｜<Purpose>.ext`（环境View写`Layout_ENV-01`这类既有View ID，Support Board写`<Board ID>｜<Item ID>.ext`），每类有`_MANIFEST.md`，包根有`00_INDEX.md`与`00_MANIFEST.md`。包位于Project Root之外，Project Root内原文件未被改名或移动。
+
+FAIL：把包当作新STATE或最终Prompt字段、把包写进`asset_registry.md`、为“整齐”重命名或转码已确认资产图、把缺失类别静默省略、或用文件名伪称某张图已确认。
+
+### R36-B Prompt References Map One-To-One Onto Packaged Files
+
+输入：存在已编译的CLIP片段，其`参考资产：`列出多个已确认资产文件名。
+
+PASS：每个参考条目都能落到包内`02_assets/`的一张真实文件；包内每张被引用的资产图都能在该Clip的参考条目中找到；环境多视角按View Code区分，不被合并成一张。
+
+FAIL：提示词引用了包内不存在的文件、同一文件被列为两个不同资产、只写资产名而不写锁定文件名、或把`REF-SKETCH` / Storyboard / 尾帧占位当成包内已确认资产文件。
+
+### R36-C Off-Convention Or Missing Source Files Block The Package
+
+输入：某资产登记的Canonical Reference文件名不符合规范；另一项目缺一类生产物；第三个项目某张已登记文件在项目目录中不可读。
+
+PASS：逐项报告阻塞原因（命名不符、类别缺失、文件不可读）并给出最小修复路径；不得改名绕开、不得凭文件名伪造内容、不得声称包完整。已提供项照常打包并标注未完成项。
+
+FAIL：自动把`CHAR-001-identity.png`改名为合规名并登记、用空目录或占位图冒充缺失类别、或在文件不可读时静默跳过该资产仍报PASS。
+
+### R36-D Access Precondition: Portable Chat Gets A Manifest, Not A Fake Zip
+
+输入一：在普通Chat（Portable模式）中，用户说“把所有已确认的生产物打包给我”，当前会话无法读取本机Project Root。输入二：在Codex本地模式中，能读项目目录但不能写入包位置。输入三：项目整体可读，但其中一张已登记资产图不可读。
+
+PASS：输入一不产zip也不产包目录，交付纯文本的六类清单、`文件名 ↔ Asset ID ↔ 用途 ↔ Active Version ↔ 类别`映射与目录骨架，并明确标注“未打包”；不得声称已生成zip或包。输入二交付包目录与完整清单，并明确说明未生成zip。输入三打包可读项、逐项报告不可读项与原因，不因单项失败放弃整包。三者都不得用文件名、清单或空目录伪造包已生成、图片已上传或已确认。
+
+FAIL：因为用户说“打包”就凭空声称已打包、在不能读文件时仍输出一个只含清单的`.zip`、以平台名（“我在用Codex”）代替本轮实际读写能力核验，或把环境降级误报为`BLOCKED`。
+
+### R36-E Only Approved Work Enters The Package
+
+输入一：项目已有剧本、Scene Breakdown、Detailed Shot Design与多张候选图，但用户只确认过资产与Clip表，剧本与分镜从未表态。输入二：用户确认过某项Prompt，随后同一批次里另有一张被明确否决的候选图。输入三：用户说“只打包我本人确认过的”，而包内本应有一项是FAST自动接受的。输入四：某批次已逐项展示且Revision可核对，用户看过后只说“继续”，没有指出任何问题。
+
+PASS：输入一只打包已确认的资产与Clip表，从未展示、未表态的剧本 / Scene / Shot 与候选图全部列入`未确认／未打包`并逐项写原因（从未展示、未确认、缺确认记录），不因“文件存在”或“下游用过”而进包。输入二被否决的图不进包且不登记为Canonical，原文件仍留在Project Root。输入三排除FAST自动接受项，或先报告该项的`Approval Basis`再由用户决定，不静默混入。输入四按`Exception-Based Batch Confirmation`把该批已展示项判为已确认并正常入包，标注`Confirmed (batch, no objection)`，不额外索要“确认 / 批准”措辞。四者都必须让排除可见，不得概括成“其余项目”。
+
+FAIL：把Project Root里能找到的文件默认全打包、把`Auto-accepted under FAST`或批次确认合并写成`User Confirmed`、为了让某项进包而回填`Approval Basis`或把未确认项标成已确认、用“打包需要”当补确认理由、把**从未展示或范围无法逐项核对**的内容也按沉默判为确认、因排除而删除Project Root内的原文件。
+
 ## R33 Model-Specific Main Style Regression
 
 ### R33-A Seedance 2.5 Has A Dedicated Main Style Field

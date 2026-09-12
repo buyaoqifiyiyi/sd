@@ -70,6 +70,8 @@ Skill 安装目录保存通用的 `SKILL.md`、Rules、Workflows、Knowledge、T
 
 没有实际内容的子目录不必提前创建。前三个 Markdown 项目文件和 Manifest 为必需文件。
 
+生产交付包（已确认生产物的分类打包与zip）不放在Project Root内，其位置、命名、构成与**执行环境前提**由`references/asset_package.md`唯一拥有：它位于Project Root之外的交付目录，只复制真实已确认文件，不改写Project Root、不改名已确认资产图片、不改动`asset_registry.md`，也不被当作运行时Required Resource。只有在能读写本机目录的Work / Codex本地模式才产包与zip；普通Chat的Portable模式不产zip，只交付清单、命名映射与目录骨架文本。`.git`、`tmp`不属于Project Root Contract，也不得进入包内。
+
 `project_manifest.json` 至少包含：
 
 ```json
@@ -176,20 +178,25 @@ Registry 中 Project ID 和 Root 都必须唯一。移动项目后应更新 Root
 
 ## Validation Commands
 
+Skill自身由`scripts/validate_sd_film.py`确定性校验（唯一入口为skill root）：
+
 ```text
-validate_sd_film.py project <project-root>
-validate_sd_film.py registry <project-registry.json>
-validate_sd_film.py sequence <sequence-plan.md>
-validate_sd_film.py clip <clip-plan.md>
-validate_sd_film.py state08 <prompt-file>
-validate_sd_film.py review <review-report.md>
-validate_sd_film.py asset <project-root-or-asset-registry.md>
-validate_sd_film.py artifact <project-root-or-artifact-registry.md>
-validate_sd_film.py execution <project-root-or-execution-ledger.md>
-validate_sd_film.py portable <portable_project_status.md>
-validate_sd_film.py routing <skill-root>
-validate_sd_film.py skill <skill-root>
+validate_sd_film.py --skill-root <skill-root> [--report]
 ```
+
+本次交付的视频Prompt由`scripts/validate_prompt_package.py`校验：
+
+```text
+validate_prompt_package.py <prompt-file> [--clip-plan <confirmed-clip-plan.md>]
+```
+
+生产交付包由`scripts/build_asset_package.py`构建并顺带核验命名与对应性（可选加固，规范真源仍是`references/asset_package.md`）：
+
+```text
+build_asset_package.py --project-root <project-root> [--check-prompt <compiled-prompt.md>]
+```
+
+项目根内的`project_status.md` / `asset_registry.md` / `artifact_registry.md` / `execution_ledger.md`当前**没有**独立的确定性CLI校验器：它们由各Workflow的Required Read、`# Completion Gate`与`references/project_state_contract.md`的写回要求人工判定。本节不发布不存在的子命令。
 
 校验器只报告结构和确定性协议问题，不替代剧情、表演、摄影或审美判断。
 

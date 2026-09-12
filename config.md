@@ -33,10 +33,12 @@
 - Project State Contract: `references/project_state_contract.md`
 - Project Workspace Contract: `references/project_workspace.md`
 - Asset Lock Contract: `references/asset_lock_contract.md`
+- Production Delivery Package And Asset File Naming: `references/asset_package.md`
 - Module Contracts (framework, authority and owners): `references/module_contracts.md`
 - Module Contracts (production modules): `references/module_contracts_production.md`
 - Module Contracts (auxiliary modules): `references/module_contracts_auxiliary.md`
 - Module Contracts (knowledge contracts): `references/module_contracts_knowledge.md`
+- Production Delivery Package Builder (optional hardening): `scripts/build_asset_package.py`
 - Skill Maintenance Self-Check (per-change entry): `references/maintenance_self_check.md`
 - Skill Maintenance Self-Check Criteria: `references/maintenance_self_check_protocol.md`
 - Skill Accessibility Discipline And Size Index: `references/context_budget.md`

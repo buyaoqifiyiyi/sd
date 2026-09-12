@@ -31,3 +31,7 @@
 该排序只提升Asset Prompt Draft的可验证性，不新增Prompt字段、不改变资产事实、图像工具路由、Prompt / Image双确认或Canonical锁定。已选择图像模型时，其独立最终提示词模板拥有模型专属正文与参数策略；本节只提供跨模型的事实证据顺序。
 
 路由在每个Prompt Draft记录；生成记录继续保存实际工具/模型、参数、来源与授权。Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed的双确认顺序不变。
+
+## Asset Naming And Delivery Package
+
+图片成为Canonical Reference时，必须按`references/asset_package.md`的`Asset Image Naming`绑定稳定文件名；该文件同时唯一拥有已确认生产物的分类打包构成、包位置、来源规则与“最终视频Prompt参考条目 ↔ 包内文件”的一一对应。本模块不重复其形态，只负责在批次图片确认时把该文件名写入当前资产的Canonical References记录。

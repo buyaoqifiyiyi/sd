@@ -62,6 +62,8 @@ Output拥有者：Character、Environment、Prop与FX的最终阶段字段分别
 
 下游消费者：STATE-04 Visual Development、STATE-05 Scene Breakdown、STATE-06 Detailed Shot Design、STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与Review。
 
+交付包：已确认生产物的分类打包、资产图片稳定文件名与最终视频Prompt参考条目的一一对应，由`references/asset_package.md`唯一拥有。打包是STATE-03资产确认与STATE-07 Clip表确认之后的交付动作，不是新STATE，也不进Registry字段或最终Prompt字段。
+
 不变量：`Visual Production Status`只使用`Prompt Draft`、`Prompt Confirmed`、`Image Generated`、`Asset Confirmed`；Prompt确认与图片确认独立；Prompt Draft不得调用图片生成；Image Generated只登记Candidate References；Asset Confirmed必须有图片批准依据，才可Active并登记Canonical References；工具不可用不把文字设定升级为confirmed asset。`Prompt Status / Image Status / Confirmed Status`必须与该生命周期严格映射；任何Core Asset、Support Board或Support Item在图片确认前都不得confirmed。Support必须有唯一Board ID / Item ID映射和Canonical Board Reference区域/标签对应关系。
 
 禁止修改：主Pipeline、导演决策层、知识应用思考层、Clip-centric逻辑、STATE-08 Seedance Schema、已确认剧情事实和未获批准的Active Asset Version。
@@ -95,6 +97,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 每个Clip在任何最终Prompt句子之前执行Before-Single-Clip-Prompt Gate；Final=`REQUIRED`且尚无匹配Confirmed Visual Anchor时，本轮按`references/ref_sketch_master.md`路由真实已注册母版或明确Text Contract Fallback，先用Neutral Mannequin Representation Rule生成Technical Director Blocking Sheet、执行Template Content Leakage Check、Character Appearance Leakage Check与完整Sketch Validation并注册当前`REF-SKETCH-XX`；随后必须按`Required Sketch Submission Binding`将可访问的真实图片绑定到兼容Adapter输入，才可输出Prompt。普通Prompt Rewrite不得重触发草图；`REF-SKETCH-MASTER`不得自动进入最终视频参考资产
 - 每个Clip必须服从锁定模型的用户选择时长；2.5的16—30秒须严格预检PASS；Clip内分镜保持原顺序、逐镜字段和显式状态链
 - 跨Clip在既有Handoff内明确A/B/C：A/B均列统一`REF-TAIL`、用途与真实状态，缺图时标待补充；A直接承接，B另起新镜头重新构图且不使用Direct固定句；C不列`REF-TAIL`，以Canonical资产、Spatial Blocking与文字状态重建
+- 每个Clip的`参考资产：`（或对应模型的参考字段）为每个实际投喂的视觉条目写出`references/asset_package.md`锁定的图片文件名；条目与包内文件必须一对一可核验，不得虚构文件名、引用未确认或未打包图片，也不得把同一文件列为两个不同资产
 - 每个Clip交付前强制验证【参考资产】、首帧来源/要求、稳定尾帧接口和前后Clip连续性关系；缺任一项不得输出
 - 先执行Voice Identity Omission Gate：默认不检查或投影Voice Profile / Voice Audio Reference，不输出`音色特征：`或声音资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按`Source Carries State, Prompt Carries Delta`输出当前Clip最小必要控制
 - 风格标签行为只由`knowledge/prompt_compilation/state08_projection.md`的Style Label Expansion Rule拥有：重要标签可保留，首次出现必须在同一风格段获得项目特定、可执行解释；正式Style Source锁定后的连续Clip只补当前delta；具象化本身不是默认删除标签的理由

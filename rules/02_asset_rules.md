@@ -437,6 +437,8 @@ STATE-03的资产生产与确认以**批次**为默认单位，不逐个资产�
 
 分批按生产形态进行，不跨形态混装：外观参考图与正式资产图不得合并为同一批次，因为后者依赖前者的确认结果；Core与Support也不得混入同一批次。单批建议不超过12个资产，超出时拆为多个`Batch ID`并各自独立确认，不因批量降低单项QA。环境主参考图与适用View同属一个生产形态，但View依赖母参考的真实成像：母参考先单独一轮出图并确认，随后其余适用View在**同一轮内**连续生成（后一张沿用前面已生成的View作累积参考），整组就绪后只做一次图片批次确认——View之间的累积输入不构成逐项用户确认，不得逐View停顿。
 
+批次图片确认后，每张确认图按`references/asset_package.md`的`Asset Image Naming`取得稳定文件名并写入该资产的Canonical References；命名在该时点锁定，不得原地改名。已确认生产物的分类打包——包括“只有用户认可的才进包”的入选判据——由同一文件唯一拥有，本节只声明两条不变量：确认即定名；**未确认、已否决或仅用于设计决策的图不得进入交付包**。
+
 ### Asset Checkpoint Confirmation Semantics
 
 STATE-03的资产确认仍是可审计的Gate；确认输入语义由`rules/progression_rules.md`的`Confirmation Input Semantics`唯一拥有。资产确认检查点包括当前Prompt Revision、当前Candidate Image / Candidate Reference（包括用户外部回传的图片与Existing Asset Fast Path），以及Core角色的当前外观参考图。该确认必须写入相应的Prompt Confirmation、Image Confirmation或Appearance Confirmation及时间、Revision、Candidate / Board / Item范围。
@@ -501,6 +503,7 @@ Asset Design
 - 图片被拒绝时，保留其生成记录但不得升级为Canonical Reference；若只需重生则回到已确认Prompt，若需改Prompt则回到`Prompt Draft`重新确认。
 - 只有图片获得全局确认语义定义的用户确认后，才能写`Visual Production Status: Asset Confirmed`，完成Canonical References、Active Version、Approval Basis与Approved At登记。
 - Asset Confirmed时同步状态才允许为`Prompt Status: Confirmed`、`Image Status: Confirmed`、`Confirmed Status: Yes`；Support还必须记录Board ID、Item ID与图中区域/标签对应关系。
+- 图片成为Canonical Reference的同时，必须按`references/asset_package.md`的`Asset Image Naming`绑定稳定文件名；未绑定文件名的图片不得进入最终视频Prompt的参考条目，也不得打包交付。
 
 ### Candidate Output Triage And Cleanup
 
