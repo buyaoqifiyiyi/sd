@@ -147,6 +147,8 @@ Sequence Plan（如适用）
 
 判定Gate固定为`Story → Director's Cut → Technical`。后续编号章节可复用Technical证据，但不得让技术PASS覆盖Story或Director失败。
 
+**审核档位**：默认进入**失败驱动档**——用户带回实际生成结果并指出问题时，先执行`# Failure Diagnosis And Single-Variable Retake`的定位，再由`## Failure Origin And Disposition`的`Failure Class` / `Failure Origin`决定展开哪一层：命中`WRITING`展开Story Review，命中`DIRECTING`展开Director's Cut Review，`GENERATION` / `EDITING`只展开Technical层加最小Return Route、Recheck Scope与Must Not Change。未展开的层在报告中写`Not Expanded`及一行依据，**不得把未展开当作通过**。用户明确要求“完整审核 / 全片Review / 给出PASS判定”时进入**完整档**，执行全部三层与编号章节。两档共用同一判定顺序与同一护栏：任何档位都不得在`Failure Class`确定之前给出技术PASS，也不得让技术PASS覆盖Story或Director失败。无法把用户报告的问题明确归入单一`Failure Class`时，按层展开到能确定归属为止，不得为省事默认Technical层。
+
 执行顺序：
 
 

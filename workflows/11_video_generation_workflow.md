@@ -35,4 +35,4 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 
 # Completion Gate
 
-只改当前 Clip 的 Prompt 映射问题留在 STATE-08；Clip 边界、预算、尾帧或连续性组织问题回 STATE-07；Shot/Blocking 回 STATE-06；事实或资产回对应 owner。全部检查 PASS 后交付或生成，随后进入 STATE-09 Review。
+只改当前 Clip 的 Prompt 映射问题留在 STATE-08；Clip 边界、预算、尾帧或连续性组织问题回 STATE-07；Shot/Blocking 回 STATE-06；事实或资产回对应 owner。全部检查 PASS 后交付或生成，随后停在Review检查点：state写回必须显式声明`State Status: COMPLETE`、由`workflows/workflow_map.md`确定的下一Workflow，以及`Pending Decision: 等待实际生成结果（有问题回来进Review；无问题项目停在此处）`，并把下一阶段保持为`NOT_STARTED`。用户未带回结果既**不是PASS也不是失败**，项目合法停在该检查点，不得写成STATE-09 COMPLETE；用户带回结果并指出问题时进入STATE-09失败驱动档，用户明确接受具体Take时按Review owner的`Accepted Take Canon Writeback`登记。

@@ -86,6 +86,40 @@ FAIL：把单独“继续 / 下一步 / 好的”当作优化授权或Proposal�
 
 ## R08 Review Revision Loop
 
+### R08-A Delivery Stops At The Review Checkpoint
+
+输入：CLIP-001的最终Prompt已通过Template与Workflow验证并交付，用户尚未生成视频。
+
+PASS：STATE-08写回`State Status: COMPLETE`、由`workflows/workflow_map.md`确定的下一Workflow与`Pending Decision: 等待实际生成结果（有问题回来进Review；无问题项目停在此处）`，下一阶段保持`NOT_STARTED`；项目合法停在该检查点，既不判完成也不判失败，也不生成Review Report。
+
+FAIL：因Prompt通过验证就写STATE-09 COMPLETE或`Project Complete`；输出没有实际生成结果的Review PASS；或静默结束而不声明检查点。
+
+### R08-B Failure-Driven Review Expands Only The Owning Layer
+
+输入：用户带回CLIP-001实际生成结果，指出“人物左手变成了右手，钥匙位置跳了”。
+
+PASS：先定位`Failure Class`，判定为GENERATION FAILURE后只展开Technical层，输出Affected IDs、最小必要修复（只修Prop持有与Identity Reference路由）、Return Route指向Affected Clip、Recheck Scope与Must Not Change；Story Review与Director's Cut Review写`Not Expanded（Failure Origin=Generation，依据：…）`且不当作通过。
+
+FAIL：为一次道具持有错误跑完整三层并产出空的Story / Director台账；把`Not Expanded`写成`PASS`；或用技术通过掩盖用户报告的行为动机问题。
+
+### R08-C Unattributable Failure Escalates Instead Of Defaulting
+
+输入：用户只说“这条不对，感觉差”。
+
+PASS：不默认Technical层，按层展开到能确定唯一`Failure Class`为止；命中WRITING展开Story Review，命中DIRECTING展开Director's Cut Review，并在报告中写明归属依据。
+
+FAIL：为省事只跑Technical层就给出PASS；或在`Failure Class`确定之前给出技术PASS。
+
+### R08-D Full Review On Explicit Request
+
+输入：用户明确要求“完整审核 / 全片Review / 给出PASS判定”。
+
+PASS：执行Story → Director's Cut → Technical三层与全部编号章节，三层Summary与逐SHOT台账无空项。
+
+FAIL：以默认档为由省略任一已请求的层。
+
+### R08-E Revision Loop Preserves State
+
 PASS允许完成；REVISE/REBUILD保持STATE-09 IN_PROGRESS，记录Affected IDs、Return Route、Accepted Unaffected Artifacts和Recheck Scope。
 
 ## R09 STATE-03 Double-Confirmation Closure
@@ -302,6 +336,14 @@ FAIL：把新OTS误写为同镜头续拍；使用A固定句；尾帧用途未写
 PASS：八组记录明确上一人物状态暂不进入画面、剧情仍有效但不作视觉首帧锚定；判定C Not Required与`Tail Frame Required = NO`。Reference Selection不列、不预留`REF-TAIL`，只选择门结构风险所需Environment Canonical与门把手造型风险所需Prop Canonical；雨天光态若只有文字场景视觉基准则写入`环境一致性 / 首帧参考 / 起始状态`，只有实际已确认合格的场景状态图存在时才作为视觉参考。Spatial Blocking继续提供文字方向约束，Top-down Map不进入参考资产。
 
 FAIL：机械要求截图或把旧尾帧、两名角色图、钢琴/乐谱等无关资产塞入；把旧人物构图和光线画面强行继承到新特写；遗漏门结构或门把手这一实际风险所需资产。
+
+### R13-D Accepted Canon Is Asked Once, Only When Needed
+
+输入一：下一Clip判定A（`Tail Frame Required = YES`），上一Clip已有实际生成Take但尚无用户接受的`Accepted Canon State`。输入二：同类A/B项目，用户上一轮已回答“没定”。输入三：下一Clip判定C。
+
+PASS：输入一在构建下一G Package的同一轮只问一次“上一条过了吗”，用户明确接受时按Review owner的`Accepted Take Canon Writeback`写回八组Shot-State Memory并作为本Clip起始状态的权威输入；输入二不追问，按Planned State起步并把差异记为Continuity Risk；输入三不询问。技术Review PASS不等于用户接受。
+
+FAIL：为补齐Canon重复追问；把技术PASS当成用户接受；把未接受的Take写成Canon；或因C类不需要尾帧也照样发问。
 
 ---
 

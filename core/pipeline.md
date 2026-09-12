@@ -13,6 +13,6 @@ Storyboard、Audio、Music、Sequence、Poster、Editing 与 Series 是按需辅
 - STATE-01 Production Setup：Script锁定后一次确认项目图像模型默认项、图像交付形态、视频模型偏好与项目风格基线；STATE-03继承图像默认项与风格基线，STATE-06后仅按当前Clip能力复核视频偏好并选择唯一Adapter。这些设置只取得执行能力与项目风格基线，不改写创作事实。
 - STATE-07：先形成 Natural Unit，再按选定模型将其整合为 Execution Clip、边界、连续性、参考预算和目标时长。
 - STATE-08：以确认的 Execution Clip 编译最终 Prompt；Adapter 仅适配执行，不改写上游事实。
-- STATE-09：仅 PASS 完成；REVISE / REBUILD 返回最小受影响 owner。
+- STATE-09：仅 PASS 完成；REVISE / REBUILD 返回最小受影响 owner。它必须消费实际生成结果；Prompt交付后项目停在Review检查点，直到用户带回结果。
 
 `下一步`、`继续`等纯推进命令按 `core/runtime-state.md`、当前 Completion Gate 和这个顺序路由；已确认且未受影响的交付物不得重做。

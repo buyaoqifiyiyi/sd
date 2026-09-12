@@ -131,7 +131,7 @@ Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Scr
 - Authority：`workflows/11_video_generation_workflow.md`；它拥有资源清单、语义编译、Preflight、Knowledge Reflection、Projection与验证流程。
 - Final schema owner：`templates/10_video_prompt.md`。Workflow、Rules、Knowledge、Adapter和本地图都不得维护竞争Schema。
 - Image-to-video boundary：`templates/11_image_to_video_prompt.md`只拥有参考帧Source Data与边界约束。
-- Next route：最终Prompt通过Template与Workflow验证后进入STATE-09。
+- Next route：最终Prompt通过Template与Workflow验证后停在Review检查点（`Next Workflow: 13_review_workflow.md`、`Pending Decision: 等待实际生成结果`）；用户带回实际生成结果后才进入STATE-09，无结果时既不进入也不判失败。
 
 ### STATE-09 Review
 

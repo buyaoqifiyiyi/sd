@@ -670,6 +670,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 - 只有你明确接受具体 Take，才会建立 / 更新 Accepted Canon；技术 Review PASS 本身不等于用户接受。
 - Accepted Canon 来自实际 `Observed State`，不是把原计划值抄一遍。
 - 后续 Clip 在同一维度优先从 Accepted Canon 继续，不能无过程强行纠回原计划。
+- **只会问你一次。** 如果你接着做下一个 Clip，而它需要接上一条的实际画面（A/B 类需要尾帧），系统会顺带问一句“上一条过了吗”：你说接受就写成 Accepted Canon；你说没定、不回答、或说“以后别问”，就不再追问，下一段按原计划状态起步并把差异记为连续性风险。C 类（新镜头、不需要尾帧）不会问。
 - 已接受 Take 中的脸、服装、环境结构或道具造型漂移不会覆盖正式 Canonical 资产；只继承合法瞬时状态，并把漂移列为 Continuity Risk。
 
 ## 20）STATE-09 Review / 是否重做 / 单变量返修
@@ -689,6 +690,8 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 **Skill 行为 / 停止点**
 
 - `PASS`：硬门槛通过，允许完成 Review；如要把 Take 写成 Accepted Canon，仍需你明确接受该 Take。
+- **默认只查该查的那一层。** 你带回结果并指出问题（“手不对”“脸变了”“接不上”）时，系统先定位失败归属，只展开对应那一层：故事问题才跑 Story Review，导演问题才跑 Director's Cut，纯生成 / 后期问题只跑 Technical 层加最小返修方案。你说“完整审核 / 全片 Review”才跑三层全量。**没展开的层会写 `Not Expanded` 和依据，不会当通过。**
+- **没回来不等于判 PASS。** Prompt 交给你之后，项目停在一个明确的 Review 检查点上（`等待实际生成结果`）：你带问题回来就进 Review，回来验收就说一句“这条过了”；一直不回来，项目就停在那儿——**既不会自动判 PASS，也不算失败**。真正生成之前也无法假装审完。
 - `REVISE`：局部可修复，返回最小必要 Workflow；修完必须重新 Review。
 - `REBUILD`：上游事实或设计严重错误，返回事实 / 设计拥有者；不会把 STATE-09 标为完成。
 - 站位错优先只修 Spatial / Blocking；身份漂移优先修 Identity Reference 路由；动作错优先修 Motion / Performance；镜头错优先修 Camera。

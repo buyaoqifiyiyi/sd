@@ -46,6 +46,8 @@ Technical Review Summary：
 
 Director's Cut Review Summary（Intent vs Result / Audience Attention / Performance Truth / Relationship Readability / Information Timing / Shot Necessity / Rhythm / Emotional Residue / Aesthetic Judgement）：
 
+失败驱动档下未展开的层，其Summary与对应章节表写`Not Expanded（Failure Origin=…，依据：…）`；不得留空、不得用一段总体评价代替，也**不得把未展开当作通过**。Story / Director's Cut / Technical三层的判定顺序与“技术PASS不得覆盖Story或Director失败”在任何档位都成立。
+
 ---
 
 ## Story Review

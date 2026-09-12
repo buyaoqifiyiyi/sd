@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r81 structural, routing and readability validation for SD Film."""
+"""Deterministic r82 structural, routing and readability validation for SD Film."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
@@ -1239,7 +1239,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r81 structural, routing and readability validation")
+    print("PASS: r82 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

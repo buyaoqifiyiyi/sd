@@ -53,5 +53,6 @@ Clip 表中的“知识投影摘要”不是知识名称清单，而是以下模
 - 在【主风格】之前输出一次【首帧参考】与【尾帧限制】，只在Package末尾输出一次【反向提示词】
 - 最后一分镜与`尾帧限制：`定义本Clip新的稳定结束状态；实际生成、提取并确认后登记为`REF-TAIL-XX｜CLIP-XX尾帧参考`
 - 下一 G Package先依据当前Clip Start Requirement判定A/B/C，再检查资产可用性：A/B均在`参考资产：`列统一`REF-TAIL`名称、对应用途和真实状态；A在`首帧参考：`写固定直接承接句，B明确另起新镜头重新构图且不得写该句；未上传时标记“待用户提供/待上传、未确认”，Prompt可交付但实际提交生成前补图。C不列`REF-TAIL`，可由Canonical资产、Spatial Blocking与文字End State建立新首帧
+- **Accepted Canon采集（唯一一次询问）**：构建本G Package时，若上一Clip的`Tail Frame Required = YES`（A/B）且该Clip尚无用户接受的`Accepted Canon State`，在同轮**只问一次**“上一条过了吗”。用户明确接受该Take时，按`workflows/13_review_workflow.md`的`Accepted Take Canon Writeback`写回八组Shot-State Memory，并作为本Clip起始状态的权威输入；用户表示未定、不回答或说“以后别问”时不追问，本Clip按Planned State起步并把差异保留为Continuity Risk。同一Clip只问一次；`C`不询问。技术Review PASS不等于用户接受，本条不改变该边界
 
 同一 Clip 内非末分镜的“镜头结尾状态”使用现有字段承载模式：多Shot连续生成明确“同一 Clip 连续生成、不中断、不硬切”；多Shot有动机剪辑明确切点、视觉媒介、切前结束、切后稳定重建和保留/改变锚点。Clip末分镜说明与下一Clip的连接方式或最后一段收尾；不新增STATE-08字段。
