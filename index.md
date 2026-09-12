@@ -265,7 +265,6 @@ SD Film
 ├── SKILL.md
 ├── config.md
 ├── index.md
-├── project_registry.json
 ├── project_bible.md       # 兼容入口，不保存真实项目状态
 ├── asset_registry.md      # 兼容入口，不保存真实项目状态
 ├── project_status.md      # 兼容入口，不保存真实项目状态

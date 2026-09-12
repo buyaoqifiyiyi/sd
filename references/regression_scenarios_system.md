@@ -323,6 +323,24 @@ FAIL：因为用户要求合并展示就绕过Confirmation Input Semantics、Com
 ---
 
 
+## R37 No Project Registration Regression
+
+### R37-A The Skill Holds No Project Index Or Registration Table
+
+输入：Skill 根目录与全部运行时 owner 文件；用户在新会话中说“根据这个剧本做一条片子”。
+
+PASS：不存在也不得建立任何项目索引、清单或注册文件；新项目只在会话内建立最小STATE-00，项目文件只落在该项目的Project Root内。Skill 安装目录始终只保存通用定义。用户明确要求保存或归档时才在独立目录初始化Project Root，且不写回 Skill 根目录。
+
+FAIL：重新引入项目登记表或注册文件、把 Skill 根目录当项目仓库、或让普通制作请求必须先“登记项目”才能执行。
+
+### R37-B Recovery Uses A Path Or Checkpoint, Never A Registry Lookup
+
+输入一：用户说“继续 PROJECT-RAIN-REUNION-001”，并给出项目目录。输入二：用户只说“继续上次那个项目”，未给路径，当前会话无已验证项目上下文。输入三：用户说“重新调用sd，恢复当前项目，从最后一个安全Checkpoint继续”。
+
+PASS：输入一按用户给出的路径与Project ID核验后继续。输入二不得扫描磁盘、不得按名称/题材/“类似项目”猜测匹配，也不得声称存在登记表可查；应请用户给出路径或Project ID。输入三按Portable State或Project Root的Checkpoint恢复，不查任何索引。
+
+FAIL：为找回项目而扫描磁盘、虚构或读取一个项目登记表、按名字猜中重名项目之一，或因“找不到登记表”而报`BLOCKED`。
+
 ## R36 Production Delivery Package Regression
 
 ### R36-A Confirmed Work Is Packaged By Category Before The Final Prompt

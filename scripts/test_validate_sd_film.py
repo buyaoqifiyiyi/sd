@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r76 SD Film validator."""
+"""Regression tests for the r77 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -2701,6 +2701,70 @@ Confirmed Status: No
                 any("no readable file in the project root" in item for item in result["errors"]),
                 result["errors"],
             )
+
+
+class R77NoProjectRegistryTests(unittest.TestCase):
+    """Skill 是工具，不是项目仓库：登记能力被移除后，守卫必须真的能拦住它复活。"""
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        for relative in validator.NO_PROJECT_REGISTRY_SOURCES:
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(overrides.get(relative, "# unrelated content\n"), encoding="utf-8")
+
+    def test_fixture_is_clean_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_no_project_registry(root), [])
+
+    def test_reintroduced_registry_file_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {"index.md": "├── project_registry.json\n"})
+            self.assertIn(
+                "project registration must stay removed: project_registry (in index.md)",
+                validator.check_no_project_registry(root),
+            )
+
+    def test_reintroduced_init_command_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(
+                root,
+                {"references/project_workspace.md": "validate_sd_film.py init --registry x.json\n"},
+            )
+            self.assertIn(
+                "project registration must stay removed: `--registry` command "
+                "(in references/project_workspace.md)",
+                validator.check_no_project_registry(root),
+            )
+
+    def test_reintroduced_registration_table_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(
+                root,
+                {"rules/state_source.md": "`project_registry.json` 只负责登记项目。\n"},
+            )
+            errors = validator.check_no_project_registry(root)
+            self.assertTrue(any("project_registry" in item for item in errors), errors)
+
+    def test_active_skill_states_the_removal_and_keeps_no_registry_file(self) -> None:
+        workspace = (ROOT / "references/project_workspace.md").read_text(encoding="utf-8-sig")
+        source = (ROOT / "rules/state_source.md").read_text(encoding="utf-8-sig")
+        self.assertIn("本Skill不维护项目登记表", workspace)
+        self.assertIn("本Skill不维护项目登记表", source)
+        self.assertIn("Skill安装目录只保存通用定义，不是项目仓库", workspace)
+        self.assertFalse((ROOT / "project_registry.json").exists())
+        self.assertEqual(validator.check_no_project_registry(ROOT), [])
+        # 该移除必须有正反例回归场景，否则下一个人只会看到“文件没了”
+        scenarios = regression_corpus()
+        self.assertIn("## R37 No Project Registration Regression", scenarios)
+        for marker in ("R37-A", "R37-B"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, scenarios)
 
 
 if __name__ == "__main__":

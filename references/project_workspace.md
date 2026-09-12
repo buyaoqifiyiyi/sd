@@ -9,7 +9,6 @@
 | 解析项目候选 | `## Project Root Contract`、`## Active Project Resolution` |
 | 新项目 | `## New Project Rule` |
 | 既有项目 | `## Existing Project Rule` |
-| Registry 核验 | `## Registry Rule` |
 | 与 State Source 衔接 | `## State Source Integration` |
 | 路径别名 | `## Path Alias Rule` |
 | 校验命令 | `## Validation Commands` |
@@ -93,12 +92,14 @@ Skill 安装目录保存通用的 `SKILL.md`、Rules、Workflows、Knowledge、T
 
 1. 用户在当前任务中明确指定的 Project Root 或 Project ID。
 2. 当前工作目录或其父目录中可确认的 `project_manifest.json`，且当前会话已明确指向该项目。
-3. 仅当用户明确要求查找/恢复已登记项目或提供精确Project ID时，读取 Skill 根目录 `project_registry.json` 作精确ID核验。
-4. 如果输入明确属于新项目，进入 STATE-00并建立会话内最小状态；只有用户明确要求保存、登记、归档或跨会话恢复时，才在独立目录初始化新的 Project Root。
+3. 恢复或继续既有项目时，按`rules/state_source.md`的Intent Scope Gate使用项目路径、项目`project_status.md`或Portable State。
+4. 如果输入明确属于新项目，进入 STATE-00并建立会话内最小状态；只有用户明确要求保存或归档时，才在独立目录初始化新的 Project Root。
+
+本Skill不维护项目登记表：不得建立、读取或更新任何项目索引、清单或注册文件，也不得为了找出既有项目而扫描磁盘。找回项目只使用用户给出的路径/Project ID、当前可访问的项目目录或Portable State。
 
 如果存在多个合理候选且当前信息无法唯一判断，不得自动选择最近项目；必须先确认用户要继续的项目。
 
-Active Project 只对当前任务上下文生效。`project_registry.json` 不保存全局“当前项目”指针，防止不同任务互相切换状态。
+Active Project 只对当前任务上下文生效；Skill不保存任何全局“当前项目”指针，防止不同任务互相切换状态。
 
 ---
 
@@ -136,19 +137,18 @@ project_status.md = 当前任务最新可用的 portable_project_status.md
 
 ## New Project Rule
 
-STATE-00必须先确定会话Project ID。默认不创建Project Root、不登记Registry，也不展示项目初始化页；它在当前响应内完成最小启动事实后进入下一个可交付阶段。用户明确要求保存、登记、归档或跨会话恢复时，才确定Project Root并初始化项目文件。
+STATE-00必须先确定会话Project ID。默认不创建Project Root、也不展示项目初始化页；它在当前响应内完成最小启动事实后进入下一个可交付阶段。用户明确要求保存或归档时，才确定Project Root并初始化项目文件。
 
 新 Project Root 必须满足：
 
 - 不与现有项目共用三个核心状态文件。
-- Project ID 在 `project_registry.json` 中唯一。
-- Project Manifest、Status、Bible 和 Asset Registry 中的 Project ID 一致。
+- Project ID 与Project Manifest、Status、Bible和Asset Registry中的写法一致。
 - 初始化不得覆盖已有非空项目目录。
 - project_status.md符合references/project_state_contract.md。
 - execution_ledger.md与artifact_registry.md已经建立最小入口。
 - 用户没有确认的信息保持待分析，不通过初始化脚本虚构。
 
-可以使用 `scripts/validate_sd_film.py init --registry <project_registry.json>` 创建并登记最小项目工作区。该命令默认拒绝覆盖现有项目，并拒绝重复 Project ID 或 Project Root。
+本Skill不登记项目：新项目只在自己的Project Root内建立最小文件，不写入任何Skill根目录下的索引、清单或注册文件。Skill安装目录只保存通用定义，不是项目仓库。
 
 ---
 
@@ -162,17 +162,7 @@ STATE-00必须先确定会话Project ID。默认不创建Project Root、不登�
 - 不自动合并两个项目的数据。
 - 运行项目校验并定位冲突文件。
 
-Work/Codex项目级更新只能写入 Active Project Root。完成阶段后，不得同时更新其他已登记项目；随后按`references/project_state_contract.md`同步Portable State。
-
----
-
-## Registry Rule
-
-`project_registry.json` 只负责登记项目，不决定当前任务使用哪一个项目。
-
-每个登记项包含 `project_id`、`project_name`、`root` 和 `lifecycle`。
-
-Registry 中 Project ID 和 Root 都必须唯一。移动项目后应更新 Root；归档项目可将 `lifecycle` 标记为 `archived`，不得删除历史项目状态来表示归档。
+Work/Codex项目级更新只能写入 Active Project Root。完成阶段后，不得同时更新其他项目；随后按`references/project_state_contract.md`同步Portable State。
 
 ---
 
@@ -204,7 +194,7 @@ build_asset_package.py --project-root <project-root> [--check-prompt <compiled-p
 
 ## Final Principle
 
-Skill 是生产系统，Project Root 是Work/Codex中单个项目的完整可变状态；Portable State是普通Chat可继续执行的最小状态镜像。
+Skill 是生产工具，Project Root 是Work/Codex中单个项目的完整可变状态；Portable State是普通Chat可继续执行的最小状态镜像。Skill只保存通用定义，不保存任何项目索引或注册表。
 
 Runtime Reload只替换Skill Definition，不清空Project Context。已确认Script、资产、Checkpoint、已接受交付物与用户约束仍属于当前项目，只按最新Pipeline重新映射路由。
 

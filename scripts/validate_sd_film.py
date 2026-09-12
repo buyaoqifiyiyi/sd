@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r76 structural, routing and readability validation for SD Film."""
+"""Deterministic r77 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -595,6 +595,44 @@ def check_reference_ownership(root: Path) -> list[str]:
     return errors
 
 
+NO_PROJECT_REGISTRY_SOURCES = (
+    "SKILL.md",
+    "config.md",
+    "index.md",
+    "rules/state_source.md",
+    "rules/chat_compatibility.md",
+    "references/project_workspace.md",
+    "workflows/01_project_setup_workflow.md",
+)
+# The removed capability and the wording that described it: a project index or
+# registration table, the `init --registry` command that never existed, and the
+# registry-named uniqueness claim. A tool may not grow a project repository back.
+#
+# The table patterns describe the *positive* claim only ("the registry holds /
+# lives in / each entry contains ..."). The skill documents the removal itself
+# ("本Skill不维护项目登记表：…"), and a pattern that also matched that sentence
+# would fire on the very text that forbids it -- a guard that rejects its own
+# counter-statement is worse than none.
+NO_PROJECT_REGISTRY_PATTERNS = (
+    ("project_registry", re.compile(r"project_registry")),
+    ("`--registry` command", re.compile(r"--registry")),
+    ("registry-held project ID", re.compile(r"Project ID\s*在\s*`?[^`\s]*registr", re.I)),
+    ("registration table as the subject", re.compile(r"(登记表|注册表)\s*(?:只负责|负责|中)")),
+    ("registry record fields", re.compile(r"每个登记项包含")),
+)
+
+
+def check_no_project_registry(root: Path) -> list[str]:
+    """The skill is a tool, not a project repository: it holds no project index."""
+    errors: list[str] = []
+    for relative in NO_PROJECT_REGISTRY_SOURCES:
+        text = read(root, relative)
+        for label, pattern in NO_PROJECT_REGISTRY_PATTERNS:
+            if pattern.search(text):
+                errors.append(f"project registration must stay removed: {label} (in {relative})")
+    return errors
+
+
 def validate_skill(root: Path) -> list[str]:
     errors: list[str] = []
     for relative in REQUIRED:
@@ -963,6 +1001,7 @@ def validate_skill(root: Path) -> list[str]:
         (fx, "Image Delivery Mode: DIRECT_IMAGE"),
         (user_guide, "DIRECT_IMAGE"),
         (user_guide, "PROMPT_ONLY"),
+        (user_guide, "不维护项目登记表"),
         (asset_rules, "命名在该时点锁定，不得原地改名"),
         (asset_rules, "未绑定文件名的图片不得进入最终视频Prompt的参考条目"),
         (completion, "生产交付包由`references/asset_package.md`拥有"),
@@ -1029,6 +1068,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
     errors.extend(check_workflow_routing(root))
     errors.extend(check_reference_ownership(root))
+    errors.extend(check_no_project_registry(root))
     errors.extend(check_internal_references(root))
     errors.extend(check_read_scope_sections(root))
     errors.extend(check_line_endings(root))
@@ -1049,7 +1089,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r76 structural, routing and readability validation")
+    print("PASS: r77 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

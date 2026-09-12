@@ -61,9 +61,9 @@ references/project_workspace.md
 
 references/project_state_contract.md
 
-只有`rules/state_source.md`的Intent Scope Gate明确要求恢复、保存、登记、归档或核验用户指定项目时，才读取`project_registry.json`或解析Active Project Root候选；不得为新项目、首次剧本请求或相似项目查找而扫描它们。随后只按`rules/state_source.md`选定唯一State Source。本Workflow不复制State Source优先级或fallback细节。
+只有`rules/state_source.md`的Intent Scope Gate明确要求恢复、保存或归档用户指定项目时，才解析Active Project Root候选；不得为新项目、首次剧本请求或相似项目查找而扫描磁盘。本Skill不维护项目登记表，找回项目只使用用户给出的路径/Project ID、可访问的项目目录或Portable State。随后只按`rules/state_source.md`选定唯一State Source。本Workflow不复制State Source优先级或fallback细节。
 
-当前没有项目证据时，在会话内建立最小STATE-00即可；Project Root、Registry和完整Portable State只在用户明确要求持久化或当前环境的恢复任务确实需要时创建/读取。无论持久化与否，STATE-00的生产边界、Project ID、事实记录与后续Gate均保持不变。
+当前没有项目证据时，在会话内建立最小STATE-00即可；Project Root与完整Portable State只在用户明确要求持久化或当前环境的恢复任务确实需要时创建/读取。无论持久化与否，STATE-00的生产边界、Project ID、事实记录与后续Gate均保持不变。
 
 继续现有项目且Selected State Source是Active Project Root时读取：
 

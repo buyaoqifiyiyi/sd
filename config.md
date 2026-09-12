@@ -31,7 +31,7 @@
 - Workflow Map: `workflows/workflow_map.md`
 - Knowledge Index: `knowledge/00_knowledge_index.md`
 - Project State Contract: `references/project_state_contract.md`
-- Project Workspace Contract: `references/project_workspace.md`
+- Project Workspace Contract: `references/project_workspace.md`（不维护项目登记表；Skill安装目录只保存通用定义，不是项目仓库）
 - Asset Lock Contract: `references/asset_lock_contract.md`
 - Production Delivery Package And Asset File Naming: `references/asset_package.md`
 - Module Contracts (framework, authority and owners): `references/module_contracts.md`
