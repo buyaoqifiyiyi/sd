@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r74 SD Film validator."""
+"""Regression tests for the r75 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -537,6 +537,25 @@ class R34RegressionTests(unittest.TestCase):
             self.assertNotIn(token, workflow, f"workflows/05 复述了环境View形态：{token}")
         owner = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")
         self.assertIn("`ENV-03` Lateral View", owner)
+
+    def test_environment_views_after_the_master_are_delivered_in_one_round(self) -> None:
+        """母参考确认后，其余方位视图必须同轮连续出齐、只做一次图片批次确认。
+
+        根因：累积约束原本写成“每一步先完成现有双确认”，于是 ENV-02 必须先被用户确认
+        才能作为 ENV-03 的输入，出图退化成一张一张停。累积约束约束的是生成输入，不是确认次数。
+        """
+        owner = (ROOT / "knowledge/environment_multi_view_reconstruction.md").read_text(encoding="utf-8-sig")
+        workflow = (ROOT / "workflows/05_environment_asset_workflow.md").read_text(encoding="utf-8-sig")
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates/05_environment_asset_prompt.md").read_text(encoding="utf-8-sig")
+        self.assertIn("不得为每个View插入一次用户确认往返", owner)
+        self.assertIn("无需等待用户先确认ENV-02", owner)
+        self.assertIn("ENV-01 + ENV-02 → ENV-03", owner)
+        self.assertIn("ENV-01 + ENV-02 + ENV-03 → ENV-04", owner)
+        self.assertIn("不逐View停顿等待确认", workflow)
+        self.assertIn("只在整组这一层做一次图片批次确认", workflow)
+        self.assertIn("View之间的累积输入不构成逐项用户确认，不得逐View停顿", rules)
+        self.assertIn("只在整组就绪后做一次图片批次确认", template)
 
     def test_prompt_quality_rules_strengthen_existing_owners_without_new_style_system(self) -> None:
         assets = (ROOT / "modules/assets.md").read_text(encoding="utf-8-sig")

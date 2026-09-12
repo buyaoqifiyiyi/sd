@@ -435,7 +435,7 @@ STATE-03的资产生产与确认以**批次**为默认单位，不逐个资产�
 
 批次只改变交付与确认的切片，不改变任何Prompt / Image Hard Gate：Prompt Draft不得触发图片生成；未经批次展示的Candidate不得因用户沉默升级为Canonical Reference或Active Version；`Asset Confirmed`仍必须具有可核对的批次或逐项确认记录、当前Prompt Revision、Candidate References与Canonical绑定。单资产批次与多资产批次使用同一语义，不为单个资产另立流程。
 
-分批按生产形态进行，不跨形态混装：外观参考图与正式资产图不得合并为同一批次，因为后者依赖前者的确认结果；Core与Support也不得混入同一批次。单批建议不超过12个资产，超出时拆为多个`Batch ID`并各自独立确认，不因批量降低单项QA。
+分批按生产形态进行，不跨形态混装：外观参考图与正式资产图不得合并为同一批次，因为后者依赖前者的确认结果；Core与Support也不得混入同一批次。单批建议不超过12个资产，超出时拆为多个`Batch ID`并各自独立确认，不因批量降低单项QA。环境主参考图与适用View同属一个生产形态，但View依赖母参考的真实成像：母参考先单独一轮出图并确认，随后其余适用View在**同一轮内**连续生成（后一张沿用前面已生成的View作累积参考），整组就绪后只做一次图片批次确认——View之间的累积输入不构成逐项用户确认，不得逐View停顿。
 
 ### Asset Checkpoint Confirmation Semantics
 

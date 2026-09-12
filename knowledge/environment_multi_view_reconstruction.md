@@ -50,7 +50,7 @@
 
 ## Multi-Reference Constraint Rule
 
-禁止默认串行漂移：不得以`ENV-02 → ENV-03 → ENV-04`的单一上代图作为后续唯一约束。每一步先完成现有双确认和空间检查，再使用以下累积的已确认输入：
+禁止默认串行漂移：不得以`ENV-02 → ENV-03 → ENV-04`的单一上代图作为后续唯一约束。累积约束约束的是**生成输入**，不是**用户确认次数**：`ENV-01`经用户确认后，其余Required View同属该批次的一轮，必须**在同一轮内连续推进**，不得为每个View插入一次用户确认往返。累积输入为：
 
 ```text
 ENV-01 → ENV-02
@@ -58,7 +58,7 @@ ENV-01 + ENV-02 → ENV-03
 ENV-01 + ENV-02 + ENV-03 → ENV-04
 ```
 
-`ENV-01`始终保留母参考。后续图的Prompt必须写明使用哪些已确认Canonical环境View、当前View的几何任务和不可改变的Major Spatial Anchors；不能只写“保持同风格”。出现严重冲突时，停止扩展，不继续生更多View，先修复冲突的Candidate或走Revision。
+`ENV-01`始终保留母参考。ENV-02生成后即可直接作为ENV-03的累积输入，无需等待用户先确认ENV-02；ENV-03同理供ENV-04使用。整组View就绪后一次性展示，按`rules/02_asset_rules.md`的`Asset Batch Delivery`与`rules/progression_rules.md`的`Exception-Based Batch Confirmation`只做**一次图片批次确认**；用户挑出某项时只退该项，并连带重跑依赖它的更后View（例如ENV-02被拒时，ENV-03/ENV-04一并重跑），同批其余View保持已确认。后续图的Prompt必须写明使用哪些已生成的环境View、当前View的几何任务和不可改变的Major Spatial Anchors；不能只写“保持同风格”。出现严重冲突时，停止扩展，不继续生成更多View，先修复冲突的Candidate或走Revision。
 
 ## Spatial Truth, Spatial Lock And Revision
 

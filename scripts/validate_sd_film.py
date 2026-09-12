@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r74 structural, routing and readability validation for SD Film."""
+"""Deterministic r75 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -767,6 +767,10 @@ def validate_skill(root: Path) -> list[str]:
         (environment, "Spatial Reconstruction: Full / Partial / Not Required"),
         (environment_reconstruction, "ENV-01 + ENV-02 → ENV-03"),
         (environment_reconstruction, "ENV-01 + ENV-02 + ENV-03 → ENV-04"),
+        (environment_reconstruction, "不得为每个View插入一次用户确认往返"),
+        (environment_reconstruction, "无需等待用户先确认ENV-02"),
+        (environment, "不逐View停顿等待确认"),
+        (asset_rules, "View之间的累积输入不构成逐项用户确认，不得逐View停顿"),
         (environment_reconstruction, "最相关2–4张"),
         (environment_reconstruction, "`ENV-03` Lateral View"),
         (environment_reconstruction, "## Direction Anchor Contract｜方向锚点契约"),
@@ -977,7 +981,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r74 structural, routing and readability validation")
+    print("PASS: r75 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":
