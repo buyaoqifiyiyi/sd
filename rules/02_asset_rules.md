@@ -408,7 +408,7 @@ STATE-07 / STATE-08中的视觉参考条目继续服从既有Asset Registry、Ac
 
 STATE-02必须为每个CHAR、ENV、PROP执行Asset Tiering Decision；Asset Tier与Primary / Secondary / Background优先级相互独立。
 
-满足任一条件即优先`Core`：主角或固定角色、跨场景或跨Clip反复出现、承担强剧情/角色/品牌识别、需要高一致性、关键场景、剧情关键道具。Core角色先生成一张外观参考图供用户确认角色外观；该图只用于设计决策，不能成为Canonical资产。用户确认后，才独立制作一张正式角色资产设定图（形态由`templates/04_character_asset_prompt.md`拥有）；必要状态变体另作独立图。Core环境独立制作主参考图/多视角/关键区域图；Core道具独立制作主参考图/必要状态或细节图。
+满足任一条件即优先`Core`：主角或固定角色、跨场景或跨Clip反复出现、承担强剧情/角色/品牌识别、需要高一致性、关键场景、剧情关键道具。Core角色先生成一张外观参考图供用户确认角色外观；该图只用于设计决策，不能成为Canonical资产。用户确认后，才独立制作一张正式角色资产设定图（形态由`templates/04_character_asset_prompt.md`拥有）；必要状态变体另作独立图。外观参考图与正式资产图各自按`### Asset Batch Delivery`整批提交、整批确认，不逐角色、逐张停顿。Core环境独立制作主参考图/多视角/关键区域图；Core道具独立制作主参考图/必要状态或细节图。
 
 不满足Core条件的一次性配角/群演、群体背景角色、同类家具与环境小物、氛围装饰、低频道具通常为`Support`。Support不得逐个制作完整独立资产包，必须按同一资产类型和相近用途形成Support Reference Board；角色、环境、道具不得跨类型混板。
 
@@ -429,7 +429,7 @@ STATE-03的资产生产与确认以**批次**为默认单位，不逐个资产�
 批次在一个生产形态内固定走两轮交付，不随资产数量放大：
 
 1. **批次Prompt轮**：整批资产的Prompt一次性输出，逐项保留各自完整Prompt与状态字段，然后停止等待批次确认；不逐资产停止。
-2. **批次Image轮**：批次Prompt确认后按已记录路由整批生成或整批交付外部Prompt；先对整批执行`Candidate Output Triage`，再把保留项一次性展示并停止等待批次确认。
+2. **批次Image轮**：批次Prompt确认后，按已记录路由在**同一轮内提交整批全部图片**（一次多张或同轮并行提交，取当前工具实际能力），整批就绪后才执行一次`Candidate Output Triage`，再把保留项一次性展示并停止等待批次确认。不得逐张生成后停顿、不得为批内单项单独等待确认，也不得把同一批次拆成多次用户往返。Core外观参考图同样整批提交、整批确认，不逐角色生成后停顿。
 
 两轮的确认都按`rules/progression_rules.md`的`Confirmation Input Semantics`及其`Exception-Based Batch Confirmation`判读：用户挑出的项只退该项——仅需重生回到`Prompt Confirmed`，需要改Prompt则回到`Prompt Draft`并重新确认——同批其余已确认项保持确认，不回退、不重做。
 
@@ -484,9 +484,9 @@ Asset Design
 
 ## Prompt Gate
 
-- 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型路由：优先继承STATE-00已确认的`Project Image Model Default`，只有默认项或当前批次为`UNSELECTED`、当前批次例外或默认项不可用时才提出新选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。
+- 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型路由：优先继承Production Setup已确认的`Project Image Model Default`，只有默认项或当前批次为`UNSELECTED`、当前批次例外或默认项不可用时才提出新选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。
 - Image Prompt必须是完整、可直接生图的执行文本，不得只输出外观说明、关键词清单或“用于后续生成”的参考要求。
-- Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、项目视觉风格、一致性限制、必要负面限制与适用生成参数。
+- Prompt至少明确主体身份、可见结构、构图/视角、材质/服装、光影、已确认`Project Style Baseline`（项目视觉风格）、一致性限制、必要负面限制与适用生成参数。
 - `Visual Production Status: Prompt Draft`时必须停止在当前Prompt Confirmation Checkpoint；用户的确认输入按`rules/progression_rules.md`解释。只有`Automation Policy: FAST`或`Image Delivery Mode: DIRECT_IMAGE`、输入完整、当前资产不触及`rules/automation_mode.md`的Hard Stop且当前Workflow QA通过时，才可记录自动Prompt确认并继续当前批次生成；`DIRECT_IMAGE`下仍必须完整输出并留档当前批次Prompt，且仅当当前执行环境确实具备图像生成能力时成立——无能力时按`PROMPT_ONLY`交付并标注`Image Generation Availability: Unavailable`，不得伪造生成结果。
 - 同步状态必须为`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`。
 - 当前Prompt Revision获得全局确认语义定义的确认后，才可写`Prompt Confirmed`并按已记录的工具路由继续；`Automation Policy: FAST`的合格资产可由`rules/automation_mode.md`记录自动确认后继续。对外部图像服务，该确认只记录Prompt Confirmed，不构成外部提交授权。

@@ -73,17 +73,17 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 
 - Required boundary：读取项目输入、STATE-00登记的`Creation Brief / Existing Script / Material`入口和当前Script Status。
 - Authority：`workflows/02_script_analysis_workflow.md`；Creation Brief进入其Idea-to-Screenplay分支，Existing Script / Material进入Diagnosis分支。剧本创作、改编、优化、授权与锁定细则不得在本地图复制。
-- Completion boundary：只有`Script Status: Production-Locked`才可进入STATE-02。
+- Completion boundary：只有`Script Status: Production-Locked`且`Production Setup`已经确认，才可进入STATE-02。
 
 ### STATE-02 Asset Discovery
 
-- Required boundary：消费Production-Locked Script与STATE-01分析结果。
+- Required boundary：消费Production-Locked Script、STATE-01分析结果与已确认`Production Setup`（项目图像模型默认项、`Image Delivery Mode`、视频模型偏好、`Project Style Baseline`）。
 - Authority：`workflows/03_asset_discovery_workflow.md`与`rules/02_asset_rules.md`；资产分级算法和Board规则不得在本地图复制。
 - Next route：按已确认需求进入对应STATE-03资产Workflow。
 
 ### STATE-03 Asset Development
 
-- Required boundary：消费STATE-02已分级并路由的CHAR / ENV / PROP / FX需求与Production-Locked Script。
+- Required boundary：消费STATE-02已分级并路由的CHAR / ENV / PROP / FX需求、Production-Locked Script与已确认`Project Style Baseline`。
 
 | Asset route | Workflow | Template |
 |---|---|---|
@@ -93,12 +93,12 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 | Formal FX（条件） | `workflows/15_fx_asset_workflow.md` | `templates/13_fx_asset_prompt.md` + 显式外部图像模型的已选最终提示词模板 |
 
 - Authority：资产生产Gate、确认闭环、Active Version和Canonical Reference由对应Workflow、`rules/02_asset_rules.md`与`references/asset_lock_contract.md`定义。
-- 图像模型Prompt正文：STATE-00由`modules/image-model-selection.md`确认项目图像模型默认项；任何新Image Prompt前当前资产批次直接继承它，只有默认项缺失、不可用或当前批次例外时才停止要求新选择，绝不默认GPT Image。选择后由`modules/assets.md`读取该Adapter声明的独立最终提示词模板：GPT Image为`templates/24_gpt_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`；新模型必须先建立独立Adapter和模板，不能复用现有图像或视频模型正文。
+- 图像模型Prompt正文：`Production Setup Gate`由`modules/image-model-selection.md`确认项目图像模型默认项；任何新Image Prompt前当前资产批次直接继承它，只有默认项缺失、不可用或当前批次例外时才停止要求新选择，绝不默认GPT Image。选择后由`modules/assets.md`读取该Adapter声明的独立最终提示词模板：GPT Image为`templates/24_gpt_image_asset_prompt.md`，Midjourney为`templates/14_midjourney_asset_prompt.md`；新模型必须先建立独立Adapter和模板，不能复用现有图像或视频模型正文。
 - Completion boundary：当前项目所需资产全部通过对应Completion Checklist，或对应类别已合法记录Not Applicable。
 
 ### STATE-04 Visual Development
 
-- Required boundary：消费Production-Locked Script、已确认资产和用户视觉要求。
+- Required boundary：消费Production-Locked Script、已确认资产、已确认`Project Style Baseline`和用户视觉要求。
 - Authority：`workflows/07_visual_development_workflow.md`。
 - Next route：完成可执行Visual Direction后进入STATE-05。
 

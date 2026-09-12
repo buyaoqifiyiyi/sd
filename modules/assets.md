@@ -6,9 +6,9 @@
 
 ## Asset Image Route
 
-批次是路由与交付的默认单位：同一资产类别、同一Asset Tier、同一生产形态与同一已选图像模型构成一批，其构成、两轮交付与挑拣回退由`rules/02_asset_rules.md`的`Asset Batch Delivery`拥有。本模块只按该批次写入`Target Image Tool / Model`与交付记录，不为批内每个资产单独重开模型路由。
+批次是路由与交付的默认单位：同一资产类别、同一Asset Tier、同一生产形态与同一已选图像模型构成一批，其构成、两轮交付与挑拣回退由`rules/02_asset_rules.md`的`Asset Batch Delivery`拥有。本模块只按该批次写入`Target Image Tool / Model`与交付记录，在该批次的Image轮同轮提交整批全部图片，不为批内每个资产单独重开模型路由，也不逐张生成后停顿。
 
-本模块是STATE-03图像工具路由与提示词适配的唯一owner。读取STATE-00已确认的项目图像模型默认项、已确认的资产定义、当前Prompt Revision、画幅/交付要求和用户当前明确例外选择；只写当前Asset Prompt Package中的`Target Image Tool / Model`、提示词形态及生成记录。它不创建Video Model Lock、Clip、视频Prompt或项目主STATE，不改写资产事实、Template字段与双确认Gate。冲突返回当前资产Workflow；视频模型只由`modules/model-selection.md`的项目偏好与后续能力复核处理。
+本模块是STATE-03图像工具路由与提示词适配的唯一owner。读取Production Setup已确认的项目图像模型默认项、已确认的资产定义、当前Prompt Revision、画幅/交付要求和用户当前明确例外选择；只写当前Asset Prompt Package中的`Target Image Tool / Model`、提示词形态及生成记录。它不创建Video Model Lock、Clip、视频Prompt或项目主STATE，不改写资产事实、Template字段与双确认Gate。冲突返回当前资产Workflow；视频模型只由`modules/model-selection.md`的项目偏好与后续能力复核处理。
 
 ### Image Model Selection Gate
 

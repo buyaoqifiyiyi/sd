@@ -346,7 +346,7 @@ FAIL：只写孤立风格标签、将风格藏在第二行后、增加H3顶级`�
 
 ### R34-A Project Model Choice Is Early, Clip Capability Is Late-Bound
 
-输入：新项目在STATE-00确认`GPT Image + MiniMax H3`；STATE-03新建角色与环境资产；后续CLIP-04为H3 Start-End模式且Final=`REQUIRED`。
+输入：新项目在剧本`Production-Locked`后的`Production Setup`确认`GPT Image + MiniMax H3`；STATE-03新建角色与环境资产；后续CLIP-04为H3 Start-End模式且Final=`REQUIRED`。
 
 PASS：STATE-03直接继承GPT Image而不逐批重复提问；STATE-06/07复核H3 Start-End无法提交Required草图，只给出改为H3 All-Reference、改选兼容模型或返回上游降低Blocking的最小路径。不得为了兑现项目偏好把`REF-SKETCH`伪装为首/尾帧，也不得重做剧本、资产或导演设计。
 

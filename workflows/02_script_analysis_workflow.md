@@ -324,9 +324,29 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 `Automation Policy: FAST`不得覆盖本Gate。Creation、Adaptation或Optimization生成的Production Script Proposal仍需要用户明确锁定；自动模式只能继续其后的已锁定制作设计，不能替代用户对剧情、人物关系、改写范围或制作版文本的确认。
 
 - Creation Brief或Existing Script / Material的Production Script Proposal输出后必须再次停止，保持`Script Status: Optimized Proposal`、STATE-01 `IN_PROGRESS`与`Next Workflow: 02_script_analysis_workflow.md`。
-- 用户明确确认当前Proposal：把唯一确认版本写为`Script Status: Production-Locked`，清除Pending Decision，再执行STATE-01 Completion Gate并进入STATE-02。
+- 用户明确确认当前Proposal：把唯一确认版本写为`Script Status: Production-Locked`，清除Pending Decision，随后进入`## 07 Production Setup Gate`；该Gate确认后再执行STATE-01 Completion Gate并进入STATE-02。
 - 用户要求修改Proposal：保持`Optimized Proposal + IN_PROGRESS`，只修订用户指出范围，输出新Proposal Revision并再次等待确认。
 - 当前Proposal已展示且可核对时，用户说“继续”“下一步”“下一个”“往后做”“接着做”“好的”或同义推进表达，即按`rules/progression_rules.md`确认提案；未展示或版本不清时仍停在Proposal Confirmation Gate。
+
+
+---
+
+## 07 Production Setup Gate
+
+`Script Status: Production-Locked`之后、STATE-01 Completion Gate通过之前，必须完成一次`Production Setup Proposal`；剧本锁定前不得提出它。STATE-00不询问任何模型或风格，只登记用户已明确指定的内容作为该Proposal的唯一候选。
+
+读取`modules/image-model-selection.md`、`modules/model-selection.md`、本Workflow已Production-Locked的Script与用户已明确输入的视觉方向，在同一个Proposal中展示：
+
+- 项目图像模型默认项：GPT Image / Midjourney，以及各自Adapter、最终资产Prompt Template与交付路线；
+- 图像交付形态：`AUTO`（按当前执行环境能力自动路由）/ `DIRECT_IMAGE`（直接出图）/ `PROMPT_ONLY`（只交付Prompt）；用户当前请求已明确指定时只展示该唯一候选；
+- 项目视频模型偏好：Seedance 2.0 / Seedance 2.5 / MiniMax H3，以及已验证的时长与参考输入能力摘要；
+- 项目风格基线`Project Style Baseline`：主风格标签（导演 / 流派 / 题材风格）、它在本项目中的Project-specific Style Meaning与2—4个当前可执行的可见载体。
+
+`Project Style Baseline`只回答“主风格是什么、在本项目指什么”，是STATE-03资产Prompt的“已确认的项目视觉风格”唯一来源；它不展开焦段、运镜、综合色彩或Lighting体系——那些仍由STATE-04在它之上建立`Visual Grammar Baseline`与`Aesthetic Decision Lock`。基线只从用户已明确输入或已Production-Locked剧本可证实的内容提取，不得自行选择导演风格。
+
+用户已在项目请求中指定模型时，对应项只展示该唯一候选；未指定时不得默认选择。展示后用户说`下一步`、`继续`等按`rules/progression_rules.md`确认；确认后写入`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`及各自`SELECTED`状态，并把风格基线写入`## Visual Direction Lock`的基线行与`project_bible.md`既有Visual Direction区域，不新增Schema字段。这些设置只取得执行能力与项目风格基线，不是资产、Clip或外部提交授权；图像默认项供STATE-03资产批次继承，视频偏好供STATE-06按每Clip能力复核。
+
+旧项目已有可验证唯一Selected Image Model或Selected Model时分别迁移为项目默认/偏好，不重复询问；没有证据则保持`UNSELECTED`，直到该项目下一个合法模型选择入口。
 
 
 ---
@@ -625,6 +645,7 @@ Creation Brief入口直接输出Script Control、完整Production Script Proposa
 - 视觉元素识别
 - 视觉需求整理
 - Script Status已经是Production-Locked
+- Production Setup已经确认：`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`与`Project Style Baseline`均已写入且为`SELECTED`
 
 
 未完成情况：
@@ -632,6 +653,7 @@ Creation Brief入口直接输出Script Control、完整Production Script Proposa
 - `Script Status: Source Material`：STATE-01保持IN_PROGRESS；Creation Brief等待关键创作输入或执行Screenplay Development，Existing Script / Material等待Optimization Opportunity Report对应的锁定、优化、改编或拒绝决定。
 - `Script Status: Adaptation Draft`：STATE-01保持IN_PROGRESS，继续编剧优化与导演化处理，不得进入STATE-02。
 - `Script Status: Optimized Proposal`：STATE-01保持IN_PROGRESS，等待用户明确确认Production Script Proposal。
+- Production Setup尚未确认：STATE-01保持IN_PROGRESS，停在Production Setup Gate等待一次确认；不得默认选择模型或风格，也不得进入STATE-02。
 - 任一未完成情况都不得把STATE-01写为COMPLETE，不得进入STATE-02。
 
 
@@ -653,7 +675,7 @@ STATE-01 Complete
 
 仅当：
 
-`Script Status: Production-Locked`。
+`Script Status: Production-Locked` 且 Production Setup 已经确认。
 
 
 

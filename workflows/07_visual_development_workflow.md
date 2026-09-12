@@ -78,6 +78,9 @@ STATE-04 Visual Development
 Script Analysis已经完成。
 
 
+Production Setup已经确认项目风格基线`Project Style Baseline`。
+
+
 Asset Discovery已经完成。
 
 
@@ -221,7 +224,7 @@ Update Project Status
 - 前景 / 中景 / 背景如何分配人物、障碍、线索与视觉权重；哪些遮挡用于Withhold，何时解除形成Reveal
 - Visual Motif如何首次出现、变化、反转或留下Residue，而不是每场机械重复
 - 关系从疏远→靠近→再次克制时，画面距离、共享空间、负空间、对比与光色层级必须出现可追踪的视觉变化，不得只给全片统一色调说明
-- 先在既有Visual Direction / Project Bible中确定`Visual Grammar Baseline`（稳定的摄影/材质质感、可用色谱与强调色条件、真实光源、空间气质、构图/景深与摄影机介入倾向），再为每个戏剧阶段仅记录有事实依据的Scene Delta；统一不等于每场同色、同景别、同构图或同运镜
+- 先在既有Visual Direction / Project Bible中确定`Visual Grammar Baseline`（稳定的摄影/材质质感、可用色谱与强调色条件、真实光源、空间气质、构图/景深与摄影机介入倾向），再为每个戏剧阶段仅记录有事实依据的Scene Delta；统一不等于每场同色、同景别、同构图或同运镜。已确认的`Project Style Baseline`是它的主风格标签与项目内含义来源：本阶段在其上展开体系，不改写基线标签；需要改变整体风格时按`# Revision Rule`处理并回写基线
 - 色彩按权限定义：哪些层级是世界常态，哪些强调色只在人物状态、剧情事件、空间光源或资产事实满足时出现；不得借颜色新增光源、改写资产固有色或把色彩当作默认情绪滤镜
 - 用户提供色卡时，按`knowledge/visual_styles/index.md`的`Project Color Reference Route`读取它的可观察色彩证据；在既有Project Bible的Color System记录来源和Color Baseline，不把色卡注册为CHAR / ENV / PROP / FX资产。只有用户确认它服务本项目、真实图片可访问且当前Clip出现光色漂移风险时，后续STATE-07/08才可将其作为受控模型图片输入
 
@@ -1821,6 +1824,9 @@ Prop Bible。
 ---
 
 # Visual Direction Lock
+
+
+STATE-01 `Production Setup Gate`已把`Project Style Baseline`写入本区块；STATE-04在其上完成正式Visual Direction与`Aesthetic Decision Lock`并更新同一区块，不新增竞争字段，也不改写基线标签。
 
 
 STATE-04完成之后：

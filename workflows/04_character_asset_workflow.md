@@ -98,7 +98,7 @@ Board ID与Item ID（Support必填；Core为`Not Applicable`）。
 
 ## Visual Production Sequence
 
-角色视觉资产按`rules/02_asset_rules.md`的`Asset Batch Delivery`分批交付：同一Asset Tier、同一生产形态与同一已选图像模型归为一批，整批出Prompt、整批出图、整批确认，不逐角色停顿。Support角色使用标准双确认闭环；Core角色额外先通过外观参考确认：
+角色视觉资产按`rules/02_asset_rules.md`的`Asset Batch Delivery`分批交付：同一Asset Tier、同一生产形态与同一已选图像模型归为一批，整批出Prompt、整批出图、整批确认，不逐角色停顿。Core的外观参考图也按同一规则整批提交、整批确认：该批全部外观参考图在同一轮内出图，不逐角色生成后停顿。Support角色使用标准双确认闭环；Core角色额外先通过外观参考确认：
 
 ```text
 Asset Design
@@ -118,7 +118,7 @@ Core的外观参考图是正式资产前的设计确认，不进入Asset Registr
 
 ### FAST Automation Exception
 
-启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型先按`modules/image-model-selection.md`继承STATE-00已确认的项目默认项；只有批次例外或默认项不可用才确认新选择。符合资格的当前Prompt Revision才可自动确认并按已选图像模型路由生成当前角色资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖项目模型偏好/批次例外选择、图片确认、真实人物/品牌/授权、外部服务或任何Hard Stop。
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型先按`modules/image-model-selection.md`继承Production Setup已确认的项目默认项；只有批次例外或默认项不可用才确认新选择。符合资格的当前Prompt Revision才可自动确认，并按已选图像模型在同一轮内提交当前角色资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖项目模型偏好/批次例外选择、图片确认、真实人物/品牌/授权、外部服务或任何Hard Stop。
 
 ### Image Model Selection Gate
 
@@ -294,7 +294,7 @@ Screen Presence与主要表演可读性；例如面部、身体轮廓、手部�
 包括：
 
 
-Core角色外观参考图Prompt：在角色定义完成后先输出一条可独立执行的外观参考图Prompt。画面使用单人头肩或半身自然肖像，清楚呈现脸型、五官、肤质、年龄感、发际线、发型、体态轮廓、主要服装与项目视觉风格；不要求多视图或拼版。生成后必须等待用户明确确认外观或要求修改。该图仅为设计确认，不得登记为Candidate / Canonical Reference、Active Version或下游视觉输入。
+Core角色外观参考图Prompt：在角色定义完成后先输出一条可独立执行的外观参考图Prompt。画面使用单人头肩或半身自然肖像，清楚呈现脸型、五官、肤质、年龄感、发际线、发型、体态轮廓、主要服装与项目视觉风格；不要求多视图或拼版。该批全部外观参考图在同一轮内整批生成，然后按批次一次性确认外观或要求修改；不得逐角色生成后停顿。该图仅为设计确认，不得登记为Candidate / Canonical Reference、Active Version或下游视觉输入。
 
 Core角色正式角色资产设定图Prompt：只有外观参考图获用户确认后才输出一条完整可执行Prompt并只生成一张基础正式资产。**资产形态、区域构成与各区域的信息分工以`templates/04_character_asset_prompt.md`为唯一权威**，本Workflow不复述、不另立形态定义。禁止将任一分区拆为基础资产Prompt或独立Candidate Reference。
 
@@ -319,7 +319,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 - `Confirmed Status: No`
 - `Awaiting User Confirmation: Image Prompts`
 
-到此必须停止并等待当前批次Prompt Revision确认；同批角色在同一轮交付，不逐角色停止。选择GPT Image不得跳过该Prompt确认；仅当`Image Delivery Mode: DIRECT_IMAGE`、当前执行环境确实具备出图能力且QA通过时，才按`rules/02_asset_rules.md`的Prompt Gate在同一轮自行确认本批Prompt Revision并继续生成，Prompt仍完整留档。
+到此必须停止并等待当前批次Prompt Revision确认；同批角色在同一轮交付，不逐角色停止。批次Image轮同样整批提交：同批全部图片在同一轮内生成或整批交付外部Prompt，只在整批就绪后一次性展示与挑拣，不逐张生成后停顿。选择GPT Image不得跳过该Prompt确认；仅当`Image Delivery Mode: DIRECT_IMAGE`、当前执行环境确实具备出图能力且QA通过时，才按`rules/02_asset_rules.md`的Prompt Gate在同一轮自行确认本批Prompt Revision并继续生成，Prompt仍完整留档。
 
 
 ---
@@ -343,7 +343,7 @@ Support角色参考板Prompt：按一个Board输出一条完整可执行Prompt�
 
 # 08 Image Generation
 
-当前Prompt获确认后按`modules/assets.md`的已记录路由执行：仅已选择GPT Image且当前环境实际可用时可调用GPT Image 生成；Midjourney只交付外部生成Prompt，不调用GPT Image 生成。Core先按获确认的外观参考图Prompt生成一张外观参考图，并等待用户确认外观；不得把它登记为Candidate / Canonical Reference。外观确认后，Core再按获确认的正式资产Prompt生成一张正式角色资产设定图与必要状态变体；资产形态以`templates/04_character_asset_prompt.md`为准，基础正式资产禁止拆成独立多图Candidate Reference。Support按已确认Board Prompt生成整张Support Character Reference Board。
+当前Prompt获确认后按`modules/assets.md`的已记录路由执行：仅已选择GPT Image且当前环境实际可用时可调用GPT Image 生成；Midjourney只交付外部生成Prompt，不调用GPT Image 生成。Core按获确认的外观参考图Prompt在同一轮内整批生成该批次全部外观参考图，并按批次等待用户确认外观；不得把它登记为Candidate / Canonical Reference。外观确认后，Core再按获确认的正式资产Prompt在同一轮内整批生成正式角色资产设定图与必要状态变体；资产形态以`templates/04_character_asset_prompt.md`为准，基础正式资产禁止拆成独立多图Candidate Reference。Support按已确认Board Prompt生成整张Support Character Reference Board。整批提交不改变任何单项Prompt / Image确认：不得逐张生成后停顿，也不得把同一批次拆成多次用户往返。
 
 生成后记录：
 

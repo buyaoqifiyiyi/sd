@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r73 SD Film validator."""
+"""Regression tests for the r74 SD Film validator."""
 from __future__ import annotations
 import importlib.util
 import tempfile
@@ -226,16 +226,34 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("仅已选择GPT Image且当前环境实际可用时", character)
         self.assertIn("不得因环境可生成而跳过图像模型选择或Prompt确认", rules)
 
-    def test_project_models_are_selected_once_early_then_clip_capability_is_verified(self) -> None:
+    def test_production_setup_is_confirmed_after_script_lock_and_before_assets(self) -> None:
         setup = (ROOT / "workflows/01_project_setup_workflow.md").read_text(encoding="utf-8-sig")
+        script = (ROOT / "workflows/02_script_analysis_workflow.md").read_text(encoding="utf-8-sig")
         image_selection = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
         video_selection = (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")
         state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
-        self.assertIn("Project Model Selection Gate", setup)
-        self.assertIn("Project Model Selection Proposal", image_selection)
+        # STATE-00 must not ask for models or style; it only points at the post-script gate.
+        self.assertNotIn("Project Model Selection Gate", setup)
+        self.assertIn("Production Setup Gate", setup)
+        self.assertIn("## 07 Production Setup Gate", script)
+        self.assertIn("`Script Status: Production-Locked`之后、STATE-01 Completion Gate通过之前", script)
+        self.assertIn("Project Style Baseline", script)
+        self.assertIn("Production Setup Proposal", image_selection)
         self.assertIn("STATE-06后读取Confirmed Detailed Shot Design", video_selection)
         self.assertIn("Project Image Model Default", state)
         self.assertIn("Project Video Model Preference", state)
+        self.assertIn("Project Style Baseline", state)
+
+    def test_asset_batch_image_round_submits_the_whole_batch_in_one_pass(self) -> None:
+        rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        character = (ROOT / "workflows/04_character_asset_workflow.md").read_text(encoding="utf-8-sig")
+        adapter = (ROOT / "adapters/gpt-image.md").read_text(encoding="utf-8-sig")
+        self.assertIn("同一轮内提交整批全部图片", rules)
+        self.assertIn("不得逐张生成后停顿", rules)
+        self.assertIn("Core外观参考图同样整批提交、整批确认", rules)
+        self.assertIn("整批生成该批次全部外观参考图", character)
+        self.assertIn("不得逐张生成后停顿", character)
+        self.assertIn("不得逐张串行生成后停顿", adapter)
 
     def test_required_sketch_is_bound_to_real_model_input_or_blocks_honestly(self) -> None:
         preflight = (ROOT / "knowledge/clip_preflight_check.md").read_text(encoding="utf-8-sig")
@@ -1940,8 +1958,9 @@ class DeliveryModeTests(unittest.TestCase):
                 validator.check_delivery_mode_ownership(root),
             )
 
-    def test_active_skill_routes_the_mode_from_setup_to_batch(self) -> None:
+    def test_active_skill_routes_the_mode_from_production_setup_to_batch(self) -> None:
         mode = (ROOT / "modules/image-model-selection.md").read_text(encoding="utf-8-sig")
+        script = (ROOT / "workflows/02_script_analysis_workflow.md").read_text(encoding="utf-8-sig")
         setup = (ROOT / "workflows/01_project_setup_workflow.md").read_text(encoding="utf-8-sig")
         state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
         rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
@@ -1949,7 +1968,8 @@ class DeliveryModeTests(unittest.TestCase):
         self.assertIn("`DIRECT_IMAGE`", mode)
         self.assertIn("`PROMPT_ONLY`", mode)
         self.assertIn("不得用历史会话、其他平台或上一次运行的能力推断本轮环境", mode)
-        self.assertIn("Image Delivery Mode", setup)
+        self.assertIn("Image Delivery Mode", script)
+        self.assertNotIn("Image Delivery Mode", setup)
         self.assertIn("Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY", state)
         self.assertIn("`Automation Policy: FAST`或`Image Delivery Mode: DIRECT_IMAGE`", rules)
         self.assertIn("不得伪造生成结果", rules)

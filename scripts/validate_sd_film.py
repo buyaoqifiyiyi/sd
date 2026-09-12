@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r73 structural, routing and readability validation for SD Film."""
+"""Deterministic r74 structural, routing and readability validation for SD Film."""
 from __future__ import annotations
 
 import argparse
@@ -480,6 +480,7 @@ DELIVERY_MODE_CONSUMERS = (
     ("references/project_state_contract.md", "Image Delivery Mode"),
     ("references/module_contracts_production.md", "Image Delivery Mode"),
     ("workflows/01_project_setup_workflow.md", "图像交付形态"),
+    ("workflows/02_script_analysis_workflow.md", "图像交付形态"),
     ("workflows/04_character_asset_workflow.md", "Image Delivery Mode"),
     ("workflows/05_environment_asset_workflow.md", "DIRECT_IMAGE"),
     ("workflows/06_prop_asset_workflow.md", "DIRECT_IMAGE"),
@@ -628,12 +629,17 @@ def validate_skill(root: Path) -> list[str]:
     review_template = read(root, "templates/16_review_report.md")
     budget_doc = read(root, "references/context_budget.md")
     required_markers = (
-        (core, "STATE-00：一次确认项目图像模型默认项与视频模型偏好"),
+        (core, "STATE-01 Production Setup：Script锁定后一次确认项目图像模型默认项"),
         (runtime, "PROJECT_IMAGE_MODEL_DEFAULT"),
         (selection, "不创建Clip、也不输出`KEEP / ADAPT_SPLIT / RETURN`"),
         (selection, "Project Video Model Preference"),
-        (image_selection, "Project Model Selection Proposal"),
-        (project_setup, "### Project Model Selection Gate"),
+        (image_selection, "Production Setup Proposal"),
+        (project_setup, "Production Setup Gate"),
+        (script_analysis, "## 07 Production Setup Gate"),
+        (state, "Project Style Baseline"),
+        (runtime, "PROJECT_STYLE_BASELINE"),
+        (asset_rules, "同一轮内提交整批全部图片"),
+        (character, "整批生成该批次全部外观参考图"),
         (project_start_template, "# Project Model Preferences"),
         (state, "Project Image Model Default"),
         (state, "Project Video Model Preference"),
@@ -882,7 +888,7 @@ def validate_skill(root: Path) -> list[str]:
         (state, "Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY"),
         (runtime, "IMAGE_DELIVERY_MODE"),
         (project_start_template, "图像交付形态："),
-        (project_setup, "图像交付形态：`AUTO`"),
+        (script_analysis, "图像交付形态：`AUTO`"),
         (asset_rules, "`Image Delivery Mode: DIRECT_IMAGE`"),
         (automation, "由`modules/image-model-selection.md`拥有"),
         (assets, "Image Delivery Route"),
@@ -971,7 +977,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r73 structural, routing and readability validation")
+    print("PASS: r74 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

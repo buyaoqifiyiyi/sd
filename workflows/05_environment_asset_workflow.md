@@ -65,7 +65,7 @@ Prompt确认与图片确认是两个独立Hard Gate；未经当前Prompt Revisio
 
 ### FAST Automation Exception
 
-启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型先按`modules/image-model-selection.md`继承STATE-00已确认的项目默认项；只有批次例外或默认项不可用才确认新选择。符合资格的当前Prompt Revision才可自动确认并按已选图像模型路由生成当前环境资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖项目模型偏好/批次例外选择、图片确认、品牌/法务事实、外部服务或任何Hard Stop。
+启用`Automation Policy: FAST`时，读取`rules/automation_mode.md`与`rules/02_asset_rules.md`。图像模型先按`modules/image-model-selection.md`继承Production Setup已确认的项目默认项；只有批次例外或默认项不可用才确认新选择。符合资格的当前Prompt Revision才可自动确认，并按已选图像模型在同一轮内提交当前环境资产批次。所有Candidate仍汇总为一次用户图片审阅，未经明确图片批准不得登记Canonical / Active。此例外覆盖本Workflow中“等待Prompt确认”与逐Prompt停止的表述，不覆盖项目模型偏好/批次例外选择、图片确认、品牌/法务事实、外部服务或任何Hard Stop。
 
 ### Image Model Selection Gate
 

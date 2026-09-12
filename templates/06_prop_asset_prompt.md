@@ -73,7 +73,7 @@ Confirmed Status：No / Yes
 封套只组织交付与确认的切片：批内每个PROP仍逐项保留完整字段、Prompt Revision与Prompt / Image / Confirmed状态，不得用合并表头、摘要或“同上”代替任何单项内容，也不得因批量省略单项QA。用户按`rules/progression_rules.md`的`Exception-Based Batch Confirmation`挑拣时，被指出的PROP退回其自身最小Return Route，同批其余PROP保持已确认状态。Core与Support不得混入同一批次。
 
 
-任何道具Prompt Draft前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出道具Prompt或Candidate Image；选择GPT Image也不跳过Prompt确认。图片确认仍不可跳过。
+任何道具Prompt Draft前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。已有已确认`Project Image Model Default`时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出道具Prompt或Candidate Image；选择GPT Image也不跳过Prompt确认。图片确认仍不可跳过。
 
 ## Phased Output Contract
 

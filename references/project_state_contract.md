@@ -66,7 +66,7 @@ Revision ID
 Updated At
 ```
 
-STATE-00完成前必须在`## State Control`保存一次确认的项目模型偏好；它只减少后续重复选择，不是资产、Clip或外部提交授权：
+Script `Production-Locked`后、STATE-01 Completion Gate通过前，必须在`## State Control`保存一次确认的项目模型偏好；它只减少后续重复选择，不是资产、Clip或外部提交授权：
 
 ```text
 - Project Image Model Default: GPT Image / Midjourney / UNSELECTED
@@ -76,7 +76,7 @@ STATE-00完成前必须在`## State Control`保存一次确认的项目模型偏
 - Project Video Model Preference Status: UNSELECTED / SELECTED
 ```
 
-新项目的两个偏好必须在STATE-00 `Project Model Selection Proposal`确认后才可完成；用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。`Image Delivery Mode`未设置时按`AUTO`处理：由当前执行环境在批次路由时的真实出图能力决定，不得用历史推断；它只决定该批次交付图片还是交付Prompt，不改变`Selected Image Model`、双确认实质或Hard Stop。
+新项目的两个偏好必须在STATE-01 `Production Setup Gate`的`Production Setup Proposal`确认后才可完成；剧本`Production-Locked`之前不得提出该Proposal，STATE-00也不询问模型。用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。`Image Delivery Mode`未设置时按`AUTO`处理：由当前执行环境在批次路由时的真实出图能力决定，不得用历史推断；它只决定该批次交付图片还是交付Prompt，不改变`Selected Image Model`、双确认实质或Hard Stop。
 
 当`Current State`为STATE-03且当前资产批次需要新建或重编Image Prompt时，必须在`## State Control`保存该批次唯一的图像执行Profile：
 
@@ -145,6 +145,20 @@ STATE-00完成前必须在`## State Control`保存一次确认的项目模型偏
 ```
 
 无内容的栏目必须写 `None`、`Not Applicable` 或明确待确认原因，不得删除栏目。
+
+`## Visual Direction Lock`在STATE-03之前必须保存STATE-01 `Production Setup Gate`确认的项目风格基线；STATE-04完成后追加正式Visual Direction：
+
+```text
+- Project Style Baseline: <主风格标签 / UNSELECTED>
+- Project Style Baseline Status: UNSELECTED / SELECTED
+- Style Baseline Meaning: <该项目内的Project-specific Style Meaning>
+- Style Baseline Carriers: <2—4个当前可执行的可见载体>
+- Aesthetic Decision Lock: Not Applicable / Draft / Locked（STATE-04写入）
+```
+
+风格基线只锁定“主风格是什么、在本项目指什么”，是STATE-03资产Prompt的“已确认的项目视觉风格”唯一来源，不定义焦段、运镜、综合色彩或Lighting体系。`Visual Grammar Baseline`与`Aesthetic Decision Lock`由STATE-04在它之上建立，不改变基线标签；只有用户明确要求变更整体风格时才更新该基线，并把受影响的STATE-04及后续阶段标为需重跑。
+
+旧项目已经越过STATE-01且`Project Style Baseline`为`UNSELECTED`时，按模型偏好同一迁移纪律处理：在下一个合法入口（当前资产批次路由前或STATE-04 Entry Gate）提出一次最小确认，不得静默编造基线，也不得因此重做已确认Script、资产或视觉方向。
 
 `portable_project_status.md`还必须包含：
 

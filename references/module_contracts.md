@@ -30,7 +30,7 @@
 
 ## Image Model Prompt Template Isolation
 
-图像模型不进入视频Model Selection：STATE-00由`modules/image-model-selection.md`拥有项目图像模型默认项的选择，STATE-03由它为当前资产批次继承默认项或处理明确例外，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。GPT Image固定使用`templates/24_gpt_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
+图像模型不进入视频Model Selection：`Production Setup Gate`由`modules/image-model-selection.md`拥有项目图像模型默认项与`Image Delivery Mode`的选择，STATE-03由它为当前资产批次继承默认项或处理明确例外，`modules/assets.md`拥有选择后的图像路由。资产类别Template（角色、环境、道具、FX）继续独占资产定义、阶段状态和双确认闭环；每个可选图像模型的Adapter必须声明独立`prompt_output_template`，并由该Template唯一拥有模型专属的最终Prompt正文和参数策略。GPT Image固定使用`templates/24_gpt_image_asset_prompt.md`，Midjourney固定使用`templates/14_midjourney_asset_prompt.md`。未来已验证图像模型若没有自身Adapter与独立最终提示词模板，不得进入模型选择或适配路径，也不得复用现有图像或任一视频模板。模型中立自然语言Prompt仅是未适配外部服务的安全回退，不构成模型Adapter。
 
 ---
 
@@ -140,7 +140,7 @@ Module Name：`Model Execution Lock` + `Seedance 2.5 Model Profile`。
 
 Module Type：STATE-06完成后的唯一内部Gate与STATE-07/08共用的模型知识Profile；不创建主STATE、项目事实或STATE-08最终字段。
 
-Owner与触发：`workflows/01_project_setup_workflow.md`在STATE-00拥有项目图像默认项与视频模型偏好的单次询问；`modules/model-selection.md`在STATE-06后拥有按Clip能力复核、Adapter路由与不兼容返回路径；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译和唯一Model Template Router；`knowledge/prompt_compilation/seedance_20_compilation.md`与`seedance_25_compilation.md`各自拥有对应模型的内部编译语义，后者连同`knowledge/seedance_25_profile.md`消费已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。STATE-00已确认偏好且覆盖当前Clip时不得重复询问；不兼容时只提出最小的模型/执行模式替代选择。
+Owner与触发：`workflows/02_script_analysis_workflow.md`的`Production Setup Gate`在Script `Production-Locked`后拥有项目图像默认项、图像交付形态、视频模型偏好与`Project Style Baseline`的单次确认；`modules/model-selection.md`在STATE-06后拥有按Clip能力复核、Adapter路由与不兼容返回路径；`knowledge/11_seedance_adapter.md`拥有共通Seedance翻译和唯一Model Template Router；`knowledge/prompt_compilation/seedance_20_compilation.md`与`seedance_25_compilation.md`各自拥有对应模型的内部编译语义，后者连同`knowledge/seedance_25_profile.md`消费已证实的2.5能力上限、执行模式及降级策略；`references/project_state_contract.md`拥有状态镜像；`templates/20_clip_plan.md`拥有Confirmed Clip Production Plan中的内部执行Profile字段。已确认偏好且覆盖当前Clip时不得重复询问；不兼容时只提出最小的模型/执行模式替代选择。
 
 Writeback与变更：所选Target Model、唯一匹配的Model Compilation Template、Execution Profile、Execution Mode、Long-duration Route与Effective Gateway Limits写入Project State和Confirmed Clip Production Plan。Seedance 2.5的16—30秒由用户目标时长自动触发内部严格预检，不是用户需额外选择的Execution Mode；用户可在模型窗口内选择时长，未知网关状态不得预先压缩为15秒，实际平台拒绝才作为STATE-07最小调整的触发。用户在Clip Plan确认前切换模型时，只使受影响的STATE-07 / STATE-08执行产物失效并重跑；Production-Locked Script、Confirmed Assets、Scene Breakdown与Detailed Shot Design保持已确认状态。最终STATE-08 Prompt不得新增模型、Compiler、模式、预算或时间轴字段。
 

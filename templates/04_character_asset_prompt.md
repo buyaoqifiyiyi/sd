@@ -111,7 +111,7 @@ Confirmed Status：No / Yes
 
 ### Image Model Selection Prerequisite
 
-在本Template的任何Prompt Draft之前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出角色Prompt或Candidate Image。选择GPT Image也必须先走下列Prompt Draft与确认步骤；Midjourney保持外部Prompt交付。
+在本Template的任何Prompt Draft之前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。已有已确认`Project Image Model Default`时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出角色Prompt或Candidate Image。选择GPT Image也必须先走下列Prompt Draft与确认步骤；Midjourney保持外部Prompt交付。
 
 本Template不是一次性填写全部区块。每轮只输出当前合法阶段：
 

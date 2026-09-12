@@ -6,7 +6,7 @@
 
 它不是STATE-08 Clip-based Video Prompt / Video Generation Template，不得替代templates/10_video_prompt.md。
 
-任何FX Image Prompt前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。STATE-00已确认项目图像模型默认项时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出FX Prompt或Candidate Image；选择GPT Image也不跳过Prompt确认。图片确认仍不可跳过。
+任何FX Image Prompt前，必须由`modules/image-model-selection.md`为当前资产批次完成`Selected Image Model`路由。已有已确认`Project Image Model Default`时直接继承；默认项缺失、不可用或当前批次例外时才输出Image Model Selection Proposal，不输出FX Prompt或Candidate Image；选择GPT Image也不跳过Prompt确认。图片确认仍不可跳过。
 
 ---
 

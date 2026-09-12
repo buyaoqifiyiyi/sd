@@ -2,13 +2,13 @@
 
 ## Contract
 
-位置：STATE-00确认项目图像模型默认项；STATE-03中，当前资产批次的资产定义已可读、任何新Image Prompt编译之前，直接继承该默认项或处理明确例外。它不创建主STATE，也不属于视频模型选择。
+位置：`workflows/02_script_analysis_workflow.md`的`Production Setup Gate`在Script `Production-Locked`之后、STATE-02之前确认项目图像模型默认项与`Image Delivery Mode`；STATE-03中，当前资产批次的资产定义已可读、任何新Image Prompt编译之前，直接继承该默认项或处理明确例外。它不创建主STATE，也不属于视频模型选择。
 
 本模块同时拥有项目级**图像交付形态**（`Image Delivery Mode`）的选择与路由：模型选择回答“用哪个工具”，交付形态回答“这一轮交付图片还是交付Prompt”，两者相互独立、不得互相推断。
 
 ### Trigger
 
-1. STATE-00新项目初始化：必须提出一次`Project Model Selection Proposal`，其中含项目图像模型默认项与视频模型偏好；用户已指定图像模型时直接作为唯一候选，展示后等待确认。
+1. `Production Setup Gate`（Script `Production-Locked`后、STATE-02之前）：必须提出一次`Production Setup Proposal`，其中含项目图像模型默认项与视频模型偏好；用户已指定图像模型时直接作为唯一候选，展示后等待确认。剧本锁定前不得提出该Proposal，也不得在STATE-00询问模型。
 2. 当前资产批次需要新建或重编Image Prompt且有已确认`Project Image Model Default`时，自动继承为该批次的`Selected Image Model`、Adapter、Template与Delivery Route，不再逐批询问。
 3. 仅在默认项为`UNSELECTED`（旧项目迁移）、用户明确指定当前批次例外模型、默认Adapter不可用或当前批次已被明确要求更换时，展示一次当前批次选择Proposal。
 4. 同一批次已`SELECTED`且模型、Prompt Template和Scope均匹配时复用，不重复询问。
@@ -43,7 +43,7 @@
 
 用户明确说“用Midjourney / 用GPT Image”等选择后，或当前请求已指定模型时，Proposal只有该一个`Proposed Image Model`。在这个已经展示的单一Proposal检查点，`下一步`、`下一个`、`继续`及等义推进表达按`rules/progression_rules.md`确认该选择；在`UNSELECTED`状态下，纯推进表达不凭空选模型，必须要求用户指定一个可用模型。
 
-STATE-00确认后写入State Contract的`Project Image Model Default`与选择状态；STATE-03继承时再写当前批次的`Selected Image Model`、`Image Adapter Profile`、`Image Prompt Output Template`、`Image Model Selection Status: SELECTED`和Scope，然后才可调用对应资产Workflow的Prompt Generation。项目默认项不是图片/资产确认，也不授权外部提交。
+Production Setup确认后写入State Contract的`Project Image Model Default`与选择状态；STATE-03继承时再写当前批次的`Selected Image Model`、`Image Adapter Profile`、`Image Prompt Output Template`、`Image Model Selection Status: SELECTED`和Scope，然后才可调用对应资产Workflow的Prompt Generation。项目默认项不是图片/资产确认，也不授权外部提交。
 
 ### Change And Return Route
 
@@ -74,7 +74,7 @@ STATE-00确认后写入State Contract的`Project Image Model Default`与选择�
 
 ### Trigger
 
-1. STATE-00初始化：`Project Model Selection Proposal`必须同时包含图像模型默认项与`Image Delivery Mode`。
+1. `Production Setup Gate`：`Production Setup Proposal`必须同时包含图像模型默认项与`Image Delivery Mode`。
 2. 用户当前请求明确指定时（例如“直接出图”“不要给我Prompt”“只要Prompt”），直接设为对应形态并展示一次确认，不重复询问。
 3. 用户随时可以改：说“以后直接出图”写`DIRECT_IMAGE`；说“只要Prompt / 我在别处出图”写`PROMPT_ONLY`；说“你按环境来 / 你自己看着办”写`AUTO`。改动只影响之后的批次，不追溯改写已确认资产与既有生成记录。
 4. 未设置时为`AUTO`，不阻塞任何资产流程。
@@ -89,4 +89,4 @@ STATE-00确认后写入State Contract的`Project Image Model Default`与选择�
 
 ### 写回
 
-STATE-00确认后写入State Contract的`Image Delivery Mode`；STATE-03在批次Profile中把它投影为既有的`Image Delivery Route`并按该Route执行。它不创建STATE、不改写`Selected Image Model`、不授权外部提交。
+Production Setup确认后写入State Contract的`Image Delivery Mode`；STATE-03在批次Profile中把它投影为既有的`Image Delivery Route`并按该Route执行。它不创建STATE、不改写`Selected Image Model`、不授权外部提交。

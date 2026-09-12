@@ -8,6 +8,8 @@
 
 当前环境实际提供可调用的`GPT Image`时，Prompt确认后可以生成Candidate Image；环境无此能力时只能交付Prompt并诚实写`Image Generation Availability: Unavailable`。不得把可选中的GPT Image误说成固定默认，也不得伪称已生成。
 
+同一资产批次（`rules/02_asset_rules.md`的`Asset Batch Delivery`）的图片必须在同一轮内提交：使用当前入口允许的一次多张能力（`n`不超批次数量且不超已验证上限10）或同轮并行提交；不得逐张串行生成后停顿。批次数量超过入口上限时先按`Batch ID`拆批，再对每一批整批提交。
+
 ## Boundary
 
 - Prompt正文只由`templates/24_gpt_image_asset_prompt.md`编译；Adapter不复制其模型专属正文。
