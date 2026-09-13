@@ -67,7 +67,7 @@ templates/
 
 Purpose:
 
-把已确认影片事实、资产与Visual Direction转换为电影海报、Key Art或One-sheet的宣传视觉系统。
+把已确认影片事实、资产与Visual Direction转换为电影海报、Key Art、One-sheet或宣传封面的视觉系统。
 
 Relevant knowledge:
 
@@ -81,7 +81,7 @@ Output owner:
 
 templates/15_poster_design_package.md
 
-Poster Design是STATE-04条件性辅助模块。未请求海报时不触发；不创建主STATE，不改变上游资产，也不修改STATE-08 Seedance Schema。
+Poster Design是STATE-04条件性辅助模块。未请求海报或封面时不触发；不创建主STATE，不改变上游资产，也不修改STATE-08 Seedance Schema。
 
 ---
 

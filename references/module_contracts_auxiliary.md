@@ -126,9 +126,9 @@ Validator不变量：候选未确认不得入库；经验不占用现有实体ID
 
 Module Type：STATE-04条件性辅助Workflow与Knowledge。
 
-触发：用户明确请求电影海报、Key Art、One-sheet、先导/正式/角色海报、Poster Prompt或标题字设计。
+触发：用户明确请求电影海报、Key Art、One-sheet、先导/正式/角色海报、Poster Prompt、标题字设计，或服务本项目的宣传封面（平台/剧集/短剧/竖屏/社媒宣传封面、视频封面、频道主视觉）。
 
-不触发：普通视频Prompt、Storyboard、分镜、镜头设计、普通社交媒体封面；未请求时不得成为每个项目的默认步骤。
+不触发：普通视频Prompt、Storyboard、分镜、镜头设计、与本项目影片内容无关的通用平面设计；未请求时不得成为每个项目的默认步骤。
 
 输入拥有者：STATE-01的影片事实与人物关系、STATE-03已确认资产、STATE-04 Visual Direction，以及用户或项目资料确认的投放渠道、准确文案、credits、logo和参考授权状态。
 

@@ -151,7 +151,7 @@ Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Scr
 | 用户显式请求后期配乐规划或SeedMusic提示词 | `workflows/music_router.md` | MUSIC Route → `workflows/21_seed_music_score_workflow.md` → `templates/22_seed_music_score.md` | 必须先过唯一Router；默认纯音乐；专业规划音乐与留白；不得把配乐写入视频Prompt |
 | 中断恢复、Review退回或生成重试 | `workflows/18_project_resume_workflow.md` | `references/project_state_contract.md` | 从已验证Checkpoint恢复，不创建STATE |
 | Sequence级Coverage规划 | `workflows/16_sequence_planning_workflow.md` | `templates/14_sequence_plan.md` | 条件执行；不创建SHOT或CLIP ID |
-| 电影海报 / Key Art | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付 |
+| 电影海报 / Key Art / 封面 | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付；未请求不自动追加 |
 | 已有视频结果的局部修改 | `workflows/12_editing_workflow.md` | `templates/12_edit_prompt.md` | 修复后必须返回STATE-09 Review |
 | 系列项目管理 | `workflows/14_series_management_workflow.md` | `templates/19_series_status.md` | 不替代单个制作单元的完整主Pipeline |
 

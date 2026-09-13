@@ -48,7 +48,7 @@ Clip Production Plan。
 视频Prompt。
 
 
-当用户明确请求电影海报、Key Art、One-sheet、先导/正式/角色海报或标题字时：
+当用户明确请求电影海报、Key Art、One-sheet、先导/正式/角色海报、标题字或宣传封面时：
 
 完成Visual Direction后，按条件调用`workflows/17_poster_design_workflow.md`。
 

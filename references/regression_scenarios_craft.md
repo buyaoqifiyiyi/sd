@@ -407,5 +407,13 @@ PASS：主Pipeline仍只有STATE-00至STATE-09；Storyboard仍Optional/Auxiliary
 
 FAIL：新增主STATE、让Storyboard进入主路由、自动触发Voice/Music、改变STATE-08 Schema，或让内部Director Intent污染剧本/Prompt。
 
+### R22-I Poster And Cover Trigger Regression
+
+输入：STATE-04后用户请求“给短剧设计一张平台竖屏封面”；另一会话未请求任何海报或封面。
+
+PASS：显式封面请求进入`workflows/17_poster_design_workflow.md`封面系Lane；渠道尺寸、安全区与导出格式来自渠道官方规范或用户提供规格，缺失记待确认；大字标题在缩略图尺寸可读；沿用已确认资产不重设计；输出仍由`templates/15_poster_design_package.md`拥有。未请求时不追加海报或封面交付，主Pipeline推进权不变。
+
+FAIL：未请求时自动加海报或封面；凭记忆硬编码平台像素；把封面做成与影片内容无关的通用营销图；或电影海报系Lane混入电视剧宣传图、广告KV气质。
+
 ---
 

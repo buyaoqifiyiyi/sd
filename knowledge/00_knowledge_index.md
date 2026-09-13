@@ -229,10 +229,10 @@ Required / Conditional routing：
 - 项目级表演尺度
 - 项目级声音原则
 - 项目级FX表现原则
-- 电影海报的视觉母题、构图、字体与分层制作（仅在Poster Design触发时）
+- 电影海报与项目宣传封面的视觉母题、构图、字体与分层制作（仅在Poster Design触发时）
 
 
-海报请求追加：
+海报/封面请求追加：
 
 knowledge/poster_design/
 

@@ -7,7 +7,7 @@
 - 从创意/题材/品牌Brief开始的剧本创作，以及剧本改编、分析、优化、导演化或制作拆解
 - AI影视项目初始化、项目恢复或制作流程推进
 - 角色、环境、道具、FX资产设计与一致性管理
-- 视觉开发、场景拆解、电影海报或Key Art
+- 视觉开发、场景拆解、电影海报、Key Art或宣传封面
 - Detailed Shot Design、镜头语言、Clip Production
 - AI视频生成、Seedance视频提示词、图生视频参考
 - 最终Review、连续性检查或局部返修
@@ -55,6 +55,12 @@
 - 只有用户明确请求Storyboard、故事板或分镜图时，才调用`workflows/10_storyboard_workflow.md`与`templates/09_storyboard_prompt.md`。
 - Storyboard是Optional/Auxiliary Artifact，不是独立STATE，不进入Completed States，不是固定Next Workflow，也不得替代Detailed Shot Design或Clip Production。
 - Storyboard产物不得作为STATE-08 Canonical Reference；合法首/尾帧与其他图生视频Source Data按对应Workflow和Template处理。
+
+## Poster / Cover Explicit-Only
+
+- 只有用户明确请求海报、封面、Key Art、One-sheet、标题字或宣传主视觉时，才调用`workflows/17_poster_design_workflow.md`。
+- 未请求时不得自动追加海报或封面交付；封面系只服务本项目影片宣传，与影片内容无关的通用平面设计不属于本模块。
+- 海报/封面是STATE-04条件性辅助Workflow：不创建STATE，不改变主Pipeline推进权，输出由`templates/15_poster_design_package.md`拥有。
 
 ## AUDIO / SEED-AUDIO Explicit-Only
 
