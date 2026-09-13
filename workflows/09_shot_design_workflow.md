@@ -242,7 +242,7 @@ Work/Codex把结果写入`<active-project-root>/shots/spatial_blocking/SCENE-xxx
 
 每个SHOT必须可追溯到至少一个`Writer Beat / Writer obligation`或一个合法的`Director Purpose`；后者可包括必要的关系建立、观察、呼吸、空间定向、反应保留或剪辑接口，但不能凭空增加剧情事实。`Writer Beat ≠ Shot`：一个Writer Beat可以由一个或多个Shot呈现，多个相邻Writer Beat也可由一个可执行长镜头承载；Shot数量永远由Director根据观众体验、表演、空间与生成可执行性决定，Writer Module不规定Shot Count。
 
-任务必须写成该镜头产生的具体变化或建立结果，不能只写“有电影感、增加压力、好看、过渡”。创建或保留前必须回答：`如果删掉这个SHOT，观众会损失什么？` 一个镜头可以承担多项，但不得为凑任务新增剧情。若没有具体信息、情绪、关系、空间/动作、氛围/节奏或边界损失，优先与相邻兼容SHOT合并或删除；若它承担必要呼吸、观察、场景建立或剪辑接口，应归入上述对应任务并说明可见 / 可听结果。Shot Purpose Gate是内部导演决策，不新增Template字段，也不进入STATE-08 Prompt。
+任务必须写成该镜头产生的具体变化或建立结果，不能只写“有电影感、增加压力、好看、过渡”。创建或保留前必须回答：`如果删掉这个SHOT，观众会损失什么？` 一个镜头可以承担多项，但不得为凑任务新增剧情。若没有具体信息、情绪、关系、空间/动作、氛围/节奏或边界损失，优先与相邻兼容SHOT合并或删除；若它承担必要呼吸、观察、场景建立或剪辑接口，应归入上述对应任务并说明可见 / 可听结果。同时必须完成**可替换性损失（Default-Replacement Loss）**检查：`若把本镜换成平视中景、固定机位、顺向跟拍或正面双人这类默认拍法，并保持相同台词与动作，观众会失去哪一条可指认的信息、关系或感受？` 只能回答“会不好看 / 会少点电影感”时判平庸解，必须重新设计或与相邻兼容SHOT合并；有叙事理由的Static / Locked-Off不受此影响，但必须写出它保护了什么。Shot Purpose Gate是内部导演决策，不新增Template字段，也不进入STATE-08 Prompt。
 
 ## Scene / Shot Mode Routing
 
@@ -445,19 +445,24 @@ Template定义的全部字段属于同一SHOT的统一生产记录，不能用�
 `Shot Purpose → Audience Attention → POV / Audience Position → Relationship & Blocking → Composition Strategy → Shot Size → Lens → Camera Position → Camera Movement → Duration / Hold → Cut Motivation`
 
 1. 先从Scene Camera Strategy、Coverage与Confirmed Spatial Blocking Result提取目的、观众第一/第二注意目标、信息位置、关系和表演载体；不得重新摆位、换边或改变轴线。
-2. 在选择技术前确定Composition Function，以及观众需要通过脸、身体、人物间距、前中后景、遮挡或共享空间看到什么；情绪不自动触发特写。
+2. 在选择技术前先写出本镜三段式**情绪变化**`起始状态 → 变化触发与过程 → 结束落点 / 观众残留感受`，再确定Composition Function，以及观众需要通过脸、身体、人物间距、前中后景、遮挡或共享空间看到什么；情绪不自动触发特写，只写情绪名称不算完成；并按`knowledge/camera_language/index.md`的Face Economy决定本镜给不给脸及其信息后果。
 3. 依序确定Shot Size、Lens / Distance、Camera Position，再实际读取`selection_matrix.md`、Camera Movement Index与候选原子知识。
-4. Camera Movement必须写`Trigger → Path → Stop → End Composition`；没有充分触发时使用有理由的Static / Locked-Off。禁止只写“镜头缓慢推进”。
+4. Camera Movement必须写`Trigger → Path（含Mid-path Change）→ Stop → End Composition`与运镜理由，并显式选择Movement Phase（抢先 / 同步 / 滞后 / 拒绝跟随）；没有充分触发时使用有理由的Static / Locked-Off，并写出它保护了什么。禁止只写“镜头缓慢推进”。
 5. 再确定Duration / Hold与Cut Motivation，为关键反应、信息延迟、动作后余韵或关系变化留出可见时间。
 6. 结合关系轴、人物动作容量、焦段、表演可读性和模型复杂度确定Seedance稳定等级、禁止运镜与安全降级；多主要运动、多个机位/视点或一镜到底进入Movement Combination，复杂路径进入Advanced Camera Movement门控。
+7. 命中已确认视觉母题节点时，按`knowledge/camera_language/index.md`的Camera Motif And Recurrence写出本次改变哪一个变量、哪些保持；使用复杂度破例时确认它占用本Clip唯一一次运动新奇度预算（按`selection_matrix.md`），未绑定视觉高潮不得占用。
 
 Camera Language Decision至少包含：
 
-- 镜头目的
+- 镜头目的与三段式情绪变化（起始状态 → 变化触发与过程 → 结束落点 / 观众残留感受）
 - Audience Attention Hierarchy与POV / Audience Position
 - Relationship & Blocking来源
-- Composition Function、Shot Size、Lens / Distance与Camera Position
-- 人物运动、Camera Movement Trigger / Stop
+- Composition Function、Shot Size、Lens / Distance与Camera Position，以及唯一主要承担画面关系变量与被让位变量
+- Face Economy决定（给脸 / 延迟给脸 / 不给脸及其信息后果）
+- 人物运动、Camera Movement `Trigger / Path（含Mid-path Change）/ Stop / End Composition`与运镜理由
+- Movement Phase（抢先 / 同步 / 滞后 / 拒绝跟随）
+- 命中的视觉母题节点与保持变量，或`Not Applicable`
+- 运动新奇度预算占用（是 / 否，绑定哪个视觉高潮）
 - Duration / Hold与Cut Motivation
 - 推荐主运镜，或有叙事理由的Static / Locked-Off
 - 可选辅助运镜/支持行为
@@ -893,8 +898,11 @@ FX-001（如适用）
 检查：
 
 - 每个SHOT是否先完成Camera Language Decision，且实际读取Selection Matrix、Camera Movement Index与被选主运镜原子文件
-- 镜头目的、情绪功能、空间功能、人物运动和节奏阶段是否与推荐主运镜、辅助支持、禁止运镜、稳定等级和选择理由一致
+- 镜头目的、三段式情绪变化、空间功能、人物运动和节奏阶段是否与推荐主运镜、辅助支持、禁止运镜、稳定等级和选择理由一致
+- 是否只指定唯一主要承担画面关系变量，其余变量具有保持或让位理由；主运镜是否写出Mid-path Change与运镜理由，而不是只给运镜名称或抽象风格词
 - 是否出现没有独特叙事理由的默认“缓慢推进/轻微横移”，或连续SHOT只替换形容词而保持同一运镜模板
+- 是否通过Default-Replacement Loss检查；命中视觉母题节点时是否写出改变项与保持项，未到节点是否写`Not Applicable`
+- 是否写明Movement Phase与Face Economy决定；每Clip运动新奇度预算是否不超过1次并绑定视觉高潮
 - 相邻SHOT若承担不同的Shot Purpose、Audience Attention、POV / Audience Position、关系 / 信息阶段或节奏功能，是否已通过`knowledge/camera_language/shot_language_router.md`的Adjacent Observation Contrast检查，在景别 / 距离、侧位 / 高度、构图 / 遮挡、Static / Hold或主路径中留下至少一项可见差异；若刻意重复，是否记录连续长镜、压迫累积、关系冻结或信息压住的理由与解除 / 稳定终点
 
 - 景别、机位角度、摄影机物理运动、光学变化、视点和剪辑关系是否分类正确
@@ -1048,7 +1056,9 @@ Notes默认不进入`templates/08_shot_design_prompt.md`的用户可见输出，
 
 □ 所有镜头包含摄影参数
 
-□ 所有镜头均已确认Camera Language Decision，包含镜头目的、情绪功能、空间功能、人物运动、节奏阶段、推荐主运镜、可选辅助、禁止运镜、Seedance稳定等级、选择理由与实际读取的原子知识证据
+□ 所有镜头均已确认Camera Language Decision，包含镜头目的与三段式情绪变化、空间功能、人物运动、节奏阶段、推荐主运镜、可选辅助、禁止运镜、Seedance稳定等级、选择理由、唯一主要承担画面关系变量、Mid-path Change / 运镜理由与实际读取的原子知识证据
+
+□ 每个SHOT已通过Default-Replacement Loss检查，并记录Movement Phase、Face Economy决定、命中的视觉母题节点与运动新奇度预算；每Clip破例不超过1次且绑定视觉高潮
 
 □ 所有适用运镜组合已完成一镜/多镜分类；每个正式SHOT只有一个主要路径或一次兼容延续，拆镜后Required Coverage没有丢失
 

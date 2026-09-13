@@ -94,6 +94,7 @@ Scene-level Packet由STATE-01在Writer → Director Handoff后生成呈现source
 
 - Shot Purpose
 - Audience Effect
+- Emotional Delta（起始状态 → 变化触发与过程 → 结束落点 / 观众残留感受）
 - POV / Audience Position
 - Information Function
 - Performance Function
@@ -191,7 +192,11 @@ Visual Grammar Baseline之后必须完成`Aesthetic Decision Lock`：在反差�
 
 Shot Purpose类别为：`Narrative Change / Emotional Change / Relationship Change / Spatial-Action Progression / Information Reveal-Withhold / Atmosphere-Rhythm Control`。创建或保留前必须回答：`如果删掉这个Shot，观众会损失什么？` 若没有具体信息、情绪、关系、空间/动作、氛围/节奏或边界损失，合并或删除。
 
-Camera Movement必须有`Camera Movement Trigger`：人物进入/退出、动作启动/停止、关系改变、信息Beat完成、注意转移或节奏释放。人物压抑且没有触发时可以整镜固定；摄影机可以在关键表演或信息Beat完成后才启动，并必须写停止点。禁止只写“镜头缓慢推进”。
+同时必须完成**可替换性损失（Default-Replacement Loss）**检查：`若把本镜换成平视中景、固定机位、顺向跟拍或正面双人这类默认拍法，并保持相同台词与动作，观众会失去哪一条可指认的信息、关系或感受？` 只能回答“会不好看 / 会少点电影感”时，本镜为平庸解，必须重新设计或与相邻兼容Shot合并；有叙事理由的Static / Locked-Off不受此影响，但必须写出它保护了什么。
+
+Shot Purpose确定后、选择任何技术前，必须先写出本镜的**Emotional Delta**：`起始状态 → 变化触发与过程 → 结束落点 / 观众残留感受`。三段都要由可见刺激、表演Beat或信息披露支撑，并说明镜头结束时观众应留下什么感受或疑问。只写“悲伤、压抑、震撼、氛围感”等情绪名称，或只标注一个静态情绪，视为Shot Purpose不合格。画面关系翻译、唯一主要承担变量与运镜理由由`knowledge/camera_language/index.md`的Emotion Translation Contract执行。
+
+Camera Movement必须有`Camera Movement Trigger`：人物进入/退出、动作启动/停止、关系改变、信息Beat完成、注意转移或节奏释放。人物压抑且没有触发时可以整镜固定；摄影机可以在关键表演或信息Beat完成后才启动，并必须写停止点与运镜理由。禁止只写“镜头缓慢推进”。
 
 ### STATE-07 Clip Production
 
@@ -226,6 +231,7 @@ STATE-06的当前有效Director Decision Notes继续按Scene / Shot Group覆盖�
 7. 声音在哪里成为前景、在哪里退后或留白；剪辑为何Hold或Cut？
 8. 删除这一Scene / Shot / Clip后，观众具体损失什么？
 9. 若要在同一生成Clip内切镜：观众因此会看见或理解什么，切点由何种视觉媒介触发，切后如何在稳定构图中重建世界与关系？
+10. 若把这一镜替换成默认拍法（平视中景、固定机位、顺向跟拍、正面双人），观众会失去哪一条可指认的信息、关系或感受？
 
 只能用风格标签、技巧名称、器材参数或“为了电影感”回答时，决策不合格。
 
@@ -237,9 +243,11 @@ Source SHOTs:
 Dominance:
 Narrative Objective:
 Audience Experience — Know / Feel / Wait:
+Emotional Delta — 起始状态 → 触发与过程 → 落点 / 残留感受:
 Character Relationship / Blocking:
 Information Strategy:
-Camera Strategy — Audience Position + Move / Hold + Trigger + Stop:
+Camera Strategy — Audience Position + Move / Hold + Trigger + Stop + 运镜理由:
+Camera Motif / Movement Phase / Novelty Budget:
 Composition / Lens-Distance:
 Performance Direction:
 Color / Lighting / Sound Function:
@@ -247,6 +255,7 @@ Editing / Rhythm — Hold / Cut / Reaction / Residue:
 Continuity Risk:
 Seedance Feasibility / Safe Downgrade:
 Deletion Loss:
+Default-Replacement Loss:
 Downstream Non-negotiables:
 ```
 
@@ -304,7 +313,9 @@ Editing只改变有素材依据的排列、时长、反应优先级、声音连�
 - Director Thinking从STATE-00/01持续到Scene、Shot、Clip、Prompt、Editing与Review，没有创建新主STATE。
 - Project / Scene / Shot / Clip四层Packet具有当前有效source、owner、Revision或Checkpoint关联；未知项没有被虚构。
 - STATE-04建立了Aesthetic Decision Lock，四个维度各有选择、被放弃的选项、依据与可见后果；项目级视觉说明如果只有风格标签、技巧名称、器材参数或“为了电影感”，不合格。
-- 每个Shot通过固定决策顺序和Deletion Loss检查；Camera choice是intent的后果。
+- 每个Shot通过固定决策顺序、Deletion Loss与Default-Replacement Loss检查；Camera choice是intent的后果，不是默认拍法的重复。
+- 运镜时相、脸部信息决定、视觉母题节点与运动新奇度预算均已记录；每Clip运动新奇度破例不超过1次且绑定视觉高潮。
+- 每个Shot写出可复核的Emotional Delta三段式与唯一主要画面关系承担变量；没有用情绪名称或风格词替代画面关系与运镜理由。
 - 镜头运动具有Trigger与Stop；Static同样具有保护对象和理由。
 - Director Module调用现有Performance、Spatial Blocking、Action PREVIS、Camera Language、Prompt Compiler与Continuity能力，没有复制其规则。
 - Clip保留必要的performance / information积累，且通过Camera Continuity / Visual Rhythm与生成容量检查。

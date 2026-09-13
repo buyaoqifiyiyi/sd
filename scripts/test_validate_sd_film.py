@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r83 SD Film validator."""
+"""Regression tests for the r84 SD Film validator."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util
@@ -30,6 +30,7 @@ MODULE_CONTRACT_FILES = (
 REGRESSION_FILES = (
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
     "references/regression_scenarios_maintenance.md",
     "references/recovery_guards.md",

@@ -11,6 +11,9 @@
 ## Required Inputs
 
 - Shot Purpose / Required Coverage
+- Emotional Delta（起始状态 → 变化触发与过程 → 结束落点 / 观众残留感受）
+- Camera Motif 节点（来自已确认视觉母题轨迹；未到节点写Not Applicable）
+- Movement Novelty Budget 余量（本Clip剩余破例次数）
 - Character Blocking And Performance Evidence
 - Space / Axis / Screen Direction
 - Active Asset Versions
@@ -25,15 +28,15 @@
 
 每个正式SHOT固定按以下Director-to-Camera顺序完成，不得先选焦段、机位或运镜再倒推理由：
 
-1. **Shot Purpose**：确定本镜带来的Narrative / Emotional / Relationship / Spatial-Action / Information / Atmosphere-Rhythm变化。
+1. **Shot Purpose**：确定本镜带来的Narrative / Emotional / Relationship / Spatial-Action / Information / Atmosphere-Rhythm变化，并按`index.md`的Emotion Translation Contract写出三段式Emotional Delta；只标注情绪名称视为未完成。
 2. **Audience Attention**：观众第一眼、第二眼分别需要看到什么；若删镜，观众具体损失什么。
 3. **POV / Audience Position**：观众跟谁知道、从哪里看、先于/同时/晚于人物获得信息。
 4. **Relationship & Blocking**：读取Spatial Blocking、Pose Hierarchy、Relationship Topology、Axis与Screen Direction；不重新摆位。
-5. **Composition Strategy**：决定距离、压迫、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal中哪项承担主要功能。
-6. **Shot Size**：由Required Evidence和表演载体决定；面部情绪不自动等于特写，身体/关系证据可能要求中景或全景。
+5. **Composition Strategy**：决定距离、压迫、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal中哪项承担主要功能，并指定本镜**唯一主要承担变量**，写明其余画面关系变量为何保持或让位；命中已确认视觉母题节点时，按`index.md`的Camera Motif And Recurrence写出本次改变哪一个变量、哪些保持不变。
+6. **Shot Size**：由Required Evidence和表演载体决定；面部情绪不自动等于特写，身体/关系证据可能要求中景或全景；并按`index.md`的Face Economy决定本镜给不给脸及其信息后果。
 7. **Lens**：与摄影机距离、景别、脸部几何、背景尺度、景深与对焦共同决定。
 8. **Camera Position**：确定距离、高度、角度、侧位、安全轴线侧和观察权。
-9. **Camera Movement**：选择Static或一个主要路径；写清Camera Movement Trigger、Path、Stop和End Composition，必要时才进入Movement Combination。
+9. **Camera Movement**：选择Static或一个主要路径；写清Camera Movement Trigger、Path（含Mid-path Change）、Stop、End Composition与运镜理由，显式写出Movement Phase（抢先 / 同步 / 滞后 / 拒绝跟随）；使用复杂度破例时确认它是否占用本Clip唯一一次运动新奇度预算，未绑定视觉高潮不得占用，必要时才进入Movement Combination。
 10. **Duration / Hold**：为动作、反应、信息延迟或Post-action Residue保留可见时间；不能用无理由移动填满停顿。
 11. **Cut Motivation**：说明为何此刻继续Hold、切到反应、揭示、确认、对照或进入下一边界。
 12. **Lighting / Color Readability**：保证上述关键证据可见，不以色光效果覆盖信息层级。
@@ -83,6 +86,6 @@
 
 ## Internal Decision Record
 
-记录Purpose、Audience Attention Hierarchy、Audience Position、Blocking Source、Composition Function、Shot Size、Lens / Distance、Camera Position、Movement Trigger / Stop、Duration / Hold、Cut Motivation、Selected Atomic Language、Rejected Alternatives、Risk Level和Stable Downgrade。
+记录Purpose、Emotional Delta三段式、Default-Replacement Loss、Audience Attention Hierarchy、Audience Position、Blocking Source、Composition Function、唯一主要承担变量与被让位变量、Movement Phase、Face Economy决定、命中母题节点与被保持变量、运动新奇度预算占用、Shot Size、Lens / Distance、Camera Position、Movement `Trigger / Path（含Mid-path Change）/ Stop / End Composition`与运镜理由、Duration / Hold、Cut Motivation、Selected Atomic Language、Rejected Alternatives、Risk Level和Stable Downgrade。
 
 这些内部栏目不得进入STATE-08最终Prompt。

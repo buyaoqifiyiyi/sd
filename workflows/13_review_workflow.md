@@ -663,6 +663,8 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 
 □ 如果删除当前Shot，观众是否会损失具体Narrative / Emotional / Relationship / Spatial-Action / Information / Atmosphere-Rhythm证据；没有损失的镜头不得因“好看”而自动KEEP
 
+□ 每个镜头是否通过可替换性损失检查：把本镜换成平视中景 / 固定机位 / 顺向跟拍 / 正面双人并保持相同台词与动作后，观众是否仍会失去至少一条可指认的信息、关系或感受；只能回答“会少点电影感”时判平庸解，不得KEEP
+
 
 □ 人物调度是否通过距离、视线、站位、身体朝向、先后动作、靠近/后退或停顿表达人物关系；是否存在人物只是并排站立说台词的平铺直叙
 
@@ -684,7 +686,7 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 □ 声音哪里加强、哪里留白是否有设计；环境底声、同步Foley/动作声、对白/呼吸、剧情内声源和声音尾部是否承担空间、等待、转折或余韵，而不是平均铺满
 
 
-□ Editing / Rhythm是否有建立、累积、高潮、停顿、释放或余韵；视觉高潮与最克制镜头是否有层级，摄影强调是否平均铺满整段
+□ Editing / Rhythm是否有建立、累积、高潮、停顿、释放或余韵；视觉高潮与最克制镜头是否有层级，摄影强调是否平均铺满整段；视觉母题命中节点是否能在成片中被认出，运动新奇度破例是否每Clip不超过1次并绑定视觉高潮
 
 □ Audience Attention第一/第二目标是否清楚；关键反应、Performance Truth、Relationship Readability、Information Timing与Emotional Residue是否按意图出现
 

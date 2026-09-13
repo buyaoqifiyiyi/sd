@@ -68,6 +68,8 @@
   - 刻意重复的摄影机逻辑（连续长镜 / 压迫累积 / 关系冻结 / 信息压住，或Not Applicable；写受保护注意力对象、解除条件与稳定终点）：
   - 视觉高潮镜头及理由；无独立高潮时写“保持克制”：
   - 最克制镜头及理由：
+  - 视觉母题命中节点（出现 / 变化 / 反转；未到节点写Not Applicable）：
+  - 运动新奇度预算（本Clip破例次数 / 绑定哪个视觉高潮；上限1次）：
   - 重复规避（连续同类主运镜扫描；3次以上逐镜理由；超过4个Shot时的运镜逻辑数量与例外理由）：
   - Seedance复杂度控制（逐镜稳定等级、Clip峰值、同时负荷、删辅助 / 降速 / 缩短路径 / 固定机位 / 拆分降级；2.5多镜头能力不放宽复杂多人互动、物理或动作风险降级）：
   - Clip Camera Continuity / Visual Rhythm（建立 / 隐藏 / 泄漏 / 确认 / 压住 / 释放的功能差异；Movement Trigger / Stop；景别、距离、观察侧位与构图层级；禁止无理由每镜慢推+浅景深，也禁止多个不同阶段被默认压成同一平视跟拍）：
@@ -159,7 +161,7 @@
 - 是否满足“来源 Shot 时长求和 = Clip Detail 合计 = Clip Table目标时长 = 平台生成时长”：
 - 每个 Clip 的声音是否包含具体环境底声/有意静默和至少一个同步前景声层：
 - 每个 Clip 是否有风险降级、稳定尾帧、尾帧用途与下一 Clip Handoff：
-- 每个 Clip 是否有明确主导运镜逻辑、逐镜变化、视觉高潮、最克制镜头、重复规避与Seedance复杂度控制：
+- 每个 Clip 是否有明确主导运镜逻辑、逐镜变化、视觉高潮、最克制镜头、视觉母题命中节点、最多1次运动新奇度破例、重复规避与Seedance复杂度控制：
 - 每个 Clip 是否是完整Dramatic Execution Unit；必须连续完成的表演/信息积累没有因技术方便拆断，Camera Continuity / Visual Rhythm具有功能差异：
 - 超过4个Shot的Clip是否通常至少有2种不同运镜逻辑；同类主运镜连续3次以上是否具有逐镜叙事理由；是否避免为了多样而强制每镜不同：
 - 是否完全未使用Storyboard图片、分镜板、拼图、Scene Top-down Blocking Map或多画面材料作为Clip / STATE-08视觉参考；只有经Before-Single-Clip-Prompt Gate确认、绑定当前Blocking Signature的单Clip `REF-SKETCH`可作为受限例外：

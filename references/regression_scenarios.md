@@ -4,12 +4,13 @@
 
 ## Regression File Index
 
-为控制单次读取成本，本回归集按编号族拆为五个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
+为控制单次读取成本，本回归集按编号族拆为六个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
 
 | File | 覆盖范围 | 用途 |
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
-| `references/regression_scenarios_craft.md` | R15—R23 | Prompt 编译、表演、阻断、剧本与导演端到端 |
+| `references/regression_scenarios_craft.md` | R15—R22 | Prompt 编译、表演、视觉阻断与剧本端到端 |
+| `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
 | `references/regression_scenarios_maintenance.md` | R48—R61 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
@@ -387,7 +388,7 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R20-A至R20-F验证母版只拥有Sketch Presentation Authority、Current Clip独占Blocking内容、钢琴双人 / 三人围桌 / A3统一使用无性别技术人偶、任何Character Appearance Leakage硬失败、简单单人NONE不受母版可用性影响、Prompt Rewrite复用当前草图且母版不进入最终视频参考资产或图片预算。
 - R21-A至R21-C验证逐角色Performance Arc、Pre-action / In-action / Post-action Residue、Intentional Hold、多人相对表演层级和Clip Performance / Emotion Check；固定剧情、SHOT / Clip结构与STATE-08字段保持不变。
 - R22-A至R22-H验证Creation Brief与Existing Script / Material双入口、Idea-to-Screenplay、明确直接优化授权、Proposal修订/确认、Directable Screenplay QA、导演思维向STATE-05/06传递，以及STATE-02至09、Storyboard、Voice、Music、REF-SKETCH与Prompt Compiler隔离不回归。
-- R23-A至R23-N验证Director Module从Project / Script到资产、Scene / Sequence / Shot / Clip / Prompt / Editing / Review的持续传递、Visual Dramaturgy、Visual Grammar Baseline与Scene Delta、Project Color Reference的条件性模型输入、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离、三镜功能差异、FX / Sequence / Clip / Prompt的显式消费与多阶段Clip的观察层次；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
+- R23-A至R23-Q验证Director Module从Project / Script到资产、Scene / Sequence / Shot / Clip / Prompt / Editing / Review的持续传递（并覆盖平庸解的Default-Replacement Loss判定、Movement Phase、Face Economy、视觉母题命中节点与每Clip最多1次运动新奇度预算）、Visual Dramaturgy、Visual Grammar Baseline与Scene Delta、Project Color Reference的条件性模型输入、Scene Camera Strategy、固定Shot决策顺序、Dramatic Execution Unit、双女主钢琴Prompt、Action-dominant路由、Technical与Director's Cut Review、Runtime Continue隔离、三镜功能差异、FX / Sequence / Clip / Prompt的显式消费与多阶段Clip的观察层次；最终Prompt Schema、Voice opt-in和现有连续性系统保持不变。
 - R34-A至R34-D验证`Production Setup`的模型默认/偏好减少重复确认，但STATE-06/07仍按模型真实参考能力复核；Final=`REQUIRED`的草图在兼容模型中成为真实提交图片输入、计入预算，在文件缺失、Signature失配、预算不足或H3模式不兼容时诚实阻断；NONE、复用与替换不回归。
 - R35-A至R35-C验证用户“已有资产”属于可用性声明而非提交义务：STATE-02照常输出完整清单并标注`已有（用户声明）` / `待制作`，不索取、不催交、不逐项盘问、不写BLOCKED；声明不构成Existing File Check、Candidate / Canonical Reference或Active Version；缺失由用户主动说明或由清单承载。
 - R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。

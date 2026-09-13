@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r83 structural, routing and readability validation for SD Film."""
+"""Deterministic r84 structural, routing and readability validation for SD Film."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
@@ -30,6 +30,7 @@ REQUIRED = (
     "references/maintenance_self_check_protocol.md",
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
     "references/regression_scenarios_maintenance.md",
     "references/recovery_guards.md",
@@ -1267,7 +1268,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r83 structural, routing and readability validation")
+    print("PASS: r84 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":
