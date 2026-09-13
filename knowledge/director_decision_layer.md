@@ -7,7 +7,7 @@
 | 当前阶段 | 只读 |
 |---|---|
 | STATE-00 / STATE-01 | `## Module Contract`、`## Boundary With Screenwriter Module` |
-| STATE-04 | `## Required Decision Dimensions`、`## Mandatory Director Questions` |
+| STATE-04 | `## Stage Responsibilities` 的 STATE-04 节、`### Visual Grammar Baseline And Scene Delta`、`## Mandatory Director Questions` |
 | STATE-05 / STATE-06 | `## Stage Responsibilities`、`## DIRECTOR INTENT PACKET` 中当前 Scene / Shot Group 相关字段、`## Internal Notes Shape` |
 | STATE-07 / STATE-08 | `## Director-to-Prompt Boundary`、`## Workflow Handoff`、`## Packet Persistence And Projection` |
 | STATE-09 / Editing / Review | `## Completion Check` |

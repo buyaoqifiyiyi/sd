@@ -264,7 +264,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 执行顺序固定为：
 
-`Source Material → Adaptation Target Detection → Script Adaptation → Adaptation Draft → Screenwriting Optimization → Directorial Interpretation → Production Script Proposal → User Confirmation → Production-Locked Script`
+`Source Material → Adaptation Target Detection → Script Adaptation → Adaptation Draft → Screenwriting Optimization → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation → Production-Locked Script`
 
 必须读取：
 
@@ -292,8 +292,9 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 2. 形成完整Adaptation Draft并写`Script Status: Adaptation Draft`；该状态仍是STATE-01 IN_PROGRESS，不得进入STATE-02。
 3. 对Adaptation Draft执行Screenwriting Optimization。
 4. 先建立更新后的Writer Intent Packet并执行Writer → Director Handoff，再执行Directorial Interpretation，把优化结果转换为可视、可听、可表演的制作版叙事；不得创建SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。
-5. 使用`templates/02_script_analysis_prompt.md`输出完整Production Script Proposal及其Script Analysis。
-6. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止；不得进入STATE-02。
+5. 对候选Proposal执行Directable Screenplay QA（十项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
+6. 使用`templates/02_script_analysis_prompt.md`输出完整Production Script Proposal及其Script Analysis。
+7. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止；不得进入STATE-02。
 
 ## 05 Class A/B Approved Route — Optimization Without Forced Adaptation
 
@@ -301,14 +302,15 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 固定执行：
 
-`Screenwriting Optimization → Directorial Interpretation → Production Script Proposal → User Confirmation`
+`Screenwriting Optimization → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation`
 
 必须读取`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`：
 
 1. 只在已授权范围内执行Screenwriting Optimization。
 2. 更新受影响Writer Intent并执行Writer → Director Handoff；随后执行Directorial Interpretation，不提前进入后续技术层。
-3. 使用Template输出Production Script Proposal与Script Analysis。
-4. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止。
+3. 对候选Proposal执行Directable Screenplay QA（十项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
+4. 使用Template输出Production Script Proposal与Script Analysis。
+5. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止。
 
 ### Local Optimization Scope Lock
 
@@ -647,6 +649,7 @@ Creation Brief入口直接输出Script Control、完整Production Script Proposa
 - 环境信息整理
 - 视觉元素识别
 - 视觉需求整理
+- Directable Screenplay QA已在Production Script Proposal输出前完成（Creation与Existing授权分支同样适用）
 - Script Status已经是Production-Locked
 - Production Setup已经确认：`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`与`Project Style Baseline`均已写入且为`SELECTED`
 

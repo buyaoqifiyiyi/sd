@@ -16,7 +16,7 @@
 
 # 2. Trigger Condition
 
-执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`、当前有效Director Intent / Director Decision Notes、Confirmed Clip Plan、实际素材与适用的`knowledge/quality/index.md`（先据index定位，只读命中文件），确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
+执行前按`rules/state_source.md`取得Selected State Source，再读取`references/project_state_contract.md`、`references/artifact_revision_contract.md`、当前有效Director Intent / Director Decision Notes、Confirmed Clip Plan、实际素材、`knowledge/director_decision_layer.md`（按其Read Scope只读Editing相关节：Editing合同与Completion Check）与适用的`knowledge/quality/index.md`（先据index定位，只读命中文件），确认当前Accepted Unaffected Artifacts。本Workflow不维护Chat fallback规则。
 
 
 当用户要求：
@@ -126,6 +126,8 @@ Editing同样不是重新编剧。它必须保护Writer Rhythm：Writer Beat ord
 环境。
 
 道具。
+
+空间连续性修复以该Scene的Confirmed Spatial Blocking Result与Text Spatial Rules（owner：`knowledge/spatial_blocking_layer.md`）为依据；修复后的Position / Facing / Topology / Distance与道具状态按Delta更新，不重建全部Blocking，也不把修复误当重新设计空间。
 
 
 ---

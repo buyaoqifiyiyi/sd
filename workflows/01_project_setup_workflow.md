@@ -130,6 +130,8 @@ rules/05_output_rules.md
 
 knowledge/director_decision_layer.md
 
+knowledge/screenplay_development.md（按其Read Scope只读STATE-00相关节）
+
 templates/00_project_start_template.md
 
 references/project_state_contract.md
@@ -1164,6 +1166,7 @@ STATE-00不得：
 - 项目基础信息已经记录
 - 最终制作目标已经确认
 - 最小Project Director Baseline已经建立，或所有未知项已明确留给STATE-01而未虚构
+- 最小Writer Foundation已经建立（Premise / Theme or Thematic Question / Dramatic Question / Genre Promise / Story Engine / Core Conflict），或所有未知项已明确留给STATE-01而未虚构
 - 已在会话Checkpoint记录最小项目事实；如用户明确要求持久化，project_bible.md、asset_registry.md、project_status.md、execution_ledger.md与artifact_registry.md已按合同初始化
 - 当前STATE已经确认
 - 下一Workflow已经确定

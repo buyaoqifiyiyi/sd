@@ -22,7 +22,7 @@ STATE-07 是 Natural Unit 与 Execution Clip 的唯一决策 owner。它不重�
 - `modules/model-selection.md` 与唯一 Selected Adapter
 - `knowledge/director_decision_layer.md`（当前Natural Unit覆盖的Director Decision Notes与Clip-level投影）
 - `knowledge/clip_planning/index.md`（先据index定位，只读当前Clip相关文件）、`knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
-- `knowledge/spatial_blocking_layer.md`、适用的 Camera / Performance / Transition knowledge
+- `knowledge/spatial_blocking_layer.md`、`knowledge/camera_language/index.md`（Clip Movement Plan / Camera Continuity / Visual Rhythm的执行owner）、适用的 Performance / Transition knowledge
 - 当前Clip使用Spatial Lock环境时：`knowledge/environment_multi_view_reconstruction.md`
 - `templates/20_clip_plan.md`
 

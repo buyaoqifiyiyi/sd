@@ -310,6 +310,8 @@ Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜�
 
 出现字段缺失、重复、乱序、改名、合并、额外字段、空值、旧模板或跨 Clip 压缩时，判定该 Clip 输出失败。只修正受影响的格式或映射，然后重新执行完整性检查；不得把失败格式交付给用户。
 
+内部语义泄漏同判失败：最终 Prompt 出现 `Director Decision Notes`、`DIRECTOR INTENT PACKET`、dominance、十三维度标题、BUILD / HOLD / PEAK / RELEASE、S1-S4或其他内部模式ID、"观众应知道 / 感受 / 等待"的内部问答、候选方案、拒绝理由、风险权衡过程、Knowledge文件名或"因为导演决策所以……"等元说明时，判定该 Clip 输出失败；只把泄漏段改写为模型可执行的构图、调度、摄影机、光色、表演、声音、节奏或信息时序语义后重新检查。
+
 ---
 
 ## Final Principle

@@ -103,6 +103,8 @@ project_bible.md
 
 asset_registry.md
 
+knowledge/director_decision_layer.md（按其Read Scope只读STATE-04相关节：Visual Dramaturgy、Visual Grammar Baseline、Aesthetic Decision Lock与Look Frame判定纪律）
+
 
 如果核心资产尚未完成：
 
@@ -216,7 +218,9 @@ Update Project Status
 
 # Visual Dramaturgy / Mise-en-scène Gate
 
-在风格检索和参数定义前先读取Writer Intent中的Theme / Story Arc、Motif / Symbol Function、Information Architecture与Setup / Payoff obligations，再读取Project / Scene Director Intent建立项目级Visual Arc。Writer决定这些元素为何存在、何时建立或回收；Director把它们转译为Visual Dramaturgy：
+本节与下方`# Aesthetic Decision Lock Gate`、`# Look Frame Gate`的定义与判定纪律由`knowledge/director_decision_layer.md`的STATE-04相关节唯一拥有；本Workflow为其执行投影，表述冲突时以该文件为准。
+
+在风格检索和参数定义前先读取与Production-Locked剧本绑定的Writer Intent Packet（owner：`knowledge/screenplay_development.md`）中的Theme / Story Arc、Motif / Symbol Function、Information Architecture与Setup / Payoff obligations，再读取Project / Scene Director Intent（owner：`knowledge/director_decision_layer.md`，经STATE-01 Writer → Director Handoff绑定）建立项目级Visual Arc。Writer决定这些元素为何存在、何时建立或回收；Director把它们转译为Visual Dramaturgy：
 
 - 各主要戏剧阶段的Audience Attention、关系距离、空间压力和情绪可读性如何变化
 - Color / Light / Contrast / Depth / Negative Space在何处保持、累积、转折或释放，并写明真实来源与触发

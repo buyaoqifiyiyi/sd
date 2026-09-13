@@ -6,8 +6,9 @@
 
 | 当前事项 | 只读 |
 |---|---|
+| STATE-00 | 只读 `## Cross-stage Projection` 的 STATE-00 行 |
 | STATE-01 Creation Brief | `## Module Contract`、`## Minimum Project Intent Gate`、`## Director-first Story Development`、`## WRITER INTENT PACKET`、`## Writer Decision Engines`、`## Directable Screenplay QA`、`## Proposal And Revision Handoff`、`## Completion Check` |
-| STATE-01 Existing Script / Material | 加读 `## AIGC Directability Check`、`## Dialogue Principle` |
+| STATE-01 Existing Script / Material | 加读 `## AIGC Directability Check`、`## Dialogue Principle`；授权改写输出Proposal前加读 `## Directable Screenplay QA` |
 | STATE-05 / STATE-06 | 只读 `## WRITER INTENT PACKET`、`## Writer → Director Handoff`、`## Cross-stage Projection`、`## Scene Director Intent Source Data` |
 | 归属冲突时 | `## Route Boundary` |
 | 不必在运行时读取 | `## Purpose` |

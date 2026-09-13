@@ -688,7 +688,7 @@ Spatial Continuity QA结果映射到`templates/16_review_report.md`已有的`Sho
 
 □ Editing / Rhythm是否有建立、累积、高潮、停顿、释放或余韵；视觉高潮与最克制镜头是否有层级，摄影强调是否平均铺满整段；视觉母题命中节点是否能在成片中被认出，运动新奇度破例是否每Clip不超过1次并绑定视觉高潮
 
-□ Audience Attention第一/第二目标是否清楚；关键反应、Performance Truth、Relationship Readability、Information Timing与Emotional Residue是否按意图出现
+□ Audience Attention第一/第二目标是否清楚；关键反应、Performance Truth、Relationship Readability、Information Timing与Emotional Residue是否按意图出现；Emotional Residue对照该SHOT记录的三段式Emotional Delta核验结束落点与观众残留感受
 
 □ 技术连续性即使完全正确，只要情绪或关键信息提前暴露、反应被切掉、关系读反或余韵消失，仍判Director-level failure，不得判KEEP；若现有素材可通过切点/顺序/声音恢复则RE-EDIT，否则REDIRECT或REGENERATE
 
@@ -781,6 +781,10 @@ Review必须在兼容的`PASS / REVISE / REBUILD` Result之外选择一个处置
 □ 每个SHOT的主运镜/Static与镜头目的、情绪功能、人物运动、空间任务和节奏阶段匹配
 
 □ 每个主运镜已在最终执行信息中具体化为摄影机起点、侧位、路径、方向、速度/幅度、触发、人物配合、终点与稳定限制，不是只写术语
+
+□ 每个SHOT的Face Economy决定在成片中成立：给脸 / 延迟给脸 / 只给局部或遮挡与登记的信息后果一致；整镜不给脸而观众既少知道该知道的、又未在同一Clip后续SHOT、尾帧或声音中偿还时，判Director-level failure
+
+□ 每个主运镜的Movement Phase（抢先 / 同步 / 滞后 / 拒绝跟随）显式且与信息时机一致：能指认观众是先于、同时还是晚于人物获得关键信息；无法指认或成片时相与登记相反时返回STATE-06
 
 □ 没有连续慢推、连续轻微横移或“稳定中景+轻微运动”的无理由模板重复；同类主运镜连续3次以上均有逐镜叙事理由
 
