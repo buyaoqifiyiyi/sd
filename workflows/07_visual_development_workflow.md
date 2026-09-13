@@ -206,7 +206,7 @@ Update Project Status
 本Workflow开始前必须先读取已确认的`媒介形式`，并按需加载`knowledge/medium_profiles.md`。
 
 - 已确认`live_action` / `3d_animation` / `2d_anime`时，按该档的编剧承载、镜头语言基底与美学词表执行本阶段的Visual Direction与Cinematic Parameter定义。
-- 媒介为`Pending`或缺失时，记录`Medium Profile: PENDING`并把该决定返回STATE-00；不得默认按真人剧展开方向。
+- 媒介为`Pending`或缺失时，记录`Medium Profile: PENDING`并把该决定返回STATE-01的`Production Setup Gate`；**不得在本阶段首次向用户提出媒介问题**——若此处才发现`Pending`，说明`Production Setup`漏确认，按最小修复回STATE-01补确认，不在此处就地问，也不得默认按真人剧展开方向。
 - `2d_anime`下，`Camera Style`、`Lens Direction`、`Aperture And Depth`、`Filter And Texture`等光学参数区域必须写明本档等效表达（注意引导、明暗对比、帧感），不得留空或照搬实拍参数；不得写入焦段毫米数、光比比值或器材。
 - `3d_animation`下，光的性质属于打光与渲染设计，不得沿用实拍光比捕捉语言。
 

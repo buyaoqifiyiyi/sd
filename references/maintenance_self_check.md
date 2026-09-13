@@ -60,7 +60,7 @@ Read current rules
 → Classify and resolve every finding by risk
 → Run targeted regression for the requested change and every repaired finding
 → Sync USER_GUIDE when user-facing behavior changed
-→ Sync Skill Version / Build ID（一次迭代 = 一个对话累积的改动，不为单个任务各升一版）
+→ Release Gate：仅在维护者确认该对话批次定稿时递增`Skill Version` / `Build ID`（未定稿不递增；判据真源为`Change Classification Check`）
 → Final change report
 ```
 

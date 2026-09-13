@@ -69,6 +69,7 @@ Updated At
 Script `Production-Locked`后、STATE-01 Completion Gate通过前，必须在`## State Control`保存一次确认的项目模型偏好；它只减少后续重复选择，不是资产、Clip或外部提交授权：
 
 ```text
+- Medium Form: live_action / 3d_animation / 2d_anime / PENDING
 - Project Image Model Default: GPT Image / Midjourney / UNSELECTED
 - Project Image Model Selection Status: UNSELECTED / SELECTED
 - Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY
@@ -76,7 +77,7 @@ Script `Production-Locked`后、STATE-01 Completion Gate通过前，必须在`##
 - Project Video Model Preference Status: UNSELECTED / SELECTED
 ```
 
-新项目的两个偏好必须在STATE-01 `Production Setup Gate`的`Production Setup Proposal`确认后才可完成；剧本`Production-Locked`之前不得提出该Proposal，STATE-00也不询问模型。用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。`Image Delivery Mode`未设置时按`AUTO`处理：由当前执行环境在批次路由时的真实出图能力决定，不得用历史推断；它只决定该批次交付图片还是交付Prompt，不改变`Selected Image Model`、双确认实质或Hard Stop。
+新项目的两个偏好必须在STATE-01 `Production Setup Gate`的`Production Setup Proposal`确认后才可完成；剧本`Production-Locked`之前不得提出该Proposal，STATE-00也不询问模型或媒介。`Medium Form`在同一Proposal中与它们一起确认一次，并同时写入`project_bible.md`的`Project Information → 媒介形式`；为`PENDING`时是STATE-02之前的合法停点——不得进入STATE-02资产发现或STATE-03的媒介相关资产生产，也不得登记为已确认真人剧。用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。`Image Delivery Mode`未设置时按`AUTO`处理：由当前执行环境在批次路由时的真实出图能力决定，不得用历史推断；它只决定该批次交付图片还是交付Prompt，不改变`Selected Image Model`、双确认实质或Hard Stop。
 
 当`Current State`为STATE-03且当前资产批次需要新建或重编Image Prompt时，必须在`## State Control`保存该批次唯一的图像执行Profile：
 

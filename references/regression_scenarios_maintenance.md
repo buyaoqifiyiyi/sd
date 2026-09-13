@@ -290,11 +290,11 @@ FAIL：以“本机没有验证器”为由跳过固定基线，或把未验证�
 
 ### R55-D Version Discipline Is Portable
 
-输入：一次正式修改。
+输入：同一对话内的多次正式修改；以及维护者明确确认该批改动定稿。
 
-PASS：同步递增`Skill Version`与`Build ID`。这是纯文本可完成的操作，因此不因换执行者而豁免。
+PASS：对话进行中的改动累积为**一个待发布批次**，不逐任务递增版本号；只有维护者确认该批定稿时才一次性递增`Skill Version`与`Build ID`并使两者继续匹配。递增是纯文本可完成的操作，因此不因换执行者而豁免。
 
-FAIL：改动内容但不递增版本，使外部无法判断Skill是否已变更。
+FAIL：每完成一个任务就升一版，把版本号当成进度计数；或在维护者已确认定稿后仍不递增版本，使外部无法判断Skill是否已变更。
 
 ### R55-E Identity Survives The Move
 
@@ -352,9 +352,17 @@ FAIL：为2D项目照搬实拍焦段与光比语言，或把这些参数留空�
 
 输入：用户只说“动画”，未指明二维或三维。
 
-PASS：STATE-00写`Medium: Pending`并询问一次；后续STATE按`live_action`既有行为继续但登记为`Pending`，不加载分化表，也不把它记成已确认真人剧。
+PASS：STATE-00只登记并写`Medium: Pending`（本阶段不询问）；STATE-01的`Production Setup Gate`在剧本`Production-Locked`后与模型、交付形态、风格基线在同一张确认单里询问一次；媒介确认前不进入STATE-02、不生产媒介相关资产、不加载分化表，也不把它记成已确认真人剧。
 
-FAIL：默认取`live_action`或`2d_anime`并当作已确认事实推进，使下游按错误的剖面展开。
+FAIL：默认取`live_action`或`2d_anime`并当作已确认事实推进，使下游按错误的剖面展开；或在STATE-00另开一次媒介提问、与`Production Setup`重复索取同一选择。
+
+### R57-D Medium Is Confirmed Before Any Asset, Never After Assets
+
+输入：用户给出一份定稿剧本但从未提及媒介形式，项目正常推进到剧本锁定。
+
+PASS：`Production Setup Proposal`中出现媒介形式（三档候选或用户唯一指定项），与图像模型、交付形态、视频偏好、风格基线同轮确认；回答后写入`project_bible.md`的`Project Information → 媒介形式`。媒介确认发生在**资产制作之前**：STATE-02资产发现与STATE-03资产生产都能读到该值。若用户答的是非`live_action`档，先进STATE-01按`knowledge/medium_profiles.md`的Screenwriter Layer做信息承载复核，再进入STATE-02。
+
+FAIL：让`Medium: Pending`穿过STATE-03资产生产、直到STATE-04的`Medium Profile Gate`才第一次向用户提出媒介问题，使已产出的资产处于可能错档的状态（2D 与实拍的资产结构、材质与光学语言不通用）；或在STATE-04就地问媒介而不按最小修复回STATE-01的`Production Setup Gate`补确认。
 
 ## R58 Review Line Is A Signal, Not A Quota Regression
 

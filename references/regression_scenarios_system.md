@@ -349,7 +349,7 @@ FAIL：为找回项目而扫描磁盘、虚构或读取一个项目登记表、�
 
 输入：Production-Locked Script、全部CHAR / ENV / PROP / FX已`Asset Confirmed`并绑定了稳定文件名，Clip表已确认；用户要求打包。当前环境具备文件访问能力。
 
-PASS：在Clip表确认后、最终视频Prompt之前，按`references/asset_package.md`生成一个包含`01_script`、`02_assets`、`03_visual_development`、`04_scenes`、`05_shots`、`06_clips`六类的包与zip；每类只收真实已确认文件，资产图片使用`<Asset ID>｜<Purpose>.ext`（环境View写`Layout_ENV-01`这类既有View ID，Support Board写`<Board ID>｜<Item ID>.ext`），每类有`_MANIFEST.md`，包根有`00_INDEX.md`与`00_MANIFEST.md`。包位于Project Root之外，Project Root内原文件未被改名或移动。
+PASS：在Clip表确认后、最终视频Prompt之前，按`references/asset_package.md`生成一个包含`01_script`、`02_assets`、`03_visual_development`、`04_scenes`、`05_shots`、`06_clips`、`07_references`、`08_design`八类的包与zip；每类只收真实已确认文件，资产图片使用`<Asset ID>｜<Purpose>.ext`（环境View写`Layout_ENV-01`这类既有View ID，Support Board写`<Board ID>｜<Item ID>.ext`），每类有`_MANIFEST.md`，包根有`00_INDEX.md`与`00_MANIFEST.md`。包位于Project Root之外，Project Root内原文件未被改名或移动。
 
 FAIL：把包当作新STATE或最终Prompt字段、把包写进`asset_registry.md`、为“整齐”重命名或转码已确认资产图、把缺失类别静默省略、或用文件名伪称某张图已确认。
 
@@ -373,7 +373,7 @@ FAIL：自动把`CHAR-001-identity.png`改名为合规名并登记、用空目�
 
 输入一：在普通Chat（Portable模式）中，用户说“把所有已确认的生产物打包给我”，当前会话无法读取本机Project Root。输入二：在Codex本地模式中，能读项目目录但不能写入包位置。输入三：项目整体可读，但其中一张已登记资产图不可读。
 
-PASS：输入一不产zip也不产包目录，交付纯文本的六类清单、`文件名 ↔ Asset ID ↔ 用途 ↔ Active Version ↔ 类别`映射与目录骨架，并明确标注“未打包”；不得声称已生成zip或包。输入二交付包目录与完整清单，并明确说明未生成zip。输入三打包可读项、逐项报告不可读项与原因，不因单项失败放弃整包。三者都不得用文件名、清单或空目录伪造包已生成、图片已上传或已确认。
+PASS：输入一不产zip也不产包目录，交付纯文本的六类清单、`文件名 ↔ Asset ID ↔ 用途 ↔ Active Version ↔ 类别`映射与目录骨架，并明确标注“未打包”；不得声称已生成zip或包。输入二交付包目录与完整清单，并明确说明未生成zip。输入三打包可读项、逐项报告不可读项与原因，不因单项失败放弃整包。三者都不得用文件名、清单或空目录伪造包已生成、图片已上传或已确认。**zip 与包目录是同一交付物的两种形态**（目录是本体、zip 是它的压缩搬运形态，内容相同）：不得把二者当两份交付物或两套内容，也不得因缺 zip 而把包判为未完成。
 
 FAIL：因为用户说“打包”就凭空声称已打包、在不能读文件时仍输出一个只含清单的`.zip`、以平台名（“我在用Codex”）代替本轮实际读写能力核验，或把环境降级误报为`BLOCKED`。
 
@@ -381,9 +381,49 @@ FAIL：因为用户说“打包”就凭空声称已打包、在不能读文件�
 
 输入一：项目已有剧本、Scene Breakdown、Detailed Shot Design与多张候选图，但用户只确认过资产与Clip表，剧本与分镜从未表态。输入二：用户确认过某项Prompt，随后同一批次里另有一张被明确否决的候选图。输入三：用户说“只打包我本人确认过的”，而包内本应有一项是FAST自动接受的。输入四：某批次已逐项展示且Revision可核对，用户看过后只说“继续”，没有指出任何问题。
 
-PASS：输入一只打包已确认的资产与Clip表，从未展示、未表态的剧本 / Scene / Shot 与候选图全部列入`未确认／未打包`并逐项写原因（从未展示、未确认、缺确认记录），不因“文件存在”或“下游用过”而进包。输入二被否决的图不进包且不登记为Canonical，原文件仍留在Project Root。输入三排除FAST自动接受项，或先报告该项的`Approval Basis`再由用户决定，不静默混入。输入四按`Exception-Based Batch Confirmation`把该批已展示项判为已确认并正常入包，标注`Confirmed (batch, no objection)`，不额外索要“确认 / 批准”措辞。四者都必须让排除可见，不得概括成“其余项目”。
+PASS：输入一只打包已确认的资产与Clip表，从未展示、未表态的剧本 / Scene / Shot 与候选图全部列入`未确认／未打包`并逐项写原因（从未展示、未确认、缺确认记录），不因“文件存在”或“下游用过”而进包。输入二被否决的图不进包且不登记为Canonical，原文件仍留在Project Root。输入三排除FAST自动接受项，或先报告该项的`Approval Basis`再由用户决定，不静默混入。输入四按`Exception-Based Batch Confirmation`把该批已展示项判为已确认并正常入包，标注`Confirmed (batch, no objection)`，不额外索要“确认 / 批准”措辞。**确认效力与工件是否已落盘无关**：不得把“只出现在对话里、还没写成项目文件”当成未确认或降级理由——它只影响打包前是否需要先落盘。四者都必须让排除可见，不得概括成“其余项目”。
 
 FAIL：把Project Root里能找到的文件默认全打包、把`Auto-accepted under FAST`或批次确认合并写成`User Confirmed`、为了让某项进包而回填`Approval Basis`或把未确认项标成已确认、用“打包需要”当补确认理由、把**从未展示或范围无法逐项核对**的内容也按沉默判为确认、因排除而删除Project Root内的原文件。
+
+### R36-F The Delivery Package Accompanies The Final Prompt Turn, Not Only An Explicit Packing Request
+
+输入：资产全部`Asset Confirmed`并绑定稳定文件名，Clip表已确认；用户只说“确认 / 下一步”，从未单独说过“打包”。系统按STATE-08交付第一个Clip的最终Prompt。输入一的环境为Work / Codex本地模式（可读写本机目录）；输入二为普通Chat（本机Project Root不可读）；输入三为Work本地模式但某`Applicable`类别缺真实已确认文件。
+
+PASS：STATE-08的Required reads含`references/asset_package.md`的`## Package Timing And Delivery`与`## Access Precondition`；输入一在该交付轮同轮附上包与zip（或给出包路径与已生成证据）；输入二同轮交付六类清单、`文件名 ↔ Asset ID`映射与目录骨架并明确标注“未打包”；输入三照常交付当前Clip的Prompt，并同轮逐项报告缺失类别与所在Gate，不生成空包。三者都不得因为用户没说过“打包”就完全不提交付包或包状态，且打包始终不作为进入STATE-08的前置条件——缺失时报告，不阻塞Prompt。
+
+FAIL：把交付包当成只在用户显式下令“打包”时才存在的动作、Prompt交付轮完全不提包或包状态、因包未就绪而拒绝交付或阻塞STATE-08、把包未就绪谎报为已打包，或用“用户没要求”当作静默略过的理由。
+
+### R36-G Confirmed But Unpersisted Work Is Materialized, Not Declared Missing
+
+输入：资产全部`Asset Confirmed`并绑定稳定文件名，Clip表已确认；本项目此前从未落盘（STATE-00按默认只留了会话内状态）；当前环境本轮实测可读、可写、可压缩；用户从未单独说过“保存项目”或“归档”。
+
+PASS：按`references/project_workspace.md`把**已确认**工件落为项目文件（锁定剧本与剧本分析、场景拆解、Detailed Shot Design、Clip表、资产登记表与已确认资产图），再产出包目录 + zip；包内每项仍同时有确认记录与真实文件，来源写Project Root相对路径；落盘只写已确认内容，不新增确认、不改内容、不重做阶段、不虚构路径。这些工件的确认效力**不因此前未落盘而降低**，落盘不是确认成立的条件，也不是“补确认”。
+
+FAIL：以“锁定剧本、场次、分镜与Clip表尚未落为可打包的确认文件”为由报告门条件未满足、跳过整包，或把已有确认记录的类别列为缺失；或反过来不落盘就凭会话文本直接伪造包内文件与来源路径。
+
+### R36-H Non-Canonical Model-Input References Have Their Own Category And Correspondence
+
+输入一：CLIP-01的Final Visual Blocking Assessment=`REQUIRED`，已生成、验证并登记的`REF-SKETCH-01`与A所需的`REF-TAIL-01`都有真实文件，且都出现在最终Prompt的参考字段里。输入二：同一项目里色卡被STATE-07按风险选为`Project Color Reference（非资产）`。
+
+PASS：两个条目的文件进`07_references/`，文件名沿用其既有引用名（`REF-SKETCH-01｜CLIP-01草图.png`、`REF-TAIL-01｜CLIP-01尾帧参考.png`）；它们**不占Asset ID、不进`02_assets/`、不登记为Canonical**，但必须能与Prompt里的对应条目一一核对；Prompt引用了却不在包内属阻塞项。
+
+FAIL：把`REF-SKETCH` / `REF-TAIL` / 色卡塞进`02_assets/`当作Canonical资产文件、给它们新铸Asset ID，或因“不是Canonical资产”就把它们排除在包外——那会让Prompt引用的真实输入在包里找不到。
+
+### R36-I Internal Reference Material Is Archived, Never Submitted
+
+输入一：某Scene走了双锁，存在已确认的Top-down Blocking Map与文字空间规则；用户另行显式请求过一份Storyboard。输入二：同一项目里用户看过一张Look Frame试片帧并确认其判断。
+
+PASS：三者按`08_design/`归档（`<Scene ID>｜Top-down Blocking.png`、`<Scene或Sequence ID>｜Storyboard.png`、`<Scene或Clip ID>｜Look Frame.png`），`08_design/_MANIFEST.md`逐项写明“系统内部参考（空间 / 分镜 / 试片判断）、不作为模型输入参考”与产生owner、消费阶段；它们不占参考位、不计Reference Budget、不出现在任何Clip的参考字段，也不登记为Canonical。**俯视空间关系进入模型输入的合法载体是`REF-SKETCH`的`Spatial Proof`区域**，不是这张规划图。
+
+FAIL：把Top-down Blocking Map或Storyboard放进`02_assets/`或任何参考字段、登记为Canonical / Active Version；或反向地把它们判成“不进包”，使已确认的内部参考材料在交付包里丢失；也把“进`08_design/`”解释成获得了模型输入资格。
+
+### R36-J Prompt-Stage Sketches Do Not Rebuild The Package
+
+输入：v001生产包已交付（Clip表确认时点的快照，八类齐备）；STATE-08随后为CLIP-002生成了`REF-SKETCH-002`，并计划从CLIP-001末帧提取`REF-TAIL-001`作为CLIP-002的站位参考——两者的真实文件都出现在快照之后。
+
+PASS：`REF-SKETCH-002` / `REF-TAIL-001`**不使v001失效、不改变其Revision、不触发自动重建**；系统只报告“这两项不在本包快照内”、它们的真实位置与按`## Non-Canonical Reference Naming`应使用的文件名（如`REF-SKETCH-002｜CLIP-02草图.png`），并告知用户可自行放入`07_references/`；CLIP-002 Prompt照常交付。只有用户明确要求重建，或命中既有失效条件（打包资产Active Version变化、被引用文件名称或内容变化、Clip表重跑）时才重新打包。
+
+FAIL：为一两张快照外草图自动重发整包、把包判成“已失效”、把快照外条目报成对应性阻塞项，或反过来谎称它们已在包内。
 
 ## R33 Model-Specific Main Style Regression
 

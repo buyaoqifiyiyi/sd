@@ -55,7 +55,7 @@
 | `knowledge/environment_multi_view_reconstruction.md` | 当前Active Core ENV存在Spatial Reconstruction | STATE-03环境资产记录 |
 | `knowledge/adaptation/`、`knowledge/script_adaptation.md`、`knowledge/screenwriting_optimization.md` | 当前为Existing Script / Material或改编 / 优化分支 | STATE-01入口路由 |
 | `knowledge/directorial_interpretation.md` | 当前为导演化 / 改编分支 | STATE-01入口路由 |
-| `knowledge/medium_profiles.md` | 项目为非默认媒介（短剧 / 广告 / MV等） | STATE-01媒介判定 |
+| `knowledge/medium_profiles.md` | `媒介形式`已确认为`live_action` / `3d_animation` / `2d_anime`；为`Pending`时不加载 | STATE-01的`Production Setup Gate`确认结果 / `project_bible.md`的`媒介形式`字段 |
 | `rules/automation_mode.md` | `Automation Policy: FAST` | 用户显式启用 |
 | `rules/runtime_reload.md` | 命中显式Reload触发 | `rules/runtime_reload.md`的触发词表 |
 | 未选中的视频模型Template与Adapter | 当前Clip选定该模型 | STATE-06的Selected Model |

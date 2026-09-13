@@ -532,7 +532,7 @@ STATE-08 Clip-based Video Prompt / Video Generation。
 
 # Medium Profile｜Internal
 
-STATE-00必须从用户已明确输入中确认项目`媒介形式`，并写入`project_bible.md`的`Project Information → 媒介形式`字段（既有字段，不新增）。值域固定为：
+STATE-00只登记用户已明确输入的`媒介形式`，并写入`project_bible.md`的`Project Information → 媒介形式`字段（既有字段，不新增）；用户未提供时写`Pending`，由STATE-01的`Production Setup Gate`确认后覆盖该值。值域固定为：
 
 - `live_action`：真人 / 实拍；画面由真实光穿过光学镜头生成。
 - `3d_animation`：三维 / 三渲二 / CG动画；画面由虚拟摄影机渲染。
@@ -541,8 +541,8 @@ STATE-00必须从用户已明确输入中确认项目`媒介形式`，并写入`
 判定规则：
 
 - 只记录用户直接提供或可从素材直接确认的值；不得从Genre、题材、平台或画风标签推定媒介。
-- 用户只说“动画”而未指明维度时写`Medium: Pending`并询问一次；不得默认取`2d_anime`或`live_action`。
-- 未确认时保持`Pending`，后续STATE按`live_action`的既有行为继续，但不得把它登记为已确认真人剧。
+- 用户未提供媒介信息（完全未提及，或只说“动画”而未指明维度）时写`Medium: Pending`，**不得默认取`2d_anime`或`live_action`**；本阶段不询问——媒介确认统一由STATE-01的`Production Setup Gate`在剧本`Production-Locked`后与图像模型、交付形态、视频偏好、风格基线一次性完成。
+- `Pending`只允许走到该Gate之前：不得穿过STATE-02资产发现与STATE-03的媒介相关资产生产（角色资产结构、材质与光学语言按媒介分化）。未确认期间不得把它登记为已确认真人剧。
 
 媒介与Genre正交：Genre承诺不因媒介改变，媒介也不改变任何主STATE、Template字段或STATE-08最终Schema。该字段的值域与三档分化规则由`knowledge/medium_profiles.md`拥有；STATE-00只负责记录，不在此展开编剧、镜头语言或美学分化。
 

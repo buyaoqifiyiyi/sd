@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.13-r82
+Skill Version: 2026.09.13-r83
 
-Build ID: sd-film-2026.09.13-r82
+Build ID: sd-film-2026.09.13-r83
 
 ## Core
 
@@ -29,7 +29,7 @@ Build ID: sd-film-2026.09.13-r82
 
 写入后必须执行完整自检：`references/maintenance_self_check.md`的16项与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；可达性判据、文件类别与Size Index的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
 
-**本协议是纯文本的，不依赖任何脚本、工具或外部服务即可手工执行。**`scripts/validate_sd_film.py`只是某些环境下的可选加固；环境里没有它、或没有Python、或换了别的Agent，都不构成跳过自检的理由——按短卡逐项人工判定即可。正式修改后同步递增`Skill Version`与`Build ID`；**一次迭代等于一个对话累积的全部改动，不是每完成一个任务就升一版**。
+**本协议是纯文本的，不依赖任何脚本、工具或外部服务即可手工执行。**`scripts/validate_sd_film.py`只是某些环境下的可选加固；环境里没有它、或没有Python、或换了别的Agent，都不构成跳过自检的理由——按短卡逐项人工判定即可。**版本递增是一次定稿动作，不是每次修改的收尾步骤**：同一对话的改动累积为一个批次，只有维护者确认该批定稿时才同步递增`Skill Version`与`Build ID`（判据见`references/maintenance_self_check_protocol.md`的`Change Classification Check`）。
 
 ## Modules
 

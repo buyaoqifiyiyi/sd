@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for the r82 SD Film validator."""
+"""Regression tests for the r83 SD Film validator."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util
@@ -1213,6 +1213,47 @@ class R57MediumProfileTests(unittest.TestCase):
         self.assertIn("# Medium Profile｜Internal", setup)
         self.assertIn("不得默认取`2d_anime`或`live_action`", setup)
         self.assertIn("不得把它登记为已确认真人剧", setup)
+        # STATE-00 只登记、不询问；Pending 不得穿过资产阶段
+        self.assertIn("本阶段不询问", setup)
+        self.assertIn("不得穿过STATE-02资产发现与STATE-03的媒介相关资产生产", setup)
+
+    def test_medium_is_confirmed_in_the_one_time_production_setup(self) -> None:
+        """媒介必须与模型同轮、早于资产确认：答晚了，已出的资产可能错档。"""
+        script = (ROOT / "workflows/02_script_analysis_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("媒介形式：`live_action`（真人 / 实拍）", script)
+        self.assertIn("必须在本Proposal中询问一次", script)
+        self.assertIn("媒介仍为`Pending`时不得进入STATE-02", script)
+        self.assertIn("Screenwriter Layer", script)
+        self.assertLess(
+            script.index("## 07 Production Setup Gate"),
+            script.index("媒介仍为`Pending`时不得进入STATE-02"),
+        )
+        template = (ROOT / "templates/00_project_start_template.md").read_text(encoding="utf-8-sig")
+        self.assertIn("# Medium Form", template)
+        self.assertIn("同一张**`Production Setup Proposal`中一次性完成", template)
+        runtime = (ROOT / "core/runtime-state.md").read_text(encoding="utf-8-sig")
+        self.assertIn("MEDIUM_PROFILE", runtime)
+        state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Medium Form: live_action / 3d_animation / 2d_anime / PENDING", state)
+        self.assertIn("为`PENDING`时是STATE-02之前的合法停点", state)
+
+    def test_medium_pending_cannot_pass_asset_production(self) -> None:
+        asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
+        profiles = self._profiles()
+        self.assertIn("媒介前提", asset_rules)
+        self.assertIn("返回STATE-01的`Production Setup Gate`补确认", asset_rules)
+        self.assertIn("不得穿过STATE-02 / STATE-03的媒介相关资产生产", profiles)
+        self.assertIn("由STATE-01的`Production Setup Gate`一次性确认", profiles)
+
+    def test_state04_never_asks_the_medium_first(self) -> None:
+        visual = (ROOT / "workflows/07_visual_development_workflow.md").read_text(encoding="utf-8-sig")
+        self.assertIn("不得在本阶段首次向用户提出媒介问题", visual)
+        self.assertIn("返回STATE-01的`Production Setup Gate`", visual)
+        scenarios = regression_corpus()
+        self.assertIn("## R57 Medium Profile Regression", scenarios)
+        for marker in ("R57-A", "R57-B", "R57-C", "R57-D"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, scenarios)
 
     def test_medium_route_reaches_script_analysis(self) -> None:
         script = (ROOT / "workflows/02_script_analysis_workflow.md").read_text(encoding="utf-8-sig")
@@ -2433,9 +2474,72 @@ class R76DeliveryPackageTests(unittest.TestCase):
         # 该能力必须有覆盖正反例的回归场景，否则它只是“写了一条规定”
         scenarios = regression_corpus()
         self.assertIn("## R36 Production Delivery Package Regression", scenarios)
-        for marker in ("R36-A", "R36-B", "R36-C", "R36-D", "R36-E"):
+        for marker in ("R36-A", "R36-B", "R36-C", "R36-D", "R36-E", "R36-F", "R36-G",
+                       "R36-H", "R36-I", "R36-J"):
             with self.subTest(marker=marker):
                 self.assertIn(marker, scenarios)
+
+    def test_prompt_stage_sketches_do_not_rebuild_the_package(self) -> None:
+        """包是 Clip 表确认时点的快照：STATE-08 的草图/尾帧不使包失效、不触发重建。"""
+        owner = (ROOT / "references/asset_package.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        builder = (ROOT / "scripts/build_asset_package.py").read_text(encoding="utf-8-sig")
+        self.assertIn("包是 Clip 表确认时点的快照", owner)
+        self.assertIn("STATE-08提示词撰写阶段新增的草图与尾帧不在失效条件之列", owner)
+        self.assertIn("属**报告项**而非阻塞项", owner)
+        self.assertIn("包是 Clip 表确认那一刻的快照", guide)
+        # 构建器：快照外的非资产参考只报警告，不判对应性失败
+        self.assertIn("the user may drop it into 07_references/", builder)
+
+    def test_package_separates_model_input_references_from_internal_reference(self) -> None:
+        """两种“参考”分通道：投喂给模型的进 07_references，只给系统看的进 08_design。"""
+        owner = (ROOT / "references/asset_package.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        for marker in ("## Non-Canonical Reference Naming", "## Design Material Naming",
+                       "07_references/", "08_design/", "系统内部参考材料",
+                       "归档位置不改变资格规则"):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, owner)
+        # Storyboard 矛盾已消解：不再归 05_shots，改归 08_design
+        self.assertIn("| Shots | `05_shots/` | 用户确认过的Detailed Shot Design |", owner)
+        self.assertNotIn("Detailed Shot Design与适用Storyboard", owner)
+        # 俯视空间关系进参考位的合法载体是 REF-SKETCH 的 Spatial Proof，而不是规划图
+        self.assertIn("Spatial Proof", owner)
+        # 对应性覆盖两个目录
+        self.assertIn("对应性覆盖两个目录", owner)
+        # 用户文档同步到八类
+        self.assertIn("包内固定八类", guide)
+        self.assertIn("07_references", guide)
+        self.assertIn("08_design", guide)
+
+    def test_unpersisted_confirmed_work_is_materialized_before_packing(self) -> None:
+        """包需要真实文件；项目从未落盘时不是"缺失类别"，而是先落盘再打包。"""
+        owner = (ROOT / "references/asset_package.md").read_text(encoding="utf-8-sig")
+        workspace = (ROOT / "references/project_workspace.md").read_text(encoding="utf-8-sig")
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertIn("未落盘不等于缺失", owner)
+        self.assertIn("确认效力不取决于该工件是否已被写成文件", owner)
+        self.assertIn("不得以“还只在对话里 / 尚未落为正式文件”为理由拒绝入包", owner)
+        self.assertIn("不得以“锁定剧本、场次、分镜与Clip表尚未落为可打包的确认文件”为由跳过整包", owner)
+        self.assertIn("要求交付生产交付包等同于要求保存或归档", workspace)
+        self.assertIn("先把已确认的内容原样写成项目文件", guide)
+
+    def test_state08_final_prompt_turn_carries_the_package(self) -> None:
+        """交付轮义务必须有确定性消费者：只写在owner里、没有Workflow路由，就会再次被忘记。"""
+        workflow = (ROOT / "workflows/11_video_generation_workflow.md").read_text(encoding="utf-8-sig")
+        consumers = dict(validator.PACKAGE_CONSUMERS)
+        self.assertIn("workflows/11_video_generation_workflow.md", consumers)
+        self.assertEqual(
+            consumers["workflows/11_video_generation_workflow.md"], "references/asset_package.md"
+        )
+        self.assertIn("workflows/11_video_generation_workflow.md", validator.PACKAGE_NON_OWNERS)
+        self.assertIn("## Package Timing And Delivery", workflow)
+        self.assertIn("## Access Precondition", workflow)
+        self.assertIn("不得静默略过交付包", workflow)
+        # 义务不得被写成进入STATE-08的前置条件，否则缺包会阻塞Prompt
+        self.assertIn("打包不是进入本阶段的前置条件", workflow)
+        # 规范本体仍只属于owner：本Workflow只给指针与义务，不复述命名形态
+        self.assertNotIn("<Asset ID>｜", workflow)
 
     def test_access_precondition_is_owned_once_and_routed(self) -> None:
         """打包有环境前提：只有具备真实文件访问能力的 Work / Codex 本地环境才产包与zip。"""
@@ -2448,6 +2552,9 @@ class R76DeliveryPackageTests(unittest.TestCase):
         self.assertIn("判据是能力，不是平台名", owner)
         self.assertIn("不产zip、不产包目录", owner)
         self.assertIn("未打包", owner)
+        # zip 是包目录的压缩形态，不是第二份交付物
+        self.assertIn("zip 是同一个包目录的压缩搬运形态", owner)
+        self.assertIn("zip 缺失只影响搬运", owner)
         # 降级阶梯必须包含“不能读”的最弱一档，且永远不许伪造
         self.assertIn("只交付命名映射表", owner)
         self.assertIn("降级不是`BLOCKED`", owner)

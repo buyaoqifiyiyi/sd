@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic r82 structural, routing and readability validation for SD Film."""
+"""Deterministic r83 structural, routing and readability validation for SD Film."""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
@@ -615,12 +615,25 @@ REFERENCE_OWNER_MARKERS = (
     ("references/asset_package.md", "不作为入选证据"),
     ("references/asset_package.md", "不得事后补确认"),
     ("references/asset_package.md", "## Access Precondition"),
+    ("references/asset_package.md", "未落盘不等于缺失"),
+    ("references/asset_package.md", "确认效力不取决于该工件是否已被写成文件"),
+    ("references/asset_package.md", "zip 是同一个包目录的压缩搬运形态"),
+    ("references/asset_package.md", "## Non-Canonical Reference Naming"),
+    ("references/asset_package.md", "## Design Material Naming"),
+    ("references/asset_package.md", "`07_references/`"),
+    ("references/asset_package.md", "`08_design/`"),
+    ("references/asset_package.md", "系统内部参考材料"),
+    ("references/asset_package.md", "归档位置不改变资格规则"),
+    ("references/asset_package.md", "包是 Clip 表确认时点的快照"),
+    ("references/asset_package.md", "STATE-08提示词撰写阶段新增的草图与尾帧不在失效条件之列"),
+    ("USER_GUIDE.md", "07_references"),
     ("references/asset_package.md", "普通 Chat / Portable 模式"),
     ("references/asset_package.md", "## Asset Image Naming"),
     ("references/asset_package.md", "## Final Prompt Correspondence"),
     ("references/asset_package.md", "## Package Location And Source Rule"),
     ("references/asset_package.md", "## Optional Interoperable Tooling"),
     ("references/asset_package.md", "`_MANIFEST.md`"),
+    ("references/project_workspace.md", "要求交付生产交付包等同于要求保存或归档"),
 )
 
 PACKAGE_CONSUMERS = (
@@ -630,6 +643,7 @@ PACKAGE_CONSUMERS = (
     ("references/project_workspace.md", "references/asset_package.md"),
     ("references/module_contracts_production.md", "references/asset_package.md"),
     ("modules/assets.md", "references/asset_package.md"),
+    ("workflows/11_video_generation_workflow.md", "references/asset_package.md"),
 )
 
 PACKAGE_NON_OWNERS = (
@@ -638,6 +652,7 @@ PACKAGE_NON_OWNERS = (
     "references/project_workspace.md",
     "references/module_contracts_production.md",
     "modules/assets.md",
+    "workflows/11_video_generation_workflow.md",
 )
 
 PACKAGE_NAMING_SHAPE_RE = re.compile(r"<Asset ID>｜<Purpose>")
@@ -1060,12 +1075,23 @@ def validate_skill(root: Path) -> list[str]:
         (medium_profiles, "`live_action`、`3d_animation`、`2d_anime`"),
         (project_setup, "# Medium Profile｜Internal"),
         (project_setup, "不得把它登记为已确认真人剧"),
+        (project_setup, "本阶段不询问"),
+        (project_setup, "不得穿过STATE-02资产发现与STATE-03的媒介相关资产生产"),
         (visual_workflow, "# Medium Profile Gate"),
         (visual_workflow, "不得写入焦段毫米数、光比比值或器材"),
+        (visual_workflow, "不得在本阶段首次向用户提出媒介问题"),
         (script_analysis, "媒介剖面与目标形式是两根独立的轴"),
+        (script_analysis, "媒介形式：`live_action`（真人 / 实拍）"),
+        (script_analysis, "必须在本Proposal中询问一次"),
+        (script_analysis, "媒介仍为`Pending`时不得进入STATE-02"),
+        (runtime, "MEDIUM_PROFILE"),
+        (state, "Medium Form: live_action / 3d_animation / 2d_anime / PENDING"),
+        (asset_rules, "媒介前提"),
+        (project_start_template, "# Medium Form"),
         (knowledge_index, "## Persistent Medium Profile"),
         (project_bible, "未确认写 `Pending`"),
         (contracts_knowledge, "## Medium Profile Knowledge Contract"),
+        (contracts_knowledge, "确认与写入发生在STATE-01的`Production Setup Gate`"),
         (contracts_knowledge, "不得新增第四档或改名"),
         (budget_doc, "## Size Index"),
         (budget_doc, "目标是可达性，不是尺寸"),
@@ -1154,6 +1180,8 @@ def validate_skill(root: Path) -> list[str]:
         (asset_rules, "命名在该时点锁定，不得原地改名"),
         (asset_rules, "未绑定文件名的图片不得进入最终视频Prompt的参考条目"),
         (completion, "生产交付包由`references/asset_package.md`拥有"),
+        (prompt, "## Package Timing And Delivery"),
+        (prompt, "不得静默略过交付包"),
         (assets, "## Asset Naming And Delivery Package"),
         (contracts_production, "交付包：已确认生产物的分类打包"),
         (contracts_production, "每个Clip的`参考资产：`（或对应模型的参考字段）为每个实际投喂的视觉条目写出"),
@@ -1239,7 +1267,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r82 structural, routing and readability validation")
+    print("PASS: r83 structural, routing and readability validation")
     return 0
 
 if __name__ == "__main__":

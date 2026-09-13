@@ -137,7 +137,7 @@ project_status.md = 当前任务最新可用的 portable_project_status.md
 
 ## New Project Rule
 
-STATE-00必须先确定会话Project ID。默认不创建Project Root、也不展示项目初始化页；它在当前响应内完成最小启动事实后进入下一个可交付阶段。用户明确要求保存或归档时，才确定Project Root并初始化项目文件。
+STATE-00必须先确定会话Project ID。默认不创建Project Root、也不展示项目初始化页；它在当前响应内完成最小启动事实后进入下一个可交付阶段。用户明确要求保存或归档时，才确定Project Root并初始化项目文件。**要求交付生产交付包等同于要求保存或归档**（含最终Prompt交付轮的自动附包，见`references/asset_package.md`）：此时可以确定Project Root，并把当前**已确认**工件写入其中——落盘只把已确认内容写成文件，不新增确认、不改写已确认事实、不重做已完成阶段。
 
 新 Project Root 必须满足：
 

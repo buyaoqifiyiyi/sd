@@ -145,6 +145,24 @@ Project Root：
 
 ---
 
+# Medium Form
+
+媒介形式（`live_action` 真人 / `3d_animation` 三维 / `2d_anime` 二维；用户未提供时写 `Pending`）：
+
+□ `live_action`（真人 / 实拍）
+
+□ `3d_animation`（三维 / 三渲二 / CG）
+
+□ `2d_anime`（二维 / 漫剧 / 手绘 / 动态漫画）
+
+□ `Pending`（用户未提供；在`Production Setup Gate`询问一次）
+
+确认状态：`UNSELECTED / SELECTED`
+
+说明：STATE-00只登记用户已明确输入的值，未提供时保持`Pending`；确认由STATE-01在剧本`Production-Locked`后与下一节的项目级默认项在**同一张**`Production Setup Proposal`中一次性完成。确认前不得进入STATE-02，也不得生产媒介相关资产——角色资产结构与材质、光学语言按媒介分化（见`templates/04_character_asset_prompt.md`的媒介适用条件与`knowledge/medium_profiles.md`的`Cross-Medium Asset Rule`）；值域与三档分化规则由`knowledge/medium_profiles.md`唯一拥有。
+
+---
+
 # Project Model Preferences
 
 项目图像模型默认项：

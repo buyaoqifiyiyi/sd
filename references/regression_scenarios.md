@@ -10,7 +10,7 @@
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
 | `references/regression_scenarios_craft.md` | R15—R23 | Prompt 编译、表演、阻断、剧本与导演端到端 |
-| `references/regression_scenarios_system.md` | R24、R27—R35 | 写作、Runtime、模型适配、FAST 与交付管线 |
+| `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
 | `references/regression_scenarios_maintenance.md` | R48—R61 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 

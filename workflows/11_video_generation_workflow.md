@@ -24,6 +24,7 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 - 当前 Model Compilation Template（MiniMax H3 时为 `knowledge/prompt_compilation/minimax_h3_compilation.md`）
 - 当前Clip使用Spatial Lock环境时：`knowledge/environment_multi_view_reconstruction.md`
 - `knowledge/clip_preflight_check.md`、`knowledge/reference_budget.md`
+- `references/asset_package.md`：交付义务只读`## Package Timing And Delivery`与`## Access Precondition`；实际构建包时再按该文件的`# Read Scope`加读构成、入选、命名与位置各节——包的规范正文始终由该文件唯一拥有
 - 最终输出Template：Seedance 2.0为`templates/10_video_prompt.md`；Seedance 2.5为`templates/12_seedance_25_video_prompt.md`；MiniMax H3为`templates/13_minimax_h3_video_prompt.md`
 
 ## Procedure
@@ -32,7 +33,8 @@ Input：Confirmed Execution Clip Plan、Selected Model / Adapter Profile、Confi
 2. 对当前一个Confirmed Execution Clip执行最终Reference、A/B/C尾帧、Visual Blocking Anchor、连续性和Prompt Preflight，并在Template投影前完成`Required Sketch Submission Binding`。Spatial Lock环境只使用STATE-07按风险预选并仍为Active/Confirmed的2–4张环境View；不得把Storyboard、STATE-06 Top-down Planning Map或文字Spatial Truth作为视频参考。Final=`REQUIRED`时，草图必须是实际可访问输入并按Adapter占用真实图片位：2.0使用现有参考资产中的真实文件/受控ID，2.5与H3 All-Reference使用`@图片N`；H3其他模式必须先回STATE-07改Execution Mode或模型。`Automation Policy: FAST`下，验证、登记和输入绑定PASS后可在同一轮继续当前Clip编译；STANDARD仍保留草图Checkpoint，任何失败照常返回最小owner。
 3. 通过 Projection 写入Selected Model的唯一最终Template。每个 Clip 独立完整输出；不输出 Adapter 或内部账本。Seedance 2.5使用独立多模态时间线模板，默认按30图 / 10视频 / 10音频 / 合计50项能力上限审计，按需少用但不回退为9图模板；时间线按当前Clip写必要阶段。H3使用独立官方三段式模板；2.0保留自己的固定Template。未来模型没有独立Template时不得编译最终Prompt。
 4. 不改写剧情、关系、导演意图、Shot 目的、Blocking 或 Canonical Asset。Voice 仅显式 opt-in；Prompt 永久禁止 BGM/配乐。
+5. 交付或生成当前 Clip 的最终 Prompt 时，同轮按`references/asset_package.md`处理生产交付包（构建、入选与命名判据由该文件拥有）：门条件与`## Access Precondition`均满足时附上包（或给出包路径与已生成证据）；条件不满足时按其降级阶梯交付清单 / 命名映射并标注`未打包`，或逐项报告缺失类别与所在 Gate。**不得静默略过交付包**，也不得声称已打包而实际未生成。打包不是进入本阶段的前置条件，但它是最终 Prompt 交付轮的同轮交付义务。
 
 # Completion Gate
 
-只改当前 Clip 的 Prompt 映射问题留在 STATE-08；Clip 边界、预算、尾帧或连续性组织问题回 STATE-07；Shot/Blocking 回 STATE-06；事实或资产回对应 owner。全部检查 PASS 后交付或生成，随后停在Review检查点：state写回必须显式声明`State Status: COMPLETE`、由`workflows/workflow_map.md`确定的下一Workflow，以及`Pending Decision: 等待实际生成结果（有问题回来进Review；无问题项目停在此处）`，并把下一阶段保持为`NOT_STARTED`。用户未带回结果既**不是PASS也不是失败**，项目合法停在该检查点，不得写成STATE-09 COMPLETE；用户带回结果并指出问题时进入STATE-09失败驱动档，用户明确接受具体Take时按Review owner的`Accepted Take Canon Writeback`登记。
+只改当前 Clip 的 Prompt 映射问题留在 STATE-08；Clip 边界、预算、尾帧或连续性组织问题回 STATE-07；Shot/Blocking 回 STATE-06；事实或资产回对应 owner。全部检查 PASS 后交付或生成，随后停在Review检查点：交付轮必须已按`references/asset_package.md`提交包或其降级 / 缺失报告（**不得静默略过交付包**）；state写回必须显式声明`State Status: COMPLETE`、由`workflows/workflow_map.md`确定的下一Workflow，以及`Pending Decision: 等待实际生成结果（有问题回来进Review；无问题项目停在此处）`，并把下一阶段保持为`NOT_STARTED`。用户未带回结果既**不是PASS也不是失败**，项目合法停在该检查点，不得写成STATE-09 COMPLETE；用户带回结果并指出问题时进入STATE-09失败驱动档，用户明确接受具体Take时按Review owner的`Accepted Take Canon Writeback`登记。

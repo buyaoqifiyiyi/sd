@@ -422,6 +422,8 @@ Core与Support执行同一双确认闭环。`Automation Policy: FAST`仅可按`r
 
 # 10 Visual Asset Production Gate
 
+媒介前提：本节任何资产生产都要求`媒介形式`已知。`Pending`时不得生产媒介相关资产形态——`2d_anime`与`live_action` / `3d_animation`的角色资产结构、材质与光学语言不通用（见`knowledge/medium_profiles.md`的`Cross-Medium Asset Rule`与`templates/04_character_asset_prompt.md`的媒介适用条件）；此时返回STATE-01的`Production Setup Gate`补确认，不按默认档静默出图，也不把已出图登记为Canonical。
+
 ### Asset Batch Delivery｜批次交付
 
 STATE-03的资产生产与确认以**批次**为默认单位，不逐个资产停顿。一个批次同时满足：同一资产类别（CHAR / ENV / PROP / FX）× 同一Asset Tier × 同一生产形态（外观参考图 / 正式资产图 / 环境主参考图与适用View / 道具设定图 / Support Reference Board）× 同一已选图像模型。每批使用稳定`Batch ID`，并列出全部`Included Asset IDs`与顺序。

@@ -19,4 +19,4 @@ None
 - 只有`references/skill_experience_contract.md`定义的候选在用户明确确认后才能写入。
 - 每条记录必须包含Experience ID、Statement、Applicability、Evidence、Confidence、Validated Count、Created / Last Validated与Status。
 - 经验只作为相关产出和项目迭代的只读建议；冲突时暂停应用并标记REVIEW或RETIRED。
-- 每次写入都必须递增Skill Version / Build ID并执行完整Skill Update Self-Check。
+- 写入必须落在该对话已定稿的迭代内：随该迭代递增Skill Version / Build ID并执行完整Skill Update Self-Check，不为单条经验单独升版。

@@ -42,9 +42,9 @@
 
 ## Selection And Ownership
 
-媒介由STATE-00确认并存于`project_bible.md`的`Project Information → 媒介形式`字段；本文件拥有该字段的**值域**与三档分化规则。
+媒介由STATE-00登记用户已明确输入的值，并由STATE-01的`Production Setup Gate`一次性确认，存于`project_bible.md`的`Project Information → 媒介形式`字段；本文件拥有该字段的**值域**与三档分化规则。
 
-判定：只记录用户直接提供或可从素材直接确认的媒介；不得从Genre、题材、平台或画风标签推定。用户只说“动画”而未指明维度时写`Pending`并询问一次。
+判定：只记录用户直接提供或可从素材直接确认的媒介；不得从Genre、题材、平台或画风标签推定。用户未提供媒介信息时写`Pending`，由STATE-01的`Production Setup Gate`询问一次；不得默认取`live_action`或`2d_anime`。
 
 未确认时保持`Pending`，按`live_action`的既有行为继续，但不得登记为已确认真人剧。
 
@@ -119,14 +119,14 @@
 
 ## Return Routing
 
-- 媒介决定本身缺失或冲突 → STATE-00（`媒介形式`字段的写入owner）
+- 媒介决定本身缺失、为`Pending`或冲突 → STATE-01的`Production Setup Gate`（确认与`媒介形式`字段写入的发生地）
 - 资产身份或Canonical冲突 → 对应资产拥有者
 - 逐镜镜头语言冲突 → STATE-06
 - 项目级美学方向冲突 → STATE-04
 
 ## Non-Applicable Rule
 
-- 未确认媒介：记`Medium Profile: PENDING`，不加载本文件的分化表，按`live_action`既有行为继续。
+- 未确认媒介：记`Medium Profile: PENDING`，不加载本文件的分化表；`Pending`不得穿过STATE-02 / STATE-03的媒介相关资产生产，需回STATE-01的`Production Setup Gate`确认（不同媒介的角色资产结构、材质与光学语言不通用，见`## Cross-Medium Asset Rule`）。
 - 本文件不适用于Storyboard、Poster、Sequence、MUSIC、AUDIO等辅助模块的既有边界；它们各自既有owner不变。
 - 本文件不创建STATE、不新增Template字段、不改变任何Model Adapter能力。
 

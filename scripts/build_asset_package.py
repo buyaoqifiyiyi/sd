@@ -62,6 +62,8 @@ CATEGORIES = (
     ("04_scenes", "Scenes"),
     ("05_shots", "Shots"),
     ("06_clips", "Clips"),
+    ("07_references", "References"),
+    ("08_design", "Design Materials"),
 )
 
 # Files that carry the package's own bookkeeping and are therefore not assets.
@@ -160,6 +162,11 @@ REFERENCE_NAME_RE = re.compile(
 )
 VIEW_CODE_TAIL_RE = re.compile(r"_(ENV|EXT)-\d{2}$", re.I)
 
+# Non-Canonical model inputs keep the stable reference names their own owners
+# already use (`REF-SKETCH-XX`, `REF-TAIL-XX`), so a compiled prompt can be
+# mapped onto `07_references/` without inventing a second naming scheme.
+NON_ASSET_REFERENCE_RE = re.compile(r"(REF-(?:SKETCH|TAIL)-\d+)", re.I)
+
 
 class Asset:
     def __init__(self, asset_id: str, title: str) -> None:
@@ -227,11 +234,23 @@ SOURCE_MAP = (
         "04_scene_breakdown.md", "05_scene_breakdown.md", "14_sequence_plan.md",
     )),
     ("05_shots", (
-        "06_detailed_shot_design.md", "08_detailed_shot_design.md", "09_storyboard.md",
+        "06_detailed_shot_design.md", "08_detailed_shot_design.md",
     )),
     ("06_clips", (
         "07_clip_production_plan.md", "10_clip_plan.md", "20_clip_plan.md",
     )),
+    ("08_design", (
+        "09_storyboard.md",
+    )),
+)
+
+# `07_references` and `08_design` are staged by name/path rather than by a single
+# flat document name: non-Canonical model inputs keep the stable reference names
+# the prompt already uses, and the blocking map lives in its own scene folder
+# (`knowledge/spatial_blocking_layer.md`).
+DIRECTORY_SOURCES = (
+    ("07_references", ("**/REF-SKETCH-*", "**/REF-TAIL-*")),
+    ("08_design", ("shots/spatial_blocking/*", "shots/spatial_blocking/**/*")),
 )
 
 
@@ -460,6 +479,50 @@ class Builder:
             if not hits:
                 self.warn(f"{folder}: nothing admitted (missing or unconfirmed)")
 
+        for folder, patterns in DIRECTORY_SOURCES:
+            hits = 0
+            for pattern in patterns:
+                for source in sorted(self.project_root.glob(pattern)):
+                    if not source.is_file() or BOOKKEEPING.search(source.as_posix()):
+                        continue
+                    if source.suffix.lower() == ".md":
+                        text = source.read_text(encoding="utf-8-sig", errors="replace")
+                        basis = preferred_basis(text) if confirmation_basis(text) else ""
+                        if not basis:
+                            self.excluded.append(
+                                f"{folder}/{source.name}: 从未展示或未确认（缺确认记录）"
+                            )
+                            continue
+                    else:
+                        # An image carries no confirmation marker of its own: it is
+                        # admitted only when a confirmed document actually names it.
+                        # No record means "not packed", never a silent default.
+                        basis = self.confirmed_record_naming(source.name)
+                        if not basis:
+                            self.excluded.append(
+                                f"{folder}/{source.name}: 缺少可回查的确认记录"
+                                "（没有已确认文档引用它）"
+                            )
+                            continue
+                    self._copy(
+                        source, self.package_root / folder / source.name, folder, source.name,
+                        "", basis,
+                    )
+                    hits += 1
+            if not hits:
+                self.warn(f"{folder}: nothing admitted (missing or unconfirmed)")
+
+    def confirmed_record_naming(self, filename: str) -> str:
+        """Return the approval basis of a confirmed document that names `filename`."""
+        stem = Path(filename).stem
+        for document in sorted(self.project_root.rglob("*.md")):
+            if BOOKKEEPING.search(document.as_posix()):
+                continue
+            text = document.read_text(encoding="utf-8-sig", errors="replace")
+            if stem and stem in text and confirmation_basis(text):
+                return preferred_basis(text)
+        return ""
+
     def clip_table_state(self) -> str:
         """`06_clips` is the package's gate condition, so it gets its own verdict."""
         for name in CLIP_SOURCE_CANDIDATES:
@@ -541,8 +604,10 @@ class Builder:
             "| Assets | `02_assets/` | 每条`Asset Confirmed`的图片（按CHAR / ENV / PROP / FX / SUPPORT） |",
             "| Visual Development | `03_visual_development/` | 用户确认过的Style Baseline / Aesthetic Decision Lock / Project Color Reference |",
             "| Scenes | `04_scenes/` | 用户确认过的Scene Breakdown与适用Sequence Plan |",
-            "| Shots | `05_shots/` | 用户确认过的Detailed Shot Design与适用Storyboard |",
+            "| Shots | `05_shots/` | 用户确认过的Detailed Shot Design |",
             "| Clips | `06_clips/` | 用户确认过的Clip Production Plan |",
+            "| References | `07_references/` | 实际投喂的非Canonical参考（REF-SKETCH / REF-TAIL / 色卡 / 合法首尾帧），与Prompt参考条目一一对应 |",
+            "| Design Materials | `08_design/` | 系统内部参考（Top-down Blocking Map / Storyboard / Look Frame），不作为模型输入参考 |",
             "",
         ]
         if self.excluded:
@@ -593,6 +658,16 @@ class Builder:
                 packaged.setdefault(match.group(1).upper(), []).append(name)
         packaged_files = {name for names in packaged.values() for name in names}
 
+        packaged_non_asset: dict[str, list[str]] = {}
+        for record in self.records:
+            if not record["file"].startswith("07_references/"):
+                continue
+            name = Path(record["file"]).name
+            match = NON_ASSET_REFERENCE_RE.match(name)
+            if match:
+                packaged_non_asset.setdefault(match.group(1).upper(), []).append(name)
+        packaged_files |= {name for names in packaged_non_asset.values() for name in names}
+
         # Full locked file names quoted anywhere in the prompt.
         referenced = {Path(name).name for name in LOCKED_FILENAME_RE.findall(text)}
 
@@ -623,6 +698,21 @@ class Builder:
                     f"package holds several files for it ({', '.join(sorted(files))}); "
                     "the entry cannot be mapped to one file"
                 )
+
+        for ref_id in sorted({match.upper() for match in NON_ASSET_REFERENCE_RE.findall(text)}):
+            files = packaged_non_asset.get(ref_id, [])
+            if not files:
+                # Sketches and tail frames are produced in STATE-08, i.e. after the
+                # Clip-table snapshot this package was built from. Their absence is a
+                # report item, not a correspondence failure: the package is never
+                # rebuilt for them unless the user asks.
+                self.warn(
+                    "compiled prompt references a non-asset reference that is not in this "
+                    f"snapshot (STATE-08 sketches / tail frames are produced afterwards; "
+                    f"the user may drop it into 07_references/): {ref_id}"
+                )
+                continue
+            referenced.update(files)
 
         for name in sorted(referenced - packaged_files):
             self.error(f"compiled prompt references a file that is not in the package: {name}")

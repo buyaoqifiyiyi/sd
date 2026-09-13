@@ -112,7 +112,7 @@ Owner：`knowledge/skill_experience.md`；存储、确认、应用、项目迭�
 
 输入唯一来源：实际Review结果、Generation Attempts / Failure Pattern、用户明确反馈、重复验证案例与当前Skill规则；不得把单一项目事实直接当作跨项目经验。
 
-输出：`Experience Candidate`可在Review / 复盘后自动提出，但必须保持`PENDING`直到用户明确确认；确认后写入Skill经验库并递增Skill版本。已确认经验在相关产出和项目迭代前按需读取，作为只读建议。
+输出：`Experience Candidate`可在Review / 复盘后自动提出，但必须保持`PENDING`直到用户明确确认；确认后写入Skill经验库，其版本递增仍服从定稿纪律（`references/maintenance_self_check_protocol.md`的`Change Classification Check`），不因单条经验写入另升一版。已确认经验在相关产出和项目迭代前按需读取，作为只读建议。
 
 应用边界：经验只能投影到当前Template允许的语义，不能新增最终字段、覆盖用户指令、项目事实、Rules、Workflow、Template或既有Owner。项目迭代必须通过对应事实/设计Owner和用户确认，并按项目Revision规则落盘。
 

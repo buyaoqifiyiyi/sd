@@ -276,7 +276,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 从用户要求与已确认项目事实判断目标形式。只有目标明确为短剧、竖屏剧情或1—3分钟剧情视频时，才读取并执行`knowledge/adaptation/short_form_drama_adapter.md`。其他类型将该Adapter记录为Not Applicable及理由，不得强制套用前3秒、前30秒或五段短剧模型。目标缺失且会实质改变改编结构时，写`Adapter Load: Pending`与Pending Decision，不得猜测平台规则。
 
-媒介剖面与目标形式是两根独立的轴：本阶段同时读取已确认的`媒介形式`，按`knowledge/medium_profiles.md`的Screenwriter Layer决定信息承载方式（`2d_anime`下信息必须外化为可见动作、符号化表情或OS，不得依赖微表情留白）。媒介为`Pending`时记`Medium Profile: PENDING`并返回STATE-00；不得从Genre、目标形式或平台推定媒介，也不得因目标为短剧就默认真人剧。
+媒介剖面与目标形式是两根独立的轴：本阶段同时读取已确认的`媒介形式`，按`knowledge/medium_profiles.md`的Screenwriter Layer决定信息承载方式（`2d_anime`下信息必须外化为可见动作、符号化表情或OS，不得依赖微表情留白）。媒介为`Pending`时记`Medium Profile: PENDING`、不加载Screenwriter Layer分化表，由本阶段的`Production Setup Gate`确认后按该Gate的时序后果补做信息承载复核；不得从Genre、目标形式或平台推定媒介，也不得因目标为短剧就默认真人剧。
 
 ### Adaptation Intensity Selection
 
@@ -333,10 +333,11 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 ## 07 Production Setup Gate
 
-`Script Status: Production-Locked`之后、STATE-01 Completion Gate通过之前，必须完成一次`Production Setup Proposal`；剧本锁定前不得提出它。STATE-00不询问任何模型或风格，只登记用户已明确指定的内容作为该Proposal的唯一候选。
+`Script Status: Production-Locked`之后、STATE-01 Completion Gate通过之前，必须完成一次`Production Setup Proposal`；剧本锁定前不得提出它。STATE-00不询问任何模型、风格或媒介，只登记用户已明确指定的内容作为该Proposal的唯一候选。
 
 读取`modules/image-model-selection.md`、`modules/model-selection.md`、本Workflow已Production-Locked的Script与用户已明确输入的视觉方向，在同一个Proposal中展示：
 
+- 媒介形式：`live_action`（真人 / 实拍）/ `3d_animation`（三维 / 三渲二 / CG）/ `2d_anime`（二维 / 漫剧 / 手绘 / 动态漫画）；用户当前请求已明确指定时只展示该唯一候选，未指定时**必须在本Proposal中询问一次**，不得默认取`live_action`或`2d_anime`；值域与三档分化规则由`knowledge/medium_profiles.md`拥有；
 - 项目图像模型默认项：GPT Image / Midjourney，以及各自Adapter、最终资产Prompt Template与交付路线；
 - 图像交付形态：`AUTO`（按当前执行环境能力自动路由）/ `DIRECT_IMAGE`（直接出图）/ `PROMPT_ONLY`（只交付Prompt）；用户当前请求已明确指定时只展示该唯一候选；
 - 项目视频模型偏好：Seedance 2.0 / Seedance 2.5 / MiniMax H3，以及已验证的时长与参考输入能力摘要；
@@ -344,7 +345,9 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 `Project Style Baseline`只回答“主风格是什么、在本项目指什么”，是STATE-03资产Prompt的“已确认的项目视觉风格”唯一来源；它不展开焦段、运镜、综合色彩或Lighting体系——那些仍由STATE-04在它之上建立`Visual Grammar Baseline`与`Aesthetic Decision Lock`。基线只从用户已明确输入或已Production-Locked剧本可证实的内容提取，不得自行选择导演风格。
 
-用户已在项目请求中指定模型时，对应项只展示该唯一候选；未指定时不得默认选择。展示后用户说`下一步`、`继续`等按`rules/progression_rules.md`确认；确认后写入`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`及各自`SELECTED`状态，并把风格基线写入`## Visual Direction Lock`的基线行与`project_bible.md`既有Visual Direction区域，不新增Schema字段。这些设置只取得执行能力与项目风格基线，不是资产、Clip或外部提交授权；图像默认项供STATE-03资产批次继承，视频偏好供STATE-06按每Clip能力复核。
+用户已在项目请求中指定模型时，对应项只展示该唯一候选；未指定时不得默认选择。展示后用户说`下一步`、`继续`等按`rules/progression_rules.md`确认；确认后写入`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`及各自`SELECTED`状态，把风格基线写入`## Visual Direction Lock`的基线行与`project_bible.md`既有Visual Direction区域，并把媒介形式写入`project_bible.md`的`Project Information → 媒介形式`字段；不新增Schema字段。这些设置只取得执行能力与项目风格基线，不是资产、Clip或外部提交授权；图像默认项供STATE-03资产批次继承，视频偏好供STATE-06按每Clip能力复核。
+
+媒介确认的时序后果：本Gate运行在Script `Production-Locked`之后，因此当确认的媒介非`live_action`时，必须在进入STATE-02之前按`knowledge/medium_profiles.md`的Screenwriter Layer复核已锁定Script的信息承载——该档读不到的微表情层次、沉默留白或未言明潜台词，按承载外化改写为可见动作、符号化表情或OS。承载外化只改表达方式，不改剧情、因果、人物、对白与结局；一旦触及剧情事实，按`references/artifact_revision_contract.md`出新Revision并在Proposal Gate重新确认，不得静默改写已锁定的Script。媒介仍为`Pending`时不得进入STATE-02，也不得按默认档生产资产。
 
 旧项目已有可验证唯一Selected Image Model或Selected Model时分别迁移为项目默认/偏好，不重复询问；没有证据则保持`UNSELECTED`，直到该项目下一个合法模型选择入口。
 

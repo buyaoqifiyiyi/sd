@@ -276,11 +276,11 @@ Module Type：STATE-06至STATE-09辅助Knowledge。
 
 ## Medium Profile Knowledge Contract
 
-Module Type：STATE-00确认、STATE-01与STATE-04消费的跨媒介Knowledge；不创建新STATE、不新增Template字段。
+Module Type：STATE-00登记、STATE-01的`Production Setup Gate`确认、STATE-01与STATE-04消费的跨媒介Knowledge；不创建新STATE、不新增Template字段。
 
-Owner：`knowledge/medium_profiles.md`。STATE-00负责把确认结果写入`project_bible.md`的`Project Information → 媒介形式`字段；本文件拥有该字段的值域与三档分化规则。
+Owner：`knowledge/medium_profiles.md`。STATE-00只登记用户已明确输入的值；确认与写入发生在STATE-01的`Production Setup Gate`，结果写入`project_bible.md`的`Project Information → 媒介形式`字段；本文件拥有该字段的值域与三档分化规则。
 
-触发：项目`媒介形式`为`live_action` / `3d_animation` / `2d_anime`时，在STATE-01（编剧承载）与STATE-04（美学与摄影方向）读取；为`Pending`时记录`Medium Profile: PENDING`并把决定返回STATE-00，不加载分化表。
+触发：项目`媒介形式`为`live_action` / `3d_animation` / `2d_anime`时，在STATE-01（编剧承载）与STATE-04（美学与摄影方向）读取；为`Pending`时记录`Medium Profile: PENDING`并把决定返回STATE-01的`Production Setup Gate`，不加载分化表，且`Pending`不得穿过STATE-02 / STATE-03的媒介相关资产生产。
 
 不触发：不因Genre、题材、平台或画风标签加载；Storyboard、Poster、Sequence、MUSIC、AUDIO等辅助模块不因本Knowledge改变各自既有边界。
 
@@ -294,6 +294,6 @@ Owner：`knowledge/medium_profiles.md`。STATE-00负责把确认结果写入`pro
 
 禁止：把媒介当成Genre子类；从平台或题材推定媒介；用本Knowledge改写剧情事实、资产身份或STATE-08 Schema。
 
-冲突时：媒介决定本身返回STATE-00；资产身份返回资产拥有者；逐镜镜头语言返回STATE-06；项目级美学方向返回STATE-04。
+冲突时：媒介决定本身缺失、为`Pending`或冲突时返回STATE-01的`Production Setup Gate`；资产身份返回资产拥有者；逐镜镜头语言返回STATE-06；项目级美学方向返回STATE-04。
 
 ---

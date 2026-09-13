@@ -7,9 +7,10 @@
 | 当前事项 | 只读 |
 |---|---|
 | 图片文件名怎么起、锁定时机 | `## Asset Image Naming`, `## Naming Lock And Rename` |
+| 非Canonical参考与规划材料怎么归档、怎么命名 | `## Non-Canonical Reference Naming`, `## Design Material Naming` |
 | 打包时机、交付什么 | `## Package Timing And Delivery`, `## Package Contents` |
 | 哪些东西才允许进包 | `## Package Admission｜只收已认可的` |
-| 当前环境能不能打包、不能时给什么 | `## Access Precondition` |
+| 当前环境能不能打包、不能时给什么、已确认工件尚未落盘时怎么办 | `## Access Precondition` |
 | 包放在哪、原文件动不动 | `## Package Location And Source Rule` |
 | 与最终视频 Prompt 的一一对应 | `## Final Prompt Correspondence` |
 | 校验与失效 | `## Verification And Invalidation` |
@@ -35,6 +36,12 @@
 - 与`rules/automation_mode.md`的`Unified Delivery Packages`正交：后者的包名是**展示封套**，本文件的包是**真实文件集合**。两者不得互相定义，也不得把一个的实现写进另一个。
 - 门条件未满足时：报告还缺哪一类、缺在哪个Gate，不生成空包，也不把缺失类别静默省略。
 
+**包是 Clip 表确认时点的快照**：STATE-08逐Clip产出的最终Prompt、`REF-SKETCH`草图与`REF-TAIL`尾帧**不回溯改变本包**——它们不使包失效、不改变包Revision、不触发自动重建，也不需要为了让包“跟上”而重发整包。后续Clip的Prompt交付轮照常附上**已生成的快照包**（不重建），并只做三件事：
+
+1. 在交付说明里逐项报告这些文件不在本包快照内、它们的真实位置，以及按`## Non-Canonical Reference Naming`它们应使用的文件名；
+2. 明确告知用户可自行放入`07_references/`（自行放入不改写包内确认记录，也不改变任何已交付Prompt）；
+3. 只有**用户明确要求重建**，或命中`## Verification And Invalidation`的既有失效条件时才重新打包；重建时这些文件按同一命名规则进入`07_references/`。
+
 **门条件**（`final-prompt-ready`）：
 
 1. 当前项目应制作的CHAR / ENV / PROP / FX视觉资产全部为`Asset Confirmed`，且每条已确认资产都有符合命名规范的文件名绑定；
@@ -55,7 +62,11 @@
 
 包内每一条都标注接受依据`Approval Basis`：`User Confirmed`、`Confirmed (batch, no objection)`或`Auto-accepted under FAST`。批次确认与逐项确认可以分别标注，但都属用户确认；FAST自动接受项必须与用户确认区分标注，不得合并表述。用户要求“只要我本人确认过的”时，排除FAST自动接受项。
 
-**不作为入选证据**：出现在Asset Registry或对话里、路径存在、Prompt已完整、被下游阶段消费过。这些都不是认可。另有两类边界不因沉默而成立——**从未真实展示过的内容**（用户没有机会提异议）、**用户没看到或范围无法逐项核对的内容**；把沉默当成不展示的理由同样无效。Asset候选图、被弃用图、仅用于设计决策的外观参考图、Storyboard与Top-down Blocking Map按各自既有规则不进包。
+**不作为入选证据**：**仅有出现、没有确认记录**的内容——出现在Asset Registry或对话里、路径存在、Prompt已完整、被下游阶段消费过。这些都不是认可。另有两类边界不因沉默而成立——**从未真实展示过的内容**（用户没有机会提异议）、**用户没看到或范围无法逐项核对的内容**；把沉默当成不展示的理由同样无效。Asset候选图、被弃用图、仅用于设计决策的外观参考图、Storyboard与Top-down Blocking Map按各自既有规则不进包。
+
+**反向同样成立（不得用它当拒绝理由）**：只要某批次已真实展示、逐项可核对，用户未提出异议的推进输入就构成确认——**确认效力不取决于该工件是否已被写成文件**。会话内已确认的内容就是正式工件，与已落盘的工件同等有效；落盘只是把它写成文件，不是确认成立的条件，也不需要任何“补确认”。不得以“还只在对话里 / 尚未落为正式文件”为理由拒绝入包、跳过整包或降低该工件的确认等级。
+
+**准入不等于参考资格**：`07_references/`与`08_design/`的存在只决定“归档到哪个目录”，不改变任何一条视频输入资格规则。Storyboard与Top-down Blocking Map**不进`02_assets/`、不登记为Canonical、也不得进入任何`参考资产`**，但已确认者按`08_design/`归档进包（不再写成“不进包”）。
 
 **排除必须可见**：`00_INDEX.md`列出`未确认／未打包`清单，逐项写原因（从未展示、未确认、已否决、缺确认记录、非Canonical、文件不可读）。排除数量与原因不得省略或概括成“其余项目”。
 
@@ -72,6 +83,8 @@
 1. **读**：Active Project Root 可访问，且确认资产图片的真实文件可读；
 2. **写**：包位置（Project Root 之外）可创建目录并写入文件；
 3. **压缩**：可生成zip。只有第3项允许降级——它只影响搬运形态，不影响包本身。
+
+第1项的`读`在项目此前从未落盘时**不构成失败**：此时以当前可写目录作为 Project Root 候选，先按`references/project_workspace.md`把已确认工件落盘，再按下方`未落盘不等于缺失`处理；不得因为"还没有项目文件"就判定不可打包。
 
 ### 普通 Chat / Portable 模式
 
@@ -93,6 +106,8 @@
 | 不能读 | 只交付命名映射表，每项标`待用户重命名`，明确“未打包” |
 | 部分可读 | 打包可读项，逐项列出不可读项与原因；不因单项失败放弃整包 |
 
+**未落盘不等于缺失**：上游已确认工件只存在于会话中、尚未写成项目文件时，它仍是**有可回查确认记录的真实工件**，不是空类别、也不是`Not Applicable`。环境可写时必须先按`references/project_workspace.md`的Project Root结构把已确认工件落盘，再按上表打包——落盘只把已确认内容写成文件，不改内容、不加确认、不重做已完成阶段，也不改变任何已确认事实。**不得以“锁定剧本、场次、分镜与Clip表尚未落为可打包的确认文件”为由跳过整包**，或把已有确认记录的类别报成缺失；只有环境不可写，或某项确实没有可回查的确认记录时，才按上表降级或逐项报告。
+
 任何降级都不得用文件名、清单或空目录**伪造**包已生成、图片已上传或已确认。降级不是`BLOCKED`：它是当前能力下的合法交付形态，按上表如实报告即可。
 
 ## Package Contents
@@ -105,8 +120,10 @@
 | Assets | `02_assets/` | 资产登记表 + 每条`Asset Confirmed`的图片 | 无该类已确认资产时写`Not Applicable`并写明依据 |
 | Visual Development | `03_visual_development/` | 用户确认过的`Project Style Baseline` / Aesthetic Decision Lock / `Project Color Reference`；只由STATE-04内部持有、未经确认的方向性材料不进包 | 无该类已确认项时该目录写`Not Applicable`并写明依据。该`Not Applicable`**只描述打包入选，不构成跳过STATE-04的依据**；STATE-04的建立与完成要求由`workflows/07_visual_development_workflow.md`拥有 |
 | Scenes | `04_scenes/` | 用户确认过的Scene Breakdown与适用Sequence Plan | 无该类已确认项时该目录写`Not Applicable`并写明依据 |
-| Shots | `05_shots/` | 用户确认过的Detailed Shot Design与适用Storyboard | 无该类已确认项时该目录写`Not Applicable`并写明依据 |
+| Shots | `05_shots/` | 用户确认过的Detailed Shot Design | 无该类已确认项时该目录写`Not Applicable`并写明依据 |
 | Clips | `06_clips/` | 用户确认过的Clip Production Plan | 未确认则不打包（见门条件） |
+| Non-Canonical References | `07_references/` | **实际进入参考位**但不属于Canonical资产的真实视觉输入：Confirmed `REF-SKETCH-XX`、A/B所需`REF-TAIL-XX`、STATE-07按风险选择的`Project Color Reference（非资产）`、用户提供的合法首尾帧 | 无该类已确认项时写`Not Applicable`并写明依据 |
+| Design Materials | `08_design/` | 已确认的**系统内部参考材料**（供空间 / 分镜锁定与校验，不作为模型输入参考位）：适用Top-down Blocking Map、用户显式请求过的Storyboard、Look Frame试片帧 | 无该类已确认项时写`Not Applicable`并写明依据 |
 
 ```text
 <Project ID>_<Project Name>_ProductionPackage_v<NNN>/
@@ -117,10 +134,14 @@
 ├── 03_visual_development/
 ├── 04_scenes/
 ├── 05_shots/
-└── 06_clips/
+├── 06_clips/
+├── 07_references/      （非Canonical参考输入：REF-SKETCH / REF-TAIL / 色卡 / 合法首尾帧）
+└── 08_design/          （规划与执行材料：Top-down Blocking Map / Storyboard / Look Frame）
 ```
 
-`06_clips/`是最后一项：包在Clip表确认后生成，包内**不含**最终视频Prompt；Prompt仍由STATE-08按当前Template独立交付。
+`06_clips/`是**最后一个生产类别**：包在Clip表确认后生成，包内**不含**最终视频Prompt；Prompt仍由STATE-08按当前Template独立交付。`07_references/`与`08_design/`是补充归档类别，不参与生产顺序、不改变门条件，也不因其中某项缺失而阻塞包的生成。
+
+**包目录是本体，zip 是同一个包目录的压缩搬运形态**：两者内容完全相同（同一份`00_INDEX.md`、各类`_MANIFEST.md`与同一批已确认文件），zip 不是第二份交付物、不是第二套内容，也不额外包含任何文件。因此“产出完整生产包”与“产出zip”不是两件事——先构建包目录，再把它整体压成同名 zip；zip 缺失只影响搬运，不影响包的完整性，也不得被写成“包未完成”。
 
 - `00_INDEX.md`：类别清单、每类文件名与来源、包Revision、构建时间与已完成类别的Gate证据。
 - `00_MANIFEST.md`：每个打包文件的`文件名｜类别｜Asset ID或Artifact ID｜版本或Revision｜来源`，以及内容清单（文件字节数与SHA-256）、`Supersedes`与未打包的`待补充`条目。
@@ -161,7 +182,37 @@
 
 - 资产内容或版本更新：新建符合规范的新文件并在Registry切换Active Version；旧文件与旧名保留为历史，记录`Supersedes`。不得覆盖旧文件、不得让两个不同内容共用同一文件名。
 - 已确认资产的文件名不得因风格、审美或整理方便而更改；改名会使已交付Prompt的参考条目失效。
-- 候选图、被弃用图、线稿、拼图、Storyboard与Top-down Blocking Map不是Canonical资产，不进入资产图片命名体系，也不进包内资产目录。
+- 候选图、被弃用图、线稿、拼图、Storyboard与Top-down Blocking Map不是Canonical资产，**不进入资产图片命名体系**（`<Asset ID>｜<Purpose>.ext`），也不进`02_assets/`；已确认者按其归属按下方的`## Non-Canonical Reference Naming`或`## Design Material Naming`归档。
+
+## Non-Canonical Reference Naming
+
+`07_references/`收**实际进入参考位、但不是Canonical资产**的真实视觉输入。它们已有各自的稳定引用名，包内文件名直接沿用，不改写、不另起名：
+
+- `REF-SKETCH-XX`：`REF-SKETCH-01｜CLIP-01草图.png`（引用名与用途沿用其登记记录）；
+- `REF-TAIL-XX`：`REF-TAIL-01｜CLIP-01尾帧参考.png`；
+- `Project Color Reference（非资产）`：保留真实来源名，并在清单里写明`非资产`与唯一用途；
+- 用户提供的合法首尾帧：保留用户提供的原名，并记录来源与用途。
+
+这一类的每一项都必须**一对一落到最终视频Prompt的某个参考条目**：Prompt引用了**快照时点已存在**的参考文件却不在包内属阻塞项；包内有却没有任何Clip引用时，必须在`_MANIFEST.md`写明其用途或移出包。它们不是Canonical资产、不占Asset ID、不改变任何Reference Authority。
+
+本目录只收**打包快照时点已存在且已确认**的参考输入。`REF-SKETCH-XX`按设计在STATE-08的Before-Single-Clip-Prompt Gate生成，`REF-TAIL-XX`来自上一个Clip的末帧——两者通常出现在快照之后；它们的处理按`## Package Timing And Delivery`的快照边界执行：报告位置与规范文件名，由用户自行放入，不触发重建。
+
+## Design Material Naming
+
+`08_design/`收**系统内部参考材料**：它们是参考材料——参考给系统的空间 / 分镜判断与人工校验，**不给模型**。两类参考的通道必须分清：模型输入参考见上一节；本节材料不占参考位、不进`参考资产`字段、不计Reference Budget。
+
+俯视空间关系进入模型输入的合法载体是`REF-SKETCH`的`Spatial Proof`区域（`templates/23_visual_blocking_sketch_prompt.md`），不是本节的规划图——多画面、带机位锥 / 箭头 / 轴线 / 图例的规划图直接投喂会把线条、边框、标注与多画面结构带进生成画面。
+
+- Top-down Blocking Map：`<Scene ID>｜Top-down Blocking.png`（Scene ID沿用STATE-05 / STATE-06既有ID；来源通常为`<active-project-root>/shots/spatial_blocking/`）；
+- Storyboard（仅用户显式请求过的工作流产物）：`<Scene或Sequence ID>｜Storyboard.png`；
+- Look Frame试片帧：`<Scene或Clip ID>｜Look Frame.png`。
+
+这一类只受两条硬约束：
+
+1. **不得**出现在任何Clip的`参考资产` / `多模态参考资产` / 其他参考字段，**不得**登记为Canonical或Active Version；
+2. `08_design/_MANIFEST.md`的每一项必须写明“系统内部参考（空间 / 分镜 / 试片判断）、不作为模型输入参考”，与该材料由哪个owner产生、供哪个阶段消费。
+
+**归档位置不改变资格规则**：进`08_design/`只解决“交付与留存”，不使该材料获得模型输入资格；进`07_references/`也不使它成为Canonical资产。视频输入资格仍只由`rules/02_asset_rules.md`、`rules/03_prompt_rules.md`与`rules/05_output_rules.md`拥有。未验证草图、候选图与被弃用图仍不进包。
 
 ## Package Location And Source Rule
 
@@ -171,6 +222,8 @@
 <project-root>/../<project_id>_packages/<version>/
 ```
 
+包目录与同名 zip 并列放在该目录下（`<Project ID>_<Project Name>_ProductionPackage_v<NNN>/` 与其 `.zip`）；zip 是包目录的压缩形态，不另起名、不另建内容。
+
 - 包目录与zip不属于Project State，不被任何Workflow当作Required Resource，也不得反向改写`asset_registry.md`或任何Accepted Artifact。
 - 打包**只复制真实已确认文件**：不改内容、不转码、不重命名已确认资产图片、不移动Project Root内原文件。Project Root仍是唯一生产真源。
 - 不伪造路径、受控ID、上传或确认状态。未提供的文件（例如A/B所需`REF-TAIL`）在manifest记为`待补充`，不计入包内文件数。
@@ -178,9 +231,9 @@
 
 ## Final Prompt Correspondence
 
-最终视频Prompt的`参考资产：`（Seedance 2.5为`多模态参考资产：`，MiniMax H3为对应参考字段）为每个实际投喂的视觉条目写出该资产的稳定引用名`<Asset ID>｜<资产名>`；环境View在其后以下划线补View Code（如`ENV-001｜面馆主视图_ENV-01`）。**以Asset ID为键**：每个引用名都必须能一对一落到`02_assets/`中的一张真实文件——一个Asset ID只对应一张Canonical图时写`<Asset ID>｜<资产名>`即可，一个Asset ID对应多张图（环境View、State、Costume、Material等）时必须补足以区分是哪一张的View Code或Purpose，否则视为不可机械核验。只写资产名、只写中文标签或写平台附件位（`图片1`）而不含Asset ID的条目一律不合格。对应关系必须是**一对一且可机械核验**：
+最终视频Prompt的`参考资产：`（Seedance 2.5为`多模态参考资产：`，MiniMax H3为对应参考字段）为每个实际投喂的视觉条目写出该资产的稳定引用名`<Asset ID>｜<资产名>`；环境View在其后以下划线补View Code（如`ENV-001｜面馆主视图_ENV-01`）。**对应性覆盖两个目录**：Canonical资产图落在`02_assets/`，非Canonical的模型输入参考（`REF-SKETCH-XX` / `REF-TAIL-XX` / `Project Color Reference（非资产）` / 用户提供的合法首尾帧）落在`07_references/`；`08_design/`的内部参考材料**不参与**本对应，也不得被任何参考条目引用。**以Asset ID为键**：每个引用名都必须能一对一落到`02_assets/`中的一张真实文件——一个Asset ID只对应一张Canonical图时写`<Asset ID>｜<资产名>`即可，一个Asset ID对应多张图（环境View、State、Costume、Material等）时必须补足以区分是哪一张的View Code或Purpose，否则视为不可机械核验。只写资产名、只写中文标签或写平台附件位（`图片1`）而不含Asset ID的条目一律不合格。对应关系必须是**一对一且可机械核验**：
 
-- 每个入选的已确认资产条目，其文件名与包内`02_assets/`中的真实文件一一对应；
+- 每个入选的已确认资产条目，其文件名与包内`02_assets/`中的真实文件一一对应；每个`REF-SKETCH-XX` / `REF-TAIL-XX` / 色卡 / 合法首尾帧条目，其引用名与包内`07_references/`中的真实文件一一对应；
 - 包内每张被列为Canonical的资产图，都能在引用它的Clip的`参考资产：`中找到对应条目；仅按`knowledge/environment_multi_view_reconstruction.md`登记为**按方位校验用途、默认不进入画面参考位**的View（典型为`ENV-04`俯视校验）豁免本项，但必须在`00_MANIFEST.md`写明其校验用途与“默认不进入参考位”的依据，不得静默留一张无解释的孤儿图；
 - 不虚构文件名，不使用未打包、未确认或来源不明的图片，不把同一文件重复列为两个不同资产；
 - 该对应只决定“条目落到哪个文件”，不改变Reference Selection / Routing、Reference Authority Map、Reference Budget或任何Prompt字段语义。
@@ -192,12 +245,13 @@
 - 同一Asset ID映射到多个文件名，或多个Asset ID映射到同一文件名；
 - Registry登记的文件名不符合本规范；
 - Registry登记的Canonical Reference文件不存在或不可读；
-- 已交付Prompt引用了包内不存在的文件；
+- 已交付Prompt引用了**打包时点已存在且已确认**、却不在包内的文件（打包快照之后才生成的`REF-SKETCH-XX` / `REF-TAIL-XX`按`## Package Timing And Delivery`的快照边界处理，属**报告项**而非阻塞项）；
+- `08_design/`的内部参考材料出现在任何Clip的参考字段，或被登记为Canonical / Active Version；
 - 某`Applicable`类别没有真实文件，或某类别被跳过而未写`Not Applicable`依据。
 
 包内不写系统无法验证的话：`00_MANIFEST.md`只记录实际打包的真实文件与其校验和，不替代`asset_registry.md`的确认状态。
 
-包的失效条件：任何打包资产的Active Version变化、任何被引用文件的名称或内容变化、或Clip表被判需重跑。失效不等于已交付Prompt自动失效——系统必须报告“包已失效”，并按最小修正处理已交付的参考条目，不静默重发。
+包的失效条件：任何打包资产的Active Version变化、任何被引用文件的名称或内容变化、或Clip表被判需重跑。失效不等于已交付Prompt自动失效——系统必须报告“包已失效”，并按最小修正处理已交付的参考条目，不静默重发。**STATE-08提示词撰写阶段新增的草图与尾帧不在失效条件之列**：它们是快照外产物，不使包失效、不触发重建，按`## Package Timing And Delivery`的快照边界报告并由用户自行放入。
 
 ## Optional Interoperable Tooling
 
@@ -215,6 +269,7 @@
 打包前提：具备真实文件访问能力的 Work / Codex 本地环境，按本轮实际能力判定
 普通Chat / Portable 模式不产zip，只交付清单与命名映射，并明说“未打包”
 资产图片文件名稳定且可机械判定
-最终Prompt的每个参考条目都能落到包内一张真实文件
+最终Prompt的每个参考条目都能落到包内一张真实文件（`02_assets/`或`07_references/`）
+规划材料只归档：`08_design/`是系统内部参考，不占参考位、不进入任何`参考资产`字段
 包是交付视图，不是新STATE、不是状态真源、不改任何已确认事实
 ```
