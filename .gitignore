@@ -25,6 +25,7 @@ tmp/
 
 # Local workspace memory and agent state (never publish)
 .workbuddy/
+.zcode/
 
 # Local editor, operating-system, and temporary files
 .vscode/

@@ -43,7 +43,7 @@ BUDGET_CEILING_BYTES = 100 * 1024
 SKILL_ENTRY_MAX_BYTES = 12 * 1024
 SKILL_ENTRY_MAX_LINES = 120
 LEDGER_CLASSES = ("COMPOSITE", "INTEGRAL", "NON_RUNTIME")
-NON_SKILL_DIRS = {".git", ".workbuddy", "tmp", "__pycache__", ".venv", "node_modules"}
+NON_SKILL_DIRS = {".git", ".workbuddy", ".zcode", "tmp", "__pycache__", ".venv", "node_modules"}
 
 SELF_CHECK_DIMENSIONS = (
     "Duplicate Rule Check", "Conflict Check", "Terminology Drift Check", "Rule Ownership Check",

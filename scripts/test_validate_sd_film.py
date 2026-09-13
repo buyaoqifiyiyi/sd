@@ -2086,7 +2086,7 @@ class R71CharacterSheetNeutralityTests(unittest.TestCase):
 
     def test_three_view_terminology_is_retired(self) -> None:
         """流程是 外观参考图 -> 正式角色资产图；「三视图」不再是本Skill的产物，全库不得再引用。"""
-        skip_dirs = {"tmp", ".workbuddy", ".git"}
+        skip_dirs = {"tmp", ".workbuddy", ".zcode", ".git"}
         offenders = []
         for path in sorted(ROOT.rglob("*.md")):
             rel = path.relative_to(ROOT)
@@ -2177,7 +2177,7 @@ class GptImageNamingTests(unittest.TestCase):
     LEGACY_TEMPLATE = "templates/24_" + "builtin" + "_image_asset_prompt.md"
 
     def test_legacy_model_name_is_fully_retired(self) -> None:
-        skip_dirs = {"tmp", ".workbuddy", ".git"}
+        skip_dirs = {"tmp", ".workbuddy", ".zcode", ".git"}
         offenders = []
         for path in sorted(ROOT.rglob("*")):
             if not path.is_file():
