@@ -218,7 +218,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 - 两者通过内部Writer → Director Handoff衔接；用户不需要填写完整WRITER INTENT PACKET，最终交付仍是可独立阅读的剧本。
 - `Writer Beat ≠ Shot`。Writer只确定人物/剧情状态发生了什么变化；一个Beat用一个或多个Shot、或多个Beat用一个长镜头，由Director决定。
 - 这不等于提前写分镜；35mm、推镜、特写、摇镜、机位、SHOT / CLIP仍留给后续Director / STATE-06/07。
-- 剧本内部会经过Directable Screenplay QA，但最终交给你的仍是可独立阅读的剧本，不是十项分析报告。
+- 剧本内部会经过Directable Screenplay QA，但最终交给你的仍是可独立阅读的剧本，不是逐项分析报告。
 - Proposal 输出后会停在确认点；你说任一推进表达即可成为 `Production-Locked Directable Screenplay`并进入后续资产阶段。
 - 你说“修改这一场”时会保持在Script Development，只改该场与必要相邻因果，不会跳到Shot Design。
 - 只有当缺失信息会实质改变故事架构或造成品牌/事实风险时，Skill才会询问最小必要问题；其他可安全信息会用清楚、可修订的假设继续。

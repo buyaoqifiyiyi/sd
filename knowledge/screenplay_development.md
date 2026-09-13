@@ -245,7 +245,7 @@ Rhythm Intent
 
 ## Directable Screenplay QA
 
-Production Script Proposal输出前，内部至少确认：
+Production Script Proposal输出前，内部至少确认。1—10检查每场戏与段落的成立性；11—14检查整片看点与兑现：
 
 1. Scene Purpose清晰。
 2. Audience Experience在场景或段落结束时发生变化。
@@ -257,8 +257,14 @@ Production Script Proposal输出前，内部至少确认：
 8. Information Strategy有层次。
 9. Rhythm Curve可执行。
 10. AIGC Directability合格。
+11. 开场钩子成立：开场在目标媒介允许的注意窗口内建立异常、欲望、悬念、关系张力或视觉问题，核心目标与阻力不因前置信息过长而推迟进入。
+12. 高潮兑现成立：最高强度的选择、揭示、动作或情绪兑现集中且可辨认，真正回应核心冲突并产生结果；巧合可以制造问题，不得无依据替人物解决核心问题。
+13. 情绪体验成立：观众能经历按Genre Promise选择的目标情绪（期待、压力、释放、共鸣、惊喜、爽感、虐感、温暖等），而非只理解事件。
+14. 结尾兑现成立：结尾完成本段兑现，并按项目需要留下下一事件、关系变化、信息缺口或余韵；独立成片且不需要续接时记录Not Applicable及理由。
 
-QA是内部生成与修订框架。最终剧本必须仍是可独立阅读的剧本，不得变成十项分析表、导演问答或提前写好的分镜表。
+11—14的钩子形态、强度与密度服从Genre Promise、目标媒介与用户意图；"无聊"的判据是无变化或无期待，不是密度不够，不得因本组检查机械加入反转、爽点或固定节拍模型。
+
+QA是内部生成与修订框架。最终剧本必须仍是可独立阅读的剧本，不得变成逐项分析表、导演问答或提前写好的分镜表。
 
 ## Proposal And Revision Handoff
 
@@ -273,6 +279,6 @@ QA是内部生成与修订框架。最终剧本必须仍是可独立阅读的剧
 - Minimum Project Intent Gate只询问真正影响架构的缺失项，其他可安全项已用可修订假设继续。
 - Director-first Story Development十步均有内部结论。
 - 每个场景已建立轻量Scene Director Intent，且未污染最终剧本文本。
-- Directable Screenplay QA十项通过或已完成最小修订。
+- Directable Screenplay QA十四项通过或已完成最小修订（11—14为整片看点项）。
 - 没有SHOT、CLIP、焦段、机位、运镜、Storyboard或Prompt内容。
 - Proposal仍等待用户明确确认，未提前进入STATE-02。

@@ -141,7 +141,7 @@ Sequence Plan（如适用）
 
 审核分为三层并按同一受审对象对照：
 
-1. **Story Review**：causality、motivation、scene necessity / value change、Writer Beat progression、conflict / stakes、subtext、setup / payoff、character / relationship arc、ending payoff与information architecture。
+1. **Story Review**：causality、motivation、scene necessity / value change、Writer Beat progression、conflict / stakes、subtext、setup / payoff、character / relationship arc、ending payoff与information architecture，并对照Directable Screenplay QA的看点层（开场钩子 / 高潮兑现 / 情绪体验 / 结尾兑现）。
 2. **Director's Cut Review**：Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Presentation、Shot Necessity、Rhythm与Emotional Residue。
 3. **Technical Review**：identity、continuity、blocking、props、action、camera/visual defects、sound/FX与Seedance稳定性。
 
@@ -220,9 +220,11 @@ Spatial Continuity QA
 
 □ Character / Relationship Arc、Information Architecture与Ending Payoff一致；Reveal / Withhold / Delay / Mislead / Confirm / Recontextualize发生在Writer锁定时机
 
+□ 看点层成立：开场在目标媒介注意窗口内建立钩子，最高强度兑现集中并回应核心冲突，观众经历目标情绪而非只理解事件，结尾完成本段兑现或已记录Not Applicable理由；任何一项缺失判`WRITING FAILURE`返回STATE-01，不因画面或技术质量抵扣
+
 ## Story Review Return Route
 
-- 因果、动机、场景必要性、Writer Beat、冲突、潜台词、Setup / Payoff、人物/关系弧、结局回收或信息架构本身错误：`WRITING FAILURE`，返回STATE-01 Screenwriter Module；若仅STATE-05投影遗漏，返回STATE-05。
+- 因果、动机、场景必要性、Writer Beat、冲突、潜台词、Setup / Payoff、人物/关系弧、结局回收、信息架构或看点层（开场钩子 / 高潮兑现 / 情绪体验 / 结尾兑现）本身错误：`WRITING FAILURE`，返回STATE-01 Screenwriter Module；若仅STATE-05投影遗漏，返回STATE-05。
 - Writer事实正确，但表演、Blocking、Camera、Rhythm Presentation或Reveal Presentation错误：`DIRECTING FAILURE`，进入Director's Cut Review定位STATE-05/06/07。
 - Writer与Director都正确而模型未实现：`GENERATION FAILURE`，返回STATE-08只重试Affected Clip。
 - 素材包含正确信息但剪辑破坏Beat order、Reaction、Reveal或Payoff timing：`EDITING FAILURE`，进入Editing最小修复。
@@ -734,7 +736,7 @@ Review必须在兼容的`PASS / REVISE / REBUILD` Result之外选择一个处置
 - `REGENERATE`：上游Director / Shot / Clip / Prompt设计正确，但模型执行、身份、动作、相机或视觉生成失败；映射Result=`REVISE`并只重试Affected Clip
 - `REDIRECT`：导演目的、观众注意、信息时序、Shot必要性、Camera动机、关系表达或Clip编排本身错误；映射Result=`REVISE`或严重时`REBUILD`，返回实际owner
 
-同时记录唯一`Failure Class: NONE / WRITING FAILURE / DIRECTING FAILURE / GENERATION FAILURE / EDITING FAILURE / UPSTREAM FACT FAILURE`，并保留兼容的`Failure Origin: None / Writing / Generation / Editing / Directing / Upstream Fact`。Writing failure指故事因果、人物动机、场景价值、Writer Beat、潜台词、Setup-Payoff、人物/关系弧、Ending Payoff或Information Architecture本身失败；Generation failure指正确设计未被模型实现；Directing failure指Writer事实正确，但结果执行了错误的注意力、关系呈现、信息呈现、表演、镜头必要性或节奏决定。不得把所有问题路由为重写Prompt，不得用REGENERATE掩盖REDIRECT，也不得用REDIRECT重做本可RE-EDIT的素材。
+同时记录唯一`Failure Class: NONE / WRITING FAILURE / DIRECTING FAILURE / GENERATION FAILURE / EDITING FAILURE / UPSTREAM FACT FAILURE`，并保留兼容的`Failure Origin: None / Writing / Generation / Editing / Directing / Upstream Fact`。Writing failure指故事因果、人物动机、场景价值、Writer Beat、潜台词、Setup-Payoff、人物/关系弧、Ending Payoff、Information Architecture或看点层（开场钩子 / 高潮兑现 / 情绪体验 / 结尾兑现）本身失败；Generation failure指正确设计未被模型实现；Directing failure指Writer事实正确，但结果执行了错误的注意力、关系呈现、信息呈现、表演、镜头必要性或节奏决定。不得把所有问题路由为重写Prompt，不得用REGENERATE掩盖REDIRECT，也不得用REDIRECT重做本可RE-EDIT的素材。
 
 根因路由：`WRITING → STATE-01`；`DIRECTING → STATE-05/06/07`；`GENERATION → STATE-08 Affected Clip`；`EDITING → Editing`；`UPSTREAM FACT → 对应事实owner`。同一报告选择唯一主Failure Class；次要问题记录在Corrective Actions，不并列争夺Return Route。
 

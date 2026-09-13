@@ -212,7 +212,7 @@ Editing保护Editorial POV、Cut / Hold动机、Information Timing、Reaction Pr
 
 ### STATE-09 Review
 
-并行区分Story Review、Director's Cut Review与Technical Review。Story Review检查causality、motivation、scene value、Writer Beat、Subtext、Setup / Payoff、arc与ending payoff；Director's Cut检查Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Presentation、Shot Necessity、Rhythm与Emotional Residue；Technical Review检查identity、continuity、blocking、props、camera/visual defects等。技术与导演呈现都正确但人物行为本身无动机时是Writing Failure，应返回Writer layer。
+并行区分Story Review、Director's Cut Review与Technical Review。Story Review检查causality、motivation、scene value、Writer Beat、Subtext、Setup / Payoff、arc、ending payoff与看点层（开场钩子 / 高潮兑现 / 情绪体验 / 结尾兑现，对应Directable Screenplay QA 11—14）；Director's Cut检查Intent vs Result、Audience Attention、Performance Truth、Relationship Readability、Information Presentation、Shot Necessity、Rhythm与Emotional Residue；Technical Review检查identity、continuity、blocking、props、camera/visual defects等。技术与导演呈现都正确但人物行为本身无动机时是Writing Failure，应返回Writer layer。
 
 ## Required Decision Dimensions
 

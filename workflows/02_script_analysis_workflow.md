@@ -292,7 +292,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 2. 形成完整Adaptation Draft并写`Script Status: Adaptation Draft`；该状态仍是STATE-01 IN_PROGRESS，不得进入STATE-02。
 3. 对Adaptation Draft执行Screenwriting Optimization。
 4. 先建立更新后的Writer Intent Packet并执行Writer → Director Handoff，再执行Directorial Interpretation，把优化结果转换为可视、可听、可表演的制作版叙事；不得创建SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。
-5. 对候选Proposal执行Directable Screenplay QA（十项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
+5. 对候选Proposal执行Directable Screenplay QA（检查项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
 6. 使用`templates/02_script_analysis_prompt.md`输出完整Production Script Proposal及其Script Analysis。
 7. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止；不得进入STATE-02。
 
@@ -308,7 +308,7 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 1. 只在已授权范围内执行Screenwriting Optimization。
 2. 更新受影响Writer Intent并执行Writer → Director Handoff；随后执行Directorial Interpretation，不提前进入后续技术层。
-3. 对候选Proposal执行Directable Screenplay QA（十项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
+3. 对候选Proposal执行Directable Screenplay QA（检查项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
 4. 使用Template输出Production Script Proposal与Script Analysis。
 5. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止。
 

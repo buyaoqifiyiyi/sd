@@ -403,7 +403,7 @@ STATE-01剧本开发与分析阶段负责：
 
 Script Optimization Gate硬规则：
 
-- Creation Brief不输出Optimization Opportunity Report，也不询问“是否允许写剧本”；只在真正缺失会改变架构或造成品牌/事实风险的关键信息时最小澄清。原创Proposal必须经过Scene Director Intent与十项Directable Screenplay QA，但最终剧本不得变成分析表或提前写好的分镜表。
+- Creation Brief不输出Optimization Opportunity Report，也不询问“是否允许写剧本”；只在真正缺失会改变架构或造成品牌/事实风险的关键信息时最小澄清。原创Proposal必须经过Scene Director Intent与十四项Directable Screenplay QA（含开场钩子 / 高潮兑现 / 情绪体验 / 结尾兑现看点层），但最终剧本不得变成分析表或提前写好的分镜表。
 - Optimization Opportunity Report只指出问题、影响与可优化方向，不得直接重写剧本正文；至少检查开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度。
 - 报告只使用A无明显优化必要、B有轻度优化空间、C有明显结构问题三档，并分别询问直接锁定、轻度优化或结构优化。
 - Existing Script / Material只有在用户明确表示“优化 / 分析并优化 / 继续优化 / 进入优化 / 直接优化 / 直接改写”或无歧义同义授权后，才执行Script Adaptation、编剧优化、导演化处理或Production Script Proposal；授权可在初始请求中给出，已明确时不得在报告后重复确认。单独“继续 / 下一步 / 好的”不构成授权。

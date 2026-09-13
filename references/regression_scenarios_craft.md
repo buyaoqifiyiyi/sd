@@ -387,9 +387,9 @@ FAIL：进入STATE-05/06、重写全稿、把`下一步`当确认，或保留旧
 
 输入：从零生成一支情感短片剧本。
 
-PASS：剧本通过Scene Purpose、Audience Experience、Character Objective / Conflict、Relationship Change、Visual Action、Performance Opportunity、Spatial Dramaturgy、Information Strategy、Rhythm Curve与AIGC Directability十项内部QA；最终文本是可独立阅读的剧本，没有35mm、特写、推镜、摇镜、机位、SHOT / CLIP或分镜表字段。
+PASS：剧本通过Scene Purpose、Audience Experience、Character Objective / Conflict、Relationship Change、Visual Action、Performance Opportunity、Spatial Dramaturgy、Information Strategy、Rhythm Curve、AIGC Directability、开场钩子、高潮兑现、情绪体验与结尾兑现十四项内部QA；最终文本是可独立阅读的剧本，没有35mm、特写、推镜、摇镜、机位、SHOT / CLIP或分镜表字段。
 
-FAIL：只写说明性对白和内心独白；把十项QA机械输出成剧本正文；或在STATE-01预先锁定摄影机。
+FAIL：只写说明性对白和内心独白；把QA清单机械输出成剧本正文；或在STATE-01预先锁定摄影机。
 
 ### R22-G Existing Diagnosis Regression
 

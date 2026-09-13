@@ -36,7 +36,7 @@ Script Status继续只允许`Source Material / Adaptation Draft / Optimized Prop
 
 冲突路由：Creation Brief只有在缺失项会实质改变架构或造成品牌/事实风险时请求最小决定；Existing的锁定事实、目标形式、Adaptation Intensity或修改范围不明确时保持STATE-01 IN_PROGRESS并请求用户决定。单独的推进表达不构成Existing优化授权；但在已展示、可核对的Proposal Confirmation Gate时，按`rules/progression_rules.md`确认Proposal。当前请求已明确“直接优化 / 直接改写”时不重复询问同一授权。用户要求修订Proposal时保持Script Development并只修改受影响范围；下游发现剧情事实冲突返回STATE-01，不在资产、镜头或Prompt阶段静默调和。
 
-Validator可检查的不变量：Creation / Existing双入口与互斥判定存在；Creation不要求先提供完整剧本、不输出Opportunity Report、具备十项Directable Screenplay QA且不提前写Shot Design；Existing固定诊断入口、十二项报告维度与A/B/C三档存在；报告前后没有未授权改写，明确“直接优化”不重复询问授权；四种Script Status值合法；Adaptation Draft或Optimized Proposal不能与STATE-01 COMPLETE或STATE-02+并存；C类只有明确授权后经过通用改编；短剧Adapter只按Target Detection加载；B类不被强制改编；No-Revision分支跳过报告和改写但仍执行Script Analysis；拒绝优化锁定原稿；所有Proposal后存在第二次确认；五份Knowledge与所有显式引用存在。
+Validator可检查的不变量：Creation / Existing双入口与互斥判定存在；Creation不要求先提供完整剧本、不输出Opportunity Report、具备十四项Directable Screenplay QA（含看点层）且不提前写Shot Design；Existing固定诊断入口、十二项报告维度与A/B/C三档存在；报告前后没有未授权改写，明确“直接优化”不重复询问授权；四种Script Status值合法；Adaptation Draft或Optimized Proposal不能与STATE-01 COMPLETE或STATE-02+并存；C类只有明确授权后经过通用改编；短剧Adapter只按Target Detection加载；B类不被强制改编；No-Revision分支跳过报告和改写但仍执行Script Analysis；拒绝优化锁定原稿；所有Proposal后存在第二次确认；五份Knowledge与所有显式引用存在。
 
 ---
 
