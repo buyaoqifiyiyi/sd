@@ -715,7 +715,7 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         text = (
             "# CLIP-001｜掏耳 Seedance 2.5视频提示词\n"
             "时长：10秒\n画幅：16:9横屏\n\n"
-            "多模态参考资产：\n- @图片1：CHAR-001\n"
+            "多模态参考资产：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
             "参考素材职责与优先级：\n- 身份由 CHAR-001 承担\n"
             "首帧参考：C\n尾帧限制：稳定\n\n"
             "主风格：低饱和胶片\n"
@@ -734,7 +734,7 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         text = (
             "# CLIP-001｜掏耳 MiniMax H3视频提示词\n"
             "时长：8秒\n画幅：16:9横屏\n\n"
-            "参考素材说明：\n- @图片1：CHAR-001\n"
+            "参考素材说明：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
             "核心创意：\n主风格：低饱和胶片\n一句话\n"
             "画面过程说明：开始、过程、结束\n\n"
             "反向提示词：\n" + package_validator.NO_BGM_SENTENCE + "\n\n"
@@ -744,6 +744,118 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         broken = text.replace("非叙事性音乐：N/A\n", "")
         errors, _ = package_validator.validate(broken, "minimax-h3", False)
         self.assertTrue(any("最后一行" in item for item in errors))
+
+    def build_25(
+        self,
+        *,
+        refs: str = "- @图片1：CHAR-001｜吴御史；用途：身份基准\n",
+        style: str = "低饱和胶片\n",
+        core_tail: str = "一句话\n",
+    ) -> str:
+        return (
+            "# CLIP-001｜掏耳 Seedance 2.5视频提示词\n"
+            "时长：10秒\n画幅：16:9横屏\n\n"
+            "多模态参考资产：\n" + refs +
+            "参考素材职责与优先级：\n- 身份由 CHAR-001 承担\n"
+            "首帧参考：C\n尾帧限制：稳定\n\n"
+            "主风格：" + style +
+            "全局叙事与画面设定：一句话\n"
+            "全局一致性与执行约束：轴线保持\n\n"
+            "时间线：\n本Clip严格只有2个阶段。\n"
+            "[0—5秒]\n画面与镜头：a\n人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n"
+            "[5—10秒]\n画面与镜头：a\n人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n\n"
+            "全局限制与反向提示词：\n" + package_validator.NO_BGM_SENTENCE + "\n"
+        ).replace("全局叙事与画面设定：一句话", "全局叙事与画面设定：" + core_tail.strip())
+
+    def check_25(self, text: str) -> list[str]:
+        return package_validator.validate(text, "seedance-2.5", False)[0]
+
+    def test_reference_entries_keep_the_asset_name_form(self) -> None:
+        self.assertEqual(self.check_25(self.build_25()), [])
+
+        with_extension = self.check_25(
+            self.build_25(refs="- @图片1：PROP-001｜Identity.png；用途：灯体基准\n")
+        )
+        self.assertTrue(any("携带文件扩展名" in item for item in with_extension))
+
+        without_separator = self.check_25(self.build_25(refs="- @图片1：CHAR-001\n"))
+        self.assertTrue(any("缺少引用名形态" in item for item in without_separator))
+
+        without_name = self.check_25(self.build_25(refs="- @图片1：CHAR-001｜\n"))
+        self.assertTrue(any("缺少资产名" in item for item in without_name))
+
+        placeholder = self.check_25(self.build_25(refs="- @图片1：图片1\n"))
+        self.assertTrue(any("平台附件位" in item for item in placeholder))
+
+        empty = self.check_25(self.build_25(refs="- @图片1：\n"))
+        self.assertTrue(any("缺少引用名" in item for item in empty))
+
+    def test_one_asset_id_with_several_images_needs_view_code_or_purpose(self) -> None:
+        ambiguous = self.check_25(
+            self.build_25(
+                refs=(
+                    "- @图片6：PROP-001｜花灯；用途：熄灭状态\n"
+                    "- @图片7：PROP-001｜花灯；用途：点亮状态\n"
+                )
+            )
+        )
+        self.assertTrue(any("必须补 View Code 或 Purpose 后缀" in item for item in ambiguous))
+
+        distinguished = self.check_25(
+            self.build_25(
+                refs=(
+                    "- @图片6：PROP-001｜花灯_Identity；用途：熄灭状态\n"
+                    "- @图片7：PROP-001｜花灯_State；用途：点亮状态\n"
+                )
+            )
+        )
+        self.assertEqual(distinguished, [])
+
+    def test_non_asset_reference_names_stay_exempt(self) -> None:
+        """`REF-*`、色卡与用户提供的首尾帧沿用各自登记名，不套 Canonical 形态。"""
+        exempt = self.check_25(
+            self.build_25(
+                refs=(
+                    "- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
+                    "- @图片2：REF-SKETCH-01｜CLIP-01草图.png；用途：Blocking\n"
+                    "- @图片3：Project Color Reference（非资产）；用途：综合色相\n"
+                )
+            )
+        )
+        self.assertEqual(exempt, [])
+
+    def test_generic_negative_list_in_the_style_field_is_rejected(self) -> None:
+        negative = self.check_25(
+            self.build_25(style="墨焰式新中式：冷灰与黑漆；禁止破败恐怖，不要艳丽古风。\n")
+        )
+        self.assertTrue(any("通用负向清单" in item for item in negative))
+
+        # 这次真实交付里出现的写法：`拒绝…` / `不做…` 同属负向约束，必须改写成正向边界。
+        refused = self.check_25(
+            self.build_25(style="墨焰式新中式：冷灰与黑漆；拒绝破败恐怖与浓郁古风装饰。\n")
+        )
+        self.assertTrue(any("通用负向清单" in item for item in refused))
+
+        positive = self.check_25(
+            self.build_25(style="墨焰式新中式：冷灰与黑漆；空间整洁干燥，只有人物、灯与自然尘埃。\n")
+        )
+        self.assertEqual(positive, [])
+
+    def test_h3_style_negative_scope_is_the_style_line_only(self) -> None:
+        """H3 的`核心创意`第二行承担主体与运镜，不在本断言的射程内。"""
+        base = (
+            "# CLIP-001｜掏耳 MiniMax H3视频提示词\n"
+            "时长：8秒\n画幅：16:9横屏\n\n"
+            "参考素材说明：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
+            "核心创意：\n主风格：低饱和胶片\n主体在室内，运镜说明：避免快摇\n"
+            "画面过程说明：开始、过程、结束\n\n"
+            "反向提示词：\n" + package_validator.NO_BGM_SENTENCE + "\n\n"
+            "非叙事性音乐：N/A\n"
+        )
+        self.assertEqual(package_validator.validate(base, "minimax-h3", False)[0], [])
+        flagged = base.replace("主风格：低饱和胶片", "主风格：低饱和胶片，不要塑料皮")
+        errors, _ = package_validator.validate(flagged, "minimax-h3", False)
+        self.assertTrue(any("通用负向清单" in item for item in errors))
 
     def test_package_validator_is_registered_and_documented(self) -> None:
         required = ROOT / "scripts" / "validate_prompt_package.py"

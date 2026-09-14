@@ -11,8 +11,13 @@ Ownership:
     `templates/10_video_prompt.md` (Seedance 2.0),
     `templates/12_seedance_25_video_prompt.md` (Seedance 2.5),
     `templates/13_minimax_h3_video_prompt.md` (MiniMax H3).
-  - This validator only asserts deterministically checkable facts. It does not
-    judge artistic quality and passing it is not a substitute for the semantic
+  - This validator only asserts deterministically checkable facts. Beyond field
+    structure it also asserts two content-form rules that used to rely on the
+    reader noticing: Canonical reference entries keep the
+    `<Asset ID>｜<资产名>` form (no package file extension; a View Code or Purpose
+    suffix when one Asset ID carries several images), and the `主风格` field
+    carries no generic negative list (`禁止` / `不要` / `避免`). It does not judge
+    artistic quality, and passing it is not a substitute for the semantic
     Output QA described by each Template.
 """
 from __future__ import annotations
@@ -32,6 +37,36 @@ SHOT_HEADER = re.compile(r"^分镜\s*(\d+)\s*$")
 SHOT_FIELD = re.compile(r"^([^：:]{1,12})：")
 STAGE_HEADER = re.compile(r"^\[(?:第)?\s*(\d+)\s*[—\-–~至]\s*(\d+)\s*秒\]\s*$")
 REF_TAIL_USAGE = ("同镜头连续承接用途", "空间/站位/景别参考用途")
+
+# Canonical reference-entry form (`references/asset_package.md`):
+#   `<Asset ID>｜<资产名>` (+ `_<View Code>` / `_<Purpose>` when one Asset ID
+#   carries several Canonical images). The package file name, extension included,
+#   never enters the prompt. Entries starting with `REF-*`, `Project Color
+#   Reference（非资产）` or a user-provided frame keep their own registered names.
+ASSET_ENTRY_RE = re.compile(
+    r"^(?:-\s*)?(?:@(?:图片|视频|音频)\d+\s*[：:]\s*)?"
+    r"((?:BOARD-)?(?:CHAR|ENV|PROP|FX)-\d{3})(.*)$"
+)
+REFERENCE_FIELD_BY_MODEL = {
+    "seedance-2.0": "参考资产",
+    "seedance-2.5": "多模态参考资产",
+    "minimax-h3": "参考素材说明",
+}
+FILE_EXTENSION_RE = re.compile(r"\.(?:png|jpe?g|webp|gif|bmp|tiff?|heic)\s*$", re.I)
+PURPOSE_OR_VIEW_SUFFIX_RE = re.compile(
+    r"_(?:ENV-\d{2}|EXT|Identity|Costume|Scale|Layout|Material|State|FX Phase)\s*$"
+)
+NEGATIVE_STYLE_TOKENS = ("禁止", "不要", "避免", "不做", "拒绝", "不得")
+# A reference entry carrying only a platform attachment slot (`图片1`) or nothing
+# names no asset at all, so no file in the package can ever be mapped to it.
+PLATFORM_ENTRY_RE = re.compile(
+    r"^(?:-\s*)?@(?:图片|视频|音频)\d+\s*[：:]\s*(.*)$"
+)
+PLATFORM_PLACEHOLDER_RE = re.compile(r"^(?:图片|视频|音频|附件)\s*\d*$")
+GENERIC_NEGATIVE_RULE = (
+    "主风格：不得保留通用负向清单（出现“{token}”）；"
+    "这类约束按 Negative Placement 收束到末尾唯一反向提示词段"
+)
 
 SHOT_FIELDS_20 = [
     "景别", "镜头/机位", "起始状态", "画面描述", "人物动作与情绪",
@@ -122,6 +157,104 @@ def check_ref_tail(lines: list[str], model: str) -> list[str]:
         errors.append(
             "参考资产出现 REF-TAIL，但未标明“同镜头连续承接用途”或“空间/站位/景别参考用途”"
         )
+    return errors
+
+
+def check_reference_entries(lines: list[str], model: str) -> list[str]:
+    """Canonical reference entries keep the `<Asset ID>｜<资产名>` form.
+
+    Two deterministic failures this catches, both observed in a delivered package:
+    a package file name with its extension pasted into the reference name
+    (`PROP-001｜Identity.png`), and one Asset ID used for several Canonical images
+    without a View Code or Purpose suffix, which makes the entry unmappable back to
+    a file. Entries that start with `REF-*`, `Project Color Reference（非资产）` or
+    a user-provided frame keep their own registered names and stay exempt; whether
+    the *meaning* of a reference entry is right remains a human judgement.
+    """
+    errors: list[str] = []
+    field = REFERENCE_FIELD_BY_MODEL[model]
+    position = marker_positions(lines, [field]).get(field, -1)
+    if position < 0:
+        return errors
+    stop_names = [
+        name for name in GLOBALS_20 + GLOBALS_25 + GLOBALS_H3 if name != field
+    ]
+    block = section_text(lines, position, stop_names)
+    entries: list[tuple[str, str]] = []
+    for raw in block.splitlines():
+        platform = PLATFORM_ENTRY_RE.match(raw.strip())
+        if platform:
+            value = re.split(r"[；;]", platform.group(1), maxsplit=1)[0].strip()
+            if not value:
+                errors.append("参考条目缺少引用名；必须写 `<资产ID>｜<资产名>` 或该素材的登记名")
+            elif PLATFORM_PLACEHOLDER_RE.match(value):
+                errors.append(
+                    f"参考条目只写了平台附件位（{value}）；必须写 `<资产ID>｜<资产名>` 或该素材的登记名"
+                )
+        match = ASSET_ENTRY_RE.match(raw.strip())
+        if not match:
+            continue
+        asset_id, remainder = match.group(1), match.group(2).strip()
+        if not remainder.startswith("｜"):
+            errors.append(
+                f"参考条目 {asset_id} 缺少引用名形态；必须是 `<资产ID>｜<资产名>`（分隔符为全角｜）"
+            )
+            continue
+        # An entry reads `<Asset ID>｜<资产名>；用途：…；锁定 / 保持：…`, so the name
+        # ends at the first `｜` (extra clause) or `；` (purpose clause).
+        name = remainder[1:].split("｜", 1)[0]
+        name = re.split(r"[；;]", name, maxsplit=1)[0].strip()
+        entries.append((asset_id, name))
+    counts: dict[str, int] = {}
+    for asset_id, _ in entries:
+        counts[asset_id] = counts.get(asset_id, 0) + 1
+    for asset_id, name in entries:
+        if not name:
+            errors.append(f"参考条目 {asset_id}｜ 缺少资产名；引用名必须是 `<资产ID>｜<资产名>`")
+            continue
+        if FILE_EXTENSION_RE.search(name):
+            errors.append(
+                f"参考条目 {asset_id}｜{name} 携带文件扩展名；"
+                "包内文件名不进入 Prompt 引用名，只写资产名与 View Code / Purpose"
+            )
+        if (
+            counts[asset_id] > 1
+            and not asset_id.startswith("BOARD-")
+            and not PURPOSE_OR_VIEW_SUFFIX_RE.search(name)
+        ):
+            errors.append(
+                f"参考条目 {asset_id}｜{name} 在同一 Prompt 中出现 {counts[asset_id]} 次，"
+                "必须补 View Code 或 Purpose 后缀（如 `_ENV-01`、`_Identity`、`_State`）以区分是哪一张"
+            )
+    return errors
+
+
+def check_style_field_negatives(lines: list[str], model: str) -> list[str]:
+    """`主风格` carries executable style, not a generic negative list.
+
+    `## Field Ownership Assignment / State Once Gate` and the Negative Placement
+    Pass move generic prohibitions into the single trailing 反向提示词 section;
+    leaving them in the style field duplicates that control and splits ownership.
+    Deterministic scope is a fixed token list inside the 主风格 content
+    (禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得, the rule's own "同义负向约束" set);
+    the fix is to rewrite the boundary positively, and paraphrases outside this
+    list still need human judgement.
+    """
+    errors: list[str] = []
+    if model == "minimax-h3":
+        text = "\n".join(
+            line for line in lines if line.strip().startswith(("主风格：", "主风格:"))
+        )
+    else:
+        position = marker_positions(lines, ["主风格"]).get("主风格", -1)
+        if position < 0:
+            return errors
+        text = section_text(
+            lines, position, [name for name in GLOBALS_20 + GLOBALS_25 if name != "主风格"]
+        )
+    for token in NEGATIVE_STYLE_TOKENS:
+        if token in text:
+            errors.append(GENERIC_NEGATIVE_RULE.format(token=token))
     return errors
 
 
@@ -237,6 +370,9 @@ def validate(text: str, model: str, allow_voice_field: bool) -> tuple[list[str],
         if not shot_numbers:
             warnings.append("没有可核对的分镜数量")
         errors.extend(check_ref_tail(line_list, model))
+
+    errors.extend(check_reference_entries(line_list, model))
+    errors.extend(check_style_field_negatives(line_list, model))
 
     if terminal_index < 0:
         errors.append(f"缺少终段字段: {terminal}：")

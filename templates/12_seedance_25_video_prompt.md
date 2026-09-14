@@ -126,10 +126,11 @@
 
 ## Output QA
 
-保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.5`；该校验器只做确定性结构断言（字段存在与顺序、阶段递进无重叠、终段位置、无BGM固定句），未通过不得交付，通过也不替代下列语义检查。参考条目与包内文件的一一对应不在该校验器的断言范围内，必须按`references/asset_package.md`的`Final Prompt Correspondence`单独完成。
+保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.5`；该校验器只做确定性断言（字段存在与顺序、阶段递进无重叠、终段位置、无BGM固定句，以及两条内容形态：Canonical参考条目的`<资产ID>｜<资产名>`形态与`主风格`不得保留通用负向清单），未通过不得交付，通过也不替代下列语义检查。参考条目与包内文件的一一对应不在该校验器的断言范围内，必须按`references/asset_package.md`的`Final Prompt Correspondence`单独完成。
 
 - 标题、时长、画幅、多模态参考资产、参考素材职责与优先级、首帧参考、尾帧限制、主风格、全局叙事与画面设定、全局一致性与执行约束、时间线、全局限制与反向提示词均存在且非空。
-- 每条参考条目均为`@图片N：<资产ID>｜<资产名>`形态，`@图片N`连续且与上传顺序一致；环境View已补View Code；每条都能一对一落到包内真实文件，无孤儿图、无同一Asset ID对应多个文件名。
+- 每条参考条目均为`@图片N：<资产ID>｜<资产名>`形态，`@图片N`连续且与上传顺序一致；环境View已补View Code；同一Asset ID对应多张Canonical图时必须补View Code或Purpose（如`PROP-001｜花灯_Identity`、`PROP-001｜花灯_State`），**包内文件名的扩展名不进入引用名**；每条都能一对一落到包内真实文件，无孤儿图、无同一Asset ID对应多个文件名。
+- `主风格`按`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`写足（建立轮四块：基线/含义、Visual Grammar Baseline、四项Aesthetic Decision Lock各一次、当前Clip载体），且不保留通用负向清单（`禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得`）——那些约束收束到末尾唯一`反向提示词`。**四锁里"排除了什么可见结果"是必需内容**：它属于Aesthetic Decision Lock本身，不是要搬走的通用负向清单，只有与具体风格判断无关的通用禁止项才移走。
 - 每项实际参考都有唯一Primary Role；计数符合图片≤30、视频≤10、音频≤10、合计≤50、视频/音频各自≤30秒以及实际入口限制；Final=`REQUIRED`时存在可访问、签名匹配且实际提交的`REF-SKETCH-XX @图片N`。
 - 时间线严格递进、无重叠、覆盖当前Clip的关键变化，且不超过确认时长；每阶段六项字段完整；时间线首行已声明阶段总数且与实际阶段数量一致，没有计划外阶段或镜头。
 - 不存在冲突参考、重复的资产长描述、未确认素材、虚构上传/标注/API参数或其他模型能力。

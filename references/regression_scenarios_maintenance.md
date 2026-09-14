@@ -74,6 +74,22 @@ PASS：候选与确认记录带`Class: P / O / C`；`O`类带`valid_as_of`且到
 
 FAIL：只有结论句而缺适用条件、步骤、失效信号或反例的条目入库；把`O`类模型参数写成跨项目原则；用耦合改动宣称某词已获验证。
 
+### R48-I Package File Names Never Enter The Prompt Reference Name
+
+输入：一份已交付的Seedance 2.5 Package，其`多模态参考资产：`写成`- @图片6：PROP-001｜Identity.png；用途：未点亮花灯造型基准`与`- @图片7：PROP-001｜State.png；用途：点亮后状态基准`；同一项目另有`- @图片1：CHAR-001`（缺资产名与分隔符）。
+
+PASS：`scripts/validate_prompt_package.py`逐条报出——携带文件扩展名（包内文件名不进入引用名）、同一Asset ID出现多次却未补View Code或Purpose、以及缺少`<资产ID>｜<资产名>`形态；改写为`PROP-001｜花灯_Identity` / `PROP-001｜花灯_State` / `CHAR-001｜阿蘅角色身份图`后同一Package通过。`REF-SKETCH-01｜CLIP-01草图.png`、色卡与用户提供的首尾帧沿用登记名，保持豁免。
+
+FAIL：把`PROP-001｜Identity.png`判为合规；或为通过检查给`REF-*`、色卡、用户素材强加Asset ID；或只保留结构断言、把这条形态要求留给"人工注意"。
+
+### R48-J Style Field Carries No Generic Negative List
+
+输入：一份Package的`主风格：`写成`…镜头如压住呼吸般平稳，人物表演内收，不做破败恐怖、灵异、鬼火或脏乱惊悚感。`，同一Package末尾`反向提示词`已列出同一批禁止项；另一个H3 Package把`避免快摇`写在`核心创意`的第二行。
+
+PASS：校验器报出`主风格`出现`不做`（同义负向约束按`禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得`判定），要求改写为正向边界或移入末尾唯一`反向提示词`；H3只检查`主风格：`那一行，第二行的主体与运镜描述不在射程内。Aesthetic Decision Lock里"排除了什么可见结果"属于必需内容，不得被这条断言误伤。
+
+FAIL：把`拒绝…` / `不做…`当风格描述放过并同时保留末尾同义清单；或反向地要求删除四锁的"排除"内容，使Aesthetic Decision Lock被压缩成只剩选择。
+
 ## R49 Aesthetic Decision Lock Regression
 
 ### R49-A Four Dimensions Require Exclusive Choices

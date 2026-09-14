@@ -70,9 +70,11 @@ H3可按明确Shot结构切镜：以故事线或`镜头1 / 镜头2`顺序写清�
 
 ## Output QA
 
-保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model minimax-h3`；该校验器只做确定性结构断言（字段存在与顺序、`核心创意：`首行、反向提示词位置、`非叙事性音乐：N/A`为最后一行、无BGM固定句），未通过不得交付，通过也不替代下列语义检查。
+保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model minimax-h3`；该校验器只做确定性断言（字段存在与顺序、`核心创意：`首行、反向提示词位置、`非叙事性音乐：N/A`为最后一行、无BGM固定句，以及两条内容形态：Canonical参考条目的`<资产ID>｜<资产名>`形态与`主风格：`行不得保留通用负向清单），未通过不得交付，通过也不替代下列语义检查。
 
 - 只用于MiniMax H3；标题、时长、画幅、参考素材说明、核心创意（第一行为`主风格：`）、画面过程说明、反向提示词和`非叙事性音乐：N/A`完整且顺序正确。
+- 参考素材的每条`@`条目均为`@图片N：<资产ID>｜<资产名>`形态；同一Asset ID对应多张Canonical图时补View Code或Purpose，**包内文件名的扩展名不进入引用名**；`REF-SKETCH` / `REF-TAIL` / 色卡 / 用户提供的首尾帧沿用各自登记名。
+- `主风格：`行按`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`写足（建立轮四块），且不保留通用负向清单（`禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得`）；这类约束收束到末尾唯一`反向提示词`。四锁里"排除了什么可见结果"属于必需内容，不在该断言的射程内。
 - 时长4—15秒；没有Seedance 2.5时间线、30秒长时长、Video Extension、Clay Render或时码式Targeted Edit语义。
 - 参考输入符合当前H3模式上限，且每项`@`素材真实、已提交/待补状态诚实、用途唯一；Final=`REQUIRED`时仅All-Reference存在可访问、签名匹配的`REF-SKETCH-XX @图片N`。
 - 对白、口型、音色、音频复用、J-cut/L-cut或视频编辑均只在用户明确要求且输入存在时出现。
