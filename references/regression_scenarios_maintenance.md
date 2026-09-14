@@ -98,6 +98,14 @@ PASS：校验器对前者给出`WARNING`（"未出现四项Aesthetic Decision Lo
 
 FAIL：把该缺口做成硬阻断，使合法的后续Delta Clip无法交付；或反向地因为"校验器通过"就认为四块已经写足。
 
+### R48-L A One-Take Time Line May Not Be One Uniform Drift
+
+输入一：一份30秒Seedance 2.5 Package的五个阶段分别写"平稳低速向后退 / 极小的右前弧移 / 连续低降再缓慢回升 / 极小幅靠近 / 极慢后移"，没有任何一段写明静止、停驻、反向或幅度变化。输入二：其余相同，但第一段写成"摄影机固定不动"。输入三：只有两个阶段的短Clip。
+
+PASS：输入一得到`WARNING`（"运镜语汇同质…一镜到底只约束不切，不约束镜头内运动层次"）且`errors`为空、退出码为0；输入二与输入三无该提示（静置段构成可指认差异；两段以内不在射程内）。真实成片回放与此一致：提示词五段皆小幅缓动时，生成结果等于一个固定双人全景，t=6s与t=18s的机位、高度、距离、背景结构完全同位。
+
+FAIL：把刻意静止的合法长镜判为不合格或做成硬阻断；或反向地因为提示词写了五种运镜名就认为成片有运镜层次——写入词表不等于画面可达。
+
 ## R49 Aesthetic Decision Lock Regression
 
 ### R49-A Four Dimensions Require Exclusive Choices

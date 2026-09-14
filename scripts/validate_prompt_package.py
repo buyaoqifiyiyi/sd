@@ -18,9 +18,11 @@ Ownership:
     suffix when one Asset ID carries several images), and the `主风格` field
     carries no generic negative list (`禁止` / `不要` / `避免` / `不做` / `拒绝` /
     `不得`). It also WARNs -- without blocking -- when `主风格` names none of the
-    four Aesthetic Decision Lock dimensions, because that content requirement stays
-    a semantic judgement. It does not judge artistic quality, and passing it is not
-    a substitute for the semantic Output QA described by each Template.
+    four Aesthetic Decision Lock dimensions, and when a Seedance 2.5 time line of
+    three or more stages is one uniform small/smooth drift (a single camera plan
+    wearing several stage labels), because both stay semantic judgements. It does
+    not judge artistic quality, and passing it is not a substitute for the semantic
+    Output QA described by each Template.
 """
 from __future__ import annotations
 
@@ -70,6 +72,40 @@ STYLE_LOCK_LABELS = (
     "构图主张",
     "视觉母题与变化轨迹",
 )
+# Multi-stage one-take Clips must show an observation hierarchy: adjacent stages
+# differ recognisably in distance / angle / direction / speed / stillness.
+# A time line where every stage is qualified as a small, smooth drift is a single
+# camera plan (in practice a locked-off master shot) wearing five labels. This stays
+# a WARNING because a deliberately still film is a legitimate choice and the token
+# test cannot judge whether the stillness serves the drama.
+CAMERA_SMALLNESS_TOKENS = (
+    "极小幅", "极小", "极缓", "极慢", "很慢", "平稳", "轻缓", "缓慢", "轻微",
+)
+CAMERA_CONTRAST_MARKERS = (
+    "静止", "不动", "固定机位", "固定不动", "锁定机位", "停住", "停驻", "反向", "反转",
+    "加速", "提速", "快速", "迅速", "大幅", "明显变化", "拉开", "推近", "升起", "升高",
+    "俯冲", "环绕", "横移", "跟拍", "跟随", "猛推", "急推",
+)
+NEGATION_PREFIXES = ("不", "无", "没", "未", "勿")
+
+
+def contains_unnegated(text: str, tokens: tuple[str, ...]) -> bool:
+    """True when a token appears and is not negated right before it.
+
+    Camera plans are full of negated statements ("机位不摇晃"、"不切换、不环绕"), and a
+    naive substring test reads them as the opposite of what they say.
+    """
+    for token in tokens:
+        start = 0
+        while True:
+            index = text.find(token, start)
+            if index == -1:
+                break
+            prefix = text[max(0, index - 2):index]
+            if not any(negation in prefix for negation in NEGATION_PREFIXES):
+                return True
+            start = index + 1
+    return False
 # A reference entry carrying only a platform attachment slot (`图片1`) or nothing
 # names no asset at all, so no file in the package can ever be mapped to it.
 PLATFORM_ENTRY_RE = re.compile(
@@ -302,6 +338,52 @@ def check_style_lock_labels(lines: list[str], model: str) -> list[str]:
     ]
 
 
+def stage_camera_lines(lines: list[str]) -> list[str]:
+    """`画面与镜头` of every time-line stage, in order."""
+    headers = [index for index, line in enumerate(lines) if STAGE_HEADER.match(line.strip())]
+    cameras: list[str] = []
+    for position, index in enumerate(headers):
+        stop = headers[position + 1] if position + 1 < len(headers) else len(lines)
+        for line in lines[index + 1: stop]:
+            stripped = line.strip()
+            if stripped.startswith(("画面与镜头：", "画面与镜头:")):
+                cameras.append(stripped)
+                break
+    return cameras
+
+
+def check_camera_contrast(lines: list[str], model: str) -> list[str]:
+    """Warn when a multi-stage one-take Clip is one uniform drift.
+
+    Scope: Seedance 2.5 time lines with at least three stages, where no stage states
+    stillness, a stop, a reversal, a fast move or a clear change of magnitude, and at
+    least half of the stages qualify the movement as small / smooth. Movement *types*
+    may well differ ("后退 / 弧移 / 低降 / 靠近 / 后移") while the amplitude stays
+    uniformly sub-perceptual -- that is the measured case this catches: the delivered
+    clip was a locked-off two-shot for its whole 30 seconds. Negated camera statements
+    ("不摇晃"、"不环绕") are read as negations, two-stage Clips pass silently, and the
+    heuristic never claims to judge whether stillness serves the drama.
+    """
+    if model != "seedance-2.5":
+        return []
+    stages = stage_camera_lines(lines)
+    if len(stages) < 3:
+        return []
+    if any(contains_unnegated(stage, CAMERA_CONTRAST_MARKERS) for stage in stages):
+        return []
+    small = sum(
+        1 for stage in stages if contains_unnegated(stage, CAMERA_SMALLNESS_TOKENS)
+    )
+    if small * 2 < len(stages):
+        return []
+    return [
+        f"时间线{len(stages)}个阶段的运镜语汇同质（每段都写作极/平稳类小幅缓动，"
+        "没有任何一段写明静止、停驻、反向或幅度变化）；一镜到底只约束“不切”，"
+        "不约束镜头内运动层次——请确认相邻阶段在距离 / 角度 / 方向 / 速度 / 是否静止上"
+        "至少一项可指认不同。本条只提示，不阻断交付"
+    ]
+
+
 def block_names(lines: list[str], start: int, stop: int) -> list[str]:
     chunk = [line.strip() for line in lines[start: stop]]
     chunk = [line for line in chunk if line and line != "……"]
@@ -418,6 +500,7 @@ def validate(text: str, model: str, allow_voice_field: bool) -> tuple[list[str],
     errors.extend(check_reference_entries(line_list, model))
     errors.extend(check_style_field_negatives(line_list, model))
     warnings.extend(check_style_lock_labels(line_list, model))
+    warnings.extend(check_camera_contrast(line_list, model))
 
     if terminal_index < 0:
         errors.append(f"缺少终段字段: {terminal}：")

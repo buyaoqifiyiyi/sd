@@ -58,7 +58,7 @@ Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm
 2. **Audience Attention Hierarchy**：规定First Look、Second Look与Delayed / Withheld信息，使用动作顺序、构图、焦点、遮挡、景深和人物活动层级控制。
 3. **Performance Beat Translation**：把情绪词变为最小充分的gaze、breath、pause、jaw / mouth / swallow、hand / fingertip tension、shoulder / weight、delayed reaction、suppression / leakage和post-action residue；使用现有PL1/PL2/PL3负荷逻辑，不另建强度Schema。
 4. **Composition Function Translation**：让距离、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal承担当前功能；“电影构图”不是合格结果。
-5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；多Shot或多阶段Clip还必须保留Confirmed Clip Movement Plan中的观察层次。不同Shot Purpose、注意力、关系 / 信息阶段或节奏功能不得被泛化成“同一台摄影机自然跟随 / 保持前进方向 / 轻微推进”；只有上游确认连续长镜理由、受保护注意力对象与稳定终点时，才可保留单一摄影机逻辑。理论解释留在内部。
+5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；多Shot或多阶段Clip还必须保留Confirmed Clip Movement Plan中的观察层次。不同Shot Purpose、注意力、关系 / 信息阶段或节奏功能不得被泛化成“同一台摄影机自然跟随 / 保持前进方向 / 轻微推进”；只有上游确认连续长镜理由、受保护注意力对象与稳定终点时，才可保留单一摄影机逻辑。**相邻阶段必须在距离 / 角度 / 运动方向 / 速度 / 是否静止中至少一项上有可指认差异**：把"平稳后退—极小弧移—低降—极小幅靠近—极慢后移"这类同一运动语汇的小幅缓动通篇铺满，判定为单一运镜（等于固定机位），不是克制；此类写法最多作为其中一段，且必须由剧情节点触发。一镜到底只约束"不切"，不约束镜头内运动的幅度与层次；至少一次明确的"停住—再启动"或方向 / 幅度变化应由剧情触发点驱动。上游Clip Movement Plan未给出阶段差异时返回STATE-07补，不在Prompt里另造；上游有差异而被压平则留在STATE-08修复。理论解释留在内部。
 6. **Information Timing Translation**：以action order、delayed gaze、delayed rack focus、temporary occlusion、hold before reveal或适用的sound-before-image实现Reveal / Withhold / Delay / Confirm / Recontextualize。
 7. **Spatial & Relationship Translation**：继承Spatial Snapshot、Relationship Topology、Pose Hierarchy、Delta Blocking、Confirmed REF-SKETCH与REF-TAIL的授权维度；不重新设计空间。
 8. **Rhythm Translation**：把BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部；标签不输出。

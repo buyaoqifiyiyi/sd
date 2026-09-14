@@ -751,19 +751,24 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         refs: str = "- @图片1：CHAR-001｜吴御史；用途：身份基准\n",
         style: str = "低饱和胶片\n",
         core_tail: str = "一句话\n",
+        moves: tuple[str, ...] = ("a", "a"),
     ) -> str:
+        span = 5 * len(moves)
+        stage_lines = "".join(
+            f"[{index * 5}—{(index + 1) * 5}秒]\n画面与镜头：{move}\n"
+            "人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n"
+            for index, move in enumerate(moves)
+        )
         return (
             "# CLIP-001｜掏耳 Seedance 2.5视频提示词\n"
-            "时长：10秒\n画幅：16:9横屏\n\n"
+            f"时长：{span}秒\n画幅：16:9横屏\n\n"
             "多模态参考资产：\n" + refs +
             "参考素材职责与优先级：\n- 身份由 CHAR-001 承担\n"
             "首帧参考：C\n尾帧限制：稳定\n\n"
             "主风格：" + style +
             "全局叙事与画面设定：一句话\n"
             "全局一致性与执行约束：轴线保持\n\n"
-            "时间线：\n本Clip严格只有2个阶段。\n"
-            "[0—5秒]\n画面与镜头：a\n人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n"
-            "[5—10秒]\n画面与镜头：a\n人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n\n"
+            "时间线：\n" + f"本Clip严格只有{len(moves)}个阶段。\n" + stage_lines + "\n"
             "全局限制与反向提示词：\n" + package_validator.NO_BGM_SENTENCE + "\n"
         ).replace("全局叙事与画面设定：一句话", "全局叙事与画面设定：" + core_tail.strip())
 
@@ -878,6 +883,41 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         errors, warnings = package_validator.validate(labelled, "seedance-2.5", False)
         self.assertEqual(errors, [])
         self.assertEqual([item for item in warnings if "维度名" in item], [])
+
+    def test_uniform_small_drift_time_line_warns(self) -> None:
+        """五段全是小幅缓动 = 一条固定机位计划戴了五个阶段标签。"""
+        uniform = self.build_25(
+            moves=(
+                "摄影机从门内中景平稳低速向后退",
+                "以极小的右前弧移显露双人关系",
+                "连续低降到手部再缓慢回升",
+                "只做极小幅靠近",
+                "以极慢后移收尾",
+            )
+        )
+        errors, warnings = package_validator.validate(uniform, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("运镜语汇同质" in item for item in warnings))
+
+        varied = self.build_25(
+            moves=(
+                "摄影机在门内固定不动，只留门缝光移动",
+                "以极小的右前弧移显露双人关系",
+                "连续低降到手部再缓慢回升",
+                "只做极小幅靠近",
+                "以极慢后移收尾",
+            )
+        )
+        errors, warnings = package_validator.validate(varied, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertEqual([item for item in warnings if "运镜语汇同质" in item], [])
+
+    def test_short_time_lines_are_out_of_camera_contrast_scope(self) -> None:
+        """两段以内不判运镜层次：短Clip本来就没有相邻阶段可比。"""
+        two_stage = self.build_25(moves=("平稳后退", "极小幅靠近"))
+        errors, warnings = package_validator.validate(two_stage, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertEqual([item for item in warnings if "运镜语汇同质" in item], [])
 
     def test_package_validator_is_registered_and_documented(self) -> None:
         required = ROOT / "scripts" / "validate_prompt_package.py"
