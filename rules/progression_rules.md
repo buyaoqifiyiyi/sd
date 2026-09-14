@@ -29,6 +29,8 @@
 5. STATE-08多Clip项目按默认单Clip交付制，只输出下一个尚未交付Clip；除非用户本轮明确要求批量或全部输出，或当前`Automation Policy: FAST`命中`rules/automation_mode.md`的连续链资格。
 6. 状态变化后按`references/project_state_contract.md`写回。
 
+STATE-08仍有未交付Clip时：交付轮Next Workflow保持`workflows/11_video_generation_workflow.md`、Pending Decision写下一个待交付Clip，按默认单Clip交付制继续。全部应交付Clip的最终Prompt都交付完（每个交付轮都含生产交付包或其降级形态）即主流程收尾：写回`Next Workflow: Project Complete / Post`与`Pending Decision: None`，**不自动进入STATE-09、不停留等待成片、不代判PASS或失败**。STATE-09按`rules/activation_rules.md`的Review显式调用进入：只有用户明确要求审核成片或携带具体成片问题 / 局部修改时才路由到Review；纯推进命令本身不构成审核授权。
+
 当`Automation Policy: FAST`时，先读取`rules/automation_mode.md`。对其明确列出的Eligible Work，当前Workflow完成必需QA后必须按FAST Continuous Chain在同一轮自动继续、写回并按Unified Delivery Packages聚合展示；不得跳过State、Hard Stop、外部权限或事实冲突处理。未命中FAST资格时仍按本规则的最近Checkpoint停止。
 
 ## Confirmation Input Semantics

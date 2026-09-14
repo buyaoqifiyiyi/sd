@@ -389,6 +389,8 @@ STATE-08的Required / Conditional Resources权威清单只由`workflows/11_video
 
 ## STATE-09 Review
 
+进入条件：显式调用——只有用户明确要求审核成片或携带具体成片问题要求返修时才进入；STATE-08全部应交付Clip的交付轮完成后主流程已收尾，本阶段默认不进入，也不等待成片。
+
 Required：
 
 - knowledge/quality/index.md

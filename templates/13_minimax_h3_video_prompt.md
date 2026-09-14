@@ -19,7 +19,7 @@
 - @图片1 / @视频1 / @音频1：<真实素材或资产ID>；用途：<人物 / 物体 / 场景 / 关键帧 / 风格 / 构图 / 动作 / 运镜 / 音色 / 音频复用 / 编辑>；保持：<其授权维度>。
 
 核心创意：
-主风格：<项目风格标签 + 当前Clip的Project-specific Style Meaning + 1—5个可见 / 可听的高价值风格载体>
+主风格：<项目风格标签或Visual Grammar Baseline + 项目内含义 + 建立轮的四项Aesthetic Decision Lock各一次（选择与它排除的可见结果）+ 当前Clip的可见 / 可听高价值风格载体；载体可少，四锁不得缺项>
 <主体 + 地点 + 事件 + 必要运镜；写清当前Clip的叙事目标和最重要的视觉结果>
 
 画面过程说明：
@@ -50,7 +50,7 @@ Canonical角色、环境和道具优先于临时动作/构图/风格参考。All
 
 ### 核心创意
 
-保持H3官方三段式，不新增顶级`主风格：`段落；但`核心创意：`下的第一行必须是`主风格：`。它写经确认的项目风格标签或Visual Grammar Baseline、当前项目具体含义，以及当前Clip最有控制价值的1—5个（动作复杂时可少至1—3个）可见 / 可听载体。第二行才使用简洁、正向、可执行的描述固定主体、地点、事件、当前Clip叙事目标和必要运镜。风格必须来自已确认Visual Direction / Project Bible、Canonical资产、Director Intent与当前剧情功能的交集；不得压过主体、动作、空间和镜头，也不得带入无依据默认场景包。
+保持H3官方三段式，不新增顶级`主风格：`段落；但`核心创意：`下的第一行必须是`主风格：`。最低内容按`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`执行：建立轮必须写足标签或基线 + 项目内含义、Visual Grammar Baseline的稳定倾向、Aesthetic Decision Lock四项各一次（每项含选择与它排除的可见结果）以及当前Clip的载体，**不得压成一句风格句**；后续连续Clip只保留已锁定锚点与当前Delta，但四锁锚点不得整体消失。它写经确认的项目风格标签或Visual Grammar Baseline、当前项目具体含义，以及当前Clip最有控制价值的可见 / 可听载体——载体可少，四锁不得缺项。第二行才使用简洁、正向、可执行的描述固定主体、地点、事件、当前Clip叙事目标和必要运镜。风格必须来自已确认Visual Direction / Project Bible、Canonical资产、Director Intent与当前剧情功能的交集；不得压过主体、动作、空间和镜头，也不得带入无依据默认场景包。
 
 ### 画面过程说明
 

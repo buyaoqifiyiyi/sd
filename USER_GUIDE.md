@@ -24,7 +24,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 快速模式会默认把连续可推进的结果合成一次交付。标准模式下也可明确说`统一输出`、`合并输出`、`一次性制作包`或`按包交付`。
 
-- `Preproduction Package`：视觉方向摘要（仅要求查看时）+ 场景拆解 + 完整专业分镜。
+- `Preproduction Package`：视觉方向摘要（基线 + Visual Grammar Baseline + 四项美学决定各一行；想看完整版直接说）+ 场景拆解 + 完整专业分镜。
 - `Execution Package`：完整 Clip Plan + 按顺序的完整目标模型视频 Prompt；前提是模型已锁定、FAST可自动接受Clip Plan且逐Clip检查通过。
 - `Asset Candidate Package`：同批次资产Prompt、生成结果筛选与合格候选；它必定停在候选图确认，不会越过资产锁定。
 
@@ -32,7 +32,7 @@ SD Film现在默认由`Director Module / Director Intelligence Layer`贯穿剧�
 
 ## 生产交付包（分类打包）
 
-当资产全部确认、Clip 表也确认之后，系统会在**交付最终视频提示词的那一轮**把这一路做出来的、**你认可过的**东西按类别打成一个包（含 zip）一并给你——不需要你专门下令打包。你也可以随时直接说：
+**这是主流程的正式收尾交付物，不是可选项。** 当资产全部确认、Clip 表也确认之后，系统会在**交付最终视频提示词的那一轮**把这一路做出来的、**你认可过的**东西按类别打成一个包（含 zip）一并给你——同轮自动执行，不需要你专门下令，也不会被跳过；交付轮没附包、也没给出降级形态时，那一轮不算完成。你也可以随时直接说：
 
 ```text
 调用sd，把我确认过的生产物按类别打包给我，图片文件名要和最终视频提示词里的参考资产一一对应。
@@ -106,7 +106,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 
 | 任务 | 你可以直接这样说 | 默认进入 / 调用模块 |
 |---|---|---|
-| 完整视频 | `调用sd，根据这个剧本进入完整视频制作流程。` | STATE-00 → STATE-09 主流程 |
+| 完整视频 | `调用sd，根据这个剧本进入完整视频制作流程。` | STATE-00 → STATE-08 主流程（STATE-09 Review显式调用） |
 | 从创意写剧本 | `调用sd，我只有一个故事概念，直接从剧本开始。` | STATE-01 Screenplay Generation branch |
 | 品牌需求写短片 | `调用sd，根据这个品牌需求写一支宣传短片，先完成剧本提案。` | STATE-01 Screenplay Generation branch |
 | 剧本优化 | `调用sd，分析这个剧本并给出优化机会报告，先不要改写。` | STATE-01 Script Analysis |
@@ -124,7 +124,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 | 专业分镜 | `调用sd，根据已确认场景和资产制作Professional Detailed Shot Script。` | STATE-06 Detailed Shot Design |
 | Storyboard | `调用sd，根据已确认Detailed Shot Design制作Storyboard。` | Optional Storyboard |
 | Shot组合为Clip | `调用sd，把已确认的Detailed Shot Design组织为Clip；沿用项目级视频模型偏好，并按当前Clip能力复核。` | STATE-07 Clip Production |
-| 生产交付包 | `调用sd，把所有已确认的生产物按类别打包给我，图片文件名与最终视频提示词的参考资产一一对应。` | 生产交付包（Clip表确认后，随最终Prompt交付轮一并提交的动作） |
+| 生产交付包 | `调用sd，把所有已确认的生产物按类别打包给我，图片文件名与最终视频提示词的参考资产一一对应。` | 生产交付包（Clip表确认后，随最终Prompt交付轮**同轮自动提交**的正式收尾交付物） |
 | MiniMax H3 Clip | `调用sd，使用MiniMax H3组织已确认Shot为Clip并输出CLIP-003视频提示词。` | STATE-07 → STATE-08；H3为4—15秒，支持首/尾帧、全能多模态参考、已有视频编辑、分镜/切镜、明确对白与口型；按官方三段式提示词编译 |
 | Dreamina长视频 | `调用sd，使用Dreamina网页端为已确认项目准备180秒长视频提交包。` | Seedance 2.5 / Dreamina Web；仅网页端能力，不改写方舟API的4—30秒路线 |
 | Dreamina标注编辑 | `调用sd，使用Dreamina网页端编辑这段视频；在我标注的区域与时间点把X改成Y，其余保持。` | Seedance 2.5 / Dreamina Web；须提供原视频、标注与时间点 |
@@ -132,8 +132,8 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 | 全部Clip Prompt | `调用sd，按顺序输出全部Confirmed Clip的完整目标模型视频提示词；过长就按完整Clip自动分批。` | STATE-08 批量交付 |
 | 下一个Clip | `调用sd，下一个Clip。` | STATE-08 下一个未交付Clip |
 | Clip返修 | `调用sd，只修CLIP-003的站位错误，其他内容和字段保持不变。` | STATE-08最小修订或对应上游Return Route |
-| 连续性检查 | `调用sd，只检查CLIP-002到CLIP-003的角色、站位、道具、轴线和首尾帧连续性，不重新生成。` | STATE-07 / STATE-09连续性核验 |
-| Review | `调用sd，审核这个实际生成结果，给出PASS / REVISE / REBUILD、KEEP / RE-EDIT / REGENERATE / REDIRECT和最小返修方案。` | STATE-09 Technical + Director's Cut Review |
+| 连续性检查 | `调用sd，只检查CLIP-002到CLIP-003的角色、站位、道具、轴线和首尾帧连续性，不重新生成。` | STATE-07 / STATE-09连续性核验（显式请求） |
+| Review | `调用sd，审核这个实际生成结果，给出PASS / REVISE / REBUILD、KEEP / RE-EDIT / REGENERATE / REDIRECT和最小返修方案。` | STATE-09 Technical + Director's Cut Review（显式调用） |
 | 技能经验 | `调用sd，Review后提出可跨项目复用的经验候选，等我确认后再写入Skill。` | Skill Experience候选确认机制 |
 | 电影海报 / Key Art / 封面 | `调用sd，根据当前项目设计一张9:16数字竖版电影Key Art，沿用现有角色和环境资产。` | Poster Design辅助Workflow |
 | 继续旧项目 | `重新调用sd，恢复当前项目，从最后一个安全Checkpoint继续。` | Runtime Reload + Legacy Project Recovery + Project Resume |
@@ -152,12 +152,12 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 6. STATE-06 若复杂空间需要俯视 Blocking Map，可能先给地图 Prompt，等你确认后再生成图；不需要图或工具不可用时可使用完整文字 Blocking。
 7. 你可以上传色卡并明确“将此色卡作为项目色彩基线”。它会作为`Project Color Reference`进入视觉开发，而不是角色、环境、道具或效果资产；只有真实图片已可访问、你已确认采用、且某个Clip确有光色漂移风险时，才会作为该Clip的受控模型图片输入。
 8. 图像模型默认项、图像交付形态、视频模型偏好与项目风格基线在剧本`Production-Locked`后只确认一次；STATE-03直接继承图像默认项与风格基线，STATE-06/07按当前Clip时长、首尾帧、编辑模式和参考输入能力复核视频偏好。能兼容时不重复问；不兼容时才给最小替代选择，不会用模型能力偷偷改导演设计。选择会自动路由到对应内部提示词编译模板，写入内部执行Profile与Clip Plan，不进入最终视频Prompt。MiniMax H3的全能参考最多9图、3视频、3音频且总计12个文件；每个实际投喂素材必须在提示词中写明`@图片N / @视频N / @音频N`与用途。Clip Plan确认前切换模型只重跑受影响的STATE-07/08，不重做剧本、资产、场景或Detailed Shot Design。
-9. Seedance 2.0为4—15秒。Seedance 2.5为4—30秒：实际生成秒数由你在该窗口内选择；4—15秒沿用稳定`Standard Clip`，16—30秒由目标时长自动进入内部严格预检，不要求你额外选择`Long-form Clip`。未知网关状态不会自动限制为15秒；若实际提交被平台拒绝，系统才返回Clip规划做最小调整。2.5现在使用独立的多模态时间线Prompt模板，默认按30图、10视频、10音频、合计50项（视频/音频各自总时长≤30秒）的能力上限规划；它会按当前Clip实际需要少用，但不再人为回退成9图上限。每项参考仍必须有唯一用途。纯音频驱动动作、口型或节奏也必须由你明确指定。2.5最终Prompt拥有独立`主风格：`字段；MiniMax H3保持官方三段式，但其`核心创意：`第一行固定为`主风格：`，两者都会把项目风格含义与最小充分的可见载体写在剧情前。
+9. Seedance 2.0为4—15秒。Seedance 2.5为4—30秒：实际生成秒数由你在该窗口内选择；4—15秒沿用稳定`Standard Clip`，16—30秒由目标时长自动进入内部严格预检，不要求你额外选择`Long-form Clip`。未知网关状态不会自动限制为15秒；若实际提交被平台拒绝，系统才返回Clip规划做最小调整。2.5现在使用独立的多模态时间线Prompt模板，默认按30图、10视频、10音频、合计50项（视频/音频各自总时长≤30秒）的能力上限规划；它会按当前Clip实际需要少用，但不再人为回退成9图上限。每项参考仍必须有唯一用途。纯音频驱动动作、口型或节奏也必须由你明确指定。2.5最终Prompt拥有独立`主风格：`字段；MiniMax H3保持官方三段式，但其`核心创意：`第一行固定为`主风格：`。两种形态都写经确认的项目风格含义，**建立轮不是一句话**：要写足标签或基线 + 项目内含义、Visual Grammar Baseline稳定倾向、四项美学决定各一次与当前Clip载体；只有后续连续Clip才压缩成锚点 + 本镜Delta。
 10. 只有你明确说“使用Dreamina网页端”时，系统才会按该入口准备30—180秒一键长视频、标注编辑、绿幕、双视频转场或多格分镜的提交方案；这些不会被误报为方舟/API默认能力。
 11. 标准模式下，Clip Plan、分镜或其他需要确认的生产成果仍会在可核对的当前版本展示后才标为Confirmed；快速模式会在现有QA和状态写回通过后自动接受Detailed Shot与Clip Plan。
 12. 长视频 A / B 接续模式缺少上一 Clip 尾帧时，Prompt 可以先交付，但真正提交生成前会要求你补入尾帧。
 13. 单个Clip在最终Prompt前若被判定需要Visual Blocking Sketch，标准模式会先给你经验证的调度草图、注册名与用途说明，暂停Prompt；快速模式则在验证、登记并确认真实输入已绑定后同轮输出Prompt。草图不是“文字里提一下”：Seedance 2.0必须绑定实际文件/受控ID，Seedance 2.5必须是实际`@图片N`，MiniMax H3必须在All-Reference模式作为实际`@图片N`。图片不可访问、签名不匹配、预算无位或H3处于首尾帧/视频编辑模式时，系统会明确说生成包未就绪并返回最小修复路径，绝不声称草图已被使用。简单Clip不会为了统一流程强制出草图。
-14. Review同时区分Technical Review与Director's Cut Review，并在兼容的`PASS / REVISE / REBUILD`外给出`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。技术正确但信息或情绪提前暴露仍会返修；修复后必须重新Review。
+14. Review是**显式调用**：只有你明确要求审核成片（或带着具体问题回来）时才进入。它同时区分Technical Review与Director's Cut Review，并在兼容的`PASS / REVISE / REBUILD`外给出`KEEP / RE-EDIT / REGENERATE / REDIRECT`处置。技术正确但信息或情绪提前暴露仍会返修；修复后必须重新Review。你自己看片时不需要走这一步。
 15. Review或失败复盘后，系统可以自动提出跨项目技能经验候选；候选不会自动写入Skill。只有你明确确认后才入库，并在适用条件满足时影响后续产出或形成项目迭代建议。经验不能直接覆盖已确认剧情、资产、镜头、Clip或Prompt，项目修改仍经过对应流程与确认。
 
 ---
@@ -173,13 +173,13 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 **进阶指令**
 
 ```text
-调用sd，根据这个剧本制作一条9:16真人剧情短片。保持核心剧情、人物关系和结局不变，重点保证角色外貌、空间轴线、道具和跨Clip连续性。按STATE-00到STATE-09推进，每遇到剧本决策、资产Prompt、候选图片、Clip Plan或返修决定时停下来等我确认；STATE-08默认逐个Clip输出。
+调用sd，根据这个剧本制作一条9:16真人剧情短片。保持核心剧情、人物关系和结局不变，重点保证角色外貌、空间轴线、道具和跨Clip连续性。按STATE-00到STATE-08推进，每遇到剧本决策、资产Prompt、候选图片、Clip Plan或返修决定时停下来等我确认；STATE-08默认逐个Clip输出，交付最终Prompt那一轮把生产交付包一并给我；成片我自己审，需要你做Review时我会明确说。
 ```
 
 **Skill 行为 / 停止点**
 
-- 固定主流程是 `STATE-00 Project Setup → STATE-01 Script Analysis → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Video Prompt / Generation → STATE-09 Review`。
-- 视觉开发（STATE-04）会在内部锁定四项排他性美学决定：反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹。每项都要写明选择、被放弃的选项和依据，不接受“电影感 / 高级感”这类标签；主光比程度、色彩对抗与构图主张会写入 Project Bible，并作为 STATE-05 到 STATE-08 的执行基准，不会在 Prompt 阶段临时另起一套审美。
+- 固定主流程是 `STATE-00 Project Setup → STATE-01 Script Analysis → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Video Prompt / Generation`；`STATE-09 Review` 是**显式调用**阶段，默认不在 STATE-08 之后自动进入。STATE-08 每个交付最终 Prompt 的轮次都会把生产交付包同轮一并给你，全部 Clip 交付完主流程即收尾——项目不会停在“等你带成片回来”的检查点。
+- 视觉开发（STATE-04）会在内部锁定四项排他性美学决定：反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹。每项都要写明选择、被放弃的选项和依据，不接受“电影感 / 高级感”这类标签；主光比程度、色彩对抗与构图主张会写入 Project Bible，并作为 STATE-05 到 STATE-08 的执行基准，不会在 Prompt 阶段临时另起一套审美。包里的视觉方向只是**摘要**（基线 + Visual Grammar Baseline + 四项各一行，每行都写清选择了哪一边、放弃了哪一边）——**想看完整版直接说**：`调用sd，把STATE-04的完整Visual Direction给我，不要摘要`。
 - 这四项决定锁定之前，可以选择先**试片**：用已确认的角色 / 环境资产出 1—3 张关键画面，让你先看一眼再定。因为不看画面就把光比、色彩和构图定死，那不是决定，是赌注。试片帧是**草稿**——不登记为资产、不写入项目状态、不进后续任何阶段、也不会成为视频参考图；用完即可丢弃，它的作用是让你在锁定前修正决定。你说不想出图或环境不支持时会跳过并记录原因，其余流程照常。想用就说`先出2张试片看看`，系统最多出3张，且每张只回答一个美学问题。
 - **媒介形式**：`live_action`（真人 / 实拍）、`3d_animation`（三维 / 三渲二 / CG）、`2d_anime`（二维 / 漫剧 / 手绘 / 动态漫画）。它不改变题材，但会改变镜头、表演与美学三套语言——尤其是 2D 漫剧不能沿用实拍焦段、光比与器材参数。它在剧本定稿后的`Production Setup`确认单里和模型、风格一起问一次，**早于资产制作**；你在指令里已经写明媒介时不会重复问。确认前系统不会按默认档出资产：2D 与实拍的资产结构与材质语言不通用，答错档会让已出的资产作废。
 - “我要最终视频”只表示目标，不表示可以跳过前置阶段。
@@ -554,7 +554,8 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 - 已确认的项目色卡可按当前Clip的真实光色漂移风险选择性投喂，并计入模型图片预算；它在模型参考列表中会明确标为`Project Color Reference（非资产）`，且只控制综合色相、明度、饱和度与强调色占比。色卡不会锁定人物、环境、道具、构图、光源、镜头或最终画风，也不会因为全片存在色卡而自动进入每个Clip。
 - 编译前会做 Prompt Control：只填补当前 Clip 尚未被资产、首尾帧或 Blocking 锁定且确实需要控制的内容；内部控制矩阵不会变成最终 Prompt 的额外栏目。
 - 会先做字段归属：每条约束只在一个权威字段完整定义。`首帧参考`负责起始状态，`尾帧限制`负责结束状态与carryover，`人物一致性`只负责长期人物身份，`环境一致性`只负责场景结构与环境基线，逐镜只写新增动作/状态变化/局部连续性；其他位置只在真实变化或边界接口需要时写最短Delta，不会为强调而在6—9个字段全文重复。
-- 会做 Prompt Pollution 清理：合并重复、消解冲突。导演名、流派名、题材风格名、情绪标签和“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日”等高层词可以保留；重要标签首次出现在最终 Prompt 时，会在同一风格段解释它在本项目中的具体含义，并选择当前 Clip 必要的 3—5 个（或更少）可见 / 可听执行项。具象化后不会默认删除标签，只有完全冗余、无关、冲突或会误触发默认视觉包时才省略。项目风格已由正式资产、视觉开发或 Style Bible 锁定后，后续连续 Clip 只补当前差异，不重复整段解释；动作复杂 Clip 会把风格压到 1—3 项或更少，确保主体、动作、空间、时间顺序、镜头与状态承接优先。“短”或“长”本身都不是质量标准。
+- 会做 Prompt Pollution 清理：合并重复、消解冲突。导演名、流派名、题材风格名、情绪标签和“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日”等高层词可以保留；重要标签首次出现在最终 Prompt 时，会在同一风格段解释它在本项目中的具体含义，并选择当前 Clip 必要的可见 / 可听执行项。具象化后不会默认删除标签，只有完全冗余、无关、冲突或会误触发默认视觉包时才省略。项目风格已由正式资产、视觉开发或 Style Bible 锁定后，后续连续 Clip 只补当前差异，不重复整段解释。“短”或“长”本身都不是质量标准。
+- **`主风格：`不是一句话。** 建立轮（项目第一个交付 Clip、独立交付，或项目风格还没被正式锁定时）必须写足四块：风格标签或基线 + 项目内含义、Visual Grammar Baseline 的稳定倾向、四项美学决定各一次（反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹，每项都要写出选择了什么、排除了什么可见结果）、以及这些决定在当前 Clip 上的载体。载体数量可以少，四项美学决定不能缺；只有后续连续 Clip 才按“只补 Delta”压缩，但四锁的可核查锚点仍在。逐镜动作、空间、时间顺序与结束状态仍只写在各自字段，不会塞进`主风格`。如果交付时它只有一句风格句，那是**不合格的编译**，直接说`主风格按视觉开发重写，四项美学决定一项都不能少`即可要求返修；判据真源是`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`。
 - 会分配 Generation Budget：只设一个主要生成负荷，最多一至两个辅助负荷，并主动降低非核心复杂度；不会把身份一致性、复杂动作、高密场景、复杂运镜、群体、口型、FX和光色变化同时拉满。
 - 会执行 Reference Routing：只选择能解决当前风险的最小充分参考集合，不会因为资产在 Registry 中、上一 Clip 用过或预算还有空位就全部塞入。
 - 会遵守 Clip Scope Firewall：已发生的事件不重播，只执行本 Clip 的主要可见 Beat，未来事件和暂不应出现的结果不提前进入画面；这些内部标签不会出现在最终 Prompt 中。
@@ -679,7 +680,9 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 - **只会问你一次。** 如果你接着做下一个 Clip，而它需要接上一条的实际画面（A/B 类需要尾帧），系统会顺带问一句“上一条过了吗”：你说接受就写成 Accepted Canon；你说没定、不回答、或说“以后别问”，就不再追问，下一段按原计划状态起步并把差异记为连续性风险。C 类（新镜头、不需要尾帧）不会问。
 - 已接受 Take 中的脸、服装、环境结构或道具造型漂移不会覆盖正式 Canonical 资产；只继承合法瞬时状态，并把漂移列为 Continuity Risk。
 
-## 20）STATE-09 Review / 是否重做 / 单变量返修
+## 20）STATE-09 Review（显式调用）/ 是否重做 / 单变量返修
+
+成片默认由你自己审；只有你明确开口时系统才进入 STATE-09——想让它审、或带着具体问题想返修，用下面任一说法。
 
 **最简指令**
 
@@ -697,7 +700,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 
 - `PASS`：硬门槛通过，允许完成 Review；如要把 Take 写成 Accepted Canon，仍需你明确接受该 Take。
 - **默认只查该查的那一层。** 你带回结果并指出问题（“手不对”“脸变了”“接不上”）时，系统先定位失败归属，只展开对应那一层：故事问题才跑 Story Review，导演问题才跑 Director's Cut，纯生成 / 后期问题只跑 Technical 层加最小返修方案。你说“完整审核 / 全片 Review”才跑三层全量。**没展开的层会写 `Not Expanded` 和依据，不会当通过。**
-- **没回来不等于判 PASS。** Prompt 交给你之后，项目停在一个明确的 Review 检查点上（`等待实际生成结果`）：你带问题回来就进 Review，回来验收就说一句“这条过了”；一直不回来，项目就停在那儿——**既不会自动判 PASS，也不算失败**。真正生成之前也无法假装审完。
+- **交付完成即收尾，不会替你判 PASS。** Prompt 和生产交付包交给你之后，主流程就结束了：系统不会停在“等待实际生成结果”的检查点上，不会主动要你带成片回来，也不会替你判 PASS 或失败。成片由你自己看；想让它审、或带着具体问题想返修时，明确说一句“审核这个成片 / 这段接不上”才进入 STATE-09；没有实际生成结果时也无法假装审完。
 - `REVISE`：局部可修复，返回最小必要 Workflow；修完必须重新 Review。
 - `REBUILD`：上游事实或设计严重错误，返回事实 / 设计拥有者；不会把 STATE-09 标为完成。
 - 站位错优先只修 Spatial / Blocking；身份漂移优先修 Identity Reference 路由；动作错优先修 Motion / Performance；镜头错优先修 Camera。
@@ -869,7 +872,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 影响范围：<指定Workflow、STATE、Template或规则>。
 完成标准：<列出需要通过的正例、反例和回归场景>。
 
-按SKILL.md的版本纪律处理Skill Version和Build ID（同一对话的改动累积为一个批次，维护者确认定稿时才递增），并自动执行`references/maintenance_self_check.md`中的16项`Skill Update Self-Check`与两个Guard（判据真源为`references/maintenance_self_check_protocol.md`）。如果用户调用方式、模块入口、Prompt输出结构、音色、连续性或Review等用户可见行为变化，同步更新USER_GUIDE.md。最后报告变更分类、修改文件、规则真源、重复/冲突/污染/路由/模板/引用检查、定向回归、USER_GUIDE同步状态和未解决Warning。
+按SKILL.md的版本纪律处理Skill Version和Build ID（同一对话的改动累积为一个批次，维护者确认定稿时才递增），并自动执行`references/maintenance_self_check.md`中的17项`Skill Update Self-Check`与两个Guard（判据真源为`references/maintenance_self_check_protocol.md`）。如果用户调用方式、模块入口、Prompt输出结构、音色、连续性或Review等用户可见行为变化，同步更新USER_GUIDE.md。最后报告变更分类、修改文件、规则真源、重复/冲突/污染/路由/模板/引用检查、定向回归、USER_GUIDE同步状态和未解决Warning。
 ```
 
 **Skill 修改任务建议写清**
@@ -947,7 +950,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 
 ## 维护约定
 
-每次Skill正式修改完成后都必须执行`references/maintenance_self_check.md`中的16项`Skill Update Self-Check`、`Standalone Skill Discovery Guard`和`Unconditional Chat Runtime Startup And Recovery Guard`。即使只修改文案、Knowledge、Template或拼写，也必须运行普通Chat启动与旧项目恢复基线，以及独立Skill发现基线，避免后续优化使Chat无法正常调用、出现两份同名Skill或误要求Work。该Reference是维护QA的唯一权威来源；本说明书只说明用户可见的调用和报告方式，不复制完整检查细则。
+每次Skill正式修改完成后都必须执行`references/maintenance_self_check.md`中的17项`Skill Update Self-Check`、`Standalone Skill Discovery Guard`和`Unconditional Chat Runtime Startup And Recovery Guard`。即使只修改文案、Knowledge、Template或拼写，也必须运行普通Chat启动与旧项目恢复基线，以及独立Skill发现基线，避免后续优化使Chat无法正常调用、出现两份同名Skill或误要求Work。该Reference是维护QA的唯一权威来源；本说明书只说明用户可见的调用和报告方式，不复制完整检查细则。
 
 以后发生以下用户可见变化时，应同步更新本说明书：
 

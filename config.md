@@ -6,7 +6,7 @@
 
 - Default Output Language: Chinese
 - Professional Terms: English allowed when clearer
-- Execution Model: Full STATE-00 through STATE-09 Pipeline
+- Execution Model: Full STATE-00 through STATE-08 main pipeline + explicit-only STATE-09 Review
 - State Persistence Mode: runtime-dependent
 - Work/Codex State Target: Active Project Root
 - Chat State Target: complete Portable State in the response
@@ -16,6 +16,7 @@
 - STATE-08 Clip Duration: inherited from the locked Target Video Model and Confirmed Clip Production Plan; duration rules are owned by the Model Execution Lock contract
 - STATE-08 Reference Budget: Seedance 2.5默认按30图 / 10视频 / 10音频 / 合计50项能力上限规划并按需少用；Seedance 2.0与MiniMax H3按各自Adapter限制执行
 - Storyboard Activation: explicit only
+- Review / Finished-Film (STATE-09) Activation: explicit only; the main pipeline closes at the STATE-08 delivery turn (final Prompt + production delivery package)
 - AUDIO / SEED-AUDIO Voice Asset Activation: explicit only
 - STATE-08 Voice Identity Text: omitted by default; conditional minimal Delta only on explicit current-video-Prompt request
 - MUSIC / SEED-MUSIC Score Activation: explicit only

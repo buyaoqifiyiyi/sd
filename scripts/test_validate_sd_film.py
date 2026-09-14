@@ -2342,6 +2342,30 @@ class R73ReadScopeIndexTests(unittest.TestCase):
         diff（实测 30 行真改动显示成 2,600 行）。两者都是纯损耗。"""
         self.assertEqual(validator.check_line_endings(ROOT), [])
 
+    def test_shipped_text_files_stay_bom_less(self) -> None:
+        """Reader 一律用 utf-8-sig，所以 BOM 在语义上不可见——正因如此它能活下来：
+        没有任何规则、引用或体量检查会发现它，却会让每次 diff 的第一行变样，并把语料
+        拆成两套字节约定。实测：一次 PowerShell 往返给一个文件加了 EF BB BF，而其余
+        273 个文件都是干净的。"""
+        self.assertEqual(validator.check_encoding_prefix(ROOT), [])
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "bom.md").write_bytes(b"\xef\xbb\xbf# Titled\n")
+            self.assertEqual(
+                validator.check_encoding_prefix(root),
+                ["text file must stay BOM-less UTF-8: bom.md (UTF-8 BOM)"],
+            )
+            (root / "wide.md").write_bytes(b"\xff\xfe# T\n")
+            self.assertIn(
+                "text file must stay BOM-less UTF-8: wide.md (UTF-16 LE BOM)",
+                validator.check_encoding_prefix(root),
+            )
+            (root / "clean.md").write_bytes(b"# Titled\n")
+            self.assertNotIn(
+                "text file must stay BOM-less UTF-8: clean.md (UTF-8 BOM)",
+                validator.check_encoding_prefix(root),
+            )
+
 
 class R73EvidenceCredibilityDimensionTests(unittest.TestCase):
     """维护层第 16 项：用来判断改动是否成立的**证据本身**必须可信。
@@ -2350,12 +2374,12 @@ class R73EvidenceCredibilityDimensionTests(unittest.TestCase):
     以及一个自身有缺陷却稳定报告“毫无变化”的测量工具。
     """
 
-    def test_run_card_lists_sixteen_dimensions(self) -> None:
+    def test_run_card_lists_every_dimension(self) -> None:
         card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
-        for index in range(1, 17):
+        for index in range(1, len(validator.SELF_CHECK_DIMENSIONS) + 1):
             with self.subTest(index=index):
                 self.assertIn(f"\n| {index} | ", card)
-        self.assertNotIn("\n| 17 | ", card)
+        self.assertNotIn(f"\n| {len(validator.SELF_CHECK_DIMENSIONS) + 1} | ", card)
 
     def test_summary_template_carries_the_new_line(self) -> None:
         card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
@@ -3014,6 +3038,115 @@ class R78ReachabilityTests(unittest.TestCase):
         )
         self.assertNotIn("image_source_coverage", index_text)
         self.assertNotIn("source_coverage.md", index_text)
+
+
+class R62StageLandingCoverageTests(unittest.TestCase):
+    """Every completed stage must name where its work lands in the final prompt.
+
+    STATE-05's Scene Directing Brief had a recorded field in the Scene template
+    and two consumers, yet appeared in no projection row -- so its survival into
+    the prompt rested on "downstream inherits it". The guard has to catch that
+    class of gap without pretending it can judge whether a landing is correct.
+    """
+
+    MATRIX = (
+        "# Projection\n\n"
+        "## Global Projection Matrix\n\n"
+        "| 来源知识 | 固定目标字段 | 必须保留的语义 |\n|---|---|---|\n"
+        + "".join(
+            f"| Row {index}（STATE-00/01/02/03/04/05/06/07） | 字段 | 语义 |\n"
+            for index in range(12)
+        )
+        + "\n## Serialization Rules\n\n正文\n"
+    )
+
+    def _fixture(self, root: Path, text: str) -> None:
+        target = root / validator.STAGE_LANDING_OWNER
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+
+    def test_the_active_skill_names_a_landing_for_every_main_stage(self) -> None:
+        self.assertEqual(validator.check_stage_landing_coverage(ROOT), [])
+
+    def test_stage_missing_from_the_matrices_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            text = self.MATRIX.replace("STATE-00/01/02/03/04/05/06/07", "STATE-00/01/02/04/06/07")
+            self._fixture(root, text)
+            errors = validator.check_stage_landing_coverage(root)
+            self.assertIn(
+                "STATE-03 has no named landing row in the prompt projection matrices; "
+                "a confirmed stage design must not rely on downstream inheritance",
+                errors,
+            )
+            self.assertIn(
+                "STATE-05 has no named landing row in the prompt projection matrices; "
+                "a confirmed stage design must not rely on downstream inheritance",
+                errors,
+            )
+
+    def test_compact_run_tags_are_expanded(self) -> None:
+        """`STATE-02/03` must count as both states, not only the first."""
+        original = validator.STAGE_LANDING_RUN_RE
+        found = {
+            f"STATE-{part}"
+            for run in original.findall("（STATE-02/03）")
+            for part in run.split("/")
+        }
+        self.assertEqual(found, {"STATE-02", "STATE-03"})
+
+    def test_deleting_rows_cannot_buy_coverage(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            rows = "".join(
+                "| Row（STATE-00/01/02/03/04/05/06/07） | 字段 | 语义 |\n" for _ in range(3)
+            )
+            text = (
+                "# Projection\n\n## Global Projection Matrix\n\n"
+                "| 来源知识 | 固定目标字段 | 必须保留的语义 |\n|---|---|---|\n"
+                + rows
+                + "\n## Serialization Rules\n\n正文\n"
+            )
+            self._fixture(root, text)
+            self.assertIn(
+                "knowledge/prompt_compilation/state08_projection.md dropped below "
+                "12 projection rows (3); landing coverage may not be fixed by deleting rows",
+                validator.check_stage_landing_coverage(root),
+            )
+
+    def test_missing_matrix_section_and_landing_rows_are_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, "# Projection\n\n没有矩阵\n")
+            self.assertIn(
+                "knowledge/prompt_compilation/state08_projection.md must own the "
+                "## Global Projection Matrix section",
+                validator.check_stage_landing_coverage(root),
+            )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, self.MATRIX.replace("Row 0", "Project / Clip Plan"))
+            errors = validator.check_stage_landing_coverage(root)
+            for marker in validator.STAGE_LANDING_ROW_MARKERS:
+                with self.subTest(marker=marker):
+                    self.assertIn(
+                        "knowledge/prompt_compilation/state08_projection.md is missing "
+                        f"the stage landing row: {marker}",
+                        errors,
+                    )
+
+    def test_run_card_and_criteria_own_this_dimension(self) -> None:
+        """A guard the maintenance layer never runs is not a guard."""
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(
+            encoding="utf-8-sig"
+        )
+        dimension = "Stage-To-Prompt Landing Coverage Check"
+        self.assertIn(dimension, validator.SELF_CHECK_DIMENSIONS)
+        self.assertIn(dimension, card)
+        self.assertIn(dimension, criteria)
+        self.assertIn("check_stage_landing_coverage", card)
+        self.assertIn("射程必须说清", criteria)
 
 
 if __name__ == "__main__":

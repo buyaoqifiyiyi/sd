@@ -54,7 +54,7 @@ Read current rules
 → Classify existing coverage
 → Before You Write: ownership / size / subtraction judgement
 → Apply minimal change
-→ Run the 16 Check Dimensions below
+→ Run the 17 Check Dimensions below
 → Run Standalone Skill Discovery Guard
 → Run Unconditional Chat Runtime Startup And Recovery Guard
 → Classify and resolve every finding by risk
@@ -86,6 +86,7 @@ Read current rules
 | 14 | Standalone Skill Discovery Check | 独立Skill的发现入口、别名与单一用户级权威副本是否完好 |
 | 15 | Context Budget Check | 细节是否仍能读到：Entry / 复核线 / Ceiling，Size Index是否有读取入口且未腐化 |
 | 16 | Claim / Evidence Credibility Check | 判断改动是否成立的**证据本身**是否可信：宣称与实现射程是否一致，测量工具是否先自证，字节与二进制事实是否用权威来源核对，实测与投影是否分开标注，删除前是否普查过独有内容 |
+| 17 | Stage-To-Prompt Landing Coverage Check | 每个已完成阶段的设计是否在提示词投影矩阵里有**具名落点行**，而不是靠"下游会自然继承"；新增或修改阶段产物时是否在同一次变更内补上落点 |
 
 ## Required Verification
 
@@ -93,10 +94,11 @@ Read current rules
 
 | 项 | 手工执行（任何环境都必须做） | 有工具时的加固 |
 |---|---|---|
-| 结构与引用完整性 | 逐个打开被引用的路径，确认存在且名称一致 | `scripts/validate_sd_film.py --skill-root <skill-root>` |
+| 结构与引用完整性 | 逐个打开被引用的路径，确认存在且名称一致；确认交付文本仍为LF-only、BOM-less的UTF-8 | `scripts/validate_sd_film.py --skill-root <skill-root>`（含`check_encoding_prefix`的BOM守卫） |
 | 阶段自证与路由唯一 owner | 逐个确认每个主 Workflow 自证所属 STATE，且未复述阶段顺序或下一 Workflow | 同上（Validator 的 `check_workflow_routing`） |
 | 孤儿内容与不可达文件 | 从`SKILL.md` / `config.md`出发，逐个问“谁会读这个文件”：答不出来的就是不可读内容——路由它、声明`Skill维护层`或删除它；并列出被豁免项及其依据 | 同上（Validator 的 `check_reachability`；`--report`另外列出“不可达但已声明豁免”的清单） |
 | 可达性预算 | 用字节数对照`references/context_budget.md`的复核线／Ceiling与Size Index | 同上（Validator 还检查读取入口、索引一致性与 NON_RUNTIME 自证） |
+| 阶段落点覆盖 | 打开`knowledge/prompt_compilation/state08_projection.md`的`## Global Projection Matrix`与`## Per-Shot Projection Matrix`（外加Writer Gate与Director Pass），对每个已完成阶段问一次"它的产物写在哪个固定字段"；答不出、只能回答"下游会继承"的就是发现项 | `scripts/validate_sd_film.py --skill-root <skill-root>`（`check_stage_landing_coverage`：矩阵区存在、STATE-00至STATE-07各自被标识、行数下限、Writer / Director / Scene三行落点仍在） |
 | `LR-R1—LR-R10` | 按`references/recovery_guards.md`逐条核对 | `scripts/test_validate_sd_film.py` |
 | `SD-R1—SD-R5` | 按`references/recovery_guards.md`逐条核对 | 同上 |
 
@@ -133,6 +135,7 @@ Reference Integrity: PASS / FIXED / WARN
 State / Continuity: PASS / FIXED / WARN
 Runtime Claim Integrity: PASS / FIXED / WARN
 Claim / Evidence Credibility: PASS / FIXED / WARN
+Stage-To-Prompt Landing: PASS / FIXED / WARN
 Legacy Recovery Regression: PASS / FAIL / WARN
 Chat Runtime Startup Guard: PASS / FAIL / WARN
 Standalone Skill Discovery: PASS / FAIL / WARN

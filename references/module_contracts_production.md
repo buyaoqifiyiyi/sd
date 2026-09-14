@@ -64,7 +64,7 @@ Output拥有者：Character、Environment、Prop与FX的最终阶段字段分别
 
 下游消费者：STATE-04 Visual Development、STATE-05 Scene Breakdown、STATE-06 Detailed Shot Design、STATE-07 Clip Production、STATE-08 Clip-based Video Prompt / Video Generation与Review。
 
-交付包：已确认生产物的分类打包、资产图片稳定文件名与最终视频Prompt参考条目的一一对应，由`references/asset_package.md`唯一拥有。打包是STATE-03资产确认与STATE-07 Clip表确认之后的交付动作，不是新STATE，也不进Registry字段或最终Prompt字段。
+交付包：已确认生产物的分类打包、资产图片稳定文件名与最终视频Prompt参考条目的一一对应，由`references/asset_package.md`唯一拥有。打包是STATE-03资产确认与STATE-07 Clip表确认之后、STATE-08最终Prompt交付轮的**正式收尾交付物**（随该轮自动执行，不需要用户下令），不是新STATE，也不进Registry字段或最终Prompt字段；入选仍只收用户已认可的（见该文件的`## Package Admission`）。
 
 不变量：`Visual Production Status`只使用`Prompt Draft`、`Prompt Confirmed`、`Image Generated`、`Asset Confirmed`；Prompt确认与图片确认独立；Prompt Draft不得调用图片生成；Image Generated只登记Candidate References；Asset Confirmed必须有图片批准依据，才可Active并登记Canonical References；工具不可用不把文字设定升级为confirmed asset。`Prompt Status / Image Status / Confirmed Status`必须与该生命周期严格映射；任何Core Asset、Support Board或Support Item在图片确认前都不得confirmed。Support必须有唯一Board ID / Item ID映射和Canonical Board Reference区域/标签对应关系。
 

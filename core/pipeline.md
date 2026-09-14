@@ -2,9 +2,9 @@
 
 SD Film 的主生产顺序唯一为：
 
-`STATE-00 Project Setup → STATE-01 Script Analysis → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Model Adaptation and Video Prompt / Generation → STATE-09 Review`
+`STATE-00 Project Setup → STATE-01 Script Analysis → STATE-02 Asset Discovery → STATE-03 Asset Development → STATE-04 Visual Development → STATE-05 Scene Breakdown → STATE-06 Detailed Shot Design → STATE-07 Clip Production → STATE-08 Model Adaptation and Video Prompt / Generation → STATE-09 Review（显式调用：只有用户明确要求审核成片或携带具体成片问题时才进入，默认不在STATE-08之后自动进入）`
 
-Storyboard、Audio、Music、Sequence、Poster、Editing 与 Series 是按需辅助能力，不创建 STATE，也不改变下一个主 STATE。现有 Verified Artifact 与 Completion Gate 是进入后续阶段的唯一证据；用户目标词、旧对话或模型名称不是跳阶段证据。
+Storyboard、Audio、Music、Sequence、Poster、Editing 与 Series 是按需辅助能力，不创建 STATE，也不改变下一个主 STATE。现有 Verified Artifact 与 Completion Gate 是进入后续阶段的唯一证据；用户目标词、旧对话或模型名称不是跳阶段证据。STATE-08全部应交付Clip的最终Prompt交付轮完成（每轮含生产交付包或其降级形态）即主流程收尾，项目**不等待成片**；该轮的正式收尾交付物是生产交付包（由`references/asset_package.md`拥有），它不是新STATE。
 
 ## Responsibility boundary
 
@@ -13,6 +13,6 @@ Storyboard、Audio、Music、Sequence、Poster、Editing 与 Series 是按需辅
 - STATE-01 Production Setup：Script锁定后一次确认项目图像模型默认项、图像交付形态、视频模型偏好与项目风格基线；STATE-03继承图像默认项与风格基线，STATE-06后仅按当前Clip能力复核视频偏好并选择唯一Adapter。这些设置只取得执行能力与项目风格基线，不改写创作事实。
 - STATE-07：先形成 Natural Unit，再按选定模型将其整合为 Execution Clip、边界、连续性、参考预算和目标时长。
 - STATE-08：以确认的 Execution Clip 编译最终 Prompt；Adapter 仅适配执行，不改写上游事实。
-- STATE-09：仅 PASS 完成；REVISE / REBUILD 返回最小受影响 owner。它必须消费实际生成结果；Prompt交付后项目停在Review检查点，直到用户带回结果。
+- STATE-09：**显式调用阶段**。只有用户明确要求审核成片，或携带具体成片问题 / 局部修改要求定位与返修时才进入；仅 PASS 完成，REVISE / REBUILD 返回最小受影响 owner。它必须消费实际生成结果。STATE-08全部应交付Clip的最终Prompt交付轮（每轮含生产交付包）完成即主流程收尾，项目**不停留在等待成片的Review检查点**，也不代判PASS或失败。
 
 `下一步`、`继续`等纯推进命令按 `core/runtime-state.md`、当前 Completion Gate 和这个顺序路由；已确认且未受影响的交付物不得重做。

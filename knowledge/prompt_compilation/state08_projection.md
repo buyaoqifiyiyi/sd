@@ -48,7 +48,7 @@ STATE-08不重新“编剧”或“导演”，只执行`Writer Intent Preservat
 5. Reveal / Withhold / Delay / Mislead / Confirm / Recontextualize的信息时机符合Writer Authority；
 6. Relationship Delta、Scene Value Change与Scene Exit State在Clip结束时仍可辨认。
 
-Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm、推镜、特写、低机位或其他Camera Language。缺少Camera决策返回Director owner；Writer事实冲突返回STATE-01/05；只有转译、压缩或字段落位问题留在STATE-08。
+Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm、推镜、特写、低机位或其他Camera Language。缺少Camera决策返回Director owner；Writer事实冲突返回STATE-01/05；只有转译、压缩或字段落位问题留在STATE-08。Writer侧的保留项只落在`画面描述 / 人物动作与情绪 / 台词 / 音效 / 起始状态 / 镜头结尾状态`等既有字段，不新增Writer字段、不输出Packet，也不用旁白或解释性台词补足被压掉的事实。
 
 ## Director-to-Prompt Translation Pass
 
@@ -170,7 +170,7 @@ Field Ownership QA逐条提问：
 
 “重要标签”指用户明确要求保留、Project Bible / Visual Direction用作Primary Style Logic，或若不解释就会显著改变当前Clip视觉/表演结果的标签。纯装饰、重复、互相稀释或对当前Clip无控制价值的标签不属于必须保留项，可以在Prompt Compression中省略。
 
-当一个重要标签在最终Prompt中首次出现，必须在紧跟文字或同一`主风格：`段中给出其项目特定含义和当前Clip可执行解释。解释只选择当前Clip最关键的3—5项，必要时1—2项即可；不要求逐项覆盖全部候选维度。标签可以保留，具象化后不得默认强制删除；只有标签已完全冗余、与当前Clip无关、与其他风格冲突或会造成Semantic Trigger Pollution时，才允许省略，并记录压缩理由。
+当一个重要标签在最终Prompt中首次出现，必须在紧跟文字或同一`主风格：`段中给出其项目特定含义和当前Clip可执行解释。除`### 主风格 Minimum Content Rule`规定的建立轮四项外，解释只选择当前Clip最关键的3—5项，必要时1—2项即可；不要求逐项覆盖全部候选维度。标签可以保留，具象化后不得默认强制删除；只有标签已完全冗余、与当前Clip无关、与其他风格冲突或会造成Semantic Trigger Pollution时，才允许省略，并记录压缩理由。
 
 ### Executable Style Carrier Rule
 
@@ -186,11 +186,26 @@ Field Ownership QA逐条提问：
 - **Rhythm**：镜头节奏、动作完成后的停留、留白与声音/剪辑节拍。
 - **Atmosphere**：只有上游事实允许时才使用的雨雾、空气介质，以及具体环境声或同期静默。
 
-默认选择3—5个彼此兼容、直接服务当前Clip的高价值carriers；如果1—2个已足够则允许更少，不得机械填满维度或复制固定风格段落。选择必须服从已确认Visual Direction、资产、空间、动作、连续性与Generation Budget；不存在上游依据的天气、场景、服装、道具、光源或人物动作不得因风格标签被自动补入。
+默认选择3—5个彼此兼容、直接服务当前Clip的高价值carriers；如果1—2个已足够则允许更少，不得机械填满维度或复制固定风格段落。**已锁定的Aesthetic Decision Lock四项锚点不在这个压缩范围内**（见`### 主风格 Minimum Content Rule`）：载体可以少，四锁不得缺项。选择必须服从已确认Visual Direction、资产、空间、动作、连续性与Generation Budget；不存在上游依据的天气、场景、服装、道具、光源或人物动作不得因风格标签被自动补入。
 
 若标签只用于检索`knowledge/visual_styles/`与Knowledge Application Reflection、对最终控制没有额外价值，可以不写入最终Prompt；这是允许省略，不是默认删除。若名称保留，首次出现必须与Project-specific Style Meaning及具体carriers同段共存；无论是否保留名称，都不得把它当作精确复现保证。
 
 示例：`电影级真人青春短片质感，岩井俊二式青春电影氛围`不能原样结束编译。首次建立时可写成`电影级真人青春短片质感：真实演员自然肤质、保留皮肤细节与真实明暗层次、轻微胶片颗粒、浅景深与受控高光；岩井俊二式潮湿夏日青春氛围：柔散自然窗光、低饱和灰绿与米白色关系、窗外轻微自然高光溢出、克制观察式镜头、人物以停顿、呼吸、同步反应和细微眼神变化表达关系。`这只说明“标签后给出项目特定解释”的方法，不是固定模板；实际Clip只选必要项，不得机械复制，也不得无依据自动加入校园、校服、樱花、海边、夏日奔跑或其他默认青春场景包。
+
+### 主风格 Minimum Content Rule｜主风格最低内容
+
+本节是`主风格`内容的唯一owner，适用于三种字段形态：Seedance 2.5的独立`主风格：`、H3 `核心创意：`首行`主风格：`、Seedance 2.0的`主风格：`前置字段。字段名、位置与顺序仍由各自Template拥有。
+
+**建立轮**（项目的第一个交付Clip、当前Prompt是脱离项目上下文的独立交付，或既有Style Meaning尚未被正式Visual Direction / Project Bible / Canonical视觉资产锁定）必须写出以下四块，缺一块即未通过Style Label Expansion：
+
+1. **标签或基线 + 项目内含义**：沿用已确认的`Project Style Baseline`标签或`Visual Grammar Baseline`，并给出它在本项目的具体含义；不在Prompt里重命名或重开选择。
+2. **Visual Grammar Baseline的稳定倾向**：摄影与材质质感、可用色谱与强调色出现条件、真实光源逻辑、空间气质、构图与景深倾向、摄影机介入边界中与当前Clip相关的部分。
+3. **Aesthetic Decision Lock四项各一次**：反差与光比结构（程度与衰减）、色彩对抗关系（含主辅与面积关系）、构图主张、视觉母题与变化轨迹的当前节点。每条必须用可执行语言同时写出**选择了什么**与它排除了什么可见结果，不得只留标签或形容词。
+4. **当前Clip的载体**：把以上决定落到本Clip真实可观察的光源与材质结果、色彩关系、构图与景深、质感、摄影机介入方式与表演尺度。
+
+**后续连续Clip**按`### Style State And Delta Compression`只写已锁定锚点、本镜Delta与到节点的母题，不重复整段项目Visual Bible；但第3项的四项锚点仍不得整体消失。
+
+**允许少，不等于允许空**：动作复杂Clip可以合并句式、压缩载体数量，也可以把与当前Clip无关的维度写短，但**不得把`主风格`压成一句风格句**——建立轮只有“标签 + 若干载体”一行时判定为不合格，因为它既没有四锁，也没有可核对的基线。篇幅不是标准：判据是第1—4项能否被画面证实；逐镜动作、空间、时间顺序与End状态仍只写在各自字段，不得借“补足内容”把`主风格`写成第二条时间线。
 
 ### Style State And Delta Compression
 
@@ -287,12 +302,15 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 
 | 来源知识 | 固定目标字段 | 必须保留的语义 |
 |---|---|---|
-| Project / Clip Plan | Markdown标题；时长 | 正式Clip编号、人类可读标题、用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
-| Format / Visual Development / Color | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
+| Project / Clip Plan（STATE-07） | Markdown标题；时长 | 正式Clip编号、人类可读标题、用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
+| Format / Visual Development / Color（STATE-01/04） | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
 | Aesthetic Decision Lock（STATE-04） | 主风格；画面描述；环境一致性 | 反差与光比结构的程度及其变化节点、色彩对抗关系与占比、构图主张、视觉母题与变化轨迹；四项是整片承诺，逐镜只投影本镜相对锁定值的可见Delta；不新增字段 |
-| Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor | Selected Template的参考字段 | Seedance 2.5按30图 / 10视频 / 10音频 / 合计50及各自30秒审计，每项有唯一Primary Role；2.0/H3按各自Adapter限制。除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
-| Previous Clip / Opening State | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
-| Clip End State / Next Clip | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
+| Writer Intent / Writer Beat / Setup-Payoff（STATE-01，经STATE-05/06/07投影） | 画面描述；人物动作与情绪；台词；音效；起始状态；镜头结尾状态 | 关键人物意图与潜台词、Writer Beat因果链的可见承载、Setup / Payoff与信息时机、Relationship Delta与Scene Value Change；核对项与禁止项沿用`## Writer Intent Preservation Gate`，不在此复述，也不新增Writer字段或输出Packet |
+| Director Intent / Director Decision Notes（STATE-00/01/04/05/06/07） | 主风格；画面描述；人物动作与情绪；镜头 / 机位；时间线；镜头结尾状态 | Current Director Intent的Dramatic Priority、Audience Attention、Performance Beat、Composition Function、Camera Motivation、Information Timing、Spatial / Relationship、Rhythm与Sound Function；转换规则沿用`## Director-to-Prompt Translation Pass`的第1—12项，不在此复述，也不输出Packet、dominance或BUILD / HOLD / PEAK / RELEASE等内部标签 |
+| Scene Breakdown / Scene Directing Brief（STATE-05） | 主风格；画面描述；人物动作与情绪；镜头 / 机位；时间线；镜头结尾状态 | 本Clip覆盖Scene的Scene Purpose与Value / Relationship / Information Change、Writer Beat Map的可见承载、Audience Start → End State、Reveal / Withhold信息时机、Scene Camera Strategy与Rhythm Intent；转换沿用Director-to-Prompt Translation Pass的第2 / 6 / 8项，SCENE / BEAT编号与`Pending`标记不成为栏目，未被本Clip覆盖的Scene不强行投影 |
+| Character / Environment / Prop / FX Assets / Confirmed Visual Blocking Anchor（STATE-02/03） | Selected Template的参考字段 | Seedance 2.5按30图 / 10视频 / 10音频 / 合计50及各自30秒审计，每项有唯一Primary Role；2.0/H3按各自Adapter限制。除A/B待补充`REF-TAIL`外，图片资产必须真实存在且已确认；`REF-SKETCH`只在Final Assessment=`REQUIRED`且验证通过时列出，写明Visual Blocking Authority并服从Canonical身份优先；核心角色独立图不可合并。Voice/Audio Reference默认省略，只有用户明确要求当前视频模型使用时才作为非视觉输入最小列出 |
+| Previous Clip / Opening State（STATE-07） | 首帧参考 | A/B/C与`Tail Frame Required = YES / NO`；A使用统一`REF-TAIL`名称和固定直接承接句并完整锁定；B明确参考尾帧但另起新镜头重新构图，不使用Direct固定句；C不列尾帧，以Canonical资产、Spatial Blocking与文字规则重建；人物姿态/位置/朝向/距离、摄影机/构图、环境/天气、道具、动作、光线与情绪状态 |
+| Clip End State / Next Clip（STATE-07） | 尾帧限制 | 可冻结最终帧、人物/摄影机/道具/环境/声音最终状态、最后1秒限制与下一Clip用途 |
 | Character Continuity / Performance | 人物一致性；主风格 | 外观与状态锁定、表演尺度、跨镜湿润/伤痕/体力/情绪连续性 |
 | Environment / Spatial / Lighting / Color | 环境一致性 | 地点、天气、固定结构、光源方向、色彩来源与锚点、材质响应、运动方向、轴线和背景逻辑 |
 | Sound / Dialogue | 台词；音效 | Dialogue Performance、口型/同步、声源位置与同期空间；Voice Identity默认不投影。`音色特征`只在用户明确要求当前视频Prompt包含声音控制时条件输出最小Delta |
@@ -315,6 +333,8 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 | FX | 画面描述；人物动作与情绪；空间关系；道具状态；音效；镜头结尾状态；反向提示词 | 来源、触发、阶段、方向、尺度、强度、物理交互、光影/声音影响、残留后果与专项风险 |
 | Editing / Handoff / Transition | 参考资产；首帧参考；尾帧限制；起始状态；镜头结尾状态 | Boundary Source、Transition Class、Outgoing/Incoming Anchor、Cut Point、继承/断点/未决状态与禁止提前动作；不新增边界字段，不输出TRN编号 |
 | Sequence / Coverage / Clip | 画面描述；镜头结尾状态；Markdown标题；时长 | Required Coverage完成证据、Clip内逐镜状态链与跨Clip状态；内部ID不成为栏目 |
+
+本矩阵的逐镜来源全部由STATE-06 Detailed Shot Design的十八字段投影而来；Shot Purpose Gate、Knowledge选择理由与内部ID只作判断依据，不进入任何字段（见`workflows/09_shot_design_workflow.md`）。
 
 ## Serialization Rules
 
@@ -348,6 +368,8 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 最终格式化前后各检查一次：
 
 - Applicable Knowledge是否留下具体执行证据，未触发模块是否没有被虚构。
+- 本Clip覆盖的Scene Directing Brief是否留下可见执行证据：Audience Start → End State、Reveal / Withhold信息时机与Rhythm Intent能否从时间线、动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部读出；Writer Beat与Scene Value Change能否从动作、反应、台词与结束状态读出；未被本Clip覆盖的Scene不强行投影，也不把`Pending`当已确认。
+- 是否丢失Writer Intent、Director Intent / Director Decision Notes的已确认要点：关键人物意图、潜台词、Setup / Payoff、Audience Attention、Camera Trigger / Stop与节奏是否仍可辨认；压缩后是否只剩抽象形容词或直白情绪说明。
 - 是否丢失摄影机终点、人物最终状态、FX后果、声音尾部或下一镜锚点。
 - 是否泄漏内部知识标题、模式ID、Ledger或SEQ/BEAT/COV/UNIT栏目。
 - 是否严格按Confirmed Clip Production Plan分组，每个Clip、每个分镜和每个字段都完整、顺序不变。
@@ -356,7 +378,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 是否只保留当前Clip有控制价值的信息；已由正式角色/环境/道具资产锁定的外观与结构是否只作最小确认，没有在人物一致性、环境一致性或逐镜正文中长篇重复。
 - 是否存在同义重复、跨字段机械复述、优先级不明，或互相冲突的机位/运动/动作/站位指令；冲突是否已消解或返回上游。
 - 重要抽象形容词是否具有至少一个可见或可听执行对应，并保留原情绪功能而非机械删除。
-- 导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日 / 宿命感”等重要标签是否完成Style Label Expansion；最终Prompt首次出现时，是否在同一风格段说明Project-specific Style Meaning并给出当前Clip必要的3—5个（或更少）高价值Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers，而不是孤立存在。
+- 导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日 / 宿命感”等重要标签是否完成Style Label Expansion；最终Prompt首次出现时，是否在同一风格段说明Project-specific Style Meaning并给出当前Clip必要的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers，而不是孤立存在；建立轮是否已按`### 主风格 Minimum Content Rule`写足四块而不是一句风格句，后续Clip是否仍保留四锁的可核查锚点。
 - 风格解释是否只是换成另一组“清透、克制、高级、氛围感”等同样抽象的词，还是已经落到可见、可听、可执行层。
 - 同一标签是否在同一Prompt中被重复解释多次；后续连续Clip若Style Source已锁定，是否只保留标签/风格锚点与当前delta，若未锁定或含义发生变化，是否重新展开受影响部分。
 - 风格标签或解释项是否无依据带入当前Clip不需要的默认场景、服装、道具、天气、美术、光源或人物动作；是否只是机械复述项目Visual Bible而与当前Clip无关。
@@ -368,7 +390,7 @@ Ledger只防止语义丢失，不拥有最终Schema。发现上游冲突时返�
 - 高共现大词是否经过Semantic Template Decomposition；是否没有把“创业、约会、学生、婚礼、医院、黑帮、赛博朋克、日系青春”等默认视觉包无依据带入当前Clip。
 - 是否存在无可见收益的工程级小数、精确轨迹或伪物理参数；有价值数字是否按视觉关系/摄影倾向使用而非承诺严格仿真。
 - 是否遗漏当前Clip真正变化的主要动作、时间顺序、中间变化、结束状态或首尾承接；高优先级动作/空间/镜头信息是否比装饰性风格词更清楚。
-- 风格标签、Style Meaning与carriers是否已压缩为不抢占主体、动作、空间、时间顺序、摄影机路径和状态承接控制位置的最小集合；动作复杂Clip是否自动降到1—3项或更少，且不存在Style Stack Pollution。
+- 风格标签、Style Meaning与carriers是否已压缩为不抢占主体、动作、空间、时间顺序、摄影机路径和状态承接控制位置的最小集合；动作复杂Clip是否只在表达与载体数量上压缩，而四项Aesthetic Decision Lock的可核查锚点没有缺项（见`### 主风格 Minimum Content Rule`），且不存在Style Stack Pollution。
 - 是否已在五维检查前完成Generation Budget Allocation；Primary目标是否唯一清楚，Secondary是否真正支持它，Economized是否主动降低至少一个非必要高负荷维度；是否仍把身份、复杂动作、高密场景、复杂运镜、群体、口型、FX与光色变化同时拉满。
 - 是否只执行`this_clip_only`的主要可见Beat并形成改变后的Endpoint；是否重播`already_happened`、提前表演`reserved_for_later`或让`do_not_show_yet`元素提前出现。
 - 是否只保留从上一镜/上一Clip合法继承的状态，没有混入其他镜头的动作、机位、结束状态或风格残留；是否没有堆叠互相稀释的导演、美术、摄影与渲染风格。

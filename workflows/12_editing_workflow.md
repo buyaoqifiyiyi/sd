@@ -164,7 +164,7 @@ templates/12_edit_prompt.md
 
 Workflow负责最小修改判断与返回路由；Template独占修改目标、修改Prompt、影响范围和结果记录的最终结构。
 
-Editing结果必须在Selected State Source登记新Revision和受影响ID，完成后重新进入13_review_workflow.md，不得直接把项目标记为完成；随后同步或输出更新后的完整Portable State，执行references/project_state_contract.md的`Portable Required Field Writeback`。
+Editing结果必须在Selected State Source登记新Revision和受影响ID，完成后重新进入13_review_workflow.md复核，不得直接把项目标记为完成；该返回与“局部修改”的显式请求一并成立（STATE-09 Review本身仍是显式调用阶段，不由STATE-08交付轮自动进入）；随后同步或输出更新后的完整Portable State，执行references/project_state_contract.md的`Portable Required Field Writeback`。
 
 
 

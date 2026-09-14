@@ -69,7 +69,7 @@ Skill 安装目录保存通用的 `SKILL.md`、Rules、Workflows、Knowledge、T
 
 没有实际内容的子目录不必提前创建。前三个 Markdown 项目文件和 Manifest 为必需文件。
 
-生产交付包（已确认生产物的分类打包与zip）不放在Project Root内，其位置、命名、构成与**执行环境前提**由`references/asset_package.md`唯一拥有：它位于Project Root之外的交付目录，只复制真实已确认文件，不改写Project Root、不改名已确认资产图片、不改动`asset_registry.md`，也不被当作运行时Required Resource。只有在能读写本机目录的Work / Codex本地模式才产包与zip；普通Chat的Portable模式不产zip，只交付清单、命名映射与目录骨架文本。`.git`、`tmp`不属于Project Root Contract，也不得进入包内。
+生产交付包（已确认生产物的分类打包与zip）不放在Project Root内，其位置、命名、构成与**执行环境前提**由`references/asset_package.md`唯一拥有：它是主Pipeline在STATE-08最终Prompt交付轮的**正式收尾交付物**，随该轮自动执行、不需要用户另行下令；它位于Project Root之外的交付目录，只复制真实已确认文件，不改写Project Root、不改名已确认资产图片、不改动`asset_registry.md`，也不被当作运行时Required Resource。只有在能读写本机目录的Work / Codex本地模式才产包与zip；普通Chat的Portable模式不产zip，只交付清单、命名映射与目录骨架文本。`.git`、`tmp`不属于Project Root Contract，也不得进入包内。
 
 `project_manifest.json` 至少包含：
 

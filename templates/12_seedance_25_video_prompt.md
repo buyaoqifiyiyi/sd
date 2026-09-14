@@ -27,7 +27,7 @@
 尾帧限制：
 
 主风格：
-<项目风格标签 + 当前Clip的Project-specific Style Meaning + 1—5个可见 / 可听的高价值风格载体>
+<项目风格标签或Visual Grammar Baseline + 项目内含义 + 建立轮的四项Aesthetic Decision Lock各一次（选择与它排除的可见结果）+ 当前Clip的可见 / 可听高价值风格载体；载体可少，四锁不得缺项>
 
 全局叙事与画面设定：
 <一句话概述：主体 + 地点 + 事件 + 主题 + 核心镜头意图>
@@ -87,7 +87,7 @@
 
 ### 主风格：
 
-这是Seedance 2.5独立、无条件的项目视觉入口。先写经确认的项目风格标签或Visual Grammar Baseline，再立刻给出它在当前项目的具体含义，以及当前Clip最有控制价值的1—5个（动作复杂时可少至1—3个）可见 / 可听载体，例如真实光源与色彩关系、摄影机介入方式、构图层级、质感或表演尺度。风格必须来自已确认Visual Direction / Project Bible、Canonical资产、Director Intent与当前剧情功能的交集；不得用抽象形容词、无依据默认场景包或重复的角色 / 环境设定替代。后续连续Clip只保留已锁定风格锚点与当前Delta，不机械复述整套Baseline。
+这是Seedance 2.5独立、无条件的项目视觉入口。最低内容按`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`执行：建立轮必须写足标签或基线 + 项目内含义、Visual Grammar Baseline的稳定倾向、Aesthetic Decision Lock四项各一次（每项含选择与它排除的可见结果）以及当前Clip的载体；后续连续Clip只保留已锁定锚点与当前Delta，但四锁锚点不得整体消失。先写经确认的项目风格标签或Visual Grammar Baseline，再立刻给出它在当前项目的具体含义，以及当前Clip最有控制价值的可见 / 可听载体，例如真实光源与色彩关系、摄影机介入方式、构图层级、质感或表演尺度——载体数量可少，**不得把本字段压成一句风格句**。风格必须来自已确认Visual Direction / Project Bible、Canonical资产、Director Intent与当前剧情功能的交集；不得用抽象形容词、无依据默认场景包或重复的角色 / 环境设定替代。逐镜动作、空间、时间顺序与End状态不属于本字段。
 
 ### 全局叙事与画面设定：
 

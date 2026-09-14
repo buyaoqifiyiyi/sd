@@ -4,7 +4,7 @@
 
 本文件是回归集的一部分，由`references/regression_scenarios.md`的 Regression File Index 统一索引；本文件内部编号保持连续，可按编号直接定位，不整集通读。
 
-覆盖范围：R48—R61 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断。
+覆盖范围：R48—R62 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断、阶段落点覆盖。
 
 ---
 
@@ -118,6 +118,14 @@ PASS：`主风格`仍保留可核查的光比结构、色彩对抗关系与构�
 
 FAIL：把“已由视觉开发锁定”当作省略理由，导致后续Clip的`主风格`只剩风格标签、`画面描述`只剩动作；或每镜机械重复整段项目Visual Bible。
 
+### R50-C Establishing Round Cannot Collapse Into One Style Sentence
+
+输入：项目第一个交付Clip（或当前Prompt是脱离项目上下文的独立交付），STATE-04已锁定四项美学决定与Visual Grammar Baseline。
+
+PASS：`主风格`按`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`写出四块：标签或基线 + 项目内含义、Visual Grammar Baseline稳定倾向、四锁各一次（每项含选择与它排除的可见结果）、当前Clip载体；句式可压缩，四项不得缺项，逐镜动作与时间顺序仍留在各自字段。
+
+FAIL：`主风格`只有一句“标签 + 若干可见载体”（例如只写风格名与几个名词），没有四锁、没有可核对基线；或反过来把`主风格`写成第二条时间线、复述逐镜动作与End状态。
+
 ## R51 Skill Context Budget Regression
 
 ### R51-A Oversized File Needs A Read Entry, Not A Penalty
@@ -158,7 +166,7 @@ FAIL：以“降低体量”为由新增平行规则文件，形成第二套并�
 
 输入：一次维护优化需要修改Skill，按`SKILL.md`入口执行维护自检。
 
-PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（16项检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到复核线以内并从Size Index移除。
+PASS：`SKILL.md`直接指向短卡`references/maintenance_self_check.md`（检查项、执行链与报告模板齐全），判据真源在`references/maintenance_self_check_protocol.md`；`references/module_contracts.md`只保留模块接口合同与一个指针，已回到复核线以内并从Size Index移除。
 
 FAIL：维护自检仍只能通过通读一个超长合同文件才能找到；或抽取后`module_contracts.md`同时保留一份可执行的并行副本。
 
@@ -268,7 +276,7 @@ FAIL：把`Additive By Default`解释成规则总量只增不减；连续多个�
 
 输入：把SD Film Skill交给另一个Agent、另一台机器，或一个没有Python、没有`scripts/`、没有定时任务的环境。
 
-PASS：`SKILL.md`的`Self-Maintenance`节在前置位置声明本Skill自维护，给出写入前三项判定与写入后的完整自检入口；`references/maintenance_self_check.md`的16项与两个Guard全部可由人按文件逐条核对；协议成立与否不引用任何脚本的运行结果。
+PASS：`SKILL.md`的`Self-Maintenance`节在前置位置声明本Skill自维护，给出写入前三项判定与写入后的完整自检入口；`references/maintenance_self_check.md`的全部检查项与两个Guard都可由人按文件逐条核对；协议成立与否不引用任何脚本的运行结果。
 
 FAIL：把自检仅实现为`scripts/validate_sd_film.py`、周期性任务或某个宿主的功能，使换环境后Skill退化为无约束的文档；或在判据中把“运行脚本”写成必要条件。
 
@@ -434,6 +442,14 @@ PASS：只展开`templates/08_shot_design_prompt.md`的十八字段内部记录�
 
 FAIL：把Storyboard当作分镜表的更完整版本顺带产出，或让它进入STATE-08参考资产。
 
+### R59-E Stage Work Must Have A Named Landing Field In The Prompt
+
+输入：一个已完成STATE-05到STATE-08全部前置的项目编译CLIP-001；Scene Directing Brief已有Audience Start → End、Reveal Timing与Rhythm Intent，STATE-06已有Director Decision Notes，STATE-01已有Writer Intent Packet。
+
+PASS：`knowledge/prompt_compilation/state08_projection.md`的Global / Per-Shot Projection Matrix为本Clip涉及的上游来源各给出一行落点（Writer Intent、Director Intent / Director Decision Notes、Scene Directing Brief、STATE-04 Aesthetic Decision Lock、STATE-02/03资产、STATE-07 Clip事实），转换规则只引用Writer Gate与Director Pass，不复制其正文；交付前Loss Check逐项核对Scene节奏与信息时机、Writer Beat与Scene Value、Audience Attention与Camera Trigger / Stop是否能从既有字段读出。
+
+FAIL：某阶段确认过的设计在任何矩阵行里都没有落点，只能靠"下游会自然继承"假定其进入Prompt；或为了补落点新增Prompt字段、复制Writer / Director协议正文、把SCENE / BEAT编号或`Pending`写进交付。
+
 ---
 
 ## R60 Look Frame And Aesthetic Judgement Regression
@@ -505,3 +521,21 @@ FAIL：由系统自行判定审美并给出PASS；或用"判据全部通过"充�
 PASS：`templates/25_look_frame_prompt.md`保留"不得进入STATE-05至STATE-08任何阶段"的禁令，同时开出唯一例外——STATE-09 Review可以把试片帧作为**当初美学决定的对照参照**读取；该例外只授权读取比对，不得据此重新生成资产、改写已确认事实或用作任何生成输入。
 
 FAIL：让试片帧成为常规下游输入、被登记为资产、或反过来用成片去改写当初的美学基线。
+
+## R62 Stage-To-Prompt Landing Coverage Regression
+
+### R62-A Every Main Stage Is Named Inside The Projection Matrices
+
+输入：`knowledge/prompt_compilation/state08_projection.md`的Global / Per-Shot Projection Matrix被改动：有人为重排表格删掉一行来源标注，有人把某行改成只剩"见上游"。
+
+PASS：`scripts/validate_sd_film.py`的`check_stage_landing_coverage`要求矩阵区内STATE-00至STATE-07各自被标识（`STATE-00/01/04`这类紧凑写法按run展开，不得只算第一个）、矩阵行数不低于下限、Writer / Director / Scene三行落点仍在。任一缺失即FAIL并指出缺哪个STATE或哪一行。
+
+FAIL：矩阵区不再出现某个主STATE却仍然通过；或为通过检查删掉落点行、把来源标注并进正文、把行数压到下限以下——删行不能买覆盖。
+
+### R62-B A New Stage Artifact Gets Its Landing Row In The Same Change
+
+输入：某次修改给STATE-05新增了一项已确认的场景级设计（例如新的节奏维度），或给STATE-06新增了一个会成为生成输入的字段。
+
+PASS：同一次变更内在投影矩阵补上"来源阶段 → 固定目标字段 → 必须保留的语义"一行，转换规则只引用既有Gate / Pass，不新增Prompt字段、不复制别家协议正文；Loss Check同步加一项可核对的判据。
+
+FAIL：新增设计只在Workflow、Knowledge或Template里被记录，投影矩阵没有任何落点，靠"下游会自然继承"假定它进入Prompt；或为补落点新增最终字段、把内部ID / `Pending`写进交付。

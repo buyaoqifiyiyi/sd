@@ -124,6 +124,6 @@ Legacy项目缺少新版Writer / Director intent时，调用`rules/runtime_reloa
 - Resume Scope和Must Not Change明确。
 - 依赖Revision存在。
 - 重试次数与降级策略已记录。
-- Next Workflow合法且没有跳过前置阶段。
+- Next Workflow合法且没有跳过前置阶段；主流程收尾时允许`references/project_state_contract.md`定义的终止值`Project Complete / Post`，它不表示跳过任何阶段。
 - 如本次触发Reload，已内部确认Reload Status、Loaded Source、Loaded Skill Version、Loaded Build ID、Owner Files Resolved、Last Routed State、State Source、Last Routed Workflow、Current Object与Workflow Entry Checkpoint；显式Re-entry已从该Workflow入口执行到合法Checkpoint后才声称完成重进；如为`UNAVAILABLE`，另有具体失败资源与Fallback Source，且没有作出“严格按当前Skill”声明。
 - 如本次为Legacy Project Recovery，已记录Skill Source、Project State Source、Mapped Current STATE、Current Workflow、Current Object、Canon Preserved、Backfill Needed与Next Workflow；STATE-08恢复已从current owner entry执行Reference Selection / Routing → Final Visual Blocking Anchor Assessment → Writer + Director Intent Preservation → Prompt Compiler → Final QA，而不是直接润色旧Prompt。

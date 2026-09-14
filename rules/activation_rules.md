@@ -24,11 +24,11 @@
 
 用户明确说“跑流程测试”“演练一遍流程”“dry run”“空跑”“测试路由”或“走一遍流程不要产物”等无歧义表达时，进入`DRY RUN`。
 
-`DRY RUN`是运行目的，不是`Automation Policy`的取值；该字段的允许值不变。它表示本次运行的目的不是生产，而是验证流程本身：不改变任何生产门槛，不新增STATE，也不放宽任何Gate。它与`rules/01_pipeline_rules.md`的“生产运行必须完整执行STATE-00至STATE-09”不冲突，因为`DRY RUN`不是生产运行。
+`DRY RUN`是运行目的，不是`Automation Policy`的取值；该字段的允许值不变。它表示本次运行的目的不是生产，而是验证流程本身：不改变任何生产门槛，不新增STATE，也不放宽任何Gate。它与`rules/01_pipeline_rules.md`的生产运行必须完整执行主Pipeline不冲突，因为`DRY RUN`不是生产运行。
 
 `DRY RUN`必须：
 
-- 按主Pipeline顺序对当前请求覆盖的STATE逐个执行路由判定；未指定范围时覆盖STATE-00至STATE-09。
+- 按主Pipeline顺序对当前请求覆盖的STATE逐个执行路由判定；未指定范围时覆盖STATE-00至STATE-08，并单独核验STATE-09 Review的显式调用入口判定。
 - 用合成输入代替缺失的上游产物，并标明哪一部分是合成的；合成输入不是资产、不是确认，不得登记为Candidate / Canonical / Active。
 - 逐STATE核验：Workflow合法、Entry Gate判据可取得、Required Reads可解析、Completion判据可判定、Next Workflow合法。
 - 全程可判定时不产出任何交付物，只给出一句走通确认；只有出现断点时才输出最小断点报告，指出具体STATE、缺失证据与最近合法Checkpoint。
@@ -77,3 +77,10 @@
 Music模块Positive Route默认`INSTRUMENTAL`。歌词、演唱、说唱、合唱、哼唱、吟唱、Vocalise或其他人声纹理只有用户当前另行明确要求时允许。模块激活后，由系统专业审阅整个请求范围并决定哪里使用音乐、哪里只保留同期声音或留白；不得要求用户逐Clip手工指定，也不得默认全段铺音乐。
 
 同一请求同时要求视频Prompt与配乐时必须拆分路由、拆分Template：视频Prompt永久执行背景音乐禁令，Music Package可用标题和`Related Clip(s)`表明服务的Clip，但Clip标签不得混入SeedMusic `style + structure`执行正文。
+
+## Review / Finished-Film Explicit-Only
+
+- STATE-09 Review是**显式调用阶段**：只有用户明确要求审核成片（“审核这个成片 / 给出PASS或REVISE / 全片Review”）或携带具体成片问题要求定位与返修时，才读取`workflows/13_review_workflow.md`并进入STATE-09。
+- 未触发时：STATE-08全部应交付Clip的最终Prompt交付轮完成后主流程即收尾，项目**不停留在Review检查点**、不等待成片、不自动判PASS或失败，也不主动要求用户把生成结果带回来。
+- 用户携带具体问题时按失败驱动档进入，只展开对应层；只有用户明确要求“完整审核 / 全片Review / 给出PASS判定”时才跑全部三层。用户明确接受具体Take时按Review owner的`Accepted Take Canon Writeback`登记。
+- 未查看生成结果不得写`REVIEW_PASS`；STATE-09不因STATE-08完成而自动进入，也不因项目收尾而消失——它是保留的显式能力，不是默认必经环节。

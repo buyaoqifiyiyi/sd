@@ -2,7 +2,7 @@
 
 ## Purpose
 
-本文件是Skill维护QA的**判据真源**：它拥有`references/maintenance_self_check.md`中15个检查维度每一项的完整判据、边界、反例与处置要求，以及两个固定Guard的完整协议。
+本文件是Skill维护QA的**判据真源**：它拥有`references/maintenance_self_check.md`中17个检查维度每一项的完整判据、边界、反例与处置要求，以及两个固定Guard的完整协议。
 
 执行入口、维护链顺序与报告格式由`references/maintenance_self_check.md`拥有。本文件不重复定义执行流程，也不定义任何模块合同（那是`references/module_contracts.md`）或Skill可达性判据（那是`references/context_budget.md`）。
 
@@ -49,6 +49,13 @@
     - **实测与投影必须分开标注**：结论中凡不是本轮直接量得的数字，必须标为投影 / 推算并写明假设；不得把推算写成结论，也不得对可实测项用“估计”代替测量。
 
     另有一条删除前置：**删除或移动任何文件之前，先普查它是否含有别处不存在的独有内容**（未被版本控制的本地数据、被Git忽略目录里的产物、独有历史）。普查结论必须写进报告；未普查即删除，视为未执行本项。
+
+17. **Stage-To-Prompt Landing Coverage Check**：核对**每个已完成阶段的设计最终有没有一个具名落点**。判据真源是`knowledge/prompt_compilation/state08_projection.md`：它的`## Global Projection Matrix`与`## Per-Shot Projection Matrix`是唯一的落点清单，其`## Applicability Gate`要求每个Applicable模块"至少在矩阵指定的一项固定字段中留下具体证据"——因此**不在矩阵里的阶段产物不受这条约束**，只能靠"下游会自然继承"假定，这正是已确认设计静默丢失的路径（STATE-05的Scene Directing Brief曾如此：它在`templates/07_scene_design_prompt.md`有记录落点，却从未出现在提示词投影矩阵里）。
+    - **必须各有落点**：STATE-00/01（Director Intent与Writer Intent、媒介与风格基线）、STATE-02/03（资产与命名）、STATE-04（Visual Grammar Baseline与Aesthetic Decision Lock）、STATE-05（Scene Directing Brief：Beat Map / Audience Start→End / Reveal Timing / Scene Camera Strategy / Rhythm Intent）、STATE-06（十八字段逐镜设计与Director Decision Notes）、STATE-07（Clip编号与时长 / Movement Plan / Reference Routing与Budget / End-State与A/B/C尾帧）。
+    - **判定方法（人工，任何环境都必须做）**：新增或修改任一阶段的产物时，逐个打开该阶段的Workflow / Template与投影矩阵，对每项已确认设计回答一句"它写在哪个固定字段"；答不出、只能回答"下游会继承"、或只在别处正文被顺带提到，即为发现项，必须在**同一次变更内**补上落点行或明确排除。
+    - **明确排除（不得为凑覆盖而投影）**：Storyboard与Look Frame（不是生成输入）、Voice（默认不投影，仅当前显式opt-in）、Music / AUDIO（独立模块）、Poster / Editing / Series（独立交付物）、Shot Purpose Gate / Knowledge选择理由 / Projection Ledger / SEQ·BEAT·COV·UNIT等内部ID。
+    - **落点只能用既有字段与既有规则**：补落点时只引用已有固定字段和既有转换规则（`## Writer Intent Preservation Gate`、`## Director-to-Prompt Translation Pass`、`## Applicability Gate`），不得新增Prompt字段、不得复制别家协议正文、不得把`Pending`或未确认内容当已确认投影。
+    - **射程必须说清（Claim / Evidence）**：确定性部分由`scripts/validate_sd_film.py`的`check_stage_landing_coverage`执行——它只验证矩阵区存在、STATE-00至STATE-07各自在矩阵区被标识（`STATE-00/01/04`这类紧凑写法按run展开）、矩阵行数不低于下限、Writer / Director / Scene三行落点仍在。它**不判断落点语义是否正确，也不证明产物真的写进了字段**；那部分与"新增阶段产物是否补了落点"只能人工判定。删除落点行使行数或标识缺失会直接判FAIL，不得作为通过方式。
 
 ## Skill-Wide Detection And Risk-Based Repair
 

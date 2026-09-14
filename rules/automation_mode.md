@@ -51,7 +51,7 @@ FAST只在事实、范围、模型和所需输入都已锁定时行动。任何�
 
 可使用的包只有既有阶段的顺序组合，包名只是展示封套，不是新STATE、Artifact、Project State字段或最终Template：
 
-- `Preproduction Package`：STATE-04完成的简洁Visual Direction摘要（仅在用户要求查看时展示）→ STATE-05完整Scene Breakdown → STATE-06完整Detailed Shot Design。
+- `Preproduction Package`：STATE-04完成的Visual Direction摘要（最低内容由`workflows/07_visual_development_workflow.md`的`# Visual Direction Summary Contract`唯一拥有：基线行 + Visual Grammar Baseline行 + 四锁各一行）→ STATE-05完整Scene Breakdown → STATE-06完整Detailed Shot Design。摘要只压缩呈现，不替代STATE-04的内部建立与Project Bible写入；用户明确要求查看视觉开发成果时，该槽位必须换成Workflow的完整输出，不得以摘要代替。
 - `Execution Package`：STATE-07完整Execution Clip Plan → STATE-08按Clip顺序的完整目标模型Prompt。仅在视频模型/Profile已锁定、Clip Plan可按FAST自动接受且所有逐Clip检查通过时，才能在同一包内交付Prompt。
 - `Asset Candidate Package`：同一已锁定图像模型与同类资产批次的Prompt / 生成结果筛选；只展示`KEEP`或`NEEDS_USER_SELECTION`项，并在Candidate Image审阅前停止，绝不延伸到STATE-04。批次本身的构成、分批与两轮交付由`rules/02_asset_rules.md`的`Asset Batch Delivery`拥有，本节只拥有FAST下的聚合展示触发；STANDARD下的同类批次交付不依赖本节。
 

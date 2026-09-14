@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Deterministic r84 structural, routing and readability validation for SD Film."""
+"""Deterministic structural, routing, readability and landing-coverage validation for SD Film.
+
+No release number is hard-coded here: the version lives in `SKILL.md` only, so this
+header cannot drift out of date on its own.
+"""
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 
@@ -52,6 +56,7 @@ SELF_CHECK_DIMENSIONS = (
     "Regression Check", "Change Classification Check", "Runtime Claim / Legacy Recovery Check",
     "Standalone Skill Discovery Check", "Context Budget Check",
     "Claim / Evidence Credibility Check",
+    "Stage-To-Prompt Landing Coverage Check",
 )
 
 MAIN_WORKFLOWS = (
@@ -485,6 +490,36 @@ def check_line_endings(root: Path) -> list[str]:
             errors.append(f"text file must use LF line endings: {relative.as_posix()}")
     return errors
 
+BOM_PREFIXES = (
+    (b"\xef\xbb\xbf", "UTF-8 BOM"),
+    (b"\xff\xfe", "UTF-16 LE BOM"),
+    (b"\xfe\xff", "UTF-16 BE BOM"),
+)
+
+
+def check_encoding_prefix(root: Path) -> list[str]:
+    """Shipped text files stay BOM-less UTF-8.
+
+    Every reader here uses `utf-8-sig`, so a BOM is semantically invisible -- which
+    is exactly why it survives: no rule check, no reference check and no size
+    check notices it, while it rewrites the first line of every diff and splits
+    the corpus into two byte conventions. Measured case: a PowerShell round-trip
+    of one file added `EF BB BF` while all 273 other shipped files stayed clean.
+    """
+    errors: list[str] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in TEXT_SUFFIXES:
+            continue
+        relative = path.relative_to(root)
+        if set(relative.parts) & NON_SKILL_DIRS:
+            continue
+        head = path.read_bytes()[:3]
+        for prefix, label in BOM_PREFIXES:
+            if head.startswith(prefix):
+                errors.append(f"text file must stay BOM-less UTF-8: {relative.as_posix()} ({label})")
+                break
+    return errors
+
 def check_internal_references(root: Path) -> list[str]:
     """Reference Integrity Check: every skill-root path a document points at has to
     exist, otherwise the read path it describes is already broken.
@@ -681,6 +716,78 @@ def check_reference_ownership(root: Path) -> list[str]:
             errors.append(f"asset image naming shape must stay with its owner: {relative}")
         if re.search(r"^#+ .*Production Delivery Package", text, re.M):
             errors.append(f"production delivery package section must stay with its owner: {relative}")
+    return errors
+
+
+STAGE_LANDING_OWNER = "knowledge/prompt_compilation/state08_projection.md"
+STAGE_LANDING_MATRIX_START = "## Global Projection Matrix"
+STAGE_LANDING_MATRIX_END = "## Serialization Rules"
+STAGE_LANDING_MIN_ROWS = 12
+STAGE_LANDING_SOURCES = tuple(f"STATE-{index:02d}" for index in range(8))
+# A row may tag several stages in one compact run (`STATE-00/01/04`); expanding
+# the run keeps the table readable without letting a stage hide behind a slash.
+STAGE_LANDING_RUN_RE = re.compile(r"STATE-(\d\d(?:/\d\d)*)")
+STAGE_LANDING_ROW_MARKERS = (
+    "Writer Intent / Writer Beat / Setup-Payoff（STATE-01",
+    "Director Intent / Director Decision Notes（STATE-00/01/04/05/06/07）",
+    "Scene Breakdown / Scene Directing Brief（STATE-05）",
+)
+
+
+def check_stage_landing_coverage(root: Path) -> list[str]:
+    """Every completed stage must name where its work lands in the final prompt.
+
+    The projection owner's matrices are the only landing list: its
+    `## Applicability Gate` requires each applicable module to leave evidence in
+    a field the matrix names. A stage whose confirmed design appears in no row is
+    therefore only *assumed* to reach the prompt through "downstream inherits
+    it" -- which is how a locked design silently misses the output while every
+    other check still passes (STATE-05's Scene Directing Brief was exactly that
+    gap). Deterministic scope: the matrices exist, each main STATE-00..07 is
+    named inside them, the row floor holds, and the Writer / Director / Scene
+    source rows that carry intent and scene design are still present. Whether a
+    given landing is semantically correct stays a human judgement -- this check
+    never proves that a field's content is right.
+    """
+    errors: list[str] = []
+    text = read(root, STAGE_LANDING_OWNER)
+    start = text.find(STAGE_LANDING_MATRIX_START)
+    if start == -1:
+        errors.append(
+            f"{STAGE_LANDING_OWNER} must own the {STAGE_LANDING_MATRIX_START} section"
+        )
+        return errors
+    end = text.find(STAGE_LANDING_MATRIX_END, start)
+    region = text[start:end] if end > start else text[start:]
+    landing_states: set[str] = set()
+    for run in STAGE_LANDING_RUN_RE.findall(region):
+        for part in run.split("/"):
+            landing_states.add(f"STATE-{part}")
+    for state in STAGE_LANDING_SOURCES:
+        if state not in landing_states:
+            errors.append(
+                f"{state} has no named landing row in the prompt projection matrices; "
+                "a confirmed stage design must not rely on downstream inheritance"
+            )
+    rows = 0
+    for line in region.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if len(cells) != 3 or cells[0] in ("来源知识", "来源"):
+            continue
+        if all(set(cell) <= {"-"} for cell in cells if cell):
+            continue
+        rows += 1
+    if rows < STAGE_LANDING_MIN_ROWS:
+        errors.append(
+            f"{STAGE_LANDING_OWNER} dropped below {STAGE_LANDING_MIN_ROWS} projection rows "
+            f"({rows}); landing coverage may not be fixed by deleting rows"
+        )
+    for marker in STAGE_LANDING_ROW_MARKERS:
+        if marker not in region:
+            errors.append(f"{STAGE_LANDING_OWNER} is missing the stage landing row: {marker}")
     return errors
 
 
@@ -1246,11 +1353,13 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_ledger_sizes(entries, read_ledger_sizes(root)))
     errors.extend(check_workflow_routing(root))
     errors.extend(check_reference_ownership(root))
+    errors.extend(check_stage_landing_coverage(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))
     errors.extend(check_internal_references(root))
     errors.extend(check_read_scope_sections(root))
     errors.extend(check_line_endings(root))
+    errors.extend(check_encoding_prefix(root))
     return errors
 
 def main() -> int:
@@ -1268,7 +1377,7 @@ def main() -> int:
         print("FAIL")
         print("\n".join(f"- {error}" for error in errors))
         return 1
-    print("PASS: r84 structural, routing and readability validation")
+    print("PASS: structural, routing, readability and landing-coverage validation")
     return 0
 
 if __name__ == "__main__":

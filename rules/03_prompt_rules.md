@@ -965,7 +965,7 @@ Camera Language必须服务于：
 
 导演名、影片名、流派名、题材名、情绪标签与审美大词首先视为上游风格意图或Knowledge Retrieval Label，不是模型必然精准复现的控制参数。不得只把“某导演式”“电影感”“高级感”“治愈感”“青春感”“黑帮感”“广告感”或类似标签加入最终Prompt。
 
-进入STATE-08前，重要风格标签必须按`knowledge/prompt_compilation/state08_projection.md`唯一拥有的Style Label Expansion Rule处理：标签可以保留；当它在最终Prompt中首次出现时，必须在紧跟文字或同一`主风格`段给出Project-specific Style Meaning与当前Clip少量高价值、可观察且可执行的style carriers。具象化后不得默认删除标签；标签完全冗余、与当前Clip无关、互相冲突或形成Semantic Trigger Pollution时允许省略，而不是强制省略。
+进入STATE-08前，重要风格标签必须按`knowledge/prompt_compilation/state08_projection.md`唯一拥有的Style Label Expansion Rule处理：标签可以保留；当它在最终Prompt中首次出现时，必须在紧跟文字或同一`主风格`段给出Project-specific Style Meaning与当前Clip少量高价值、可观察且可执行的style carriers。`主风格`的最低内容（建立轮必须含标签或基线 + 项目内含义、Visual Grammar Baseline稳定倾向、Aesthetic Decision Lock四项与当前Clip载体；不得压成一句风格句）由该文件的`### 主风格 Minimum Content Rule`唯一拥有，本节不复述其细则。具象化后不得默认删除标签；标签完全冗余、与当前Clip无关、互相冲突或形成Semantic Trigger Pollution时允许省略，而不是强制省略。
 
 项目风格已由正式Visual Direction、Project Bible或Canonical视觉资产锁定时，后续连续Clip按`Source Carries State, Prompt Carries Delta`只补当前Clip差异和风险；未锁定、独立交付或含义发生变化时重新展开受影响部分。同一标签在同一Prompt中不得重复解释。
 

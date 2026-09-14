@@ -12,7 +12,7 @@
 | `references/regression_scenarios_craft.md` | R15—R22 | Prompt 编译、表演、视觉阻断与剧本端到端 |
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
-| `references/regression_scenarios_maintenance.md` | R48—R61 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断 |
+| `references/regression_scenarios_maintenance.md` | R48—R62 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
 ## Purpose
@@ -87,13 +87,13 @@ FAIL：把单独“继续 / 下一步 / 好的”当作优化授权或Proposal�
 
 ## R08 Review Revision Loop
 
-### R08-A Delivery Stops At The Review Checkpoint
+### R08-A The Delivery Round Closes The Main Pipeline
 
-输入：CLIP-001的最终Prompt已通过Template与Workflow验证并交付，用户尚未生成视频。
+输入：CLIP-001的最终Prompt已通过Template与Workflow验证，生产交付包或它的降级形态在同一交付轮提交；项目还有未交付的Clip-002，用户尚未生成视频，也没有要求审核。
 
-PASS：STATE-08写回`State Status: COMPLETE`、由`workflows/workflow_map.md`确定的下一Workflow与`Pending Decision: 等待实际生成结果（有问题回来进Review；无问题项目停在此处）`，下一阶段保持`NOT_STARTED`；项目合法停在该检查点，既不判完成也不判失败，也不生成Review Report。
+PASS：STATE-08写回`State Status: COMPLETE`、`Next Workflow: 11_video_generation_workflow.md`（由`workflows/workflow_map.md`确定）与`Pending Decision`指向下一个待交付Clip；最后一个应交付Clip交付后才写`Project Complete / Post`与`Pending Decision: None`。两种情况都**不停留在等待成片的Review检查点**，不预写`Review Result`、不自动进入STATE-09、不主动要求用户带回生成结果，也不生成Review Report。
 
-FAIL：因Prompt通过验证就写STATE-09 COMPLETE或`Project Complete`；输出没有实际生成结果的Review PASS；或静默结束而不声明检查点。
+FAIL：把项目停在“等待实际生成结果”的检查点；因Prompt通过验证就代替用户判Review PASS或预写STATE-09 COMPLETE；主动索要成片；或交付轮完全没有交付包与包状态。
 
 ### R08-B Failure-Driven Review Expands Only The Owning Layer
 
@@ -122,6 +122,14 @@ FAIL：以默认档为由省略任一已请求的层。
 ### R08-E Revision Loop Preserves State
 
 PASS允许完成；REVISE/REBUILD保持STATE-09 IN_PROGRESS，记录Affected IDs、Return Route、Accepted Unaffected Artifacts和Recheck Scope。
+
+### R08-F Review Runs Only On Explicit Invocation
+
+输入一：用户刚收到最终Prompt与生产交付包，只说“下一步 / 继续”，没有提到成片。输入二：用户说“审核这个成片，给PASS还是REVISE”。输入三：用户说“这段接不上，帮我看看哪里出问题”。
+
+PASS：输入一不进入STATE-09、不产出Review报告、不向用户索要成片，纯推进命令不构成审核授权。输入二按用户明确要求进入STATE-09并执行对应档位。输入三按失败驱动档进入STATE-09，先定位`Failure Class`再只展开对应层。
+
+FAIL：把纯推进命令当作审核授权；因“项目已收尾”而拒绝用户明确提出的审核或返修；或未经查看生成结果就给出PASS。
 
 ## R09 STATE-03 Double-Confirmation Closure
 
@@ -395,7 +403,7 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
 - R48-A至R48-H验证交付物校验器与Skill维护校验器职责互不替代、未授权音色字段被拒、Review台账逐镜逐边界全覆盖且不得留空、`画幅：`分镜总数声明与实际数量一致、大全景尺度可由现实关系复算、人物必须响应环境光区、参考代际劣化按顺序处理且不放开线稿/Storyboard禁令，以及经验必须带P/O/C分类与触发条件、步骤、失效信号、例外、反例且耦合来源不得升级为P或不作措辞级结论；STATE-08固定Schema、R11预算硬门槛与Voice opt-in保持不变。
 - R49-A至R49-C验证STATE-04 Aesthetic Decision Lock在四个维度各要求排他性选择与被放弃的选项、无取舍的默认做法不构成决定、决定沿STATE-06与STATE-08继承并由Prompt Scorecard Hard Gate审计；四项决定不新增Project Bible竞争区域、平行Schema或STATE-08字段，逐镜参数仍由STATE-06拥有。
-- R50-A至R50-B验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；不新增任何Prompt字段。
+- R50-A至R50-C验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；建立轮的`主风格`必须写足`### 主风格 Minimum Content Rule`四块，不得压成一句风格句；不新增任何Prompt字段。
 - R51-A至R51-D验证Skill可达性纪律：越过复核线不阻断提交但必须给出读取入口或拆分、超Ceiling、僵尸索引条目、指向不存在文件的条目仍使Validator失败；`SKILL.md`保持在Entry预算内；体量本身不构成新增文件的理由，也不与`rules/resource_loading.md`的运行时读取规则重叠。
 - R52-A至R52-D验证维护自检已从模块合同抽取为可独立读取的短卡与判据真源：必读路径不再需要通读超长合同文件；`module_contracts.md`不得重新长出并行检查副本；`USER_GUIDE.md`为非运行时文件且不在可达性纪律管辖内；模型能力数值只由Adapter拥有，知识层不再复述原始窗口。
 - R53-A至R53-D验证体量以UTF-8字节而非行数判定、`COMPOSITE`文件必须拆分而`INTEGRAL`文件保留并写明按章节读入口、Ceiling不可被Size Index豁免且已实际执行（132.7 KB回归集被拆为四个文件）、拆分后编号连续且由原文件提供Index、引用方全部更新。
@@ -405,7 +413,8 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R55-E验证既有检测层的身份在搬家与改名后仍然连续：原名称`Skill Update Self-Check / Change Safety Checklist`保持可检索，新入口显式声明只是入口、不构成第二套体系，全库只有一个检查体系入口。
 - R56-A至R56-C验证维护体系已整合：每条规则正文只有一处完整定义（写入前判定只在`Before You Write`）、体量文件不拥有体系框架、执行清单的`Maintenance System Map`列出全部成员与角色并声明其为分层而非并行。
 - R57-A至R57-C验证媒介剖面与Genre正交、2D档禁止套用实拍光学参数、未确认媒介不得默认真人剧；R58-A至R58-D验证越过复核线不是违规、`INTEGRAL`条目必须有读取入口、非运行时文件不在管辖内、Size Index不会腐化成固定名单。
-- R59-A至R59-D验证分镜拆解的三处覆盖：景别只有一个owner且`workflows/09`的内联清单与`framing_and_scale.md`一致（含中近景与大特写）、`Rhythm Intent`在`templates/07`有记录落点且由STATE-05投影、节奏投影不得预定镜头数量、Storyboard始终是旁路而非分镜表的升级档。
+- R59-A至R59-E验证分镜拆解的三处覆盖与阶段落点：景别只有一个owner且`workflows/09`的内联清单与`framing_and_scale.md`一致（含中近景与大特写）、`Rhythm Intent`在`templates/07`有记录落点且由STATE-05投影、节奏投影不得预定镜头数量、Storyboard始终是旁路而非分镜表的升级档；每个已完成阶段（Writer Intent、Director Intent / Director Decision Notes、Scene Directing Brief、Aesthetic Decision Lock、资产、Clip事实）都必须在Global / Per-Shot Projection Matrix中有具名落点字段，不得只靠“下游自然继承”。
 - R60-A至R60-D验证「好看」这一环不再悬空：STATE-04在Aesthetic Decision Lock锁定之前允许一次可选Look Frame试片（`templates/25_look_frame_prompt.md`），试片帧属非生产视觉材料、不进资产链、与REF-SKETCH严格分家、判断必须由用户给出；`prompt_scorecard.md`的两项审美维度改按可见取舍评分（视觉重心、明暗层级、色彩主从、取舍可见、不平均）并要求可见证据，权重不变，且仍诚实声明不能替代人工审美判断。
 - R61-A至R61-D验证审美判据收敛到`knowledge/quality/aesthetic_judgement.md`单一owner、STATE-08与STATE-09两处只引用不复制；STATE-09 Review新增`Aesthetic Judgement`判定并可返回STATE-04重做选错的维度（不新增Failure Class）；系统只输出观察、审美结论必须由用户给出，缺失时记`PENDING_USER`且不得判PASS；`Look Frame`开出唯一例外，允许Review把它作为对照参照读取而不成为生成输入。
+- R62-A至R62-B验证每个主STATE（STATE-00至STATE-07）在提示词投影矩阵里都有具名落点行：紧凑写法`STATE-00/01/04`按run展开、矩阵行数有下限、Writer / Director / Scene三行落点仍在，删行不能买覆盖；新增阶段产物必须在同一次变更内补上"来源 → 固定字段 → 必须保留的语义"一行，只能引用既有Gate / Pass，不得新增Prompt字段或把内部ID / `Pending`写进交付；确定性射程由`check_stage_landing_coverage`承担，落点语义仍须人工判定。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

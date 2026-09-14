@@ -49,7 +49,7 @@ None
 - STATE-06 Detailed Shot Design
 - STATE-07 Clip Production
 - STATE-08 Clip-based Video Prompt / Video Generation
-- STATE-09 Review
+- STATE-09 Review（显式调用：只有用户明确要求审核成片或携带具体成片问题时才进入，不作为默认待办）
 
 ## Active Artifacts
 

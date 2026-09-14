@@ -6,6 +6,26 @@
 
 STATE-04仍须完整建立、核验并保存Visual Direction，但默认不输出Visual Guide、色彩系统、镜头语言、光线体系、情绪设定或导演阐释，也不在此阶段停下等待展示确认。它们是后续资源、分镜表、Clip表和最终提示词的内部源数据；只有用户明确要求查看或修改视觉开发成果时，才使用本Workflow的完整输出。完成内部Gate后直接进入合法下一阶段。
 
+# Visual Direction Summary Contract
+
+本契约拥有STATE-04成果**以摘要形态出现在交付包（FAST或显式请求的`Preproduction Package`）时的最低内容**；完整Visual Direction的建立、核验、Project Bible写入与完整输出形态仍由本Workflow其余章节拥有，本契约不新建字段、不改变`Aesthetic Decision Lock`的判定纪律。
+
+摘要不是正文，也不是确认工件：STATE-04仍按`## Default Interaction Boundary`在内部完成并锁定；摘要不新增确认、不算显示确认、不能替代Project Bible写入，也不得反过来被当作“视觉开发已看过并认可”。
+
+摘要**至少**包含三块，缺一即不合格：
+
+1. **基线行**：`Project Style Baseline`的标签 + 项目内含义 + 2—4个可见载体（沿用STATE-01 `Production Setup Gate`已确认值，不在摘要里重开选择）。
+2. **Visual Grammar Baseline行**：稳定视觉倾向的最短可执行表述（摄影/材质质感、可用色谱与强调色出现条件、真实光源逻辑、空间气质、构图与景深倾向、摄影机介入边界）。
+3. **四锁行**：`Aesthetic Decision Lock`四个维度**各一行**（反差与光比结构、色彩对抗关系、构图主张、视觉母题与变化轨迹），每行必须同时写清**选择了哪一边**与**放弃了哪一边**，并带最短依据与可观察的可见后果；缺放弃项的那一行不合格。
+
+禁止：
+
+- 用风格标签、导演名、题材词、器材参数或“电影感 / 高级感”替代任何一行；
+- 只给一行风格句就当作STATE-04在包内的呈现；
+- 在摘要里新增Project Bible没有记录的字段、决定或逐Shot参数。
+
+用户明确要求查看或修改视觉开发成果时，摘要槽位必须换成完整输出（`# Required Output Semantics And Template Handoff`与`# Output Requirements`），不得以“已经给过摘要”为由拒绝展开。
+
 
 ## Purpose
 

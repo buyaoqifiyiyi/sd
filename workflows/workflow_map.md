@@ -41,10 +41,10 @@ STATE-00 Project Setup
 → STATE-06 Detailed Shot Design
 → STATE-07 Clip Production
 → STATE-08 Clip-based Video Prompt / Video Generation
-→ STATE-09 Review
+→ STATE-09 Review（显式调用；默认不在STATE-08之后自动进入）
 ```
 
-Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC只在各自合法触发条件下作为Optional/Auxiliary Workflow执行，不创建STATE，也不改变固定路由。
+Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO与MUSIC / SEED-MUSIC只在各自合法触发条件下作为Optional/Auxiliary Workflow执行，不创建STATE，也不改变固定路由。STATE-08全部应交付Clip的最终Prompt交付轮完成（每轮含生产交付包或其降级形态）即主流程收尾，项目不等待成片。
 
 ## Main Workflow Routing
 
@@ -131,11 +131,11 @@ Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Scr
 - Authority：`workflows/11_video_generation_workflow.md`；它拥有资源清单、语义编译、Preflight、Knowledge Reflection、Projection与验证流程。
 - Final schema owner：`templates/10_video_prompt.md`。Workflow、Rules、Knowledge、Adapter和本地图都不得维护竞争Schema。
 - Image-to-video boundary：`templates/11_image_to_video_prompt.md`只拥有参考帧Source Data与边界约束。
-- Next route：最终Prompt通过Template与Workflow验证后停在Review检查点（`Next Workflow: 13_review_workflow.md`、`Pending Decision: 等待实际生成结果`）；用户带回实际生成结果后才进入STATE-09，无结果时既不进入也不判失败。
+- Next route：最终Prompt通过Template与Workflow验证，并按`references/asset_package.md`完成生产交付包或其降级形态后：仍有未交付Clip时下一Workflow保持本阶段并只推进下一个待交付Clip；全部应交付Clip交付完则主流程收尾（`Next Workflow: Project Complete / Post`、`Pending Decision: None`）。STATE-09是显式调用阶段：只有用户明确要求审核成片或携带具体成片问题时才进入，未触发时既不进入也不判失败。
 
 ### STATE-09 Review
 
-- Required boundary：必须实际检查生成结果及适用的项目事实、资产、镜头、Clip与连续性记录。
+- Required boundary：**显式调用**——只有用户明确要求审核成片（审核 / PASS / REVISE / 全片Review）或携带具体成片问题 / 局部修改要求定位与返修时才进入；STATE-08交付轮完成后不自动进入，也不等待成片。必须实际检查生成结果及适用的项目事实、资产、镜头、Clip与连续性记录。
 - Authority：`workflows/13_review_workflow.md`。
 - PASS：完成STATE-09。
 - REVISE / REBUILD：携带最小Return Route回到事实或设计拥有者，修复后重新进入STATE-09。
@@ -152,7 +152,7 @@ Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Scr
 | 中断恢复、Review退回或生成重试 | `workflows/18_project_resume_workflow.md` | `references/project_state_contract.md` | 从已验证Checkpoint恢复，不创建STATE |
 | Sequence级Coverage规划 | `workflows/16_sequence_planning_workflow.md` | `templates/14_sequence_plan.md` | 条件执行；不创建SHOT或CLIP ID |
 | 电影海报 / Key Art / 封面 | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付；未请求不自动追加 |
-| 已有视频结果的局部修改 | `workflows/12_editing_workflow.md` | `templates/12_edit_prompt.md` | 修复后必须返回STATE-09 Review |
+| 已有视频结果的局部修改 | `workflows/12_editing_workflow.md` | `templates/12_edit_prompt.md` | 修复后返回STATE-09 Review复核（“局部修改”本身即Review显式调用的一部分） |
 | 系列项目管理 | `workflows/14_series_management_workflow.md` | `templates/19_series_status.md` | 不替代单个制作单元的完整主Pipeline |
 
 ### Storyboard Isolation
@@ -186,6 +186,8 @@ Storyboard只在用户明确请求时调用`workflows/10_storyboard_workflow.md`
 以上仅用于旧项目兼容，不参与新项目主路由。旧State、旧Storyboard标签与旧Portable Schema统一按`rules/compatibility_mapping.md`基于Artifact和Completion Gate迁移。
 
 ## Resume And Revision Loop
+
+该循环只在Review显式调用后成立（用户明确要求审核成片或携带具体成片问题）：
 
 ```text
 STATE-09 Review

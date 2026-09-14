@@ -72,7 +72,7 @@ Clip Production
 
 当前输入命中`rules/runtime_reload.md`的Trigger时，必须先完成该规则定义的重载与状态报告，再解析项目或Workflow。本规则不维护重载词、读取顺序或Reload Status的竞争副本。
 
-普通Chat不是简化模式，生产运行必须完整执行STATE-00至STATE-09。状态来源与本机资源不可用时的行为统一服从`rules/state_source.md`与`rules/chat_compatibility.md`；历史聊天中的Skill规则、Pipeline或Workflow描述不得作为状态源。
+普通Chat不是简化模式，生产运行必须完整执行STATE-00至STATE-08；STATE-09 Review是显式调用阶段，只有用户明确要求审核成片，或携带具体成片问题 / 局部修改要求返修时才进入。状态来源与本机资源不可用时的行为统一服从`rules/state_source.md`与`rules/chat_compatibility.md`；历史聊天中的Skill规则、Pipeline或Workflow描述不得作为状态源。
 
 如果可访问项目身份无法唯一确认：
 
@@ -135,6 +135,8 @@ STATE-08 Clip-based Video Prompt / Video Generation
 ↓
 
 STATE-09 Review
+
+（显式调用；默认不在STATE-08之后自动进入）
 
 
 
@@ -605,7 +607,7 @@ Portable State还必须同步Script Status、Completed States、Confirmed Assets
 
 普通Chat输出的完整Portable副本必须逐字段服从`references/project_state_contract.md`的Canonical Portable State Schema。禁止自创Portable Schema；`READY`和`INITIALIZED`不得作为State Status，Next Workflow必须使用实际文件名。
 
-STATE-09只有Review Result为PASS时才允许写STATE-09 Complete；REVISE或REBUILD必须记录Return Route并保持Review闭环未完成。
+STATE-09只有Review Result为PASS时才允许写STATE-09 Complete；REVISE或REBUILD必须记录Return Route并保持Review闭环未完成。STATE-09是显式调用阶段：STATE-08全部应交付Clip的交付轮完成后主流程收尾（`Next Workflow: Project Complete / Post`），不自动进入Review、不停留等待成片，也不代判PASS或失败。
 
 
 

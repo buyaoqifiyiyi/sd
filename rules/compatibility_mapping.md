@@ -39,6 +39,15 @@ Storyboard只保留为Optional/Auxiliary Artifact；它不是STATE，不计入Co
 
 已有Storyboard产物仅登记为Optional/Auxiliary Artifact，不要求重做。
 
+## Legacy Review Checkpoint Mapping
+
+STATE-09 Review是显式调用阶段，因此停“等待实际生成结果”的旧状态按当前语义迁移：
+
+- 用户未要求审核：把`Pending Decision: 等待实际生成结果`与指向Review的Next Workflow迁移为主流程收尾——`Next Workflow: Project Complete / Post`、`Pending Decision: None`；保留已有Review记录、Accepted Take Canon与Open Risks，不因迁移判PASS或失败。
+- 用户当前明确要求审核成片，或已带回具体成片问题：迁移到`STATE-09`与`13_review_workflow.md`，按失败驱动档或用户要求的档位继续。
+
+两种迁移都只改路由字段与状态摘要，不重做已确认阶段，也不丢弃Review证据。
+
 ## General Mapping Procedure
 
 1. 校验Project ID、Revision与当前可读Artifact。
@@ -57,5 +66,5 @@ Portable字段结构由`references/project_state_contract.md`拥有。旧文本�
 - 只迁移有证据的项目事实。
 - 无Workflow完成证据的`READY / INITIALIZED`规范化为`NOT_STARTED`。
 - Current State只写`STATE-00`至`STATE-09`；完整阶段名写入任务或说明。
-- Next Workflow使用实际文件名。
+- Next Workflow使用实际文件名；主流程收尾时写状态合同允许的终止值`Project Complete / Post`。
 - 迁移完成前不得把旧文本当作Valid State Source。

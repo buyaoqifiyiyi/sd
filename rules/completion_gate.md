@@ -33,7 +33,8 @@
 - STATE-03必须完成Prompt确认与图片确认双闭环；确认输入语义由`rules/progression_rules.md`唯一拥有，资产范围和记录细节由`rules/02_asset_rules.md`拥有。对STATE-02 `Prop Completeness Ledger`中路由为`PROP Core`或`PROP Support Board`的每项，均须完成对应闭环；未制作不得因其他资产完成而越过。FAST可自动确认符合资格的Prompt并批量生成Candidate，但Image Generated不等于Asset Confirmed。
 - STATE-07必须有Confirmed Clip Production Plan并通过逐ClipPreflight与Reference Budget；FAST只在所有条件已通过并保留自动接受证据时可确认该Plan。
 - STATE-08必须消费Confirmed Clip Production Plan，并按`workflows/11_video_generation_workflow.md`与`templates/10_video_prompt.md`完成逐Clip验证。
-- 生产交付包由`references/asset_package.md`拥有：资产全部`Asset Confirmed`且Clip表确认后才生成；包内每一项都必须同时有可回查的确认记录与真实文件——**只收用户认可的**，未确认、已否决或仅有产出的内容一律不进包并逐项报告。包内资产图片使用该文件的稳定文件名，最终视频Prompt的每个参考条目必须能一对一落到包内文件。打包有环境前提——只在具备真实文件访问能力的Work / Codex本地环境执行，并按本轮实际能力核验读、写、压缩；普通Chat / Portable模式不产zip，只交付清单与命名映射并标记“未打包”，不得声称已打包。门条件未满足时报告缺失类别，不生成空包，也不把打包当作进入STATE-08的前置Gate。
+- 生产交付包由`references/asset_package.md`拥有：它是主Pipeline在STATE-08最终Prompt交付轮的**正式收尾交付物**——门条件满足时随该轮自动产出，不需要用户另行下令；交付轮未附包、也未按其降级阶梯交付清单 / 命名映射并标注`未打包`时，该交付轮不得判完成（缺包不阻塞Prompt本身）。资产全部`Asset Confirmed`且Clip表确认后才生成；包内每一项都必须同时有可回查的确认记录与真实文件——**只收用户认可的**，未确认、已否决或仅有产出的内容一律不进包并逐项报告。包内资产图片使用该文件的稳定文件名，最终视频Prompt的每个参考条目必须能一对一落到包内文件。打包有环境前提——只在具备真实文件访问能力的Work / Codex本地环境执行，并按本轮实际能力核验读、写、压缩；普通Chat / Portable模式不产zip，只交付清单与命名映射并标记“未打包”，不得声称已打包。门条件未满足时报告缺失类别，不生成空包，也不把打包当作进入STATE-08的前置Gate。
+- STATE-09 Review是**显式调用阶段**：STATE-08全部应交付Clip的交付轮完成后主流程即收尾，不自动进入Review、不停留等待成片、不主动索要生成结果；只有用户明确要求审核成片，或携带具体成片问题要求定位与返修时才进入（见`rules/activation_rules.md`）。未查看生成结果不得作出`REVIEW_PASS`。
 - 用户只要求下一步时不得把未来阶段或待确认资产提前标记完成。
 
 ## Persistence Gate

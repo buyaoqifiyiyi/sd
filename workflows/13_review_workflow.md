@@ -44,6 +44,8 @@ FX。
 当前阶段：
 STATE-09 Review
 
+进入条件：**显式调用**。只有用户明确要求审核成片（“审核这个成片 / 给出PASS、REVISE或REBUILD / 全片Review”）或携带具体成片问题要求定位与返修时才进入；STATE-08最终Prompt交付轮完成后主流程已收尾，本Workflow不自动进入、不停留等待成片、也不主动索要生成结果。未实际查看生成结果不得给出`PASS`。
+
 前置阶段、下一阶段与对应下一 Workflow 的唯一 owner：
 `workflows/workflow_map.md`
 

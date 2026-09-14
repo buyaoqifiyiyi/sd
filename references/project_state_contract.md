@@ -120,6 +120,8 @@ Script `Production-Locked`后、STATE-01 Completion Gate通过前，必须在`##
 
 `BLOCKED`只表示缺少外部确认、必要输入或上游事实冲突。Review发现可修复问题时保持 `IN_PROGRESS`，通过 `Review Result` 和 `Return Route` 表达返工，不误标为BLOCKED或COMPLETE。
 
+STATE-09是**显式调用阶段**：STATE-08全部应交付Clip的最终Prompt交付轮完成（仍有未交付Clip时Next Workflow保持该阶段）即主流程收尾（`Next Workflow: Project Complete / Post`、`Pending Decision: None`），不得预先进入STATE-09、不得停留在等待成片的检查点；只有用户明确要求审核成片或携带具体成片问题时，才把`Current State`写为`STATE-09`。
+
 允许的 `Script Status`：
 
 - `Source Material`：尚待STATE-01生成Proposal的Idea / Brief / Concept、用户原始文本、尚未获锁定授权的完整剧本，或仍需分类、改编、优化范围决定的版本。
@@ -233,7 +235,7 @@ None
 - STATE-06 Detailed Shot Design
 - STATE-07 Clip Production
 - STATE-08 Clip-based Video Prompt / Video Generation
-- STATE-09 Review
+- STATE-09 Review（显式调用：只有用户明确要求审核成片或携带具体成片问题时才进入，不作为默认待办）
 
 ## Active Artifacts
 None
@@ -353,6 +355,8 @@ Recheck Scope
 Review Artifact
 ```
 
+进入STATE-09本身需要`rules/activation_rules.md`的Review显式调用：不得因STATE-08完成而预先写入这组字段，也不得为“等成片”而保留待办。
+
 - `PASS`：允许 `STATE-09 + COMPLETE`。
 - `REVISE`：保持 `STATE-09 + IN_PROGRESS`，Return Route指向最小修复Workflow。
 - `REBUILD`：保持 `STATE-09 + IN_PROGRESS`，Return Route指向事实或设计拥有者。
@@ -398,7 +402,7 @@ Revision ID格式：`REV-0001`、`REV-0002`……。
 - Project ID与Manifest、Bible、Registry一致。
 - Current State合法，State Status合法。
 - Script Status只能为Source Material、Adaptation Draft、Optimized Proposal或Production-Locked；STATE-01 COMPLETE及STATE-02之后必须为Production-Locked。
-- `COMPLETE`状态必须有Last Completed Step、Checkpoint和Next Workflow；STATE-09 PASS可将Next Workflow写为`Project Complete / Post`。
+- `COMPLETE`状态必须有Last Completed Step、Checkpoint和Next Workflow；STATE-08全部应交付Clip的最终Prompt交付轮完成（每轮含生产交付包或其降级形态）或STATE-09 PASS可将Next Workflow写为`Project Complete / Post`。
 - `IN_PROGRESS`必须有Active Workflow。
 - `BLOCKED`必须有Pending Decision。
 - Review Result为REVISE或REBUILD时，不得标记STATE-09 COMPLETE。

@@ -245,7 +245,7 @@ STATE-08 将已确认的 Shot Design 和 Visual Direction 转换为 Seedance 可
 
 导演名可在内部检索记录与最终Prompt中保留；最终【主风格】负责在重要标签首次出现时完成项目特定解释，各分镜字段只写当前镜头需要的具体变化，不重复整段解释。
 
-对每个当前Clip，先从导演知识中提取候选，再按`knowledge/prompt_compilation/state08_projection.md`唯一的Style Label Expansion Rule形成`Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`，只选择3—5个（或更少）最有价值且彼此兼容的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers。不得机械复制导演文件全部维度；名称可以保留，完全冗余时允许省略，但不以“carriers已足够”为默认删除理由。
+对每个当前Clip，先从导演知识中提取候选，再按`knowledge/prompt_compilation/state08_projection.md`唯一的Style Label Expansion Rule形成`Style Label → Project-specific Style Meaning → Executable Style Carriers → Prompt Compression`，只选择3—5个（或更少）最有价值且彼此兼容的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers。carriers的数量由该Rule拥有；`主风格`的最低内容（建立轮必须含基线、Visual Grammar Baseline、四项Aesthetic Decision Lock与当前Clip载体，不得压成一句风格句）由同一Rule的`### 主风格 Minimum Content Rule`拥有，本文件不复述。不得机械复制导演文件全部维度；名称可以保留，完全冗余时允许省略，但不以“carriers已足够”为默认删除理由。
 
 STATE-08 最终 Schema 唯一来源：
 

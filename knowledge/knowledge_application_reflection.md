@@ -43,7 +43,7 @@ Knowledge不是必须填满的清单。只有能够明显增强当前Clip的叙�
 
 Director Decision Notes、剧本或用户输入中的文学化、情绪化与导演化表达可以保留为上游意图，但不能作为孤立形容词直接结束转译。每个会影响当前Clip的重要抽象描述，必须在不改变原意的前提下，至少落到一种可见或可听执行项：人物行为/微表情、环境变化、光线变化、摄影机行为、具体声音或时间状态。
 
-导演名、影片名、流派名、题材风格名、情绪标签与审美大词既可作为内部检索/意图标签，也可作为最终Prompt中的高层创作锚点。本层先从Director Style Knowledge中提取候选特征并形成Project-specific Style Meaning，再交给`knowledge/prompt_compilation/state08_projection.md`按当前Clip选择3—5个（或更少）高价值style carriers。最终是否保留名称由该唯一Expansion Rule判断；不得把“carriers已经具体”解释成默认删除名称。
+导演名、影片名、流派名、题材风格名、情绪标签与审美大词既可作为内部检索/意图标签，也可作为最终Prompt中的高层创作锚点。本层先从Director Style Knowledge中提取候选特征并形成Project-specific Style Meaning，再交给`knowledge/prompt_compilation/state08_projection.md`按当前Clip选择高价值style carriers；carriers数量与`主风格`最低内容（建立轮必须含基线、Visual Grammar Baseline、四项Aesthetic Decision Lock与当前Clip载体，不得压成一句风格句）都由该唯一Expansion Rule的`### 主风格 Minimum Content Rule`拥有，本层不复制其细则。最终是否保留名称由该唯一Expansion Rule判断；不得把“carriers已经具体”解释成默认删除名称。
 
 转换时采用：`保留情绪功能 → 找到可观察证据 → 写出起止与变化 → 检查复杂度和连续性`。例如“宿命感”不能只保留为风格标签；可根据已确认事实转译为人物保持静止而背景持续运动、摄影机一次缓慢靠近、冷色环境保持、人物停顿后垂眼或持续声音压低等一项或多项具体手段。示例只说明转译方法，不授权自动添加冷色、推进或人物动作。
 

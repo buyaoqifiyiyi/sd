@@ -150,7 +150,7 @@ Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜�
 
 ### 主风格：
 
-写明当前 Clip 共同遵守的视觉媒介、综合色彩、摄影质感、光线体系、镜头节奏、表演尺度与整体情绪方向。导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日”等高层创作锚点可以保留，但不得孤立承担执行控制；重要标签在最终Prompt中首次出现时，必须在紧跟文字或本段内说明其Project-specific Style Meaning，并只选择当前Clip真正需要的3—5个（或更少）Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers。具象化后不默认删除标签；完全冗余时允许省略。若项目级Style Meaning已由正式Visual Direction、Project Bible或Canonical视觉资产锁定，后续连续Clip按`Source Carries State, Prompt Carries Delta`只写标签/已确认风格锚点与当前Clip差异、风险和变化，不重述整段Visual Bible。同一标签在同一Prompt只解释一次，不机械填满，不自动补入默认场景包，也不堆叠互相稀释的风格。风格信息必须低于主体、动作、空间、时间顺序、摄影机行为与状态承接。
+写明当前 Clip 共同遵守的视觉媒介、综合色彩、摄影质感、光线体系、镜头节奏、表演尺度与整体情绪方向。最低内容按`knowledge/prompt_compilation/state08_projection.md`的`### 主风格 Minimum Content Rule`执行：建立轮必须写足标签或基线 + 项目内含义、Visual Grammar Baseline的稳定倾向、Aesthetic Decision Lock四项各一次（每项含选择与它排除的可见结果）以及当前Clip的载体，**不得压成一句风格句**。导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日”等高层创作锚点可以保留，但不得孤立承担执行控制；重要标签在最终Prompt中首次出现时，必须在紧跟文字或本段内说明其Project-specific Style Meaning，并选择当前Clip真正需要的Lighting / Color / Optics / Camera / Texture / Composition / Performance / Rhythm / Atmosphere carriers——载体可少，四锁不得缺项。具象化后不默认删除标签；完全冗余时允许省略。若项目级Style Meaning已由正式Visual Direction、Project Bible或Canonical视觉资产锁定，后续连续Clip按`Source Carries State, Prompt Carries Delta`只写标签/已确认风格锚点与当前Clip差异、风险和变化，不重述整段Visual Bible，但Aesthetic Decision Lock的可核查锚点仍不得整体消失。同一标签在同一Prompt只解释一次，不机械填满，不自动补入默认场景包，也不堆叠互相稀释的风格。风格信息必须低于主体、动作、空间、时间顺序、摄影机行为与状态承接。
 
 ### 人物一致性：
 
@@ -286,13 +286,13 @@ Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜�
 - `人物一致性`是否只承担长期身份，`环境一致性`是否只承担场景结构与环境基线；本Clip临时左右/坐姿/距离/共用物体/动作次数/道具接触是否已经归入首帧或对应逐镜字段。
 - 是否存在重复描述同一人物外貌/环境结构，或互相冲突、优先级不明的机位/运动/动作/站位/光线指令。
 - 是否存在孤立抽象形容词而没有人物、环境、光线、摄影机、声音或时间状态的执行对应。
-- 重要导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日 / 宿命感”等高层词首次出现时，是否在同一`主风格`段给出Project-specific Style Meaning和当前Clip必要的3—5个（或更少）高价值style carriers，而不是孤立存在。
+- 重要导演名、流派名、题材风格名、情绪标签与“电影级 / 高级感 / 治愈感 / 青春感 / 潮湿夏日 / 宿命感”等高层词首次出现时，是否在同一`主风格`段给出Project-specific Style Meaning和当前Clip必要的style carriers，而不是孤立存在；建立轮是否已按`### 主风格 Minimum Content Rule`写足四块（含四项Aesthetic Decision Lock各一次），而不是只有一句风格句。
 - 风格解释是否真正落到可见/可听执行层，而不是只换成“清透、克制、高级、氛围感”等另一组抽象词；是否没有机械填满或带入默认场景包。
 - 同一标签是否在同一Prompt被重复解释；后续连续Clip是否仅在正式Style Source已锁定时使用标签/风格锚点 + 当前delta，且没有机械复述项目Visual Bible。
 - 标签是否只在完全冗余、无关、冲突或形成Semantic Trigger Pollution时省略，而不是在具象化后默认删除。
 - 是否存在无意义工程级小数、精确轨迹或伪物理承诺；保留的数字是否真正控制可见关系或摄影行为。
 - 是否遗漏当前Clip真正变化的动作、时间顺序、中间变化、结束状态或首尾承接；高优先级主体/动作/空间/镜头信息是否比装饰性风格词更清楚。
-- 动作复杂的Clip是否已把风格描述压缩到1—3个或更少的高价值项，没有抢占主体、动作、空间、时间顺序、摄影机路径与状态承接。
+- 动作复杂的Clip是否已把风格描述压缩到高价值项，没有抢占主体、动作、空间、时间顺序、摄影机路径与状态承接；压缩表达不等于删项——已锁定的Aesthetic Decision Lock四项锚点不得整体消失。
 - `主风格 / 人物一致性 / 环境一致性 / 参考区 / 各分镜正文`是否以正向可执行语言为主，没有散落通用`禁止 / 不要 / 避免`清单；可正向化的限制是否已经改写为目标状态。
 - 是否只在具体动作、空间关系或物理连续性确需贴近说明时保留最小局部约束，并且没有因统一收束而造成分镜指代不清。
 - 末尾反向提示词是否只保留固定平台边界和少量难以正向锁死的当前高风险项；是否已删除正文重复、低价值、抽象化、同义堆叠与无关项，且没有因过长抢占主体/动作/空间/镜头/时间状态与Handoff权重。

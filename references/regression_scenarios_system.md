@@ -302,9 +302,9 @@ FAIL：把失败草图也展示或登记、只报告“草图有问题”不说�
 
 输入：核心资产、Production-Locked Script和事实已确认；视频模型/Profile已锁定；STATE-04至STATE-08所需输入完整且所有QA通过。用户启用FAST并要求继续。
 
-PASS：内部按STATE-04→05→06→07→08依序读取、检查、写回；对外以`Preproduction Package`交付可查看的Visual Direction摘要、完整Scene Breakdown与完整Detailed Shot Design，再以`Execution Package`交付完整Clip Plan和每个Clip的完整目标模型Prompt。每个Template原字段、顺序和内容保持完整；不得将多个阶段压为一张新总表或用“同上”替代。每个Clip仍执行预检、参考预算和无BGM边界。
+PASS：内部按STATE-04→05→06→07→08依序读取、检查、写回；对外以`Preproduction Package`交付Visual Direction摘要、完整Scene Breakdown与完整Detailed Shot Design，再以`Execution Package`交付完整Clip Plan和每个Clip的完整目标模型Prompt。STATE-04摘要按`workflows/07_visual_development_workflow.md`的`# Visual Direction Summary Contract`至少含基线行、Visual Grammar Baseline行与`Aesthetic Decision Lock`四锁各一行（每行写明选择与被放弃项，带最短依据与可见后果）。每个Template原字段、顺序和内容保持完整；不得将多个阶段压为一张新总表或用“同上”替代。每个Clip仍执行预检、参考预算和无BGM边界。
 
-FAIL：把包名写进Project State或最终Prompt字段、跳过中间QA、只交摘要、先输出Prompt后形成Clip Plan，或因聚合改写Script / Director Intent / Canonical资产。
+FAIL：把包名写进Project State或最终Prompt字段、跳过中间QA、只交摘要、先输出Prompt后形成Clip Plan，或因聚合改写Script / Director Intent / Canonical资产。把STATE-04摘要压成一行风格句或只给风格标签、只写四锁的选择而不写被放弃项，同样FAIL——那是“没给出可核对的视觉方向”，不是简洁。
 
 ### R32-B Hard Stop Truncates The Package At The Nearest Boundary
 
@@ -389,7 +389,7 @@ FAIL：把Project Root里能找到的文件默认全打包、把`Auto-accepted u
 
 输入：资产全部`Asset Confirmed`并绑定稳定文件名，Clip表已确认；用户只说“确认 / 下一步”，从未单独说过“打包”。系统按STATE-08交付第一个Clip的最终Prompt。输入一的环境为Work / Codex本地模式（可读写本机目录）；输入二为普通Chat（本机Project Root不可读）；输入三为Work本地模式但某`Applicable`类别缺真实已确认文件。
 
-PASS：STATE-08的Required reads含`references/asset_package.md`的`## Package Timing And Delivery`与`## Access Precondition`；输入一在该交付轮同轮附上包与zip（或给出包路径与已生成证据）；输入二同轮交付六类清单、`文件名 ↔ Asset ID`映射与目录骨架并明确标注“未打包”；输入三照常交付当前Clip的Prompt，并同轮逐项报告缺失类别与所在Gate，不生成空包。三者都不得因为用户没说过“打包”就完全不提交付包或包状态，且打包始终不作为进入STATE-08的前置条件——缺失时报告，不阻塞Prompt。
+PASS：STATE-08的Required reads含`references/asset_package.md`的`## Package Timing And Delivery`与`## Access Precondition`；输入一在该交付轮同轮附上包与zip（或给出包路径与已生成证据）；输入二同轮交付六类清单、`文件名 ↔ Asset ID`映射与目录骨架并明确标注“未打包”；输入三照常交付当前Clip的Prompt，并同轮逐项报告缺失类别与所在Gate，不生成空包。包是该交付轮的**正式收尾交付物**（不是可选附件）：三者都不得因为用户没说过“打包”就完全不提交付包或包状态，且打包始终不作为进入STATE-08的前置条件——缺失时报告，不阻塞Prompt。
 
 FAIL：把交付包当成只在用户显式下令“打包”时才存在的动作、Prompt交付轮完全不提包或包状态、因包未就绪而拒绝交付或阻塞STATE-08、把包未就绪谎报为已打包，或用“用户没要求”当作静默略过的理由。
 
@@ -425,6 +425,14 @@ PASS：`REF-SKETCH-002` / `REF-TAIL-001`**不使v001失效、不改变其Revisio
 
 FAIL：为一两张快照外草图自动重发整包、把包判成“已失效”、把快照外条目报成对应性阻塞项，或反过来谎称它们已在包内。
 
+### R36-K The Package Is A Formal Closing Deliverable, Not An Optional Attachment
+
+输入一：资产全部`Asset Confirmed`并绑定稳定文件名，Clip表已确认；用户只说“下一步”，从未提过打包；当前环境本轮实测可读、可写、可压缩。输入二：同一项目里用户只要求先看当前Clip的Prompt，而某`Applicable`类别尚无真实已确认文件。
+
+PASS：输入一同轮交付最终Prompt与包（或包路径与已生成证据），并声明包状态；包是STATE-08交付轮的**正式收尾交付物**，不是“用户点了名才做”的可选附件。输入二照常交付Prompt，并同轮按降级阶梯给出可交付形态或逐项报告缺失类别；**缺包或未按降级阶梯标注`未打包`时该交付轮不得判完成**，但缺包不阻塞Prompt本身，也不作为进入STATE-08的前置条件。
+
+FAIL：把包当成“用户没点名就可以不做”的可选附件、交付轮完全不提包或包状态、声称已打包而实际未生成、或因包未就绪而拒绝 / 阻塞Prompt交付。
+
 ## R33 Model-Specific Main Style Regression
 
 ### R33-A Seedance 2.5 Has A Dedicated Main Style Field
@@ -439,7 +447,7 @@ FAIL：把风格只隐含在全局叙事或时间线、在多个字段机械重�
 
 输入：MiniMax H3的CLIP-03使用已确认青春片Visual Grammar Baseline，要求人物在厨房内完成一个克制反应。
 
-PASS：顶级结构仍只有`参考素材说明：`、`核心创意：`、`画面过程说明：`与既有末尾限制；`核心创意：`的第一行固定为`主风格：`，写项目特定含义和最小充分的可见载体，第二行再写主体、地点、事件与必要运镜。不得新增与三段式竞争的顶级风格段。
+PASS：顶级结构仍只有`参考素材说明：`、`核心创意：`、`画面过程说明：`与既有末尾限制；`核心创意：`的第一行固定为`主风格：`，按`### 主风格 Minimum Content Rule`写项目特定含义、建立轮的四项Aesthetic Decision Lock与当前Clip载体（载体可少，四锁不得缺项，不得压成一句风格句），第二行再写主体、地点、事件与必要运镜。不得新增与三段式竞争的顶级风格段。
 
 FAIL：只写孤立风格标签、将风格藏在第二行后、增加H3顶级`主风格：`段、混入Seedance 2.5时间线或删除`非叙事性音乐：N/A`。
 
