@@ -90,6 +90,14 @@ PASS：校验器报出`主风格`出现`不做`（同义负向约束按`禁止 /
 
 FAIL：把`拒绝…` / `不做…`当风格描述放过并同时保留末尾同义清单；或反向地要求删除四锁的"排除"内容，使Aesthetic Decision Lock被压缩成只剩选择。
 
+### R48-K A Style Field Without Lock Dimension Names Warns
+
+输入：一份Seedance 2.5 Package的`主风格：`只写"墨焰式新中式。冷灰与黑漆构成干净层次；旧花灯是唯一暖色，暖光只短暂掠过侧脸。"，没有出现任何Aesthetic Decision Lock维度名；另一份把四个维度名各写一行、每行含选择与排除项。
+
+PASS：校验器对前者给出`WARNING`（"未出现四项Aesthetic Decision Lock维度名…本条只提示，不阻断交付"）且`errors`为空、退出码为0；对后者无该提示。四锁的"排除了什么可见结果"照旧属于必需内容，不因这条提示被要求删除；部分覆盖与措辞正确性仍由Output QA人工判定。
+
+FAIL：把该缺口做成硬阻断，使合法的后续Delta Clip无法交付；或反向地因为"校验器通过"就认为四块已经写足。
+
 ## R49 Aesthetic Decision Lock Regression
 
 ### R49-A Four Dimensions Require Exclusive Choices

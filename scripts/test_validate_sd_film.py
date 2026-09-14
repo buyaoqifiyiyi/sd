@@ -857,6 +857,28 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         errors, _ = package_validator.validate(flagged, "minimax-h3", False)
         self.assertTrue(any("通用负向清单" in item for item in errors))
 
+    def test_style_without_lock_dimension_names_warns_without_blocking(self) -> None:
+        """建立轮只写"标签 + 载体"时，交付前必须看得见这条缺口；但它不阻断交付。"""
+        plain = self.build_25(
+            style="墨焰式新中式。冷灰与黑漆构成干净层次；旧花灯是唯一暖色，暖光只短暂掠过侧脸。\n"
+        )
+        errors, warnings = package_validator.validate(plain, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("Aesthetic Decision Lock维度名" in item for item in warnings))
+
+        labelled = self.build_25(
+            style=(
+                "墨焰式新中式。冷灰与黑漆构成干净层次；旧花灯是唯一暖色。\n"
+                "反差与光比结构：低反差冷灰，唯一暖区由灯提供、衰减快——排除强逆光剪影。\n"
+                "色彩对抗关系：冷色占绝大面积，暖色只在点灯后出现——排除艳丽古风配色。\n"
+                "构图主张：稳定中远景容器，人物不占满画面——排除面部大特写。\n"
+                "视觉母题与变化轨迹：碑墙旧誓与花灯熄灭→点亮→熄灭，本Clip走出该节点。\n"
+            )
+        )
+        errors, warnings = package_validator.validate(labelled, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertEqual([item for item in warnings if "维度名" in item], [])
+
     def test_package_validator_is_registered_and_documented(self) -> None:
         required = ROOT / "scripts" / "validate_prompt_package.py"
         self.assertTrue(required.is_file())

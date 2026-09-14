@@ -16,9 +16,11 @@ Ownership:
     reader noticing: Canonical reference entries keep the
     `<Asset ID>｜<资产名>` form (no package file extension; a View Code or Purpose
     suffix when one Asset ID carries several images), and the `主风格` field
-    carries no generic negative list (`禁止` / `不要` / `避免`). It does not judge
-    artistic quality, and passing it is not a substitute for the semantic
-    Output QA described by each Template.
+    carries no generic negative list (`禁止` / `不要` / `避免` / `不做` / `拒绝` /
+    `不得`). It also WARNs -- without blocking -- when `主风格` names none of the
+    four Aesthetic Decision Lock dimensions, because that content requirement stays
+    a semantic judgement. It does not judge artistic quality, and passing it is not
+    a substitute for the semantic Output QA described by each Template.
 """
 from __future__ import annotations
 
@@ -57,6 +59,17 @@ PURPOSE_OR_VIEW_SUFFIX_RE = re.compile(
     r"_(?:ENV-\d{2}|EXT|Identity|Costume|Scale|Layout|Material|State|FX Phase)\s*$"
 )
 NEGATIVE_STYLE_TOKENS = ("禁止", "不要", "避免", "不做", "拒绝", "不得")
+# The establishing `主风格` must carry the four Aesthetic Decision Lock dimensions
+# (`### 主风格 Minimum Content Rule`). Naming them in the field is what makes the
+# requirement checkable at delivery time; a field that names none of them is not
+# attempting the structure at all. Later delta-only Clips keep the anchors, so this
+# stays a WARNING: partial coverage and phrasing still need human judgement.
+STYLE_LOCK_LABELS = (
+    "反差与光比结构",
+    "色彩对抗关系",
+    "构图主张",
+    "视觉母题与变化轨迹",
+)
 # A reference entry carrying only a platform attachment slot (`图片1`) or nothing
 # names no asset at all, so no file in the package can ever be mapped to it.
 PLATFORM_ENTRY_RE = re.compile(
@@ -229,6 +242,24 @@ def check_reference_entries(lines: list[str], model: str) -> list[str]:
     return errors
 
 
+def style_field_text(lines: list[str], model: str) -> str:
+    """The `主风格` content: its own section, or the H3 style line only.
+
+    H3 keeps `主风格：` inside `核心创意：`, whose second line carries subject and
+    camera work -- that line is out of scope for style-field assertions.
+    """
+    if model == "minimax-h3":
+        return "\n".join(
+            line for line in lines if line.strip().startswith(("主风格：", "主风格:"))
+        )
+    position = marker_positions(lines, ["主风格"]).get("主风格", -1)
+    if position < 0:
+        return ""
+    return section_text(
+        lines, position, [name for name in GLOBALS_20 + GLOBALS_25 if name != "主风格"]
+    )
+
+
 def check_style_field_negatives(lines: list[str], model: str) -> list[str]:
     """`主风格` carries executable style, not a generic negative list.
 
@@ -237,25 +268,38 @@ def check_style_field_negatives(lines: list[str], model: str) -> list[str]:
     leaving them in the style field duplicates that control and splits ownership.
     Deterministic scope is a fixed token list inside the 主风格 content
     (禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得, the rule's own "同义负向约束" set);
-    the fix is to rewrite the boundary positively, and paraphrases outside this
-    list still need human judgement.
+    the fix is to rewrite the boundary positively. Bare `不X` phrasings and other
+    paraphrases stay outside this list because the four locks legitimately write
+    what they ruled out -- those need human judgement, not a token ban.
     """
     errors: list[str] = []
-    if model == "minimax-h3":
-        text = "\n".join(
-            line for line in lines if line.strip().startswith(("主风格：", "主风格:"))
-        )
-    else:
-        position = marker_positions(lines, ["主风格"]).get("主风格", -1)
-        if position < 0:
-            return errors
-        text = section_text(
-            lines, position, [name for name in GLOBALS_20 + GLOBALS_25 if name != "主风格"]
-        )
+    text = style_field_text(lines, model)
     for token in NEGATIVE_STYLE_TOKENS:
         if token in text:
             errors.append(GENERIC_NEGATIVE_RULE.format(token=token))
     return errors
+
+
+def check_style_lock_labels(lines: list[str], model: str) -> list[str]:
+    """Warn when the `主风格` field names none of the four lock dimensions.
+
+    Non-blocking on purpose: the rule requires the four dimensions once when the
+    style is established and their anchors afterwards, and a delta-only Clip may
+    phrase them compactly. Naming none of the four means no reader -- or reviewer --
+    can verify the field against the Aesthetic Decision Lock, which is exactly the
+    failure that reached delivery twice. Partial naming is not flagged here and
+    stays a checklist judgement.
+    """
+    text = style_field_text(lines, model)
+    if not text:
+        return []
+    if any(label in text for label in STYLE_LOCK_LABELS):
+        return []
+    return [
+        "主风格：未出现四项Aesthetic Decision Lock维度名（"
+        + " / ".join(STYLE_LOCK_LABELS)
+        + "）；建立轮必须各写一次，后续Clip保留可核查锚点。本条只提示，不阻断交付"
+    ]
 
 
 def block_names(lines: list[str], start: int, stop: int) -> list[str]:
@@ -373,6 +417,7 @@ def validate(text: str, model: str, allow_voice_field: bool) -> tuple[list[str],
 
     errors.extend(check_reference_entries(line_list, model))
     errors.extend(check_style_field_negatives(line_list, model))
+    warnings.extend(check_style_lock_labels(line_list, model))
 
     if terminal_index < 0:
         errors.append(f"缺少终段字段: {terminal}：")
