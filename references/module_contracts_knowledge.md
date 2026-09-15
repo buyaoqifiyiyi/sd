@@ -258,6 +258,14 @@ Module Type：STATE-06至STATE-08辅助Knowledge。
 - 与Camera Angle、Movement、Perspective、Lens、FX或Performance建立重复原子定义
 - 创建新的最终Prompt字段
 
+不变量：
+
+- **交付画幅**（横屏 / 竖屏）由`knowledge/camera_language/composition_language/vertical_framing.md`拥有；相机成像画幅（全画幅等效倾向）由 Lens 目录拥有，两者不得互相推断
+- 竖屏双人布局一次只用一种（过肩前后错位 / 上下错位 / 纵深分离），不横向挤三人以上
+- 不得用裁切在横竖画幅之间转换；同一项目内不同Clip不混用交付画幅，切换画幅属交付规格变更需用户确认
+- 平台安全区不得虚构数值；平台未确认时只写避开顶部与底部安全边带
+- 资产图比例由`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`拥有，本目录不重复定义
+
 ---
 
 ## Quality Knowledge Contract
@@ -295,5 +303,113 @@ Owner：`knowledge/medium_profiles.md`。STATE-00只登记用户已明确输入�
 禁止：把媒介当成Genre子类；从平台或题材推定媒介；用本Knowledge改写剧情事实、资产身份或STATE-08 Schema。
 
 冲突时：媒介决定本身缺失、为`Pending`或冲突时返回STATE-01的`Production Setup Gate`；资产身份返回资产拥有者；逐镜镜头语言返回STATE-06；项目级美学方向返回STATE-04。
+
+---
+
+## Genre Profile Knowledge Contract
+
+Module Type：STATE-00登记、STATE-04消费、STATE-05 / 06 / 08按需回读的跨类型Knowledge；不创建新STATE、不新增Template字段。
+
+Owner：`knowledge/genre/index.md`是登记表、共享Genre File Schema、加载规则、正交声明、反公式边界与共享不变量的唯一owner；`knowledge/genre/01_mystery_thriller.md`至`knowledge/genre/06_crime.md`是它登记的类型文件。类型由STATE-00在`templates/00_project_start_template.md`的`## Genre`登记；本模块拥有登记表的Profile ID与每个类型的**呈现层倾向**。
+
+触发：项目`类型`已登记时，在STATE-04建立或修订`Visual Grammar Baseline`时读取命中的类型文件；STATE-05 / 06 / 08消费已锁定的基线，只在当前Scene / Shot的类型兑现出现真实分歧时定点回读对应类型文件的对应小节。
+
+不触发：`类型`为`PENDING`时不加载，且不得从媒介、平台、题材标签、画风或参考片推定类型；Poster的类型倾向由`knowledge/poster_design/genre_tendencies.md`拥有，本模块不替代它；Storyboard、Sequence、MUSIC、AUDIO等辅助模块不因本Knowledge改变各自既有边界。
+
+不变量：
+
+- Profile ID固定为`mystery_thriller` / `action` / `romance` / `comedy` / `horror` / `crime`，不得改名或新增同义ID；登记表与`knowledge/genre/`下的文件一一对应
+- 每个类型文件必须齐备九节共享Schema，其中`## When Not To Apply｜反公式边界与失败信号`为必答项
+- 类型知识只提供带条件的候选手段，不得写成固定节拍模型、冲突公式或跨项目原则
+- 类型与媒介正交、与导演风格正交，任何一条不得覆盖另一条
+- 不改变STATE-08 Schema、不新增Template字段、不改写Production-Locked Script / Writer Intent / Director Intent / Canonical资产 / 已确认Blocking
+- 视频Prompt永久禁止非剧情内配乐，类型不构成例外
+
+禁止：用类型替代Writer / Director判断；把单项目做法升级为通用规则；用类型知识解释或改写剧情事实；以"类型需要"为由绕过Completion Gate、资产锁、Reference Budget或任何硬停点。
+
+冲突时：类型登记缺失或冲突返回STATE-00的项目登记；类型承诺与已锁定剧本冲突返回Writer Owner（`knowledge/screenplay_development.md`）；项目级呈现取舍冲突返回STATE-04；逐镜呈现冲突返回STATE-06；媒介相关表达在非实拍档不成立返回`knowledge/medium_profiles.md`。
+
+---
+
+## Drawn-Medium Language Knowledge Contract
+
+Module Type：`2d_anime`档的镜头语言等效与画风一致性Knowledge；STATE-04与STATE-06消费；不创建新STATE、不新增Template字段。
+
+Owner：`knowledge/anime_language/index.md`是登记表、共享Atom Schema、加载规则、共享不变量与可校验不变量的唯一owner；`knowledge/anime_language/01_layout_and_space.md`至`knowledge/anime_language/04_style_and_consistency.md`是它登记的原子。本域是`knowledge/camera_language/index.md`（Camera Language Module唯一owner）在绘制媒介下的**分化**，不是第二套镜头语言路由。
+
+触发：`媒介形式`确认为`2d_anime`时，在STATE-04（美学与摄影方向）与STATE-06（逐镜设计）按命中原子的对应小节读取；STATE-07的Clip连续性与STATE-08的Prompt编译消费已确认结果，不重新选择。角色资产形态改按`templates/04_character_asset_prompt.md`的`#### 2D Character Asset Sheet Prompt｜设定集与画风锚`。
+
+不触发：`live_action`与`3d_animation`不加载（`3d_animation`的虚拟光学按既有实拍知识执行，不得借用绘制媒介词汇）；媒介为`Pending`时不加载，也不得从类型、平台、题材标签或画风推定媒介。
+
+不变量：
+
+- 不得写入焦段毫米数、光比比值、光圈、真实景深、轨道/摇臂/稳定器、云台、胶片型号等实拍专有量
+- 轴线、银幕方向、视线匹配、人物拓扑与 Relational Screen Geometry 继续由既有owner拥有，本域不重建
+- 一次运镜只允许一个方向与一个触发；透视不随版面平移旋转
+- 冲击手段（smear / impact frame / 集中线）同一次冲击只用一种，同Clip不超过一次
+- 线宽、上色法、网点/笔触在STATE-04一次锁定，跨镜只继承不重选
+- 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
+- 视频Prompt永久禁止非剧情内配乐
+- 2D角色资产形态由`templates/04_character_asset_prompt.md`拥有，本域只引用
+
+禁止：用本域替代镜头必要性与运动触发判断；把实拍词表换成"感觉相近"的形容词继续写入；以"这是2D"为由放宽Completion Gate、资产双确认或Reference Budget。
+
+冲突时：媒介缺失 / `Pending` / 冲突返回STATE-01的`Production Setup Gate`；模块路由、镜头必要性与人物拓扑返回`knowledge/camera_language/index.md`；轴线与空间关系返回`knowledge/spatial_blocking_layer.md`；项目级美学与画风基线返回STATE-04；角色资产结构返回`templates/04_character_asset_prompt.md`；逐镜冲突返回STATE-06。
+
+---
+
+## Period And Place Knowledge Contract
+
+Module Type：时代与地域的可见约束与一致性Knowledge；STATE-02至STATE-08按阶段消费；不创建新STATE、不新增Template字段。
+
+Owner：`knowledge/period_and_place/index.md`是登记表、共享Atom Schema、加载规则、考据纪律与可校验不变量的唯一owner；`knowledge/period_and_place/01_era_visibility.md`至`03_period_consistency.md`是它登记的原子。时代与地域作为**项目事实**由用户与已确认项目材料拥有，记录在`templates/01_project_bible_template.md`的`# 2. World Building`。
+
+触发：`## Time Period`或`## Location System`已登记时，在STATE-02 / STATE-03（资产形制与不可变项）、STATE-04（时代基线与光线、声音方向）、STATE-06与STATE-08（逐镜与Prompt投影）按命中原子的对应小节读取。
+
+不触发：两者均未登记时记`Period And Place: PENDING`，不加载，也不得从媒介、类型、平台、导演风格名、参考片或资产外观推定；现代题材同样需要确认。
+
+不变量：
+
+- 任何结论必须落在已确认来源 / 合理推断（须显式标注）/ 不可确认三类之一；不得把常识当史实
+- 真实历史人物、真实机构、真实事件与真实品牌是一等禁项，与`rules/automation_mode.md`的Hard Stop同一口径
+- 时代技术边界是硬事实：不得为可看性引入该时代不存在的技术类别；风格化只改变呈现方式，不改变技术类别
+- 时代与地域冲突时以时代优先并记录让位
+- 与媒介、类型、导演风格正交，任一轴不得覆盖另一轴；风格层的"不得擅自添加时代符号"与本域不互相替代
+- 反刻板：地域不得靠符号清单表达，优先空间关系、称谓、身体距离与日常器物
+- 时代基线与地域基线一次锁定（STATE-04与World Building），跨镜只继承；改变基线属项目事实变更
+- 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
+- 视频Prompt永久禁止非剧情内配乐
+
+禁止：用本域改写剧情事实或世界设定本身；把推断写成史实；用"风格化"豁免事实错误；以"时代需要"为由绕过Hard Stop、资产双确认或Reference Budget。
+
+冲突时：登记缺失 / 冲突返回STATE-00与`templates/01`的World Building字段；剧情与世界设定返回Writer Owner；美学方向返回STATE-04；资产形制最终仲裁返回对应资产owner与`references/asset_lock_contract.md`；媒介表达返回`knowledge/medium_profiles.md`。
+
+---
+
+## Branded Content Knowledge Contract
+
+Module Type：品牌诉求的呈现转译与商业事实边界Knowledge；STATE-01、STATE-04、STATE-06与STATE-08按阶段消费；不创建新STATE、不新增Template字段、不新建节拍模型。
+
+Owner：`knowledge/branded_content/index.md`是登记表、共享Atom Schema、加载规则、商业事实纪律与可校验不变量的唯一owner；`knowledge/branded_content/01_brand_requirement_translation.md`至`03_form_and_delivery.md`是它登记的原子。品牌诉求作为**项目事实**由用户与已确认项目材料拥有，登记于`templates/00_project_start_template.md`的`# Input Material`。
+
+触发：项目存在**已确认**品牌诉求或商业目标时，在STATE-01（诉求与目标形式）、STATE-04（品牌调性进入`Visual Grammar Baseline`）、STATE-06与STATE-08（产品可读性与呈现落点）按命中原子的对应小节读取。
+
+不触发：普通叙事项目不加载，也不得从项目时长、平台、题材或道具品牌推定其为商业片；品牌诉求未确认时不加载，也不得自行补写品牌目标。
+
+不变量：
+
+- 真实价格、SKU与组合、可读品牌/Logo文字、功效与资质表述、受监管承诺、免责声明、授权人物与声音是**一等禁项**，不得由制作推断或生成，与`rules/automation_mode.md`的Hard Stop同一口径
+- 资产侧三类归类由`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`唯一拥有，本域只引用
+- 不新建节拍模型：短剧 / 竖屏剧情 / 1—3分钟的节奏适配仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有
+- 时长由用户或已确认交付规格给定；不得按固定秒数分配段落
+- 商业目标不拥有剧情事实：不得为露出改写Production-Locked Script、Canonical资产或已确认Blocking
+- 与媒介、类型、时代地域三条轴正交，任一轴不得覆盖另一轴
+- 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
+- 视频Prompt永久禁止非剧情内配乐
+- 商业片不豁免资产双确认、Completion Gate、Reference Budget与任何Hard Stop
+
+禁止：用画面替代缺失的商业事实；以“客户要快”为由绕过任何Gate；把普通叙事项目改造成商业片。
+
+冲突时：商业事实缺失或冲突返回`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`与Pending Decision；品牌诉求未确认返回STATE-00的`# Input Material`与STATE-01的Creation Brief；目标形式节奏返回短剧适配器；交付画幅返回`knowledge/camera_language/composition_language/vertical_framing.md`；美学方向返回STATE-04；剧情事实返回Writer Owner。
 
 ---

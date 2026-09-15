@@ -114,6 +114,8 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 - `knowledge/fx/index.md`（仅本镜头存在正式FX时）
 - `knowledge/sequence/index.md`（存在Sequence Plan时）
 - `knowledge/camera_language/index.md`（所有镜头；先据其分类索引定位当前镜头命中的景别 / 角度 / 运镜 / 视点 / 剪辑语言分类，只读命中分类的原子文件）
+- 媒介为`2d_anime`时的镜头语言等效：`knowledge/anime_language/index.md`（按`knowledge/camera_language/index.md`的`## Medium Branch｜媒介分支`定位；该档不读本目录的光学原子，也不得写入焦段、光圈、真实景深或器材——下方`焦段选择`条目在该档不适用，`景别`仍沿用`framing_and_scale.md`的名称，但按版面占比执行）
+- 交付画幅为竖屏时：`knowledge/camera_language/composition_language/vertical_framing.md`（双人错位布局、景别补偿、纵向优先的运动方向与平台安全区；横屏项目不读，也不得从平台、目标形式或资产图比例推定交付画幅）
 - `knowledge/transitions/index.md`（所有相邻镜头；先判定Boundary Class再由Decision Engine选择一种主要技术，只读命中技术的原子文件）
 
 以上目录条目一律**先读其`index.md`定位，只读命中分支的原子文件**；目录只作为发现入口，**不得整树通读**，未命中不读。

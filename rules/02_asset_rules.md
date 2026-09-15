@@ -496,7 +496,7 @@ Asset Design
 
 ## Asset Canvas Ratio Default｜资产图画幅默认
 
-本节唯一拥有资产图的默认画幅比例。默认值只在没有项目已确认交付规格、也没有用户当前明确例外时生效；用户明确指定其他比例时以用户为准，并在当前批次记录该例外。比例必须写进Prompt的`画幅/分辨率/交付规格：`与已选模型的Generation Parameters；未确认时写`Not specified`，不得从任何参考图的宽高比反推（判据见本文件的`Reference Provenance And Degradation`与`Reference Neutrality`两节）。
+本节唯一拥有资产图的默认画幅比例。默认值只在没有项目已确认交付规格、也没有用户当前明确例外时生效；用户明确指定其他比例时以用户为准，并在当前批次记录该例外。`项目已确认交付规格`的定义、来源与记录位置由`templates/01_project_bible_template.md`的`## Delivery Spec｜交付规格`唯一拥有，本节不重复定义。比例必须写进Prompt的`画幅/分辨率/交付规格：`与已选模型的Generation Parameters；未确认时写`Not specified`，不得从任何参考图的宽高比反推（判据见本文件的`Reference Provenance And Degradation`与`Reference Neutrality`两节）。
 
 - **人物类`9:16`竖版**——单角色画布：Appearance Reference、五区角色设定图、状态变体与比例图。
 - **其他类`16:9`横版**——`Environment`（每个View各自一张）、`Prop`（含`1×4横版道具设定图`）、正式`FX`，以及一切多对象`Board`（含Support角色参考板）。

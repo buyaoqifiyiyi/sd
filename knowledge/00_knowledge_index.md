@@ -74,6 +74,47 @@ STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；S
 
 ---
 
+## Persistent Genre Profile
+
+`knowledge/genre/index.md`是类型剖面的唯一知识Owner（`knowledge/genre/01_mystery_thriller.md`至`knowledge/genre/06_crime.md`为其登记的类型文件）。它定义主类型及其次类型在**呈现层**——镜头、表演、声音与节奏——的倾向、每条倾向的成立条件与反用场景，以及反公式边界。它**不拥有**故事结构、冲突公式、节拍模型、人物关系走向与任何剧情事实。
+
+它由STATE-00登记的`类型`触发（`templates/00_project_start_template.md`的`## Genre`）：已登记时在STATE-04建立或修订`Visual Grammar Baseline`时读取命中的类型文件，把类型承诺落进已锁基线；STATE-05 / 06 / 08消费已锁定的基线，只在当前Scene / Shot的类型兑现出现真实分歧时定点回读对应类型文件的对应小节，不重复整文件读取。未登记时记`Genre Profile: PENDING`，不加载任何类型文件，也不得从媒介、平台、题材标签、画风或参考片推定类型。
+
+类型与媒介正交、与导演风格正交：任何一条不得覆盖另一条，类型倾向在非实拍媒介下必须按`knowledge/medium_profiles.md`换用等效表达。类型倾向只是**带条件的候选手段**，不得被写成固定节拍、冲突公式或跨项目原则，也不改变任何主STATE、Template字段或STATE-08最终Schema。Poster的类型倾向由`knowledge/poster_design/genre_tendencies.md`拥有，不由本模块替代。
+
+---
+
+## Persistent Drawn-Medium Language
+
+媒介为`2d_anime`时，镜头语言与角色资产形态都改由绘制媒介的knowledge拥有，实拍光学原子在该档不适用：
+
+- **镜头语言等效**：`knowledge/anime_language/index.md`（版面与空间、运动的版面等效、帧感与冲击、画风锚与一致性）。它由`knowledge/medium_profiles.md`的`2d_anime`档触发，在STATE-04（美学与摄影方向）与STATE-06（逐镜设计）读取；`knowledge/camera_language/index.md`仍是`Camera Language Module`的唯一owner，其`## Medium Branch｜媒介分支`指向本域，模块路由、镜头必要性与 Relational Screen Geometry 不变。
+- **角色资产形态**：`templates/04_character_asset_prompt.md`的`#### 2D Character Asset Sheet Prompt｜设定集与画风锚`（三区块：角色设定区 / 表情区 / 画风与色指定区）。
+
+本域只在`2d_anime`档加载：`live_action`与`3d_animation`不加载，`3d_animation`的虚拟光学按既有实拍知识执行；媒介为`Pending`时不加载，也不得从类型、平台、题材标签或画风推定媒介。它不改变任何主STATE、Template字段或STATE-08最终Schema，也不得把焦段、光圈、真实景深、稳定方式或器材写入本档Prompt。
+
+---
+
+## Persistent Period And Place
+
+`knowledge/period_and_place/index.md`是时代与地域的唯一知识Owner（`knowledge/period_and_place/01_era_visibility.md`至`knowledge/period_and_place/03_period_consistency.md`为其登记的原子）。它定义已确认的时代背景与主要地点如何约束画面上的**可见事实**——器物与技术可用性、服装形制与材料、文字与标识、照明与交通通讯条件、称谓与身体语言、习俗与日常器物——以及**时代错置**的判据。
+
+它由`templates/01_project_bible_template.md`的`# 2. World Building → ## Time Period`与`## Location System`触发：已登记时在STATE-02 / STATE-03（资产形制与不可变项）、STATE-04（时代基线与光线、声音方向）、STATE-06与STATE-08（逐镜与Prompt投影）按需读取；未登记时记`Period And Place: PENDING`，不加载任何原子，也不得从媒介、类型、平台、导演风格名或参考片推定时代与地域——现代题材同样需要确认，不是"无需考据"。它与媒介、类型、导演风格三条轴正交，不改变任何主STATE、Template字段或STATE-08最终Schema。
+
+证据纪律：任何时代/地域结论必须落在**已确认来源 / 合理推断（须显式标注）/ 不可确认**三类之一；真实历史人物、真实机构、真实事件与真实品牌是一等禁项，与`rules/automation_mode.md`的Hard Stop同一口径。风格层的"不得擅自添加时代符号"（`knowledge/visual_styles/`）与本域的"已确认时代下什么能出现"是两件事，互不替代。
+
+---
+
+## Persistent Branded Content
+
+项目存在**已确认**的品牌诉求或商业目标时，`knowledge/branded_content/index.md`是品牌与商业片知识的唯一Owner（`knowledge/branded_content/01_brand_requirement_translation.md`至`knowledge/branded_content/03_form_and_delivery.md`为其登记的原子）。它把已确认的品牌诉求转译为**呈现层语言**——单一传达目标决定的注意焦点链、产品在画面中的角色、可信度锚点、利益点的可见化——并约束商业事实边界。
+
+它由`templates/00_project_start_template.md`的`# Input Material`已勾选`品牌需求`且内容已给出、或STATE-01的Creation Brief含明确品牌目标触发：在STATE-01（诉求与目标形式）、STATE-04（品牌调性进入`Visual Grammar Baseline`）、STATE-06与STATE-08（产品可读性与呈现落点）按需读取。未确认时不加载，也**不得**因为项目时长短、平台是短视频或题材像广告就推定其为商业片。
+
+它不拥有商业事实本身、资产侧三类归类（`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`）、剧情事实、美学方向与目标形式的节奏适配（短剧仍走`knowledge/adaptation/short_form_drama_adapter.md`）；与媒介、类型、时代地域三条轴正交，不新建节拍模型、不新增Template字段或STATE-08 Schema。真实价格、SKU、Logo文字、功效与资质表述、受监管承诺、授权人物与声音是一等禁项，与`rules/automation_mode.md`的Hard Stop同一口径。
+
+---
+
 ## STATE-01 Script Analysis
 
 
@@ -206,6 +247,9 @@ knowledge/fx/
 Required / Conditional routing：
 
 - knowledge/visual_styles/index.md（存在导演、影片、类型或综合色觉参考时）
+- knowledge/genre/index.md（`类型`已登记时；只读命中类型文件，把类型承诺落进Visual Grammar Baseline）
+- knowledge/period_and_place/index.md（`## Time Period`或`## Location System`已登记时；把时代与地域基线落进视觉方向与光线、声音条件）
+- knowledge/branded_content/index.md（项目存在已确认品牌诉求时；把品牌调性落进`Visual Grammar Baseline`，并按商业事实纪律处理产品与文字级元素）
 - knowledge/camera_language/index.md（建立项目级摄影方向时）
 - knowledge/lighting/index.md（建立光线体系时）
 - knowledge/color/index.md（建立综合色彩体系时）
@@ -288,6 +332,9 @@ Conditional：
 - knowledge/camera_language/movement_combinations/（多运镜、多景别、多视点或一镜到底）
 - knowledge/lighting/
 - knowledge/color/
+- knowledge/genre/（当前Scene的类型兑现出现真实分歧时，只读命中类型的对应小节）
+- knowledge/camera_language/composition_language/vertical_framing.md（交付画幅为竖屏 / 9:16 时；横屏项目不读，也不得从平台、目标形式或资产图比例推定交付画幅）
+- knowledge/anime_language/（媒介为`2d_anime`时，取代本目录的光学原子；按`knowledge/camera_language/index.md`的`## Medium Branch｜媒介分支`）
 
 
 按镜头内容追加：

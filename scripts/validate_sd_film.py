@@ -1023,6 +1023,462 @@ def check_asset_canvas_ratio_default(root: Path) -> list[str]:
     return errors
 
 
+def roster_section(text: str, heading: str) -> str:
+    """The body of one `## heading` section.
+
+    Registrations are read from the roster table only: a prose mention of the
+    same path elsewhere in the owner file is a cross-reference, not a second
+    registration. The heading is matched at line start, because these files also
+    name their own sections inside the `# Read Scope` table at the top.
+    """
+    marker = "\n" + heading
+    at = text.find(marker)
+    if at == -1:
+        if not text.startswith(heading):
+            return ""
+        start = len(heading)
+    else:
+        start = at + len(marker)
+    end = text.find("\n## ", start)
+    return text[start:] if end == -1 else text[start:end]
+
+
+GENRE_INDEX = "knowledge/genre/index.md"
+GENRE_DIR = "knowledge/genre"
+GENRE_ROSTER_RE = re.compile(r"knowledge/genre/(\d{2}_[a-z_]+\.md)")
+GENRE_SCHEMA_SECTIONS = (
+    "## Genre Promise｜类型承诺",
+    "## Information Discipline｜信息与悬念纪律",
+    "## Camera Tendencies｜镜头倾向",
+    "## Performance And Reaction｜表演与反应",
+    "## Sound And Silence｜声音与留白",
+    "## Rhythm And Cutting｜节奏与剪辑",
+    "## Model Execution Notes｜模型执行提示",
+    "## Pairs And Tensions｜组合与张力",
+    "## When Not To Apply｜反公式边界与失败信号",
+)
+GENRE_INDEX_REQUIREMENTS = (
+    ("## The Roster", "roster table"),
+    ("## Loading Rule", "loading rule"),
+    ("## Shared Genre File Schema", "shared schema"),
+    ("## Anti-Formula Discipline｜反公式边界", "anti-formula discipline"),
+    ("## Orthogonality", "orthogonality"),
+    ("Genre Profile: PENDING", "pending discipline"),
+    ("推定类型", "no genre inference"),
+    ("禁止固定节拍模型", "no beat model"),
+    ("禁止冲突公式", "no conflict formula"),
+    ("禁止覆盖上游", "upstream intent wins"),
+    ("与类型正交", "orthogonality statement"),
+    ("禁止非剧情内配乐", "no non-diegetic score"),
+    ("Story First", "shared invariant"),
+    ("Canonical", "shared invariant"),
+    ("Template字段", "no new template field"),
+)
+GENRE_ROUTING = (
+    ("knowledge/00_knowledge_index.md", "## Persistent Genre Profile", "knowledge index section"),
+    ("knowledge/00_knowledge_index.md", GENRE_INDEX, "knowledge index discovery entry"),
+    ("rules/resource_loading.md", f"`{GENRE_DIR}/`", "project scope gate row"),
+    ("references/module_contracts_knowledge.md", "## Genre Profile Knowledge Contract", "module contract"),
+    ("workflows/07_visual_development_workflow.md", GENRE_INDEX, "STATE-04 entry gate"),
+)
+
+
+def check_genre_knowledge(root: Path) -> list[str]:
+    """The registered genre profiles must be routable, complete and anti-formula.
+
+    Measured risk: this module only works if three set comparisons hold -- the
+    roster and the directory agree, every profile file carries all nine shared
+    sections, and the anti-formula discipline is still on the page. The third is
+    the one that decays silently: R24-J forbids turning a genre into a beat
+    model, and a profile that only lists "what this genre does" reads as a recipe
+    even when the surrounding rules say otherwise.
+
+    Deterministic scope: registration, section presence, route presence, and the
+    fixed invariants. It does not judge whether a tendency is well chosen, nor
+    whether a production actually followed it.
+    """
+    errors: list[str] = []
+    if not (root / GENRE_INDEX).is_file():
+        return [f"genre profile index is missing: {GENRE_INDEX}"]
+    index = read(root, GENRE_INDEX)
+    registered = GENRE_ROSTER_RE.findall(roster_section(index, "## The Roster"))
+    present = sorted(
+        path.name for path in (root / GENRE_DIR).glob("*.md") if path.name != "index.md"
+    )
+    if len(set(registered)) != len(registered):
+        errors.append("the genre roster registers the same profile file twice")
+    for name in sorted(set(registered)):
+        if name not in present:
+            errors.append(f"genre roster points at a missing profile file: {GENRE_DIR}/{name}")
+    for name in present:
+        if name not in registered:
+            errors.append(f"genre profile file is not registered in the roster: {GENRE_DIR}/{name}")
+        text = read(root, f"{GENRE_DIR}/{name}")
+        for section in GENRE_SCHEMA_SECTIONS:
+            if section not in text:
+                errors.append(f"{GENRE_DIR}/{name} is missing the shared genre section: {section}")
+        if "禁止非剧情内配乐" not in text:
+            errors.append(
+                f"{GENRE_DIR}/{name} must keep the rule that non-diegetic score never "
+                "enters a video prompt"
+            )
+    for needle, label in GENRE_INDEX_REQUIREMENTS:
+        if needle not in index:
+            errors.append(f"{GENRE_INDEX} must keep the {label}: {needle}")
+    for relative, needle, label in GENRE_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"genre profile routing file is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must keep the genre profile {label}: {needle}")
+    return errors
+
+
+ANIME_INDEX = "knowledge/anime_language/index.md"
+ANIME_DIR = "knowledge/anime_language"
+ANIME_ROSTER_RE = re.compile(r"knowledge/anime_language/(\d{2}_[a-z_]+\.md)")
+ANIME_ATOM_SECTIONS = (
+    "## Purpose And Owner",
+    "## Executable Vocabulary｜可执行词汇",
+    "## Conditions And Anti-Use｜成立条件与反用",
+    "## Prompt Translation｜Prompt 转译",
+    "## Failure Signals｜失败信号",
+)
+ANIME_INDEX_REQUIREMENTS = (
+    ("## The Roster", "roster table"),
+    ("## Loading Rule", "loading rule"),
+    ("## Shared Atom Schema", "shared atom schema"),
+    ("## Shared Invariants", "shared invariants"),
+    ("## Non-Applicable Rule", "non-applicable rule"),
+    ("唯一owner", "single camera-language owner"),
+    ("不是第二套路由", "not a second camera-language route"),
+    ("焦段毫米数", "banned live-action quantities"),
+    ("3d_animation", "explicit non-trigger"),
+    ("新增任何字段", "no new prompt field"),
+)
+ANIME_ROUTING = (
+    ("knowledge/00_knowledge_index.md", "## Persistent Drawn-Medium Language", "knowledge index section"),
+    ("knowledge/00_knowledge_index.md", ANIME_INDEX, "knowledge index discovery entry"),
+    ("knowledge/camera_language/index.md", "## Medium Branch｜媒介分支", "camera-language medium branch"),
+    ("knowledge/camera_language/index.md", ANIME_INDEX, "camera-language redirect"),
+    ("knowledge/medium_profiles.md", ANIME_INDEX, "medium-profile equivalent owner"),
+    ("rules/resource_loading.md", f"`{ANIME_DIR}/`", "project scope gate row"),
+    ("references/module_contracts_knowledge.md", "## Drawn-Medium Language Knowledge Contract", "module contract"),
+    ("workflows/07_visual_development_workflow.md", ANIME_INDEX, "STATE-04 entry gate"),
+    ("workflows/09_shot_design_workflow.md", ANIME_INDEX, "STATE-06 resource list"),
+    ("templates/04_character_asset_prompt.md", "#### 2D Character Asset Sheet Prompt｜设定集与画风锚\n", "2D asset structure heading"),
+    ("templates/04_character_asset_prompt.md", "设定集QA", "2D asset QA branch"),
+)
+
+
+def check_anime_language(root: Path) -> list[str]:
+    """The drawn-medium language must stay registered, complete and reachable.
+
+    Measured risk: `2d_anime` was declared a first-class tier while the only
+    "equivalent expressions" it pointed at were two table rows, and the template
+    it named as the owner of the 2D asset form contained a negation instead of a
+    structure. Both failure modes are silent -- the prompt still renders, it just
+    renders live-action optics into a drawn medium.
+
+    Deterministic scope: registration, five sections per atom, the index
+    requirements, and the routing points that keep the redirect discoverable. It
+    does not judge whether an equivalent expression is well chosen.
+    """
+    errors: list[str] = []
+    if not (root / ANIME_INDEX).is_file():
+        return [f"drawn-medium language index is missing: {ANIME_INDEX}"]
+    index = read(root, ANIME_INDEX)
+    registered = ANIME_ROSTER_RE.findall(roster_section(index, "## The Roster"))
+    present = sorted(
+        path.name for path in (root / ANIME_DIR).glob("*.md") if path.name != "index.md"
+    )
+    if len(set(registered)) != len(registered):
+        errors.append("the drawn-medium roster registers the same atom twice")
+    for name in sorted(set(registered)):
+        if name not in present:
+            errors.append(f"drawn-medium roster points at a missing atom: {ANIME_DIR}/{name}")
+    for name in present:
+        if name not in registered:
+            errors.append(f"drawn-medium atom is not registered in the roster: {ANIME_DIR}/{name}")
+        text = read(root, f"{ANIME_DIR}/{name}")
+        for section in ANIME_ATOM_SECTIONS:
+            if section not in text:
+                errors.append(f"{ANIME_DIR}/{name} is missing the shared atom section: {section}")
+        if "本档禁止写入" not in text:
+            errors.append(
+                f"{ANIME_DIR}/{name} must keep framing its equivalents as replacements "
+                "for quantities this medium forbids"
+            )
+    for needle, label in ANIME_INDEX_REQUIREMENTS:
+        if needle not in index:
+            errors.append(f"{ANIME_INDEX} must keep the {label}: {needle}")
+    for relative, needle, label in ANIME_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"drawn-medium routing file is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must keep the drawn-medium {label}: {needle}")
+    return errors
+
+
+VERTICAL_ATOM = "knowledge/camera_language/composition_language/vertical_framing.md"
+VERTICAL_REQUIREMENTS = (
+    ("## Purpose And Owner", "purpose and owner block"),
+    ("交付画幅 ≠ 相机画幅", "delivery-versus-camera format distinction"),
+    ("推定交付画幅", "no inferred delivery format"),
+    ("过肩前后错位", "vertical two-shot layout"),
+    ("不得裁切转换", "no crop conversion"),
+    ("不虚构数值", "no invented platform numbers"),
+)
+VERTICAL_ROUTING = (
+    ("knowledge/camera_language/composition_language/index.md", "- [Vertical Framing](vertical_framing.md)", "composition library entry"),
+    ("knowledge/camera_language/index.md", "交付画幅与竖屏构图", "camera-language category list"),
+    ("knowledge/00_knowledge_index.md", VERTICAL_ATOM, "knowledge index discovery entry"),
+    ("rules/resource_loading.md", f"`{VERTICAL_ATOM}`", "project scope gate row"),
+    ("workflows/09_shot_design_workflow.md", VERTICAL_ATOM, "STATE-06 resource list"),
+    ("references/module_contracts_knowledge.md", f"`{VERTICAL_ATOM}`", "composition contract invariant"),
+)
+
+
+def check_vertical_framing(root: Path) -> list[str]:
+    """The delivery aspect must stay owned, routable and non-inferable.
+
+    Measured risk: 9:16 is a first-class delivery format (character assets
+    default to it, the short-drama adapter targets it, the STATE-08 prompt has a
+    `画幅：` field for it), yet nothing owned how a narrow frame changes
+    composition -- and "项目已确认交付规格" was cited as an overriding authority
+    in a dozen places without an owner. Left alone, a vertical project gets
+    horizontal blocking inside a narrow frame, or a crop presented as delivery.
+
+    Deterministic scope: the atom exists, keeps its distinguishing clauses, and
+    is registered and routed. It does not judge whether a vertical shot is well
+    composed.
+    """
+    errors: list[str] = []
+    if not (root / VERTICAL_ATOM).is_file():
+        return [f"vertical framing atom is missing: {VERTICAL_ATOM}"]
+    atom = read(root, VERTICAL_ATOM)
+    for needle, label in VERTICAL_REQUIREMENTS:
+        if needle not in atom:
+            errors.append(f"{VERTICAL_ATOM} must keep the {label}: {needle}")
+    for relative, needle, label in VERTICAL_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"vertical framing routing file is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must keep the vertical framing {label}: {needle}")
+    return errors
+
+
+DELIVERY_SPEC_SOURCE = "templates/01_project_bible_template.md"
+DELIVERY_SPEC_REQUIREMENTS = (
+    ("## Delivery Spec｜交付规格", "delivery spec section"),
+    ("项目已确认交付规格", "the term it owns"),
+    ("唯一记录位置与定义owner", "single-owner statement"),
+    ("未确认时保持`UNSELECTED`", "unconfirmed state"),
+    ("反推交付规格", "no inference from reference material"),
+)
+DELIVERY_SPEC_ROUTING = (
+    ("rules/02_asset_rules.md", DELIVERY_SPEC_SOURCE, "asset canvas ratio route"),
+    ("knowledge/camera_language/composition_language/vertical_framing.md", DELIVERY_SPEC_SOURCE, "vertical framing trigger route"),
+    ("rules/resource_loading.md", "## Delivery Spec｜交付规格", "scope gate evidence"),
+)
+
+
+def check_delivery_spec(root: Path) -> list[str]:
+    """`项目已确认交付规格` must have exactly one owner and one record.
+
+    Measured case: a dozen adapters, templates and workflows let "用户当前明确
+    例外或项目已确认交付规格优先" override their defaults, but nothing defined
+    the term and no template recorded it -- so the override pointed at a fact the
+    project could not hold. The defaults still worked, which is why it stayed
+    invisible: the override branch was simply unreachable.
+
+    Deterministic scope: the owning section exists, keeps its distinguishing
+    clauses, and the main consumers route to it. It does not judge a delivery
+    spec's content.
+    """
+    errors: list[str] = []
+    if not (root / DELIVERY_SPEC_SOURCE).is_file():
+        return [f"delivery spec owner file is missing: {DELIVERY_SPEC_SOURCE}"]
+    owner = read(root, DELIVERY_SPEC_SOURCE)
+    for needle, label in DELIVERY_SPEC_REQUIREMENTS:
+        if needle not in owner:
+            errors.append(f"{DELIVERY_SPEC_SOURCE} must keep the {label}: {needle}")
+    for relative, needle, label in DELIVERY_SPEC_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"delivery spec consumer is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must route the {label} to {DELIVERY_SPEC_SOURCE}")
+    return errors
+
+
+PERIOD_INDEX = "knowledge/period_and_place/index.md"
+PERIOD_DIR = "knowledge/period_and_place"
+PERIOD_ROSTER_RE = re.compile(r"knowledge/period_and_place/(\d{2}_[a-z_]+\.md)")
+PERIOD_ATOM_SECTIONS = (
+    "## Purpose And Owner",
+    "## Visible Constraints｜可见约束",
+    "## Conditions And Anti-Use｜成立条件与反用",
+    "## Uncertainty Marking｜不确定项标注",
+    "## Failure Signals｜失败信号",
+)
+PERIOD_INDEX_REQUIREMENTS = (
+    ("## The Roster", "roster table"),
+    ("## Loading Rule", "loading rule"),
+    ("## Evidence Discipline｜考据纪律", "evidence discipline"),
+    ("## Shared Atom Schema", "shared atom schema"),
+    ("## Shared Invariants", "shared invariants"),
+    ("## Non-Applicable Rule", "non-applicable rule"),
+    ("Period And Place: PENDING", "pending discipline"),
+    ("推定", "no inference of era or place"),
+    ("一等禁项", "hard stop on real people, bodies and brands"),
+    ("不得把常识当史实", "common sense is not history"),
+    ("反刻板", "anti-stereotype discipline"),
+    ("不新增Template字段", "no new template field"),
+    ("knowledge/visual_styles/", "style-versus-fact boundary"),
+)
+PERIOD_ROUTING = (
+    ("knowledge/00_knowledge_index.md", "## Persistent Period And Place", "knowledge index section"),
+    ("knowledge/00_knowledge_index.md", PERIOD_INDEX, "knowledge index discovery entry"),
+    ("rules/resource_loading.md", f"`{PERIOD_DIR}/`", "project scope gate row"),
+    ("references/module_contracts_knowledge.md", "## Period And Place Knowledge Contract", "module contract"),
+    ("workflows/07_visual_development_workflow.md", PERIOD_INDEX, "STATE-04 entry gate"),
+    ("templates/01_project_bible_template.md", PERIOD_INDEX, "World Building field pointer"),
+)
+
+
+def check_period_and_place(root: Path) -> list[str]:
+    """Era and place must constrain visible facts without inventing them.
+
+    Measured gap: `## Time Period` and `## Location System` were collected at
+    STATE-00/01 and passed to five workflows, but no knowledge owned what they
+    constrain -- so "时代背景" was a recorded fact with no judge, and the only
+    era-related rules anywhere were style-layer prohibitions ("don't turn a
+    director reference into a costume drama"), which answer a different question.
+
+    Deterministic scope: registration, five sections per atom, the index
+    requirements that keep evidence classes and the anti-stereotype rule alive,
+    and the routing points. It does not judge whether a period detail is correct.
+    """
+    errors: list[str] = []
+    if not (root / PERIOD_INDEX).is_file():
+        return [f"period and place index is missing: {PERIOD_INDEX}"]
+    index = read(root, PERIOD_INDEX)
+    registered = PERIOD_ROSTER_RE.findall(roster_section(index, "## The Roster"))
+    present = sorted(
+        path.name for path in (root / PERIOD_DIR).glob("*.md") if path.name != "index.md"
+    )
+    if len(set(registered)) != len(registered):
+        errors.append("the period and place roster registers the same atom twice")
+    for name in sorted(set(registered)):
+        if name not in present:
+            errors.append(f"period and place roster points at a missing atom: {PERIOD_DIR}/{name}")
+    for name in present:
+        if name not in registered:
+            errors.append(f"period and place atom is not registered in the roster: {PERIOD_DIR}/{name}")
+        text = read(root, f"{PERIOD_DIR}/{name}")
+        for section in PERIOD_ATOM_SECTIONS:
+            if section not in text:
+                errors.append(f"{PERIOD_DIR}/{name} is missing the shared atom section: {section}")
+        if "不可确认" not in text:
+            errors.append(
+                f"{PERIOD_DIR}/{name} must keep the unverifiable-evidence class"
+            )
+    for needle, label in PERIOD_INDEX_REQUIREMENTS:
+        if needle not in index:
+            errors.append(f"{PERIOD_INDEX} must keep the {label}: {needle}")
+    for relative, needle, label in PERIOD_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"period and place routing file is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must keep the period and place {label}: {needle}")
+    return errors
+
+
+BRANDED_INDEX = "knowledge/branded_content/index.md"
+BRANDED_DIR = "knowledge/branded_content"
+BRANDED_ROSTER_RE = re.compile(r"knowledge/branded_content/(\d{2}_[a-z_]+\.md)")
+BRANDED_ATOM_SECTIONS = (
+    "## Purpose And Owner",
+    "## Executable Vocabulary｜可执行词汇",
+    "## Conditions And Anti-Use｜成立条件与反用",
+    "## Commercial Fact Boundary｜商业事实边界",
+    "## Failure Signals｜失败信号",
+)
+BRANDED_INDEX_REQUIREMENTS = (
+    ("## The Roster", "roster table"),
+    ("## Loading Rule", "loading rule"),
+    ("## Shared Atom Schema", "shared atom schema"),
+    ("## Commercial Fact Discipline｜商业事实纪律", "commercial fact discipline"),
+    ("## Orthogonality", "orthogonality"),
+    ("## Shared Invariants", "shared invariants"),
+    ("## Non-Applicable Rule", "non-applicable rule"),
+    ("一等禁项", "hard stop on commercial facts"),
+    ("不得推定", "no inference of commercial intent"),
+    ("不新建节拍模型", "no second rhythm model"),
+    ("不新增Template字段", "no new template field"),
+    ("后期叠加", "post-production overlay route for text-accurate elements"),
+    ("workflows/03_asset_discovery_workflow.md", "asset-side triage route"),
+)
+BRANDED_ROUTING = (
+    ("knowledge/00_knowledge_index.md", "## Persistent Branded Content", "knowledge index section"),
+    ("knowledge/00_knowledge_index.md", BRANDED_INDEX, "knowledge index discovery entry"),
+    ("rules/resource_loading.md", f"`{BRANDED_DIR}/`", "project scope gate row"),
+    ("references/module_contracts_knowledge.md", "## Branded Content Knowledge Contract", "module contract"),
+    ("knowledge/script_adaptation.md", BRANDED_INDEX, "adaptation target route"),
+    ("workflows/07_visual_development_workflow.md", BRANDED_INDEX, "STATE-04 entry gate"),
+)
+
+
+def check_branded_content(root: Path) -> list[str]:
+    """Brand work must translate the brief without inventing commercial facts.
+
+    Measured gap: 品牌需求 is a first-class STATE-00 input and STATE-01 lists it for
+    the Creation Brief branch, but every brand-related rule in the corpus was a
+    *boundary* (asset triage, Hard Stop) -- nothing owned how a confirmed brand
+    requirement becomes framing, product role and legibility. Meanwhile the
+    short-drama adapter explicitly declared ads Not Applicable, so a brand brief
+    had a target form with no owner at all.
+
+    Deterministic scope: registration, five sections per atom, the index
+    requirements that keep the fact discipline and the no-second-rhythm-model
+    rule alive, and the routing points. It does not judge a creative treatment.
+    """
+    errors: list[str] = []
+    if not (root / BRANDED_INDEX).is_file():
+        return [f"branded content index is missing: {BRANDED_INDEX}"]
+    index = read(root, BRANDED_INDEX)
+    registered = BRANDED_ROSTER_RE.findall(roster_section(index, "## The Roster"))
+    present = sorted(
+        path.name for path in (root / BRANDED_DIR).glob("*.md") if path.name != "index.md"
+    )
+    if len(set(registered)) != len(registered):
+        errors.append("the branded content roster registers the same atom twice")
+    for name in sorted(set(registered)):
+        if name not in present:
+            errors.append(f"branded content roster points at a missing atom: {BRANDED_DIR}/{name}")
+    for name in present:
+        if name not in registered:
+            errors.append(f"branded content atom is not registered in the roster: {BRANDED_DIR}/{name}")
+        text = read(root, f"{BRANDED_DIR}/{name}")
+        for section in BRANDED_ATOM_SECTIONS:
+            if section not in text:
+                errors.append(f"{BRANDED_DIR}/{name} is missing the shared atom section: {section}")
+    for needle, label in BRANDED_INDEX_REQUIREMENTS:
+        if needle not in index:
+            errors.append(f"{BRANDED_INDEX} must keep the {label}: {needle}")
+    for relative, needle, label in BRANDED_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"branded content routing file is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must keep the branded content {label}: {needle}")
+    return errors
+
+
 def check_self_check_dimension_count(user_guide: str) -> list[str]:
     """USER_GUIDE.md self-reports the number of maintenance check dimensions.
 
@@ -1108,6 +1564,93 @@ def _reachable_files(root: Path, shipped: list[str]) -> set[str]:
     return reachable
 
 
+FRONTMATTER_BLOCK_RE = re.compile(
+    r"\A---\r?\n(?P<body>.*?)(?:\r?\n)---[ \t]*(?:\r?\n|\Z)", re.DOTALL
+)
+FRONTMATTER_ENTRY_RE = re.compile(
+    r"^(?P<key>[A-Za-z_][A-Za-z0-9_-]*):[ \t]+(?P<value>\S.*)$"
+)
+
+def quoted_scalar_end(value: str) -> int | None:
+    """Index just past the closing quote of a quoted YAML scalar, or None.
+
+    Double quotes end at the first unescaped `"`; single quotes end at the first
+    `'` that is not part of a doubled `''`.
+    """
+    if value[:1] == "'":
+        index = 1
+        while index < len(value):
+            if value[index] == "'":
+                if value[index + 1:index + 2] == "'":
+                    index += 2
+                    continue
+                return index + 1
+            index += 1
+        return None
+    index = 1
+    while index < len(value):
+        if value[index] == "\\":
+            index += 2
+            continue
+        if value[index] == '"':
+            return index + 1
+        index += 1
+    return None
+
+def check_skill_frontmatter(contents: str, relative: str = "SKILL.md") -> list[str]:
+    """The discovery entry must survive a YAML parse, not just a substring search.
+
+    Measured case: r95 rewrote `description` with straight quotes inside the
+    already double-quoted scalar -- `（用户只说"学习这个视频怎么拍"也应激活）`.
+    YAML ends the scalar at that first inner quote, the frontmatter stops
+    parsing, and the host drops the skill from its list with nothing to read:
+    the skill is simply gone. `name: sd-film` and all six aliases are still
+    substrings of the file, so the alias, name and duplicate-entry checks all
+    stayed green while the entry was unusable.
+
+    Deterministic scope: the block opens and closes, every line is a top-level
+    `key: value` entry, a quoted scalar closes exactly at the end of its line,
+    and `name` / `description` are both present with `name: sd-film`. It is not
+    a YAML parser and does not judge the values themselves.
+    """
+    block = FRONTMATTER_BLOCK_RE.match(contents)
+    if block is None:
+        return [f"{relative} must open with a closed --- frontmatter block"]
+    errors: list[str] = []
+    fields: dict[str, str] = {}
+    malformed: set[str] = set()
+    for number, raw_line in enumerate(block.group("body").split("\n"), start=2):
+        line = raw_line.rstrip("\r")
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        entry = FRONTMATTER_ENTRY_RE.match(line)
+        if entry is None:
+            errors.append(
+                f"{relative} line {number} is not a `key: value` frontmatter entry, "
+                f"so the discovery metadata cannot be parsed: {line.strip()!r}"
+            )
+            continue
+        key = entry.group("key")
+        value = entry.group("value").rstrip()
+        if value[:1] in {'"', "'"}:
+            end = quoted_scalar_end(value)
+            if end is None or value[end:].strip():
+                malformed.add(key)
+                errors.append(
+                    f"{relative} line {number} keeps text after the closing quote of "
+                    f"{key}; YAML ends the scalar early and the host drops the skill "
+                    f"silently: {value!r}"
+                )
+                continue
+            fields[key] = value[1:end - 1]
+        else:
+            fields[key] = value
+    if "name" not in malformed and fields.get("name") != "sd-film":
+        errors.append(f"{relative} frontmatter must declare `name: sd-film`")
+    if "description" not in malformed and not fields.get("description"):
+        errors.append(f"{relative} frontmatter must declare a non-empty `description`")
+    return errors
+
 def check_reachability(root: Path) -> list[str]:
     """Every shipped file must be findable, or say why it is exempt.
 
@@ -1173,6 +1716,7 @@ def validate_skill(root: Path) -> list[str]:
             f"duplicate SD Film discovery entry inside the canonical root: {duplicate}; "
             "remove or relocate staging copies"
         )
+    errors.extend(check_skill_frontmatter(skill))
     core = read(root, "core/pipeline.md")
     runtime = read(root, "core/runtime-state.md")
     selection = read(root, "modules/model-selection.md")
@@ -1607,6 +2151,12 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_fast_invariant_and_receipt(root))
     errors.extend(check_standalone_invocation(root))
     errors.extend(check_asset_canvas_ratio_default(root))
+    errors.extend(check_genre_knowledge(root))
+    errors.extend(check_anime_language(root))
+    errors.extend(check_vertical_framing(root))
+    errors.extend(check_delivery_spec(root))
+    errors.extend(check_period_and_place(root))
+    errors.extend(check_branded_content(root))
     errors.extend(check_regression_ids(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))

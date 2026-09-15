@@ -4039,5 +4039,779 @@ class MaintenanceDimensionCountGuardTests(unittest.TestCase):
         )
 
 
+class R79SkillFrontmatterIntegrityTests(unittest.TestCase):
+    """反向守卫：发现入口必须能被 YAML 解析，而不是只在文件里"包含"这几个字。
+
+    r95 把 description 的中文引号写成了直引号，嵌在已经用双引号包裹的标量里：
+    YAML 在第一个内层引号处结束标量，frontmatter 解析失败，宿主静默丢弃本Skill——
+    没有报错可读，Skill 就是消失了。`name: sd-film` 与六个别名仍是文件里的子串，
+    所以名字、别名与重复入口三项检查全部保持绿色，而入口已经不可用。
+    """
+
+    def test_active_skill_frontmatter_parses(self) -> None:
+        contents = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        self.assertEqual(validator.check_skill_frontmatter(contents), [])
+
+    def test_straight_quote_inside_a_quoted_scalar_is_rejected(self) -> None:
+        broken = (
+            "---\n"
+            "name: sd-film\n"
+            'description: "调用sd、（用户只说"学习这个视频怎么拍"也应激活）"\n'
+            "---\n"
+        )
+        errors = validator.check_skill_frontmatter(broken)
+        self.assertTrue(
+            any("closing quote of description" in item for item in errors), errors
+        )
+
+    def test_the_r95_regression_on_the_live_entry_is_rejected(self) -> None:
+        contents = (ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
+        regressed = contents.replace("“", '"').replace("”", '"')
+        self.assertNotEqual(regressed, contents, "fixture must actually change the quotes")
+        errors = validator.check_skill_frontmatter(regressed)
+        self.assertTrue(
+            any("closing quote of description" in item for item in errors), errors
+        )
+
+    def test_escaped_inner_quotes_are_accepted(self) -> None:
+        escaped = (
+            "---\n"
+            "name: sd-film\n"
+            'description: "他说 \\"继续\\" 就继续"\n'
+            "---\n"
+        )
+        self.assertEqual(validator.check_skill_frontmatter(escaped), [])
+
+    def test_a_missing_name_is_rejected(self) -> None:
+        errors = validator.check_skill_frontmatter('---\ndescription: "调用sd"\n---\n')
+        self.assertTrue(
+            any("must declare `name: sd-film`" in item for item in errors), errors
+        )
+
+    def test_a_line_outside_key_value_shape_is_rejected(self) -> None:
+        errors = validator.check_skill_frontmatter(
+            "---\nname: sd-film\ndescription: 调用sd\n  继续\n---\n"
+        )
+        self.assertTrue(
+            any("not a `key: value` frontmatter entry" in item for item in errors), errors
+        )
+
+    def test_an_unclosed_frontmatter_block_is_rejected(self) -> None:
+        errors = validator.check_skill_frontmatter("name: sd-film\n")
+        self.assertTrue(
+            any("closed --- frontmatter block" in item for item in errors), errors
+        )
+
+
+class R80GenreProfileTests(unittest.TestCase):
+    """反向守卫：类型剖面必须可路由、九节齐备，且"什么时候不该用"仍在页面上。
+
+    R24-J 禁止把类型固化成公式；一个只列"这个类型怎么做"、不写反公式边界的
+    类型文件，读起来仍然是配方。本类逐项证明缺登记、缺文件、缺小节、丢路由与
+    丢掉无配乐规则都会被判 FAIL。
+    """
+
+    MIN_INDEX = (
+        "# Genre Index\n\n"
+        "## The Roster\n\n"
+        "| Profile ID | File |\n|---|---|\n"
+        "| `alpha` | `knowledge/genre/01_alpha.md` |\n\n"
+        "## Loading Rule\n\n"
+        "记`Genre Profile: PENDING`，不得推定类型。\n\n"
+        "## Shared Genre File Schema\n\n"
+        "## Anti-Formula Discipline｜反公式边界\n\n"
+        "- **禁止固定节拍模型**\n"
+        "- **禁止冲突公式**\n"
+        "- **禁止覆盖上游**\n\n"
+        "## Orthogonality\n\n媒介与类型正交，导演风格与类型正交。\n\n"
+        "## Shared Invariants\n\n"
+        "Story First；Canonical；禁止非剧情内配乐；不新增Template字段。\n"
+    )
+
+    @classmethod
+    def _profile(cls, sections=None) -> str:
+        chosen = validator.GENRE_SCHEMA_SECTIONS if sections is None else sections
+        return "# Genre Profile\n\n" + "\n\n".join(chosen) + "\n\n禁止非剧情内配乐。\n"
+
+    @classmethod
+    def _write_root(cls, temp_dir, index=None, **profiles):
+        root = Path(temp_dir)
+        genre = root / "knowledge" / "genre"
+        genre.mkdir(parents=True)
+        (genre / "index.md").write_text(
+            cls.MIN_INDEX if index is None else index, encoding="utf-8"
+        )
+        for name, text in profiles.items():
+            (genre / f"{name}.md").write_text(text, encoding="utf-8")
+        return root
+
+    def test_active_skill_genre_module_passes(self) -> None:
+        self.assertEqual(validator.check_genre_knowledge(ROOT), [])
+
+    def test_an_unregistered_profile_file_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._profile(), "02_beta": self._profile()}
+            )
+            errors = validator.check_genre_knowledge(root)
+            self.assertTrue(
+                any("is not registered in the roster: knowledge/genre/02_beta.md" in item for item in errors),
+                errors,
+            )
+
+    def test_a_roster_entry_without_a_file_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace(
+                "| `alpha` | `knowledge/genre/01_alpha.md` |",
+                "| `alpha` | `knowledge/genre/01_alpha.md` |\n"
+                "| `gamma` | `knowledge/genre/03_gamma.md` |",
+            )
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._profile()})
+            errors = validator.check_genre_knowledge(root)
+            self.assertTrue(
+                any("points at a missing profile file: knowledge/genre/03_gamma.md" in item for item in errors),
+                errors,
+            )
+
+    def test_a_profile_missing_the_anti_formula_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._profile(validator.GENRE_SCHEMA_SECTIONS[:-1])}
+            )
+            errors = validator.check_genre_knowledge(root)
+            self.assertTrue(
+                any(
+                    "is missing the shared genre section: ## When Not To Apply｜反公式边界与失败信号"
+                    in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_profile_without_the_no_score_rule_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            profile = "# Genre Profile\n\n" + "\n\n".join(validator.GENRE_SCHEMA_SECTIONS) + "\n"
+            root = self._write_root(temp_dir, **{"01_alpha": profile})
+            errors = validator.check_genre_knowledge(root)
+            self.assertTrue(
+                any("must keep the rule that non-diegetic score" in item for item in errors),
+                errors,
+            )
+
+    def test_lost_routes_and_a_lost_anti_formula_clause_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace("- **禁止冲突公式**\n", "")
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._profile()})
+            errors = validator.check_genre_knowledge(root)
+            self.assertTrue(
+                any("must keep the no conflict formula: 禁止冲突公式" in item for item in errors),
+                errors,
+            )
+            self.assertTrue(
+                any("genre profile routing file is missing: rules/resource_loading.md" in item for item in errors),
+                errors,
+            )
+
+    def test_a_missing_genre_index_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_genre_knowledge(Path(temp_dir))
+            self.assertEqual(errors, ["genre profile index is missing: knowledge/genre/index.md"])
+
+
+class R81DrawnMediumLanguageTests(unittest.TestCase):
+    """反向守卫：2d_anime 档必须有可执行的等效词汇，且 2D 资产形态不再是空指向。
+
+    实测缺口：`medium_profiles` 要求该档"改用等效表达"，当时却只有两行示例词；
+    它指为 2D 资产结构 owner 的 `templates/04` 里只有一句否定。本类逐项证明
+    缺原子、缺小节、丢重定向、丢 2D 资产结构与 QA 分支都会被判 FAIL。
+    """
+
+    MIN_INDEX = (
+        "# Drawn-Medium Language\n\n"
+        "## The Roster\n\n"
+        "| # | Atom | File |\n|---|---|---|\n"
+        "| 1 | alpha | `knowledge/anime_language/01_alpha.md` |\n\n"
+        "## Loading Rule\n\n媒介为`2d_anime`时加载；`3d_animation`不得借用本域。\n\n"
+        "## Shared Atom Schema\n\n"
+        "## Shared Invariants\n\n不得写入焦段毫米数。\n\n"
+        "## Non-Applicable Rule\n\n"
+        "本域是`knowledge/camera_language/index.md`的分化，不是第二套路由；"
+        "其唯一owner不变。不新增任何字段。\n"
+    )
+
+    @classmethod
+    def _atom(cls, sections=None, table: bool = True) -> str:
+        chosen = validator.ANIME_ATOM_SECTIONS if sections is None else sections
+        body = "# Atom\n\n" + "\n\n".join(chosen) + "\n"
+        if table:
+            body += "\n| 实拍量（本档禁止写入） | 绘制媒介等效物 |\n|---|---|\n"
+        return body
+
+    @classmethod
+    def _write_root(cls, temp_dir, index=None, **atoms):
+        root = Path(temp_dir)
+        target = root / "knowledge" / "anime_language"
+        target.mkdir(parents=True)
+        (target / "index.md").write_text(
+            cls.MIN_INDEX if index is None else index, encoding="utf-8"
+        )
+        for name, text in atoms.items():
+            (target / f"{name}.md").write_text(text, encoding="utf-8")
+        return root
+
+    def test_active_skill_drawn_medium_language_passes(self) -> None:
+        self.assertEqual(validator.check_anime_language(ROOT), [])
+
+    def test_the_live_template_keeps_the_2d_asset_structure(self) -> None:
+        template = (ROOT / "templates" / "04_character_asset_prompt.md").read_text(
+            encoding="utf-8-sig"
+        )
+        for needle in (
+            "#### 2D Character Asset Sheet Prompt｜设定集与画风锚",
+            "画风与色指定区",
+            "设定集QA",
+        ):
+            with self.subTest(needle=needle):
+                self.assertIn(needle, template)
+
+    def test_an_unregistered_atom_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._atom(), "02_beta": self._atom()}
+            )
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any(
+                    "is not registered in the roster: knowledge/anime_language/02_beta.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_roster_entry_without_a_file_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace(
+                "| 1 | alpha | `knowledge/anime_language/01_alpha.md` |",
+                "| 1 | alpha | `knowledge/anime_language/01_alpha.md` |\n"
+                "| 2 | gamma | `knowledge/anime_language/03_gamma.md` |",
+            )
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._atom()})
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any(
+                    "points at a missing atom: knowledge/anime_language/03_gamma.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_an_atom_missing_a_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._atom(validator.ANIME_ATOM_SECTIONS[:-1])}
+            )
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any(
+                    "is missing the shared atom section: ## Failure Signals｜失败信号" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_an_atom_without_the_banned_quantity_table_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, **{"01_alpha": self._atom(table=False)})
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any("for quantities this medium forbids" in item for item in errors), errors
+            )
+
+    def test_lost_redirect_and_routing_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, **{"01_alpha": self._atom()})
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any(
+                    "drawn-medium routing file is missing: knowledge/camera_language/index.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_mention_without_the_heading_is_rejected(self) -> None:
+        """子串级检查的经典失效：正文引用还在，小节标题已被删掉。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, **{"01_alpha": self._atom()})
+            template = root / "templates" / "04_character_asset_prompt.md"
+            template.parent.mkdir(parents=True)
+            template.write_text(
+                "改按`#### 2D Character Asset Sheet Prompt｜设定集与画风锚`的三区块结构。\n"
+                "设定集QA：三区块齐备。\n",
+                encoding="utf-8",
+            )
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any("2D asset structure heading" in item for item in errors), errors
+            )
+
+    def test_a_lost_index_requirement_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace("不是第二套路由；", "")
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._atom()})
+            errors = validator.check_anime_language(root)
+            self.assertTrue(
+                any("must keep the not a second camera-language route" in item for item in errors),
+                errors,
+            )
+
+    def test_a_missing_index_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_anime_language(Path(temp_dir))
+            self.assertEqual(
+                errors, ["drawn-medium language index is missing: knowledge/anime_language/index.md"]
+            )
+
+
+class R82VerticalFramingTests(unittest.TestCase):
+    """反向守卫：交付画幅必须有 owner、有路由，且不得被推定或被裁切转换。
+
+    实测缺口：9:16 是一等交付形态（人物资产默认它、短剧适配器面向它、STATE-08
+    有 `画幅：` 字段），但没有任何 owner 说明窄画幅如何改变构图；"项目已确认交付
+    规格"被十几处引用为覆盖性权威却没有 owner。本类钉住它的判据与路由。
+    """
+
+    MIN_ATOM = (
+        "# Vertical Framing\n\n"
+        "## Purpose And Owner\n\n"
+        "交付画幅 ≠ 相机画幅。\n\n"
+        "**触发**：用户当前请求明确写明竖屏时；**不得**因为平台是短视频就推定交付画幅。\n\n"
+        "竖屏双人布局用过肩前后错位。\n\n"
+        "**不得裁切转换**：禁止把横屏裁成竖屏。\n\n"
+        "平台未确认时不虚构数值。\n"
+    )
+
+    @classmethod
+    def _write_root(cls, temp_dir, atom=None, composition_index=None):
+        root = Path(temp_dir)
+        comp = root / "knowledge" / "camera_language" / "composition_language"
+        comp.mkdir(parents=True)
+        (comp / "vertical_framing.md").write_text(
+            cls.MIN_ATOM if atom is None else atom, encoding="utf-8"
+        )
+        if composition_index is not None:
+            (comp / "index.md").write_text(composition_index, encoding="utf-8")
+        return root
+
+    def test_active_skill_vertical_framing_passes(self) -> None:
+        self.assertEqual(validator.check_vertical_framing(ROOT), [])
+
+    def test_a_missing_atom_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_vertical_framing(Path(temp_dir))
+            self.assertEqual(
+                errors,
+                [
+                    "vertical framing atom is missing: "
+                    "knowledge/camera_language/composition_language/vertical_framing.md"
+                ],
+            )
+
+    def test_an_atom_losing_the_no_inference_clause_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            atom = self.MIN_ATOM.replace("推定交付画幅", "选择交付画幅")
+            root = self._write_root(temp_dir, atom=atom)
+            errors = validator.check_vertical_framing(root)
+            self.assertTrue(
+                any("must keep the no inferred delivery format" in item for item in errors), errors
+            )
+
+    def test_an_atom_losing_the_crop_ban_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            atom = self.MIN_ATOM.replace("不得裁切转换", "不建议裁切")
+            root = self._write_root(temp_dir, atom=atom)
+            errors = validator.check_vertical_framing(root)
+            self.assertTrue(
+                any("must keep the no crop conversion" in item for item in errors), errors
+            )
+
+    def test_lost_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir)
+            errors = validator.check_vertical_framing(root)
+            self.assertTrue(
+                any(
+                    "vertical framing routing file is missing: "
+                    "knowledge/camera_language/composition_language/index.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_library_entry_without_the_atom_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, composition_index="# Composition Language Index\n\n构图层次必须服务叙事。\n"
+            )
+            errors = validator.check_vertical_framing(root)
+            self.assertTrue(
+                any("composition library entry" in item for item in errors), errors
+            )
+
+
+class R83DeliverySpecOwnerTests(unittest.TestCase):
+    """反向守卫：`项目已确认交付规格`必须有唯一定义与唯一记录位置。
+
+    实测缺口：十几个 adapter / template / workflow 用"用户当前明确例外或项目已
+    确认交付规格优先"覆盖各自默认值，但没有任何文件定义这个词、也没有任何模板
+    记录它——覆盖分支指向一个项目放不下的事实。默认值照常工作，所以它一直隐形。
+    """
+
+    MIN_OWNER = (
+        "# Project Bible\n\n"
+        "## Delivery Spec｜交付规格\n\n"
+        "说明：本节是`项目已确认交付规格`的**唯一记录位置与定义owner**。\n\n"
+        "确认状态：`UNSELECTED / SELECTED`——**未确认时保持`UNSELECTED`**。\n\n"
+        "不得从参考图宽高比反推交付规格。\n"
+    )
+
+    @classmethod
+    def _write_root(cls, temp_dir, owner=None, consumers=None):
+        root = Path(temp_dir)
+        (root / "templates").mkdir(parents=True)
+        if owner is not None:
+            (root / "templates" / "01_project_bible_template.md").write_text(
+                owner, encoding="utf-8"
+            )
+        for relative, text in (consumers or {}).items():
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+        return root
+
+    def test_active_skill_delivery_spec_passes(self) -> None:
+        self.assertEqual(validator.check_delivery_spec(ROOT), [])
+
+    def test_a_missing_owner_file_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_delivery_spec(Path(temp_dir))
+            self.assertEqual(
+                errors,
+                ["delivery spec owner file is missing: templates/01_project_bible_template.md"],
+            )
+
+    def test_a_lost_single_owner_statement_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            owner = self.MIN_OWNER.replace("唯一记录位置与定义owner", "相关说明")
+            root = self._write_root(temp_dir, owner=owner)
+            errors = validator.check_delivery_spec(root)
+            self.assertTrue(
+                any("must keep the single-owner statement" in item for item in errors), errors
+            )
+
+    def test_a_lost_no_inference_clause_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            owner = self.MIN_OWNER.replace("反推交付规格", "推断交付规格")
+            root = self._write_root(temp_dir, owner=owner)
+            errors = validator.check_delivery_spec(root)
+            self.assertTrue(
+                any("no inference from reference material" in item for item in errors), errors
+            )
+
+    def test_a_consumer_that_stops_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir,
+                owner=self.MIN_OWNER,
+                consumers={
+                    "rules/02_asset_rules.md": "# Asset Rules\n\n本节唯一拥有资产图的默认画幅比例。\n",
+                    "knowledge/camera_language/composition_language/vertical_framing.md": (
+                        "# Vertical Framing\n\n**触发**：用户当前请求写明竖屏。\n"
+                    ),
+                    "rules/resource_loading.md": "# Resource Loading\n\n| 领域 | 条件 |\n",
+                },
+            )
+            errors = validator.check_delivery_spec(root)
+            self.assertTrue(
+                any("rules/02_asset_rules.md must route the asset canvas ratio route" in item for item in errors),
+                errors,
+            )
+            self.assertTrue(
+                any(
+                    "vertical_framing.md must route the vertical framing trigger route" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_missing_consumer_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, owner=self.MIN_OWNER)
+            errors = validator.check_delivery_spec(root)
+            self.assertTrue(
+                any("delivery spec consumer is missing: rules/02_asset_rules.md" in item for item in errors),
+                errors,
+            )
+
+
+class R84PeriodAndPlaceTests(unittest.TestCase):
+    """反向守卫：时代与地域必须有 owner、有考据纪律，且不得被推定。
+
+    实测缺口：`## Time Period` 与 `## Location System` 被 STATE-00/01 收集并传给
+    五个 workflow，但没有任何知识拥有"它们约束了什么"——时代背景成了一个有记录
+    却没有判官的事实；全库与时代相关的规则只有风格层的禁止句，回答的是另一个问题。
+    """
+
+    MIN_INDEX = (
+        "# Period And Place\n\n"
+        "## The Roster\n\n"
+        "| # | Atom | File |\n|---|---|---|\n"
+        "| 1 | alpha | `knowledge/period_and_place/01_alpha.md` |\n\n"
+        "## Loading Rule\n\n记`Period And Place: PENDING`，不得推定时代与地域。\n\n"
+        "## Evidence Discipline｜考据纪律\n\n"
+        "不得把常识当史实；真实人物与品牌是一等禁项。\n\n"
+        "## Shared Atom Schema\n\n## Shared Invariants\n\n"
+        "不新增Template字段；风格边界见`knowledge/visual_styles/`。\n\n"
+        "## Non-Applicable Rule\n\n反刻板：地域不得靠符号清单表达。\n"
+    )
+
+    @classmethod
+    def _atom(cls, sections=None, uncertainty: bool = True) -> str:
+        chosen = validator.PERIOD_ATOM_SECTIONS if sections is None else sections
+        body = "# Atom\n\n" + "\n\n".join(chosen) + "\n"
+        if uncertainty:
+            body += "\n具体年号属于不可确认项。\n"
+        return body
+
+    @classmethod
+    def _write_root(cls, temp_dir, index=None, **atoms):
+        root = Path(temp_dir)
+        target = root / "knowledge" / "period_and_place"
+        target.mkdir(parents=True)
+        (target / "index.md").write_text(
+            cls.MIN_INDEX if index is None else index, encoding="utf-8"
+        )
+        for name, text in atoms.items():
+            (target / f"{name}.md").write_text(text, encoding="utf-8")
+        return root
+
+    def test_active_skill_period_and_place_passes(self) -> None:
+        self.assertEqual(validator.check_period_and_place(ROOT), [])
+
+    def test_an_unregistered_atom_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._atom(), "02_beta": self._atom()}
+            )
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any(
+                    "is not registered in the roster: knowledge/period_and_place/02_beta.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_roster_entry_without_a_file_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace(
+                "| 1 | alpha | `knowledge/period_and_place/01_alpha.md` |",
+                "| 1 | alpha | `knowledge/period_and_place/01_alpha.md` |\n"
+                "| 2 | gamma | `knowledge/period_and_place/03_gamma.md` |",
+            )
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._atom()})
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any(
+                    "points at a missing atom: knowledge/period_and_place/03_gamma.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_an_atom_missing_a_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._atom(validator.PERIOD_ATOM_SECTIONS[:-1])}
+            )
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any(
+                    "is missing the shared atom section: ## Failure Signals｜失败信号" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_an_atom_without_the_uncertainty_class_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, **{"01_alpha": self._atom(uncertainty=False)})
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any("must keep the unverifiable-evidence class" in item for item in errors), errors
+            )
+
+    def test_a_lost_index_requirement_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace("一等禁项", "注意事项")
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._atom()})
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any("hard stop on real people, bodies and brands" in item for item in errors),
+                errors,
+            )
+
+    def test_a_prose_mention_is_not_a_registration(self) -> None:
+        """索引正文提到某个路径不等于登记它——登记只从花名册表读。
+
+        曾经的实现整文件扫描，于是一句"展开见 <atom>"会被当成第二次登记，
+        而真正未登记的文件也可能因为被正文提到而蒙混过关。
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace(
+                "## Non-Applicable Rule",
+                "展开见`knowledge/period_and_place/09_extra.md`。\n\n## Non-Applicable Rule",
+            )
+            root = self._write_root(
+                temp_dir, index=index, **{"01_alpha": self._atom(), "09_extra": self._atom()}
+            )
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any(
+                    "is not registered in the roster: knowledge/period_and_place/09_extra.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_lost_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, **{"01_alpha": self._atom()})
+            errors = validator.check_period_and_place(root)
+            self.assertTrue(
+                any(
+                    "period and place routing file is missing: rules/resource_loading.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_missing_index_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_period_and_place(Path(temp_dir))
+            self.assertEqual(
+                errors, ["period and place index is missing: knowledge/period_and_place/index.md"]
+            )
+
+
+class R85BrandedContentTests(unittest.TestCase):
+    """反向守卫：品牌诉求必须有 owner，商业事实不得由制作生成。
+
+    实测缺口：`品牌需求` 是 STATE-00 的一等输入、STATE-01 也为 Creation Brief 列了
+    品牌目标，但全库与品牌相关的规则全是**边界**（资产归类、Hard Stop）——没有任何
+    知识拥有"已确认的品牌诉求如何变成取景、产品角色与可读性"；同时短剧适配器把广告
+    明确判为 Not Applicable，于是品牌片成了一个没有任何 owner 的目标形式。
+    """
+
+    MIN_INDEX = (
+        "# Branded Content\n\n"
+        "## The Roster\n\n"
+        "| # | Atom | File |\n|---|---|---|\n"
+        "| 1 | alpha | `knowledge/branded_content/01_alpha.md` |\n\n"
+        "## Loading Rule\n\n品牌诉求未确认时**不得推定**。\n\n"
+        "## Shared Atom Schema\n\n## Shared Invariants\n\n"
+        "## Commercial Fact Discipline｜商业事实纪律\n\n"
+        "真实价格与Logo是一等禁项；文字级元素默认按\"优先后期叠加\"处理；"
+        "归类见`workflows/03_asset_discovery_workflow.md`。\n\n"
+        "## Orthogonality\n\n"
+        "## Non-Applicable Rule\n\n不新建节拍模型，不新增Template字段。\n"
+    )
+
+    @classmethod
+    def _atom(cls, sections=None) -> str:
+        chosen = validator.BRANDED_ATOM_SECTIONS if sections is None else sections
+        return "# Atom\n\n" + "\n\n".join(chosen) + "\n"
+
+    @classmethod
+    def _write_root(cls, temp_dir, index=None, **atoms):
+        root = Path(temp_dir)
+        target = root / "knowledge" / "branded_content"
+        target.mkdir(parents=True)
+        (target / "index.md").write_text(
+            cls.MIN_INDEX if index is None else index, encoding="utf-8"
+        )
+        for name, text in atoms.items():
+            (target / f"{name}.md").write_text(text, encoding="utf-8")
+        return root
+
+    def test_active_skill_branded_content_passes(self) -> None:
+        self.assertEqual(validator.check_branded_content(ROOT), [])
+
+    def test_an_unregistered_atom_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._atom(), "02_beta": self._atom()}
+            )
+            errors = validator.check_branded_content(root)
+            self.assertTrue(
+                any(
+                    "is not registered in the roster: knowledge/branded_content/02_beta.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_an_atom_missing_a_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(
+                temp_dir, **{"01_alpha": self._atom(validator.BRANDED_ATOM_SECTIONS[:-1])}
+            )
+            errors = validator.check_branded_content(root)
+            self.assertTrue(
+                any(
+                    "is missing the shared atom section: ## Failure Signals｜失败信号" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_lost_commercial_fact_hard_stop_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace("一等禁项", "注意事项")
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._atom()})
+            errors = validator.check_branded_content(root)
+            self.assertTrue(
+                any("hard stop on commercial facts" in item for item in errors), errors
+            )
+
+    def test_a_lost_overlay_route_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            index = self.MIN_INDEX.replace("优先后期叠加", "按需处理")
+            root = self._write_root(temp_dir, index=index, **{"01_alpha": self._atom()})
+            errors = validator.check_branded_content(root)
+            self.assertTrue(
+                any("post-production overlay route" in item for item in errors), errors
+            )
+
+    def test_lost_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = self._write_root(temp_dir, **{"01_alpha": self._atom()})
+            errors = validator.check_branded_content(root)
+            self.assertTrue(
+                any(
+                    "branded content routing file is missing: knowledge/script_adaptation.md" in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_a_missing_index_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_branded_content(Path(temp_dir))
+            self.assertEqual(
+                errors, ["branded content index is missing: knowledge/branded_content/index.md"]
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

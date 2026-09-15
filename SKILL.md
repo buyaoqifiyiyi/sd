@@ -1,13 +1,13 @@
 ---
 name: sd-film
-description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项目、继续之前的项目：AI影视虚拟制片生产系统。处理剧本、导演转译、资产、镜头、Clip、视频 Prompt、Seedance、项目恢复与海报/封面/Key Art；参考片拉片、运镜与机位分析、镜头语言学习、风格反编译（用户只说"学习这个视频怎么拍"也应激活）；海报、封面与AUDIO/MUSIC仅在明确请求时调用，视频 Prompt 永久禁止非剧情内配乐。"
+description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项目、继续之前的项目：AI影视虚拟制片生产系统。处理剧本、导演转译、资产、镜头、Clip、视频 Prompt、Seedance、项目恢复与海报/封面/Key Art；参考片拉片、运镜与机位分析、镜头语言学习、风格反编译（用户只说“学习这个视频怎么拍”也应激活）；海报、封面与AUDIO/MUSIC仅在明确请求时调用，视频 Prompt 永久禁止非剧情内配乐。"
 ---
 
 # SD Film
 
-Skill Version: 2026.09.15-r97
+Skill Version: 2026.09.15-r98
 
-Build ID: sd-film-2026.09.15-r97
+Build ID: sd-film-2026.09.15-r98
 
 ## Core
 

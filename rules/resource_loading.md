@@ -56,6 +56,11 @@
 | `knowledge/adaptation/`、`knowledge/script_adaptation.md`、`knowledge/screenwriting_optimization.md` | 当前为Existing Script / Material或改编 / 优化分支 | STATE-01入口路由 |
 | `knowledge/directorial_interpretation.md` | 当前为导演化 / 改编分支 | STATE-01入口路由 |
 | `knowledge/medium_profiles.md` | `媒介形式`已确认为`live_action` / `3d_animation` / `2d_anime`；为`Pending`时不加载 | STATE-01的`Production Setup Gate`确认结果 / `project_bible.md`的`媒介形式`字段 |
+| `knowledge/genre/` | `类型`已登记；未登记时不加载，也不从媒介、平台、题材标签或画风推定 | STATE-00登记结果 / `templates/00_project_start_template.md`的`## Genre` |
+| `knowledge/anime_language/` | `媒介形式`确认为`2d_anime`；其他两档与`Pending`均不加载 | `project_bible.md`的`媒介形式`字段 / STATE-01的`Production Setup Gate`确认结果 |
+| `knowledge/camera_language/composition_language/vertical_framing.md` | 交付画幅为竖屏（用户当前请求或`项目已确认交付规格`写明竖屏）；横屏与未确认时不加载 | 用户当前请求 / `project_bible.md`的`## Delivery Spec｜交付规格` |
+| `knowledge/period_and_place/` | `## Time Period`或`## Location System`已登记；未登记时不加载，也不得从媒介、类型、平台、导演风格或参考片推定 | `project_bible.md`的`# 2. World Building`字段 |
+| `knowledge/branded_content/` | 项目存在已确认的品牌诉求或商业目标（Input Material的`品牌需求`已给出，或Creation Brief含明确品牌目标）；普通叙事项目不加载，也不得从时长、平台或题材推定 | `templates/00_project_start_template.md`的`# Input Material` / STATE-01的Creation Brief |
 | `rules/automation_mode.md` | `Automation Policy: FAST` | 用户显式启用 |
 | `rules/runtime_reload.md` | 命中显式Reload触发 | `rules/runtime_reload.md`的触发词表 |
 | 未选中的视频模型Template与Adapter | 当前Clip选定该模型 | STATE-06的Selected Model |

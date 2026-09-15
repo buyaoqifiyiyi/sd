@@ -125,6 +125,14 @@ asset_registry.md
 
 knowledge/director_decision_layer.md（按其Read Scope只读STATE-04相关节：Visual Dramaturgy、Visual Grammar Baseline、Aesthetic Decision Lock与Look Frame判定纪律）
 
+knowledge/genre/index.md（`类型`已登记时按该索引只读当前项目命中的类型文件与`## Anti-Formula Discipline｜反公式边界`，把类型承诺落进本阶段的`Visual Grammar Baseline`；`类型`未登记时记`Genre Profile: PENDING`、不加载，也不得从媒介、平台、题材标签或参考片推定类型）
+
+knowledge/anime_language/index.md（媒介为`2d_anime`时提供镜头语言的等效表达与画风锚；该档不读`knowledge/camera_language/`的光学原子，也不得把焦段、光圈、真实景深或器材写进`Visual Grammar Baseline`）
+
+knowledge/period_and_place/index.md（`## Time Period`或`## Location System`已登记时，把时代与地域基线落进视觉方向、光线条件与声音条件；未登记时记`Period And Place: PENDING`、不加载，也不得从媒介、类型、平台或导演风格推定）
+
+knowledge/branded_content/index.md（项目存在已确认品牌诉求时，把品牌调性落进`Visual Grammar Baseline`，并按商业事实纪律处理产品与文字级元素；普通叙事项目不加载，也不得从时长、平台或题材推定）
+
 
 如果核心资产尚未完成：
 

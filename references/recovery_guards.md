@@ -117,9 +117,9 @@ FAIL：两个用户级位置同时存在独立`sd-film`副本、后续修改需�
 
 输入：任意Writer、Director、Runtime、Pipeline、Template、Guide或拼写修改完成。
 
-PASS：frontmatter的`name`仍为`sd-film`，description保留六个启动别名，`agents/openai.yaml`仍声明`policy.allow_implicit_invocation: true`。
+PASS：frontmatter的`name`仍为`sd-film`，description保留六个启动别名，frontmatter可被YAML解析（引号闭合、每行都是`key: value`），`agents/openai.yaml`仍声明`policy.allow_implicit_invocation: true`。
 
-FAIL：别名被优化掉、description只剩能力摘要、openai.yaml缺失，或隐式调用被改为`false`。
+FAIL：别名被优化掉、description只剩能力摘要、openai.yaml缺失、隐式调用被改为`false`，或frontmatter引号未闭合导致解析失败——最后一种没有报错可读，Skill只会从宿主列表里静默消失。
 
 ### SD-R3 Codex Explicit Invocation And Chat At-Sign Boundary
 

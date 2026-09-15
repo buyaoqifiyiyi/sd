@@ -61,6 +61,12 @@ Editing / Review
 - **Protected Boundaries**：不改剧情、资产、Scene / Shot / Clip顺序、Visual Direction或最终Prompt Schema
 - **Four Core Capabilities**：Composition Direction、Camera Movement Direction、Lens / Distance Direction、Shot Rhythm Direction
 
+## Medium Branch｜媒介分支
+
+媒介为`2d_anime`时，本目录的**光学原子不适用**：焦段毫米数、光圈、真实景深、稳定方式、轨道/摇臂与实拍灯光相机在该档没有对应物，既不读取也不得写入。此时镜头语言的等效词汇由`knowledge/anime_language/index.md`拥有——版面与空间、运动的版面等效、帧感与冲击、画风锚与一致性。
+
+本文件仍是`Camera Language Module`的唯一owner：媒介分支不改变模块路由、镜头必要性判断、人物拓扑与 Relational Screen Geometry，也不建立第二套镜头语言路由。`live_action`与`3d_animation`按各自既有行为读取本目录（`3d_animation`的虚拟光学成立，但不使用绘制媒介词汇）；媒介为`Pending`时按`knowledge/medium_profiles.md`处理，不预设任何档位。
+
 ## Cross-stage Mapping
 
 - **Script**：只识别可镜头化机会、观众信息顺序、反应空间、遮挡/揭示和空间潜力；不写死景别、焦段、机位或运镜
@@ -299,6 +305,7 @@ Camera Language必须按适用性覆盖：景别功能、构图功能、机位�
 - 玻璃反射
 - 遮挡
 - 裂缝透视
+- 交付画幅与竖屏构图（横竖差异、双人错位调度、群体纵深、运动方向与平台安全区）
 
 
 执行型知识库：
