@@ -103,7 +103,7 @@ Confirmed Status：No / Yes
 - Image Adapter Profile：
 - Asset Image Route：
 - Image Prompt Output Template：GPT Image写`templates/24_gpt_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
-- Generation Parameters：画幅、分辨率、背景控制及工具必需参数。
+- Generation Parameters：画幅、分辨率、背景控制及工具必需参数。画幅默认按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`取其他类`16:9`横版；用户当前明确例外或项目已确认交付规格优先。
 
 本Template继续拥有道具资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
 
@@ -158,7 +158,7 @@ Confirmed Status：No / Yes
 - Confirmed Prompt Revision：
 - Prompt Confirmation / Confirmed By / Confirmed At：
 - Candidate References：路径或受控外部ID、用途、绑定Version、工具/模型、参数、来源与授权。
-- Image QA：主参考图是否为正面 / 侧面 / 背面 / 关键细节的1×4横版，四格的整体形态、尺度、结构、材质与基础状态是否一致；以及适用的额外细节、状态边界与使用关系。
+- Image QA：主参考图是否为正面 / 侧面 / 背面 / 关键细节的1×4横版，四格的整体形态、尺度、结构、材质与基础状态是否一致；以及适用的额外细节、状态边界与使用关系。画幅须符合`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`（其他类默认`16:9`横版），四格等宽结构不得因比例改变。
 - Support Board QA：仅Support适用；核对Board ID、Item ID、对象数量、标签、轮廓/材质/颜色/比例/功能差异及无对象混淆。
 - Awaiting User Confirmation：`Generated Images`
 - Prohibited Registry Upgrade：图片确认前不得写Canonical References、Active Version或`Status: Active`。

@@ -24,7 +24,7 @@
 - Target Image Tool / Model：`Midjourney`
 - Prompt Language：`English`
 - Prompt Output Template：`templates/14_midjourney_asset_prompt.md`
-- Generation Parameters：仅写已确认画幅和用户明确提供的参数；没有则`Not specified`
+- Generation Parameters：仅写已确认画幅和用户明确提供的参数；没有则`Not specified`。画幅默认按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`取人物类`--ar 9:16`、其他类`--ar 16:9`；用户当前明确例外或项目已确认交付规格优先。
 - Midjourney Prompt：
 
 ```text
@@ -65,7 +65,7 @@
 
 ## Parameter And Syntax Discipline
 
-- 已确认画幅才附`--ar W:H`；未确认时不猜测比例。
+- 已确认画幅才附`--ar W:H`；未确认时不猜测比例。`Asset Canvas Ratio Default｜资产图画幅默认`的类别默认值视为已确认画幅，用户当前明确例外或项目已确认交付规格优先。
 - `--v`、`--q`、`--s`、`--seed`、`--chaos`、`--raw`、`--niji`和其他版本/模型专属参数一律不是默认值；仅在用户明确提供并要求使用时原样附上。
 - `--no`只排除当前有真实风险且与正向目标冲突的对象，例如`--no text, watermark`；不用长负面词堆。
 - `::`权重只在用户明确要求优先级权衡、且两个可见目标确有竞争时使用；未提出时不用权重伪造精度。

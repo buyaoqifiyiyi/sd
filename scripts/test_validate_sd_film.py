@@ -3913,5 +3913,131 @@ class R68RegressionCorpusIdTests(unittest.TestCase):
             )
 
 
+def write_asset_canvas_fixture(root: Path, overrides: dict[str, str] | None = None) -> None:
+    """Minimal copies of the files the asset-canvas-default check reads."""
+    overrides = overrides or {}
+    route = validator.ASSET_CANVAS_RATIO_ROUTE
+    contents = {
+        validator.ASSET_CANVAS_RATIO_OWNER: (
+            "# Asset Rules\n\n"
+            f"{validator.ASSET_CANVAS_RATIO_SECTION}\n\n"
+            "- **人物类`9:16`竖版**——单角色画布。\n"
+            "- **其他类`16:9`横版**——Environment / Prop / FX / Board。\n"
+        ),
+        "templates/04_character_asset_prompt.md": f"# Character\n{route}\n人物类`9:16`竖版\n",
+        "templates/05_environment_asset_prompt.md": f"# Environment\n{route}\n其他类`16:9`横版\n",
+        "templates/06_prop_asset_prompt.md": f"# Prop\n{route}\n其他类`16:9`横版\n",
+        "templates/13_fx_asset_prompt.md": f"# FX\n{route}\n其他类`16:9`横版\n",
+        "templates/14_midjourney_asset_prompt.md": f"# Midjourney\n{route}\n`--ar 9:16`\n",
+        "templates/24_gpt_image_asset_prompt.md": f"# GPT Image\n{route}\n1152×2048\n",
+        "adapters/gpt-image.md": "# Adapter\n1152×2048\n",
+        "modules/assets.md": f"# Assets\n{route}\n",
+        "workflows/04_character_asset_workflow.md": f"# Character Workflow\n{route}\n",
+        "workflows/05_environment_asset_workflow.md": f"# Environment Workflow\n{route}\n",
+        "workflows/06_prop_asset_workflow.md": f"# Prop Workflow\n{route}\n",
+        "USER_GUIDE.md": "非运行时文件\n人物资产图默认 **9:16 竖版**；其他类默认 **16:9 横版**。\n",
+    }
+    contents.update(overrides)
+    for relative, text in contents.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8", newline="\n")
+
+
+class R69AssetCanvasRatioDefaultTests(unittest.TestCase):
+    """人物资产图9:16、其他资产图16:9：一个owner，两个类别默认值，消费方全部路由回它。"""
+
+    def test_shipped_skill_passes_the_check(self) -> None:
+        self.assertEqual(validator.check_asset_canvas_ratio_default(ROOT), [])
+
+    def test_shipped_owner_states_both_category_defaults(self) -> None:
+        owner = (ROOT / validator.ASSET_CANVAS_RATIO_OWNER).read_text(encoding="utf-8-sig")
+        self.assertIn(validator.ASSET_CANVAS_RATIO_SECTION, owner)
+        for marker in validator.ASSET_CANVAS_RATIO_OWNER_MARKERS:
+            self.assertIn(marker, owner)
+
+    def test_fixture_passes_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_asset_canvas_fixture(root)
+            self.assertEqual(validator.check_asset_canvas_ratio_default(root), [])
+
+    def test_losing_the_owner_section_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_asset_canvas_fixture(
+                root, {validator.ASSET_CANVAS_RATIO_OWNER: "# Asset Rules\n"}
+            )
+            errors = validator.check_asset_canvas_ratio_default(root)
+            self.assertTrue(
+                any("must own the asset canvas default section" in item for item in errors), errors
+            )
+            self.assertTrue(
+                any("lost the asset canvas default" in item for item in errors), errors
+            )
+
+    def test_flipping_the_character_default_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_asset_canvas_fixture(
+                root,
+                {
+                    "templates/04_character_asset_prompt.md":
+                        f"# Character\n{validator.ASSET_CANVAS_RATIO_ROUTE}\n人物类`16:9`横版\n"
+                },
+            )
+            errors = validator.check_asset_canvas_ratio_default(root)
+            self.assertTrue(
+                any("must declare its asset canvas default" in item for item in errors), errors
+            )
+            self.assertTrue(
+                any("declares the other category's asset canvas default" in item for item in errors),
+                errors,
+            )
+
+    def test_a_consumer_that_stops_routing_to_the_owner_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_asset_canvas_fixture(
+                root, {"templates/06_prop_asset_prompt.md": "# Prop\n其他类`16:9`横版\n"}
+            )
+            errors = validator.check_asset_canvas_ratio_default(root)
+            self.assertTrue(
+                any("must route to the asset canvas default owner" in item for item in errors), errors
+            )
+
+    def test_losing_the_executable_model_syntax_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            write_asset_canvas_fixture(
+                root,
+                {
+                    "templates/14_midjourney_asset_prompt.md": "# Midjourney\n",
+                    "templates/24_gpt_image_asset_prompt.md": "# GPT Image\n",
+                },
+            )
+            errors = validator.check_asset_canvas_ratio_default(root)
+            self.assertTrue(any("`--ar 9:16`" in item for item in errors), errors)
+            self.assertTrue(any("1152×2048" in item for item in errors), errors)
+
+
+class MaintenanceDimensionCountGuardTests(unittest.TestCase):
+    """用户文档自报的自检项数必须跟得上判据表，否则读者按过期项数执行自检。"""
+
+    def test_shipped_guide_states_the_current_dimension_count(self) -> None:
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        self.assertEqual(validator.check_self_check_dimension_count(guide), [])
+
+    def test_a_stale_dimension_count_is_rejected(self) -> None:
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        stale = guide.replace(f"{len(validator.SELF_CHECK_DIMENSIONS)}项", "17项")
+        self.assertNotEqual(stale, guide, "fixture must actually change the stated count")
+        errors = validator.check_self_check_dimension_count(stale)
+        self.assertTrue(
+            any("must state the current self-check dimension count" in item for item in errors),
+            errors,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

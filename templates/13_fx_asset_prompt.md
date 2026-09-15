@@ -166,4 +166,4 @@ Negative Constraints:
 
 ## Visual Production Checkpoint
 
-图像模型选择后，固定顺序为`Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。只有选择GPT Image且当前环境实际可用时，Prompt Confirmed后生成Candidate Image；外部模型等待回传。FX Image Prompt必须完整包含Effect身份、Trigger/Source、Lifecycle、材质行为、交互、光影、构图/视角、一致性、必要负面限制与生成参数。生成图在用户确认前仅为Candidate References；未经图片确认不得登记Canonical References、Active Version或confirmed asset。
+图像模型选择后，固定顺序为`Image Model Selected → Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`。只有选择GPT Image且当前环境实际可用时，Prompt Confirmed后生成Candidate Image；外部模型等待回传。FX Image Prompt必须完整包含Effect身份、Trigger/Source、Lifecycle、材质行为、交互、光影、构图/视角、一致性、必要负面限制与生成参数。画幅默认取其他类`16:9`横版（owner：`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`）；用户当前明确例外或项目已确认交付规格优先。生成图在用户确认前仅为Candidate References；未经图片确认不得登记Canonical References、Active Version或confirmed asset。

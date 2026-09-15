@@ -198,7 +198,7 @@ Asset Tier、Tier Decision Basis、Board ID与Item ID。
 
 Support道具参考板Prompt按一个Board输出一条完整可执行Prompt，列明Board Name、Board ID、4—9个Item ID、Included PROP IDs及逐项轮廓/材质/颜色/比例/功能差异；统一风格、清晰标签、完整可见且不得互相遮挡。Support分支不得逐项制作完整主参考、状态、细节或使用关系套图；若某Item实际为剧情关键道具、承担品牌识别或需要高一致性，返回STATE-02复核并升级Core。
 
-每条Prompt必须完整包含道具主体、尺度参照、结构、材质、表面状态、视点/构图、光影、背景控制、项目视觉风格、一致性限制、必要负面限制与当前图像工具所需参数。不得只写外观说明，也不得使用脱离上下文后不可执行的“同上/参考前述”。
+每条Prompt必须完整包含道具主体、尺度参照、结构、材质、表面状态、视点/构图、光影、背景控制、项目视觉风格、一致性限制、必要负面限制与当前图像工具所需参数。其他类画幅按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`取默认`16:9`横版，用户当前明确例外或项目已确认交付规格优先。不得只写外观说明，也不得使用脱离上下文后不可执行的“同上/参考前述”。
 
 首次输出写`Visual Production Status: Prompt Draft`、`Prompt Status: Draft`、`Image Status: Not Generated`、`Confirmed Status: No`、`Prompt Revision`与`Awaiting User Confirmation: Image Prompts`；`PROMPT_ONLY`、或`AUTO`且当前环境无出图能力时，在此停止等待批次确认，同批资产在同一轮交付、不逐项停止；`DIRECT_IMAGE`且当前执行环境确实具备出图能力、QA通过时，按`rules/02_asset_rules.md`的Prompt Gate在同一轮自行确认本批Prompt Revision并继续生成，Prompt仍完整留档。
 

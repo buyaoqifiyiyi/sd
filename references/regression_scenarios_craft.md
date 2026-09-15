@@ -500,3 +500,37 @@ FAIL：把每次景别缩短都记为Push In；把剪辑节奏当成摄影机运
 PASS：参考片结论先经`Reference-To-System Evidence Gate`与`Temporal Reference Decode`提炼为可观察方法，再返回STATE-04 Visual Development建立或修订Visual Grammar；不复制参考片的人物、场景、剧情、器材推测与不可确认项；STATE-06仍按当前项目的Shot Purpose重新决策，不把参考片镜头当公式套用。
 
 FAIL：直接把参考片镜头表当成本项目分镜；把推断的器材或参数写进项目事实；跳过STATE-04直接改STATE-06/08；或把单案例升级为跨项目通用原则。
+
+## R69 Asset Canvas Ratio Default Regression
+
+### R69-A Character Assets Default To 9:16 Portrait
+
+输入：一个`live_action`项目的Core角色资产批次，用户没有指定任何画幅比例。
+
+PASS：按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`，Appearance Reference与五区角色设定图Prompt的`画幅/分辨率/交付规格：`写明`9:16`竖版；GPT Image路线写`1152×2048`（4K为`2160×3840`），Midjourney路线写`--ar 9:16`；五区版式不变——上排三区共用同一水平基准线、正面区肩线以上为连续中性空白、下排两个头肩特写区仍大于上排任一区，人物头顶、手与脚未被裁切。
+
+FAIL：把人物类默认写成16:9；比例只写在正文形容词里而`画幅/分辨率/交付规格：`留空或写`Not specified`；为配合竖版压掉分区、把下排特写缩到小于上排，或给正面区补画头部与头发。
+
+### R69-B Other Asset Categories Default To 16:9 Landscape
+
+输入：同一项目的环境（含多视角）、道具（`1×4`）、正式FX与Support Board批次，用户没有指定任何画幅比例。
+
+PASS：四类Prompt都按owner取其他类`16:9`横版（GPT Image写`2048×1152`，Midjourney写`--ar 16:9`）；环境每个View各自一张16:9画布、道具保持`1×4`四格等宽、Board按多对象横版排布；同一批次内画幅一致并进入`Shared Style Lock`。
+
+FAIL：环境View改竖版或把多视角塞进一张画布；道具四格改成纵向排列或不等宽；Board用9:16排到对象互相遮挡；任一类继续沿用没有画幅的旧空字段。
+
+### R69-C User Exception Wins And A Reference Image Never Sets The Canvas
+
+输入一：用户明确说“这一批角色资产图我要横版16:9”。输入二：用户给了一张竖版参考图但没有提比例。输入三：项目已确认交付规格写明本项目全部资产图16:9。
+
+PASS：输入一按用户当前明确例外取16:9并在当前批次记录该例外；输入二仍取人物类默认9:16，且不把参考图的宽高比当作画幅依据（判据见`### Reference Provenance And Degradation｜参考来源与代际劣化`）；输入三以已确认交付规格为准，覆盖类别默认。
+
+FAIL：把参考图的宽高比当成新资产图的画幅；用“参考图是竖的”替代用户指令；把一次例外扩散到其他批次或其他类别而不记录；或让三处输入互相矛盾却仍判PASS。
+
+### R69-D The Ratio Never Reshapes The Layout And Out-Of-Boundary Ratios Are Refused
+
+输入一：人物五区设定图在9:16下被要求“上下排都放大”。输入二：道具图被要求写成`4:1`。
+
+PASS：五区在竖版下仍保持区域分工与“下排两区大于上排任一区”，不为放大而裁切、改分区数或拆成多张图；`4:1`超出现行图像模型可交付边界（`adapters/gpt-image.md`的`gpt-image-2`为比例≤3:1）时据实说明并回到合法比例或改选模型，不写成已交付。
+
+FAIL：为满足宽比例把`1×4`道具图拆成两张或四张独立图；把超边界比例写成可交付参数；或版式已随比例漂移而Image QA仍判PASS。

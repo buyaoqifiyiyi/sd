@@ -865,6 +865,38 @@ STANDALONE_INVOCATION_MARKERS = (
 )
 
 
+# The asset canvas default is one rule with two category values, and every asset
+# template and workflow routes to it. Before r97 the ratio lived only in an empty
+# `画幅/分辨率/交付规格：` field, so "character 9:16 / everything else 16:9" had no
+# single owner and could drift file by file.
+ASSET_CANVAS_RATIO_OWNER = "rules/02_asset_rules.md"
+ASSET_CANVAS_RATIO_SECTION = "## Asset Canvas Ratio Default｜资产图画幅默认"
+ASSET_CANVAS_RATIO_ROUTE = "Asset Canvas Ratio Default｜资产图画幅默认"
+ASSET_CANVAS_RATIO_OWNER_MARKERS = ("人物类`9:16`竖版", "其他类`16:9`横版")
+ASSET_CANVAS_RATIO_ROUTED_FILES = (
+    "templates/04_character_asset_prompt.md",
+    "templates/05_environment_asset_prompt.md",
+    "templates/06_prop_asset_prompt.md",
+    "templates/13_fx_asset_prompt.md",
+    "modules/assets.md",
+    "workflows/04_character_asset_workflow.md",
+    "workflows/05_environment_asset_workflow.md",
+    "workflows/06_prop_asset_workflow.md",
+)
+ASSET_CANVAS_RATIO_CATEGORY_DEFAULTS = (
+    ("templates/04_character_asset_prompt.md", "人物类`9:16`竖版", "人物类`16:9`"),
+    ("templates/05_environment_asset_prompt.md", "其他类`16:9`横版", "其他类`9:16`"),
+    ("templates/06_prop_asset_prompt.md", "其他类`16:9`横版", "其他类`9:16`"),
+    ("templates/13_fx_asset_prompt.md", "其他类`16:9`横版", "其他类`9:16`"),
+)
+ASSET_CANVAS_RATIO_SYNTAX = (
+    ("templates/14_midjourney_asset_prompt.md", "`--ar 9:16`"),
+    ("templates/24_gpt_image_asset_prompt.md", "1152×2048"),
+    ("adapters/gpt-image.md", "1152×2048"),
+    ("USER_GUIDE.md", "9:16 竖版"),
+    ("USER_GUIDE.md", "16:9 横版"),
+)
+
 REGRESSION_CORPUS = (
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
@@ -936,6 +968,73 @@ def check_standalone_invocation(root: Path) -> list[str]:
                 f"{relative} lost the standalone-invocation contract text: {marker}"
             )
     return errors
+
+
+def check_asset_canvas_ratio_default(root: Path) -> list[str]:
+    """Asset images have one per-category canvas default and one owner for it.
+
+    Measured gap: "人物资产图9:16、其他资产图16:9" existed only as an empty
+    `画幅/分辨率/交付规格：` field, so the ratio was re-decided in every file (or
+    silently dropped) with nothing to compare against.
+
+    Deterministic scope: the owner section and both category defaults are present,
+    every asset template / workflow routes to that section, each category template
+    declares its own default and not the other category's, and the executable model
+    forms (GPT Image pixel sizes, Midjourney `--ar`) stay in place. It does not
+    judge what ratio a given generation actually produced, nor whether a user
+    exception was honoured.
+    """
+    errors: list[str] = []
+    owner_path = root / ASSET_CANVAS_RATIO_OWNER
+    if not owner_path.is_file():
+        errors.append(f"asset canvas ratio owner is missing: {ASSET_CANVAS_RATIO_OWNER}")
+        return errors
+    owner = read(root, ASSET_CANVAS_RATIO_OWNER)
+    if ASSET_CANVAS_RATIO_SECTION not in owner:
+        errors.append(
+            f"{ASSET_CANVAS_RATIO_OWNER} must own the asset canvas default section: "
+            f"{ASSET_CANVAS_RATIO_SECTION}"
+        )
+    for marker in ASSET_CANVAS_RATIO_OWNER_MARKERS:
+        if marker not in owner:
+            errors.append(
+                f"{ASSET_CANVAS_RATIO_OWNER} lost the asset canvas default: {marker}"
+            )
+    for relative in ASSET_CANVAS_RATIO_ROUTED_FILES:
+        if not (root / relative).is_file():
+            continue
+        if ASSET_CANVAS_RATIO_ROUTE not in read(root, relative):
+            errors.append(f"{relative} must route to the asset canvas default owner")
+    for relative, expected, contradictory in ASSET_CANVAS_RATIO_CATEGORY_DEFAULTS:
+        if not (root / relative).is_file():
+            continue
+        text = read(root, relative)
+        if expected not in text:
+            errors.append(f"{relative} must declare its asset canvas default: {expected}")
+        if contradictory in text:
+            errors.append(
+                f"{relative} declares the other category's asset canvas default: {contradictory}"
+            )
+    for relative, marker in ASSET_CANVAS_RATIO_SYNTAX:
+        if not (root / relative).is_file():
+            continue
+        if marker not in read(root, relative):
+            errors.append(f"{relative} lost the executable canvas syntax: {marker}")
+    return errors
+
+
+def check_self_check_dimension_count(user_guide: str) -> list[str]:
+    """USER_GUIDE.md self-reports the number of maintenance check dimensions.
+
+    Measured drift: the run card grew to 18 dimensions while USER_GUIDE.md still
+    told readers to run 17, so a reader could finish the listed set and believe the
+    self-check was complete. Deterministic scope: only the stated count, not which
+    dimensions were actually run.
+    """
+    count = f"{len(SELF_CHECK_DIMENSIONS)}项"
+    if count in user_guide:
+        return []
+    return [f"USER_GUIDE.md must state the current self-check dimension count: {count}"]
 
 
 NO_PROJECT_REGISTRY_SOURCES = (
@@ -1480,6 +1579,7 @@ def validate_skill(root: Path) -> list[str]:
             errors.append(f"maintenance run card is missing the check dimension: {dimension}")
         if dimension not in criteria:
             errors.append(f"maintenance protocol is missing the criteria for: {dimension}")
+    errors.extend(check_self_check_dimension_count(user_guide))
     if "references/context_budget.md" not in card:
         errors.append("the maintenance run card must route the context budget to its single owner")
     if "references/context_budget.md" not in criteria:
@@ -1506,6 +1606,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_stage_landing_coverage(root))
     errors.extend(check_fast_invariant_and_receipt(root))
     errors.extend(check_standalone_invocation(root))
+    errors.extend(check_asset_canvas_ratio_default(root))
     errors.extend(check_regression_ids(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))

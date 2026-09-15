@@ -494,6 +494,15 @@ Asset Design
 → Asset Registry
 ```
 
+## Asset Canvas Ratio Default｜资产图画幅默认
+
+本节唯一拥有资产图的默认画幅比例。默认值只在没有项目已确认交付规格、也没有用户当前明确例外时生效；用户明确指定其他比例时以用户为准，并在当前批次记录该例外。比例必须写进Prompt的`画幅/分辨率/交付规格：`与已选模型的Generation Parameters；未确认时写`Not specified`，不得从任何参考图的宽高比反推（判据见本文件的`Reference Provenance And Degradation`与`Reference Neutrality`两节）。
+
+- **人物类`9:16`竖版**——单角色画布：Appearance Reference、五区角色设定图、状态变体与比例图。
+- **其他类`16:9`横版**——`Environment`（每个View各自一张）、`Prop`（含`1×4横版道具设定图`）、正式`FX`，以及一切多对象`Board`（含Support角色参考板）。
+- 同一批次（同一资产类别 + 同一Asset Tier + 同一已选图像模型）内画幅必须一致，并进入各Template的`Shared Style Lock`。
+- 比例不改变版式：五区角色设定图的区域关系、同尺度基准线与正面区肩线以上中性空白仍按`templates/04_character_asset_prompt.md`执行，`1×4`道具图的四格等宽结构仍按`templates/06_prop_asset_prompt.md`执行；竖版下下排两个头肩特写区仍须大于上排任一区。
+
 ## Prompt Gate
 
 - 在新建或重编Image Prompt前，必须由`modules/image-model-selection.md`完成当前资产批次的图像模型路由：优先继承Production Setup已确认的`Project Image Model Default`，只有默认项或当前批次为`UNSELECTED`、当前批次例外或默认项不可用时才提出新选择；`UNSELECTED`时不得编译模型专属Prompt或生成Candidate Image。图像模型选择不是Prompt / Image确认，不放宽任何后续Gate。

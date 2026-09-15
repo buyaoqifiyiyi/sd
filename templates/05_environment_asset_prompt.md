@@ -121,7 +121,7 @@ Confirmed Status：No / Yes
 - Image Adapter Profile：
 - Asset Image Route：
 - Image Prompt Output Template：GPT Image写`templates/24_gpt_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
-- Generation Parameters：画幅、分辨率、背景/人物控制及工具必需参数。
+- Generation Parameters：画幅、分辨率、背景/人物控制及工具必需参数。画幅默认按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`取其他类`16:9`横版，每个View各自一张画布；用户当前明确例外或项目已确认交付规格优先。
 
 本Template继续拥有环境资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
 
@@ -175,7 +175,7 @@ Confirmed Status：No / Yes
 - Confirmed Prompt Revision：
 - Prompt Confirmation / Confirmed By / Confirmed At：
 - Candidate References：路径或受控外部ID、用途、绑定Version、工具/模型、参数、来源与授权。
-- Image QA：空间骨架、视角对应、尺度、材质、光源方向、状态边界与可拍摄性。
+- Image QA：空间骨架、视角对应、尺度、材质、光源方向、状态边界与可拍摄性；画幅须符合`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`（其他类默认`16:9`横版），除非用户当前明确例外。
 - Support Board QA：仅Support适用；核对Board ID、Item ID、对象数量、标签、轮廓/材质/颜色/比例/功能差异及无对象混淆。
 - Awaiting User Confirmation：`Generated Images`
 - Prohibited Registry Upgrade：图片确认前不得写Canonical References、Active Version或`Status: Active`。

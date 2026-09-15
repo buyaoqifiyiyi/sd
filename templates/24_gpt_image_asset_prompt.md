@@ -20,7 +20,7 @@
 
 - Target Image Tool / Model：`GPT Image`
 - Prompt Output Template：`templates/24_gpt_image_asset_prompt.md`
-- Generation Parameters：仅记录当前环境实际支持且用户确认的规格；未知则`Not specified`
+- Generation Parameters：仅记录当前环境实际支持且用户确认的规格；未知则`Not specified`。画幅默认按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`取人物类`9:16`（`1152×2048`或`2160×3840`）、其他类`16:9`（`2048×1152`或`3840×2160`）；用户当前明确例外或项目已确认交付规格优先。
 - GPT Image Prompt：
 
 ```text

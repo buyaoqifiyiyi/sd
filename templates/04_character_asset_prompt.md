@@ -152,7 +152,7 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 - Image Adapter Profile：
 - Asset Image Route：
 - Image Prompt Output Template：GPT Image写`templates/24_gpt_image_asset_prompt.md`；Midjourney写`templates/14_midjourney_asset_prompt.md`
-- Generation Parameters：画幅、分辨率、背景控制及工具必需参数；未知平台时使用平台中性的可执行规格。角色与道具资产的背景、光线与画面元素必须按`rules/02_asset_rules.md`的`Reference Neutrality`中性化。
+- Generation Parameters：画幅、分辨率、背景控制及工具必需参数；未知平台时使用平台中性的可执行规格。画幅默认按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`取人物类`9:16`竖版；用户当前明确例外或项目已确认交付规格优先。角色与道具资产的背景、光线与画面元素必须按`rules/02_asset_rules.md`的`Reference Neutrality`中性化。
 
 本Template继续拥有角色资产的状态与确认字段；模型Prompt正文必须只按已选`Image Prompt Output Template`输出，不能在此Template重建模型语法或参数规则。
 
@@ -184,7 +184,7 @@ Core与Support共用上述双确认Gate。Core使用一张独立的正式角色�
 
 该五区结构是按信息分工的**有意选择**，不是遗漏：正面区交出面部与头发，正是因为尺寸偏小的正面头部会被下游当作采样来源，而使面部与发落各自只有唯一权威来源。任何下游阶段、重生请求或QA都**不得把正面区缺少头部与头发判定为出图失败并补齐**——补齐会引入无生长点的漂浮发丝，并把错误固化为Canonical Reference。正面区真正的QA标准是肩线以上为连续中性背景。
 
-Prompt必须写全主体、五区构图与区域关系、视角、姿态、表情基线、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数，不使用“同上/参考前述”。禁止输出或调用独立的Three-View Prompt、Face Close-Up Prompt、Expression Sheet Prompt，禁止基础正式资产分两张或以上生成。
+Prompt必须写全主体、五区构图与区域关系、视角、姿态、表情基线、光影、背景、视觉风格、一致性限制、必要负面限制和生成参数，不使用“同上/参考前述”。禁止输出或调用独立的Three-View Prompt、Face Close-Up Prompt、Expression Sheet Prompt，禁止基础正式资产分两张或以上生成。人物类画幅取`9:16`竖版；竖版不得改变五区版式（上排三区共用同一水平基准线、正面区肩线以上为连续中性空白、下排两区仍大于上排任一区），也不得为容纳画幅而裁切头顶、手或脚。
 
 #### Required State Variant Prompts
 
@@ -221,7 +221,7 @@ Prompt必须写全主体、五区构图与区域关系、视角、姿态、表�
 - Confirmed Prompt Revision：
 - Prompt Confirmation / Confirmed By / Confirmed At：
 - Candidate References：逐项记录路径或受控外部ID、用途、绑定Version、生成工具/模型、参数、来源与授权。
-- Image QA：基础正式资产是否为同一张含上排三区全身（正面、严格侧面、背面）与下排两区头肩特写（中性、微笑）的五区角色设定图；身份、脸型、身体比例、发型、服装、五区一致性、面部细节与状态变体边界。正面区必须为肩线以上连续中性背景且无头部、无头发；上排三区必须共用同一人物尺度与水平基准线，肩线、腰线、髋线与膝线不得错位；微笑区不得使脸型、年龄感或下颌宽度漂移。若正面区出现头部、面部或任何头发（含无生长点的漂浮发丝），或任一分区被拆为独立Candidate Reference，判定失败并重生。
+- Image QA：基础正式资产是否为同一张含上排三区全身（正面、严格侧面、背面）与下排两区头肩特写（中性、微笑）的五区角色设定图；身份、脸型、身体比例、发型、服装、五区一致性、面部细节与状态变体边界。正面区必须为肩线以上连续中性背景且无头部、无头发；上排三区必须共用同一人物尺度与水平基准线，肩线、腰线、髋线与膝线不得错位；微笑区不得使脸型、年龄感或下颌宽度漂移。若正面区出现头部、面部或任何头发（含无生长点的漂浮发丝），或任一分区被拆为独立Candidate Reference，判定失败并重生。画幅须符合`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`（人物类默认`9:16`竖版），且竖版下五区版式未被压缩、人物未被裁切。
 - Support Board QA：仅Support适用；核对Board ID、Item ID、对象数量、标签、轮廓/服饰/颜色/比例/功能差异及无对象混淆。
 - Awaiting User Confirmation：`Generated Images`
 - Prohibited Registry Upgrade：图片确认前不得写Canonical References、Active Version或`Status: Active`。
