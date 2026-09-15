@@ -103,6 +103,10 @@
 5. 涉及剪辑时读 `knowledge/camera_language/editing_language/`；
 6. 涉及正反打时读对应的 OTS / Reverse Shot 原子。
 
+执行本任务还需要读取`workflows/22_reference_film_study_workflow.md`（步骤与返回路由）、`templates/26_reference_film_study_report.md`（报告Schema），以及`scripts/reference-film/vendor/README.md`（测量层来源与平台差异）。它们**不占上述六项的额度**：前三项是本任务自身的入口，最后一项只在准备调用测量引擎时读。
+
+**测量引擎的条件读取**：`scripts/reference-film/vendor/`下的词表、Schema、版式约定与样例**只在当前步骤确实命中时才读**，不预读整个vendor目录；`node`或`ffmpeg`不可用时一律不读，改按`knowledge/visual_styles/index.md`的`#### Measured Boundary And Motion｜边界与运动量实测`末段的纯人工路径执行。
+
 明确不读：
 
 - 为分析一个对话视频而通读整个Camera Knowledge库；

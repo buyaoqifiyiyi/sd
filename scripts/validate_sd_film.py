@@ -98,6 +98,7 @@ AUXILIARY_WORKFLOWS = frozenset(
         "18_project_resume_workflow.md",
         "20_seed_audio_voice_asset_workflow.md",
         "21_seed_music_score_workflow.md",
+        "22_reference_film_study_workflow.md",
         "10_shot_execution_plan_workflow.md",
         "19_clip_planning_workflow.md",
     }
@@ -1022,6 +1023,126 @@ def check_asset_canvas_ratio_default(root: Path) -> list[str]:
             continue
         if marker not in read(root, relative):
             errors.append(f"{relative} lost the executable canvas syntax: {marker}")
+    return errors
+
+
+# The reference-film study route: one standalone analysis task whose measurement
+# layer is a vendored third-party engine. Before this route existed, an agent asked
+# to "learn how this video was shot" had a read order, a three-class evidence gate
+# and a list of things not to read -- but nothing that produced shot boundaries or
+# durations, so every timecode in the study was an eyeball estimate. The gap is
+# closed by a workflow that owns the procedure and a knowledge section that owns
+# the measurement discipline; several files have to keep pointing at them or the
+# route silently reverts.
+REFERENCE_FILM_WORKFLOW = "workflows/22_reference_film_study_workflow.md"
+REFERENCE_FILM_TEMPLATE = "templates/26_reference_film_study_report.md"
+REFERENCE_FILM_MEASUREMENT_OWNER = "knowledge/visual_styles/index.md"
+REFERENCE_FILM_MEASUREMENT_SECTION = "#### Measured Boundary And Motion｜边界与运动量实测"
+REFERENCE_FILM_VENDOR = "scripts/reference-film/vendor/README.md"
+REFERENCE_FILM_ENGINE = "scripts/reference-film/vendor/video-shots/scripts/video-shots.mjs"
+REFERENCE_FILM_COMPOSE_WIN = "scripts/reference-film/compose-win.mjs"
+# Every consumer that has to keep routing to the measurement layer: the activation
+# boundary, the read budget, the route owner, and the capability overview.
+REFERENCE_FILM_ROUTED_FILES = (
+    "rules/activation_rules.md",
+    "rules/resource_loading.md",
+    "workflows/workflow_map.md",
+    "README.md",
+)
+# Vocabulary bridge: the engine's `size` enum is the same ladder the skill already
+# owns in camera_language. If the bridge is dropped, an English enum key reaches a
+# Chinese production term with nothing mapping between them.
+REFERENCE_FILM_SIZE_BRIDGE = (
+    ("`extreme-wide`", "大全景"),
+    ("`wide`", "全景"),
+    ("`medium`", "中景"),
+    ("`medium-close`", "中近景"),
+    ("`close`", "近景"),
+    ("`extreme-close`", "大特写"),
+    ("`none`", "不适用"),
+)
+# The one-way motion gate and the manual fallback are the two claims that make the
+# measurement layer honest. Losing either turns "measured" back into "asserted".
+REFERENCE_FILM_MEASUREMENT_MARKERS = (
+    "`strong` 声称却实测接近 0 → 拦",
+    "`still` 声称而实测偏高 → 不拦，只出提示",
+    "纯人工拉片",
+)
+REFERENCE_FILM_WORKFLOW_MARKERS = (
+    "shots.json",
+    "track.json",
+    "validate",
+    "EF BB BF",
+    "compose-win.mjs",
+)
+REFERENCE_FILM_TEMPLATE_SECTIONS = (
+    "# Execution Condition｜执行条件",
+    "# Shot Table｜逐镜表",
+    "# Three-Layer Conclusion｜结论分层",
+)
+
+
+def check_reference_film_study(root: Path) -> list[str]:
+    """The reference-film study route keeps its workflow, measurement owner and consumers.
+
+    Deterministic scope: the workflow / template / measurement section / vendored
+    provenance file all exist; the size-vocabulary bridge still maps the engine's
+    enum onto the skill's canonical shot scale; the one-way motion gate, the manual
+    fallback and the platform facts are still written down; and the activation rule,
+    read budget, route owner and README still point at the route.
+
+    It does NOT prove the engine runs, that a gate actually blocked anything, or
+    that a study reported honest numbers -- those are runtime behaviour, covered by
+    R87 and by the engine's own selftest.
+    """
+    errors: list[str] = []
+    for relative in (REFERENCE_FILM_WORKFLOW, REFERENCE_FILM_TEMPLATE,
+                     REFERENCE_FILM_VENDOR, REFERENCE_FILM_ENGINE,
+                     REFERENCE_FILM_COMPOSE_WIN):
+        if not (root / relative).is_file():
+            errors.append(f"reference-film study route is missing a file: {relative}")
+    if not (root / REFERENCE_FILM_MEASUREMENT_OWNER).is_file():
+        errors.append(f"reference-film measurement owner is missing: {REFERENCE_FILM_MEASUREMENT_OWNER}")
+        return errors
+
+    measurement = read(root, REFERENCE_FILM_MEASUREMENT_OWNER)
+    if REFERENCE_FILM_MEASUREMENT_SECTION not in measurement:
+        errors.append(
+            f"{REFERENCE_FILM_MEASUREMENT_OWNER} must own the measured-boundary section: "
+            f"{REFERENCE_FILM_MEASUREMENT_SECTION}"
+        )
+    for marker in REFERENCE_FILM_MEASUREMENT_MARKERS:
+        if marker not in measurement:
+            errors.append(
+                f"{REFERENCE_FILM_MEASUREMENT_OWNER} lost the measurement discipline: {marker}"
+            )
+    for enum_key, canonical in REFERENCE_FILM_SIZE_BRIDGE:
+        if enum_key not in measurement or canonical not in measurement:
+            errors.append(
+                f"{REFERENCE_FILM_MEASUREMENT_OWNER} lost the shot-scale bridge: "
+                f"{enum_key} -> {canonical}"
+            )
+
+    if (root / REFERENCE_FILM_WORKFLOW).is_file():
+        workflow = read(root, REFERENCE_FILM_WORKFLOW)
+        for marker in REFERENCE_FILM_WORKFLOW_MARKERS:
+            if marker not in workflow:
+                errors.append(f"{REFERENCE_FILM_WORKFLOW} lost a required step: {marker}")
+    if (root / REFERENCE_FILM_TEMPLATE).is_file():
+        template = read(root, REFERENCE_FILM_TEMPLATE)
+        for heading in REFERENCE_FILM_TEMPLATE_SECTIONS:
+            if heading not in template:
+                errors.append(f"{REFERENCE_FILM_TEMPLATE} lost a report section: {heading}")
+
+    for relative in REFERENCE_FILM_ROUTED_FILES:
+        if not (root / relative).is_file():
+            continue
+        text = read(root, relative)
+        if "22_reference_film_study_workflow.md" not in text:
+            errors.append(
+                f"{relative} must route to the reference-film study workflow; "
+                f"{REFERENCE_FILM_WORKFLOW} is not discoverable from it"
+            )
     return errors
 
 
@@ -2226,6 +2347,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_fast_invariant_and_receipt(root))
     errors.extend(check_standalone_invocation(root))
     errors.extend(check_asset_canvas_ratio_default(root))
+    errors.extend(check_reference_film_study(root))
     errors.extend(check_genre_knowledge(root))
     errors.extend(check_anime_language(root))
     errors.extend(check_vertical_framing(root))

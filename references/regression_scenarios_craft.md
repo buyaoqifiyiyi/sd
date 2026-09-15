@@ -477,3 +477,47 @@ FAIL：把横向并列构图直接塞进竖屏导致两侧被裁；横向大幅�
 PASS：输入一不推定交付画幅，横屏项目不加载该原子；输入二据实说明横竖构图的信息分配不同，**不得用裁切转换**，需要竖屏时按竖屏重新构图；交付画幅是**交付**量，与相机成像画幅（全画幅等效倾向）不得互相推断。
 
 FAIL：从平台、目标形式或参考图比例推定交付画幅；把裁切后的画面当作竖屏交付；用资产图比例反推成片画幅。
+
+## R87 Reference-Film Study Measurement Regression
+
+R65（隔离边界与三层结论）仍必须成立；本节只补上**测量层**：切点、时长与运动量从哪来，判断怎么被对账，以及无工具时的降级线。不得新增主STATE，不得让拉片产物获得Artifact ID或Canonical身份。
+
+### R87-A Boundaries And Duration Are Measured, Never Eyeballed
+
+输入：用户给出一条成片并要求拉片，本机有node与ffmpeg。
+
+PASS：按`workflows/22_reference_film_study_workflow.md`的Step 2执行测量：切点来自ffmpeg场景检测、时长由切点相减（两位小数），汇报中给出片长、帧率、检测切点数与合并后镜头数；模型只判景别、类别、运镜、画面、节奏，**不报时间**。阈值不合适的判断依据是"平均镜长与镜头数"这一行输出，而不是观感。
+
+FAIL：凭目测写出"这个镜头大约3秒"并把它当读数；手改`start` / `end` / `seconds` / `motion` / `seedCuts` / `meta`；缺少`node`或`ffmpeg`时仍声称有实测数值。
+
+### R87-B No Tooling Means A Manual Pass, Stated As Such
+
+输入：运行环境没有`node`或`ffmpeg`。
+
+PASS：按`knowledge/visual_styles/index.md`的`#### Measured Boundary And Motion｜边界与运动量实测`末段执行一次纯人工拉片，结论仍按可见证据 / 推断 / 不可确认三层写出，并在汇报中**明确说明本次未实测、没有任何实测数值**；声称大动却看不出画面位移的一律降级为不可确认。
+
+FAIL：因为无法实测就把"看起来像推镜"写成推镜；或反过来以"没有工具"为由跳过拉片、跳过运镜验收或降低结论分层要求。
+
+### R87-C A Claimed Strong Move Must Survive The Motion Gate
+
+输入：某镜实测帧间变化中位数为0.7，模型填了`push-in`（`strong`档）。
+
+PASS：`validate`的运镜实测对账拦下该镜并**返回退出码1**，提示"写的是「推」，实测帧间变化只有0.7（< 1.5）——这一镜画面没动，重看一遍"；逐条修完重跑直到通过才交付报告。按退出码判定，不按输出末尾观感判定。
+
+FAIL：跳过`validate`直接出报告；把退出码1当作已通过；只在文字里加一句"可能是主体在动"而不回看画面改写运镜。**注意反向那一向不属FAIL**：声称固定而实测偏高只出提示，它是需要人回看的地方，不是错误。
+
+### R87-D A Skipped Gate Is Not A Passed Gate
+
+输入：本轮未提供`--track`、未建`cast`，或关键帧目录不存在。
+
+PASS：跳过的门在报告里**逐条列出并写明跳过原因**，汇报中明说"跳过不是通过"；关键帧确实没抽出来时明说缺哪几张。
+
+FAIL：把`⊘ 跳过（视为通过）`汇报成"质量门全绿"；用占位图或挪用其他帧来凑"关键帧齐全"。
+
+### R87-E Windows Redirect And Filtergraph Path Are Handled At The Right Layer
+
+输入（Windows）：按Workflow执行`seed`并把stdout重定向到`shots.json`；随后合成对照视频。
+
+PASS：重定向写**原始字节**（本机实测PowerShell 5.1的`>`会写出UTF-8 BOM `EF BB BF`，下游解析报`Unexpected token ''`；`cmd /c`写出`7B 0A 20`）；合成走`scripts/reference-film/compose-win.mjs`而不是上游`compose`（上游把绝对路径写进`sendcmd=f='…'`，Windows的`\`与`:`会被滤镜解析器吃掉，只把反斜杠转正斜杠仍然失败，必须写成`C\:/…`）；平台差异与实测射程记在`scripts/reference-film/vendor/README.md`，**不改上游vendoring文件**；合成后抽帧确认画面对应的镜号与面板高亮行一致。
+
+FAIL：把BOM导致的JSON解析失败当成拉片数据错误去改底稿；遇到`No option name near '\Users\…'`就声称本机不支持合成；直接编辑`scripts/reference-film/vendor/`里的上游文件来"修"平台问题；不抽帧验收就交付对照视频。

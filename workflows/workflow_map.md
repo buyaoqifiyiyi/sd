@@ -8,7 +8,7 @@
 |---|---|
 | 常规路由（推进 / 下一步 / 继续） | `## Main Workflow Routing` 中当前 STATE 的那一行 + `## STATE Route Boundaries` 中当前 STATE 的小节 |
 | 新项目首次进入 / Runtime Reload | 加读 `## Core Production Pipeline` |
-| 用户显式请求 Storyboard / AUDIO / MUSIC | 只加读 `## Auxiliary Workflow Routing` 中对应的一行及其 Gate 小节 |
+| 用户显式请求 Storyboard / AUDIO / MUSIC / 参考片拉片 | 只加读 `## Auxiliary Workflow Routing` 中对应的一行及其 Gate 小节 |
 | 旧项目恢复 | 加读 `## Legacy Compatibility` |
 | Review 退回或返修 | 加读 `## Resume And Revision Loop` |
 | 不必在运行时读取 | `## Purpose`、`## Ownership Boundaries` |
@@ -156,10 +156,20 @@ Shot是导演镜头设计单位；Clip是AI视频生成执行单位。Source Scr
 | 电影海报 / Key Art / 封面 | `workflows/17_poster_design_workflow.md` | `templates/15_poster_design_package.md` | 按需辅助视觉交付；未请求不自动追加 |
 | 已有视频结果的局部修改 | `workflows/12_editing_workflow.md` | `templates/12_edit_prompt.md` | 修复后返回STATE-09 Review复核（“局部修改”本身即Review显式调用的一部分） |
 | 系列项目管理 | `workflows/14_series_management_workflow.md` | `templates/19_series_status.md` | 不替代单个制作单元的完整主Pipeline |
+| 参考片拉片 / 拆镜头 / 分析参考视频怎么拍 | `workflows/22_reference_film_study_workflow.md` | `templates/26_reference_film_study_report.md` | 独立分析任务；不建项目、不写项目状态、不进入任何主STATE，也不审核本项目成片 |
 
 ### Storyboard Isolation
 
 Storyboard只在用户明确请求时调用`workflows/10_storyboard_workflow.md`。它不进入Completed States，不成为固定Next Workflow，不参与Clip划分，也不得作为STATE-08 Canonical Reference。
+
+### Reference-Film Study Isolation
+
+参考片拉片只在用户给出视频并说出"拉片 / 拆镜头 / 分析这段怎么拍的 / 学习这个视频的运镜"等无歧义表达时调用`workflows/22_reference_film_study_workflow.md`。它是独立分析任务：
+
+- **不建立Active Project Root、不初始化项目、不写项目状态、不进入Completed States，也不进入任何主STATE。** 拉片产物不属于Project Root Contract，不得登记为Artifact ID或Canonical Asset。
+- **不属STATE-09 Review**：参考片不是本项目成片，两者对象不同；把参考片路由进Review属误判。
+- **只在用户明确要求"把这种方法用于当前项目"时**，才把结论经`knowledge/visual_styles/index.md`的`Reference-To-System Evidence Gate`与`Temporal Reference Decode`送入STATE-04；在此之前它只是研究来源。
+- **对照合成视频是条件输出**：只有用户要求把画面与分镜信息合成一条对照视频时才执行`video-sync`那一步，此时需要一个无头浏览器；不触发时按Not Applicable记录，不影响本次交付。
 
 ### AUDIO / SEED-AUDIO Explicit Trigger Gate
 

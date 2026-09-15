@@ -9,7 +9,7 @@
 | File | 覆盖范围 | 用途 |
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
-| `references/regression_scenarios_craft.md` | R16—R22、R64—R65、R69、R80—R82 | Prompt 编译、表演、视觉阻断与剧本端到端，以及资产图默认画幅、类型剖面、绘制媒介语言与交付画幅构图 |
+| `references/regression_scenarios_craft.md` | R16—R22、R64—R65、R69、R80—R82、R87 | Prompt 编译、表演、视觉阻断与剧本端到端，以及资产图默认画幅、类型剖面、绘制媒介语言、交付画幅构图与参考片拉片的测量层 |
 | `references/regression_scenarios_prompt.md` | R15 | Prompt 注意力、文学意图转译与工程级数据压缩（按编号边界拆出的独立子案例合集） |
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |

@@ -25,7 +25,7 @@
 - **设计镜头**：专业分镜脚本——TC IN / OUT、景别、焦段、分层构图、人物动作链、机位调度、台词声音
 - **拆 Clip**：Shot 是导演设计单位，Clip 是 AI 生成单位，按模型时长窗口整合成 CLIP-001……
 - **出 Prompt**：每个 Clip 一条连续 Prompt，按已确认资产与分镜编译，模型专属模板
-- **拉片**：参考片的运镜、机位、镜头语言分析，风格反编译（"学习这个视频怎么拍"即触发）
+- **拉片**：参考片的逐镜分析——切点、时长与每镜实测运动量由 ffmpeg 量出来，模型只判景别/类别/运镜/画面/节奏，每条判断都被确定性质量门当面核对（"声称推拉摇移却实测几乎不动"直接拦）；产出时间码镜头表与单页交互式报告，风格反编译（"学习这个视频怎么拍"即触发）
 - **配画面**：海报、Key Art、封面（带视觉母题与字体层级）
 - **配声音**：角色音色资产、SeedMusic 配乐与 Cue Sheet（均需显式调用）
 
@@ -72,6 +72,7 @@
 | AUDIO / SeedAudio | 要求做音色 | 文字型 Voice Profile，不创建视觉 Asset ID |
 | MUSIC / SeedMusic | 要求配乐规划 | 默认纯音乐，与视频 Prompt 永久隔离 |
 | Poster / Key Art | 要求海报封面 | 不进入主 Pipeline |
+| 参考片拉片 | 给出视频并要求拉片 / 拆镜头 | 独立分析任务，不建项目、不写项目状态；对照合成视频需显式请求 |
 | Editing / Series | 要求剪辑或系列管理 | Editing 不作为独立 STATE |
 
 ---
@@ -104,6 +105,7 @@
 | Skill 入口与全局不变量 | `SKILL.md` |
 | 运行默认值、索引与开关 | `config.md` |
 | 阶段路由与边界 | `workflows/workflow_map.md` |
+| 参考片拉片（含测量引擎的调用方式） | `workflows/22_reference_film_study_workflow.md` |
 | 项目状态字段与写回 | `references/project_state_contract.md` |
 | 项目目录与恢复 | `references/project_workspace.md` |
 | 资产身份与版本锁 | `references/asset_lock_contract.md` |
