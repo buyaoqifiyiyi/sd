@@ -12,7 +12,7 @@
 | `references/regression_scenarios_craft.md` | R15—R22、R64—R65 | Prompt 编译、表演、视觉阻断与剧本端到端 |
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
-| `references/regression_scenarios_maintenance.md` | R48—R63 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据 |
+| `references/regression_scenarios_maintenance.md` | R48—R63、R66—R67 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据、交付物完整性打包门、独立调用 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
 ## Purpose

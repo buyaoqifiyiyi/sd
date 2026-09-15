@@ -865,6 +865,63 @@ STANDALONE_INVOCATION_MARKERS = (
 )
 
 
+REGRESSION_CORPUS = (
+    "references/regression_scenarios.md",
+    "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_director.md",
+    "references/regression_scenarios_system.md",
+    "references/regression_scenarios_maintenance.md",
+)
+REGRESSION_ID_RE = re.compile(r"^## (R\d+[A-Z]?)\b", re.M)
+REGRESSION_SUB_ID_RE = re.compile(r"^### (R\d+[A-Z]?-[A-Z0-9]+)\b", re.M)
+
+
+def check_regression_ids(root: Path) -> list[str]:
+    """One regression ID belongs to exactly one file in the corpus.
+
+    Measured case: two new scenarios were appended to the maintenance file under
+    R64/R65, which the craft file already owned. The corpus is addressed by ID
+    ("see R48-M"), so a duplicate silently sends the reader to a different
+    scenario, and every range line in the index stays plausible while it happens.
+
+    Deterministic scope: top-level IDs and sub-IDs are each unique across the
+    corpus, and every corpus file is listed in its index. It does not judge
+    whether a scenario is well written, nor whether an ID's number matches the
+    range its index row declares.
+    """
+    errors: list[str] = []
+    texts: dict[str, str] = {}
+    owners: dict[str, str] = {}
+    sub_owners: dict[str, str] = {}
+    for relative in REGRESSION_CORPUS:
+        if not (root / relative).is_file():
+            errors.append(f"regression corpus file is missing: {relative}")
+            continue
+        text = read(root, relative)
+        texts[relative] = text
+        for identifier in REGRESSION_ID_RE.findall(text):
+            if identifier in owners:
+                errors.append(
+                    f"regression ID {identifier} is defined twice: "
+                    f"{owners[identifier]} and {relative}"
+                )
+            else:
+                owners[identifier] = relative
+        for identifier in REGRESSION_SUB_ID_RE.findall(text):
+            if identifier in sub_owners:
+                errors.append(
+                    f"regression sub-ID {identifier} is defined twice: "
+                    f"{sub_owners[identifier]} and {relative}"
+                )
+            else:
+                sub_owners[identifier] = relative
+    index = texts.get(REGRESSION_CORPUS[0], "")
+    for relative in REGRESSION_CORPUS[1:]:
+        if Path(relative).name not in index:
+            errors.append(f"{relative} is not listed in the regression file index")
+    return errors
+
+
 def check_standalone_invocation(root: Path) -> list[str]:
     """A standalone run produces a real artifact without counting as progress.
 
@@ -1449,6 +1506,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_stage_landing_coverage(root))
     errors.extend(check_fast_invariant_and_receipt(root))
     errors.extend(check_standalone_invocation(root))
+    errors.extend(check_regression_ids(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))
     errors.extend(check_internal_references(root))

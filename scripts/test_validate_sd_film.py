@@ -3750,7 +3750,7 @@ class R64DeliveredArtifactValidatorTests(unittest.TestCase):
         self.assertIn("validate_delivery_artifacts.py", source)
 
 
-class R65StandaloneInvocationTests(unittest.TestCase):
+class R67StandaloneInvocationTests(unittest.TestCase):
     """独立调用：可以只跑一个模块或一个阶段，但它不计入项目进度。
 
     这条能力最容易被读成"可以跳过主流程"，所以两份事实必须在位：被调用单元
@@ -3839,6 +3839,78 @@ class R65StandaloneInvocationTests(unittest.TestCase):
         # 产物不降级：独立调用不是草稿通道，也不是Not Applicable通道
         self.assertIn("**产物不降级**", activation)
         self.assertIn("`Not Applicable`", activation)
+
+
+class R68RegressionCorpusIdTests(unittest.TestCase):
+    """回归集按编号寻址，因此一个编号只能属于一个文件。
+
+    实测违规：两个新场景被追加到 maintenance 文件时复用了 craft 已经占用的
+    R64/R65，索引里每一行范围描述在当时都仍然"看起来对"。
+    """
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        for relative in validator.REGRESSION_CORPUS:
+            text = overrides.get(relative)
+            if text is None:
+                text = (ROOT / relative).read_text(encoding="utf-8-sig")
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8", newline="\n")
+
+    def test_shipped_corpus_has_unique_ids(self) -> None:
+        self.assertEqual(validator.check_regression_ids(ROOT), [])
+
+    def test_fixture_passes_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_regression_ids(root), [])
+
+    def test_reusing_an_owned_id_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            target = root / "references/regression_scenarios_maintenance.md"
+            target.write_text(
+                target.read_text(encoding="utf-8") + "\n## R64 A Second Owner\n",
+                encoding="utf-8", newline="\n",
+            )
+            errors = validator.check_regression_ids(root)
+            self.assertTrue(
+                any("R64" in item and "defined twice" in item for item in errors), errors
+            )
+
+    def test_reusing_a_sub_id_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            target = root / "references/regression_scenarios_system.md"
+            target.write_text(
+                target.read_text(encoding="utf-8") + "\n### R48-A A Second Owner\n",
+                encoding="utf-8", newline="\n",
+            )
+            errors = validator.check_regression_ids(root)
+            self.assertTrue(
+                any("R48-A" in item and "defined twice" in item for item in errors), errors
+            )
+
+    def test_a_corpus_file_missing_from_the_index_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            index = root / "references/regression_scenarios.md"
+            index.write_text(
+                index.read_text(encoding="utf-8").replace(
+                    "`references/regression_scenarios_maintenance.md`", "（未登记）"
+                ),
+                encoding="utf-8", newline="\n",
+            )
+            errors = validator.check_regression_ids(root)
+            self.assertTrue(
+                any("not listed in the regression file index" in item for item in errors),
+                errors,
+            )
 
 
 if __name__ == "__main__":

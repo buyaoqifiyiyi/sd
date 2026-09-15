@@ -4,7 +4,7 @@
 
 本文件是回归集的一部分，由`references/regression_scenarios.md`的 Regression File Index 统一索引；本文件内部编号保持连续，可按编号直接定位，不整集通读。
 
-覆盖范围：R48—R63 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断、阶段落点覆盖、FAST不变量与交付收据。
+覆盖范围：R48—R63、R66—R67 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断、阶段落点覆盖、FAST不变量与交付收据、交付物完整性打包门、独立调用。
 
 ---
 
@@ -630,9 +630,9 @@ PASS：三种状态标签是必备内容，缺一即FAIL；收据只做交付核
 FAIL：把收据简化成没有状态区分的清单（无法区分"已输出"与"只说了完成"）；或让收据承担状态写回职责，使状态合同与Completion Gate出现第二套判据。
 
 
-## R64 Delivered Artifact Completeness Guard Regression
+## R66 Delivered Artifact Completeness Guard Regression
 
-### R64-A The Completeness Rule Has A Consumer On The Packaging Path
+### R66-A The Completeness Rule Has A Consumer On The Packaging Path
 
 输入：一次真实交付把会话里的摘要直接当工件落盘——`05_shots` 是 202 字节的一行一句清单、`04_scenes` 是两条 bullet、`06_clips` 是一句话——然后按目录结构打包。三个 Template 里"保存为文件时必须运行`scripts/validate_delivery_artifacts.py`，未通过不得交付"当时已经写着，包的目录、命名、清单也全部合规；另一份包相同，但三个源工件是完整 Template 形态。
 
@@ -641,9 +641,9 @@ PASS：`scripts/build_asset_package.py` 在写包之前对 `04_scenes` / `05_sho
 FAIL：规则只写在 Template 里、打包路径上没有任何消费者，靠执行者自觉运行校验器（于是摘要照样进包并被当作已交付）；或反向地把该门做成WARNING / 事后报告，让不合格的包先生成再说；或在校验器不可读时静默跳过该检查。
 
 
-## R65 Standalone Invocation Regression
+## R67 Standalone Invocation Regression
 
-### R65-A A Standalone Run Never Counts As Progress
+### R67-A A Standalone Run Never Counts As Progress
 
 输入一：用户说"只重做 STATE-06 分镜表，别推进后面的阶段"，项目当时停在 STATE-04；同一次运行给出完整分镜表、用户确认，系统把 `Current State` 写成 STATE-06、`Next Workflow` 指向 Clip Production。输入二：同一请求，但这次只登记 `Active Artifacts` 与 Revision，`Completed States`、`Current State`、`Next Workflow` 都不变，`Pending Decision` 写明"独立调用交付，未计入主Pipeline进度"。输入三：用户说"只调用 Storyboard 模块"，系统把它登记成 `Completed States` 里的一项。
 
