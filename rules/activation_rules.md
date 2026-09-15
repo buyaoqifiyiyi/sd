@@ -67,7 +67,7 @@
 
 | 形态 | 范围 | 进入条件 |
 |---|---|---|
-| Standalone Module Invocation | 辅助模块（Storyboard、Spatial Blocking、AUDIO / SEED-AUDIO、MUSIC / SEED-MUSIC、Poster / Cover、Sequence Planning、Editing、Series、Reference-Film Study） | 各自既有的显式触发条件；AUDIO / MUSIC 仍必须先过唯一Router |
+| Standalone Module Invocation | 辅助模块（Storyboard、Spatial Blocking、AUDIO / SEED-AUDIO、MUSIC / SEED-MUSIC、Poster / Cover、Sequence Planning、Editing、Series、Reference-Film Study） | 独立调用需用户点名该模块；**点名不改变模块自身在生产中的触发**——Storyboard、AUDIO / SEED-AUDIO、MUSIC / SEED-MUSIC、Poster / Cover、Editing、Series、Reference-Film Study为显式调用，Spatial Blocking在STATE-06内对每个Scene自动执行（只有俯视图按复杂度启用），Sequence Planning按自身条件执行（路由见`workflows/workflow_map.md`的`## Auxiliary Workflow Routing`）；AUDIO / MUSIC仍必须先过唯一Router |
 | Standalone Stage Invocation | 主Pipeline的单个STATE | 该STATE自己的Required boundary成立——输入是已确认事实，或用户本轮明确提供且可核验；边界判据见`workflows/workflow_map.md`的`## STATE Route Boundaries` |
 
 独立调用必须：

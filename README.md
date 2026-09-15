@@ -56,12 +56,12 @@
 
 ---
 
-## 辅助能力（显式调用）
+## 辅助能力（显式调用 / 独立调用）
 
 | 能力 | 触发方式 | 边界 |
 |---|---|---|
 | Storyboard | 明确要求分镜 | 可选辅助，不占 STATE |
-| Spatial Blocking | 需要空间 / 走位关系 | `REF-SKETCH` 只控空间与机位，不成为角色资产 |
+| Spatial Blocking | **STATE-06 内自动执行（每个 Scene）**；只有把它作为独立调用范围时才需点名 | `REF-SKETCH` 只控空间与机位，不成为角色资产；俯视图按复杂度启用 |
 | AUDIO / SeedAudio | 要求做音色 | 文字型 Voice Profile，不创建视觉 Asset ID |
 | MUSIC / SeedMusic | 要求配乐规划 | 默认纯音乐，与视频 Prompt 永久隔离 |
 | Poster / Key Art | 要求海报封面 | 不进入主 Pipeline |
