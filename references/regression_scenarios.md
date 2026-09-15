@@ -4,15 +4,17 @@
 
 ## Regression File Index
 
-为控制单次读取成本，本回归集按编号族拆为七个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
+为控制单次读取成本，本回归集按编号族拆分。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
 
 | File | 覆盖范围 | 用途 |
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
-| `references/regression_scenarios_craft.md` | R15—R22、R64—R65、R69 | Prompt 编译、表演、视觉阻断与剧本端到端，以及资产图默认画幅 |
+| `references/regression_scenarios_craft.md` | R16—R22、R64—R65、R69、R80—R82 | Prompt 编译、表演、视觉阻断与剧本端到端，以及资产图默认画幅、类型剖面、绘制媒介语言与交付画幅构图 |
+| `references/regression_scenarios_prompt.md` | R15 | Prompt 注意力、文学意图转译与工程级数据压缩（按编号边界拆出的独立子案例合集） |
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
-| `references/regression_scenarios_maintenance.md` | R48—R63、R66—R67 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据、交付物完整性打包门、独立调用 |
+| `references/regression_scenarios_maintenance.md` | R49—R63、R66—R67、R79、R83—R86 | 美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据、交付物完整性打包门、独立调用、Skill入口元数据、交付规格owner、时代地域、品牌商业片与受众·纪实 |
+| `references/regression_scenarios_delivery.md` | R48 | 交付物校验、覆盖与尺度（按编号边界拆出的独立子案例合集） |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
 ## Purpose
@@ -348,4 +350,12 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R62-A至R62-B验证每个主STATE（STATE-00至STATE-07）在提示词投影矩阵里都有具名落点行：紧凑写法`STATE-00/01/04`按run展开、矩阵行数有下限、Writer / Director / Scene三行落点仍在，删行不能买覆盖；新增阶段产物必须在同一次变更内补上"来源 → 固定字段 → 必须保留的语义"一行，只能引用既有Gate / Pass，不得新增Prompt字段或把内部ID / `Pending`写进交付；确定性射程由`check_stage_landing_coverage`承担，落点语义仍须人工判定。
 - R63-A至R63-B验证自动模式只自动确认：不变量（不减少阶段 / 检查 / 交付物）与交付收据（阶段 → 工件 → `本轮完整输出` / `已在Accepted Artifact` / `待交付`）必须同时留在`automation_mode` / `05_output_rules` / 状态合同 / 模块合同 / `USER_GUIDE`五处，任一丢失即FAIL；收据不得被简化成没有状态区分的清单，也不得承担状态写回职责或长成第二套判据；确定性射程由`check_fast_invariant_and_receipt`承担，"某次交付是否照做"仍由R32-D / R32-E与人工判定。
 - R69-A至R69-D验证资产图默认画幅有唯一owner并按类别分流：人物类单角色画布默认`9:16`竖版，环境（每View一张）、道具（`1×4`）、正式FX与一切多对象Board（含Support角色参考板）默认`16:9`横版；比例必须显式写进`画幅/分辨率/交付规格：`与模型参数（GPT Image `1152×2048` / `2048×1152`，Midjourney `--ar 9:16` / `--ar 16:9`）并进入`Shared Style Lock`，不得从参考图宽高比反推；用户当前明确例外与项目已确认交付规格优先；比例不改变五区版式与`1×4`四格结构，超出模型边界的比例据实拒绝；确定性射程由`check_asset_canvas_ratio_default`承担。
+- R79-A至R79-B验证发现入口必须能被YAML解析——名字与别名的子串检查在解析失败时全绿，而宿主会静默丢弃整个Skill；并验证判据锚定结构位置，删掉真标题后仍命中正文引用不算通过。确定性射程由`check_skill_frontmatter`承担。
+- R80-A至R80-B验证类型剖面只在登记后加载（不推定），且类型倾向是带条件的候选手段：不写固定节拍、不写冲突公式、与Writer / Director Intent冲突时让位。确定性射程由`check_genre_knowledge`承担。
+- R81-A至R81-B验证`2d_anime`档读等效词汇而非光学原子（版面占比即景别、版面放大与平移、关键帧密度与冲击帧），且2D角色资产是三区块设定集——正面区含头部与面部不得判为失败。确定性射程由`check_anime_language`承担。
+- R82-A至R82-B验证竖屏取三种双人布局之一、安全区不虚构数值、同项目不混用画幅，且交付画幅不得从平台、目标形式或参考图推定，也不得用裁切转换。确定性射程由`check_vertical_framing`承担。
+- R83-A至R83-B验证`项目已确认交付规格`拥有唯一定义与记录位置（`templates/01_project_bible_template.md`的`## Delivery Spec｜交付规格`），未确认时保持`UNSELECTED`且默认值行为不变，消费方路由到位。确定性射程由`check_delivery_spec`承担。
+- R84-A至R84-B验证时代与地域结论落在已确认来源 / 合理推断 / 不可确认三类之一、真实人物机构事件品牌为一等禁项，且时代技术边界与照明条件决定夜景的可拍内容。确定性射程由`check_period_and_place`承担。
+- R85-A至R85-B验证品牌诉求收成一条注意焦点链、产品角色明确、商业事实不由制作生成、文字级元素留后期叠加，且不得从时长、平台或题材推定项目为商业片。确定性射程由`check_branded_content`承担。
+- R86-A至R86-B验证受众不得推定（动画不等于儿童向）、可模仿性设定尺度、儿童向不等于降智、分级属外部事实，且纪实四道门与“生成画面不得冒充档案”在位。确定性射程由`check_audience_and_non_fiction`承担。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

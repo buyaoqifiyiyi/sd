@@ -413,3 +413,57 @@ Owner：`knowledge/branded_content/index.md`是登记表、共享Atom Schema、�
 冲突时：商业事实缺失或冲突返回`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`与Pending Decision；品牌诉求未确认返回STATE-00的`# Input Material`与STATE-01的Creation Brief；目标形式节奏返回短剧适配器；交付画幅返回`knowledge/camera_language/composition_language/vertical_framing.md`；美学方向返回STATE-04；剧情事实返回Writer Owner。
 
 ---
+
+## Audience Profile Knowledge Contract
+
+Module Type：受众定位引发的适宜性、理解难度与尺度分化Knowledge；STATE-01、STATE-04、STATE-05与STATE-06按阶段消费；不创建新STATE、不新增Template字段。
+
+Owner：`knowledge/audience_profiles.md`拥有受众字段的值域与三档分化规则（`preschool` / `children_family` / `general`）、三张分层表与可校验不变量。
+
+触发：受众定位由用户或已确认项目材料声明时，在STATE-01（信息承载与冲突形式）、STATE-04（项目级尺度）、STATE-05与STATE-06（逐场逐镜的内容适宜性与表演载体）读取对应小节。
+
+不触发：未声明时记`Audience Profile: PENDING`，不加载分化表、按既有通用行为继续，也不得登记为已确认的儿童向或家庭向；**不得从媒介、类型、平台、画风或时长推定受众**。
+
+不变量：
+
+- 三档ID固定，不得改名或新增同义档
+- 不得推定受众；"动画片是给孩子看的"是明确禁止的推定
+- 分级条文属外部事实，必须由用户提供来源，不得虚构或声称符合未确认的分级体系
+- 可模仿性判据：受众越小，危险动作越必须在同段落内给出可理解的负面后果
+- 儿童向不等于降智：不得以可理解性为由简化因果或删除冲突
+- 与媒介、类型、时代地域三条轴正交，任一轴不得覆盖另一轴
+- 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
+- 视频Prompt永久禁止非剧情内配乐，儿童向不构成例外
+
+禁止：为适宜性静默改写Production-Locked Script或已确认剧情事实；用"儿童向"当作删除冲突的理由；把海报渠道差异当作受众分化（那是`knowledge/poster_design/index.md`的边界）。
+
+冲突时：受众未声明或冲突返回用户与已确认项目材料；适宜性与剧情事实冲突返回Writer Owner；理解难度与媒介表达冲突返回`knowledge/medium_profiles.md`；美学方向返回STATE-04；逐镜尺度返回STATE-06。
+
+---
+
+## Documentary And Non-Fiction Knowledge Contract
+
+Module Type：纪实 / 非虚构目标形式的适配Knowledge；由STATE-01的`Adaptation Target Detection`触发；不创建新STATE、不新增Template字段。
+
+Owner：`knowledge/adaptation/documentary_adapter.md`拥有来源台账、重现边界、真实主体与权利门、旁白权限、时间线忠实与**生成影像不得冒充档案**六项判据及其Acceptance Checklist。
+
+触发：`Adaptation Target Detection`确认目标为纪实 / 非虚构（纪录片、观察式、访谈式、档案重组、口述史）时读取；短剧目标仍走`knowledge/adaptation/short_form_drama_adapter.md`，品牌目标仍走`knowledge/branded_content/index.md`，三者互不套用。
+
+不触发：其他目标形式一律Not Applicable；无目标证据时按`Adapter Load: Pending`记录，不猜平台规则也不强加纪实纪律。
+
+不变量：
+
+- 每条事实陈述必须能指向可核对来源；写不出来源的不得以陈述句呈现
+- 重现段落必须可区分并标注依据来源；不得与档案素材混排到无法分辨
+- 真实人物、机构、事件与品牌的授权必须由用户提供，与`rules/automation_mode.md`的Hard Stop同一口径
+- 旁白与字幕只承担可核对陈述，不得替观众下结论或替人物读心；引述必须标明
+- 时间线与事件顺序必须与来源一致；压缩不得制造虚构因果
+- **AI生成画面不得被呈现为档案或真实影像**，不得配纪实性字幕、时间码或档案式包装
+- 不新增用户可见字段、不改变STATE-08 Schema、不改变任何Model Adapter能力数值
+- 视频Prompt永久禁止非剧情内配乐
+
+禁止：用"看起来真实"填补缺失来源；为叙事顺畅调换事件顺序；生成真实人物的可信影像并作为记录呈现。
+
+冲突时：来源或权利冲突返回`PENDING`与用户决定；目标形式判定返回STATE-01入口路由；时代与地域事实返回`knowledge/period_and_place/index.md`；生成影像冒充档案属阻断项，返回本适配器`## Generated-Image Provenance｜生成影像的来源标注`。
+
+---

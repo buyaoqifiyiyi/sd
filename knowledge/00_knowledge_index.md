@@ -74,6 +74,16 @@ STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；S
 
 ---
 
+## Persistent Audience Profile
+
+`knowledge/audience_profiles.md`是受众剖面的唯一知识Owner，定义`preschool` / `children_family` / `general`三档在**内容适宜性、理解难度、表演与声音尺度**上的分化规则，以及"可模仿性"这一核心判据。
+
+它由用户或已确认项目材料给定的受众定位触发：已声明时在STATE-01（信息承载与冲突形式）、STATE-04（项目级尺度）、STATE-05 / 06（逐场逐镜的内容适宜性与表演载体）按需读取；未声明时记`Audience Profile: PENDING`，不加载分化表、按既有通用行为继续，也不得登记为已确认的儿童向或家庭向。**不得推定受众**——媒介是动画、类型是冒险、平台是少儿频道、画风可爱、时长很短都不构成依据；"动画片是给孩子看的"是最常见的一条错误推定。
+
+受众与媒介、类型、时代地域三条轴正交，不改变任何主STATE、Template字段或STATE-08最终Schema。各国各平台的分级条文属**外部事实**，必须由用户提供来源，本文件不虚构分级标准也不声称符合任何未确认的分级体系。儿童向不等于降智：可理解性要求不等于简化因果或删除冲突。
+
+---
+
 ## Persistent Genre Profile
 
 `knowledge/genre/index.md`是类型剖面的唯一知识Owner（`knowledge/genre/01_mystery_thriller.md`至`knowledge/genre/06_crime.md`为其登记的类型文件）。它定义主类型及其次类型在**呈现层**——镜头、表演、声音与节奏——的倾向、每条倾向的成立条件与反用场景，以及反公式边界。它**不拥有**故事结构、冲突公式、节拍模型、人物关系走向与任何剧情事实。
@@ -138,6 +148,10 @@ Conditional — Class C报告Adaptation Need且用户明确同意优化/改编�
 只有Adaptation Target Detection确认目标为短剧、竖屏剧情或1—3分钟剧情视频时，额外加载：
 
 - knowledge/adaptation/short_form_drama_adapter.md
+
+只有Adaptation Target Detection确认目标为纪实 / 非虚构（纪录片、观察式、访谈式、档案重组、口述史）时，额外加载：
+
+- knowledge/adaptation/documentary_adapter.md
 
 Conditional — Class A/B在报告后获得明确优化授权，或Class C已获授权并形成Adaptation Draft时：
 

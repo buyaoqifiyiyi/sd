@@ -55,7 +55,7 @@
 
 明确本次改编的目标形式、目标时长/集长、平台/画幅、受众、单集或系列、主情绪与商业目标。目标必须来自用户或已确认项目资料；缺失且会改变结构时记录Pending Decision。
 
-随后执行`Adaptation Target Detection`：只有目标为短剧、竖屏剧情或1—3分钟剧情视频时，才读取并执行`knowledge/adaptation/short_form_drama_adapter.md`。电影短片、品牌广告、儿童动画、纪录表达、长片段落等其他目标不得强制套用短剧规则。其中**品牌广告 / 品牌内容**目标改按`knowledge/branded_content/index.md`读取（品牌诉求的呈现转译与商业事实边界），同样不得套用短剧规则，也不新建节拍模型。
+随后执行`Adaptation Target Detection`：只有目标为短剧、竖屏剧情或1—3分钟剧情视频时，才读取并执行`knowledge/adaptation/short_form_drama_adapter.md`。电影短片、品牌广告、儿童动画、纪录表达、长片段落等其他目标不得强制套用短剧规则。其中**品牌广告 / 品牌内容**目标改按`knowledge/branded_content/index.md`读取（品牌诉求的呈现转译与商业事实边界），**纪实 / 非虚构**目标（纪录片、观察式、访谈式、档案重组、口述史）改按`knowledge/adaptation/documentary_adapter.md`读取（来源台账、重现边界、生成影像不得冒充档案）；三者互不套用，也都不新建节拍模型。
 
 ### 3. Preserve / Compress / Rewrite / Remove Decision
 

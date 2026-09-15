@@ -900,9 +900,11 @@ ASSET_CANVAS_RATIO_SYNTAX = (
 REGRESSION_CORPUS = (
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_prompt.md",
     "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
     "references/regression_scenarios_maintenance.md",
+    "references/regression_scenarios_delivery.md",
 )
 REGRESSION_ID_RE = re.compile(r"^## (R\d+[A-Z]?)\b", re.M)
 REGRESSION_SUB_ID_RE = re.compile(r"^### (R\d+[A-Z]?-[A-Z0-9]+)\b", re.M)
@@ -1476,6 +1478,79 @@ def check_branded_content(root: Path) -> list[str]:
             continue
         if needle not in read(root, relative):
             errors.append(f"{relative} must keep the branded content {label}: {needle}")
+    return errors
+
+
+AUDIENCE_OWNER = "knowledge/audience_profiles.md"
+AUDIENCE_REQUIREMENTS = (
+    ("## Selection And Ownership", "profile selection and ownership"),
+    ("## Suitability Layer", "suitability layer"),
+    ("## Comprehension Layer", "comprehension layer"),
+    ("## Performance And Sound Layer", "performance and sound layer"),
+    ("## Non-Applicable Rule", "non-applicable rule"),
+    ("## Validator-Checkable Invariants", "validator-checkable invariants"),
+    ("preschool", "preschool profile"),
+    ("children_family", "children and family profile"),
+    ("general", "general profile"),
+    ("不得推定受众", "no audience inference"),
+    ("可模仿性", "imitation-risk criterion"),
+    ("外部事实", "external rating facts"),
+    ("禁止非剧情内配乐", "no non-diegetic score"),
+)
+DOC_OWNER = "knowledge/adaptation/documentary_adapter.md"
+DOC_REQUIREMENTS = (
+    ("## Purpose And Trigger", "purpose and trigger"),
+    ("## Hard Gates", "hard gates"),
+    ("### 1. Source Reality Gate", "source reality gate"),
+    ("## Claim-to-Source Ledger", "claim-to-source ledger"),
+    ("## Generated-Image Provenance｜生成影像的来源标注", "generated-image provenance"),
+    ("## Acceptance Checklist", "acceptance checklist"),
+    ("不得被呈现为档案", "generated footage never poses as archive"),
+    ("Hard Stop", "hard stop on real subjects"),
+    ("禁止非剧情内配乐", "no non-diegetic score"),
+)
+SECONDARY_ROUTING = (
+    ("knowledge/00_knowledge_index.md", "## Persistent Audience Profile", "knowledge index section"),
+    ("knowledge/00_knowledge_index.md", AUDIENCE_OWNER, "audience discovery entry"),
+    ("knowledge/00_knowledge_index.md", DOC_OWNER, "documentary discovery entry"),
+    ("rules/resource_loading.md", f"`{AUDIENCE_OWNER}`", "audience scope gate row"),
+    ("rules/resource_loading.md", f"`{DOC_OWNER}`", "documentary scope gate row"),
+    ("knowledge/script_adaptation.md", DOC_OWNER, "adaptation target route"),
+    ("references/module_contracts_knowledge.md", "## Audience Profile Knowledge Contract", "audience contract"),
+    ("references/module_contracts_knowledge.md", "## Documentary And Non-Fiction Knowledge Contract", "documentary contract"),
+)
+
+
+def check_audience_and_non_fiction(root: Path) -> list[str]:
+    """Audience suitability and documentary discipline must keep their gates.
+
+    Measured gap: 受众 was captured by STATE-01 but no knowledge owned what it
+    changes, so suitability and comprehension were improvised per project; and
+    纪实 had no owner at all -- the short-drama adapter declared it Not
+    Applicable, which left non-fiction with a target form and no discipline for
+    sources, reconstruction or generated footage passing as archive.
+
+    Deterministic scope: both owner files exist and keep their distinguishing
+    gates, and their routing is in place. It does not judge a treatment.
+    """
+    errors: list[str] = []
+    for owner, requirements, label in (
+        (AUDIENCE_OWNER, AUDIENCE_REQUIREMENTS, "audience profile"),
+        (DOC_OWNER, DOC_REQUIREMENTS, "documentary adapter"),
+    ):
+        if not (root / owner).is_file():
+            errors.append(f"{label} owner file is missing: {owner}")
+            continue
+        text = read(root, owner)
+        for needle, requirement in requirements:
+            if needle not in text:
+                errors.append(f"{owner} must keep the {requirement}: {needle}")
+    for relative, needle, label in SECONDARY_ROUTING:
+        if not (root / relative).is_file():
+            errors.append(f"audience/documentary routing file is missing: {relative}")
+            continue
+        if needle not in read(root, relative):
+            errors.append(f"{relative} must keep the {label}: {needle}")
     return errors
 
 
@@ -2157,6 +2232,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_delivery_spec(root))
     errors.extend(check_period_and_place(root))
     errors.extend(check_branded_content(root))
+    errors.extend(check_audience_and_non_fiction(root))
     errors.extend(check_regression_ids(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))

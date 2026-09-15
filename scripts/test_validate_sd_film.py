@@ -37,14 +37,16 @@ MODULE_CONTRACT_FILES = (
 REGRESSION_FILES = (
     "references/regression_scenarios.md",
     "references/regression_scenarios_craft.md",
+    "references/regression_scenarios_prompt.md",
     "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
     "references/regression_scenarios_maintenance.md",
+    "references/regression_scenarios_delivery.md",
     "references/recovery_guards.md",
 )
 
 def regression_corpus() -> str:
-    """The regression set is split across five files; assertions target the set."""
+    """The regression set is split across seven files; assertions target the set."""
     return "\n".join(
         (ROOT / relative).read_text(encoding="utf-8-sig") for relative in REGRESSION_FILES
     )
@@ -4810,6 +4812,76 @@ class R85BrandedContentTests(unittest.TestCase):
             errors = validator.check_branded_content(Path(temp_dir))
             self.assertEqual(
                 errors, ["branded content index is missing: knowledge/branded_content/index.md"]
+            )
+
+
+class R86AudienceAndDocumentaryTests(unittest.TestCase):
+    """反向守卫：受众适宜性与纪实纪律都必须保住各自的门。
+
+    实测缺口：`受众` 被 STATE-01 收集却没有任何知识拥有"它改变了什么"，适宜性与
+    理解难度只能逐项目临场发挥；`纪实` 则完全没有 owner——短剧适配器把它判为
+    Not Applicable，于是非虚构成了一个有目标形式、却没有来源、重现与"生成画面不得
+    冒充档案"纪律的目标。
+    """
+
+    def test_active_skill_passes(self) -> None:
+        self.assertEqual(validator.check_audience_and_non_fiction(ROOT), [])
+
+    def test_a_missing_audience_owner_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_audience_and_non_fiction(Path(temp_dir))
+            self.assertIn(
+                "audience profile owner file is missing: knowledge/audience_profiles.md", errors
+            )
+            self.assertIn(
+                "documentary adapter owner file is missing: knowledge/adaptation/documentary_adapter.md",
+                errors,
+            )
+
+    def test_a_lost_imitation_risk_criterion_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            owner = (ROOT / validator.AUDIENCE_OWNER).read_text(encoding="utf-8-sig")
+            (root / validator.AUDIENCE_OWNER).write_text(
+                owner.replace("可模仿性", "注意事项"), encoding="utf-8"
+            )
+            errors = validator.check_audience_and_non_fiction(root)
+            self.assertTrue(
+                any("must keep the imitation-risk criterion" in item for item in errors), errors
+            )
+
+    def test_a_lost_provenance_gate_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge" / "adaptation").mkdir(parents=True)
+            owner = (ROOT / validator.DOC_OWNER).read_text(encoding="utf-8-sig")
+            (root / validator.DOC_OWNER).write_text(
+                owner.replace("不得被呈现为档案", "建议标注为档案"), encoding="utf-8"
+            )
+            errors = validator.check_audience_and_non_fiction(root)
+            self.assertTrue(
+                any("generated footage never poses as archive" in item for item in errors), errors
+            )
+
+    def test_lost_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            (root / validator.AUDIENCE_OWNER).write_text(
+                (ROOT / validator.AUDIENCE_OWNER).read_text(encoding="utf-8-sig"), encoding="utf-8"
+            )
+            (root / "knowledge" / "adaptation").mkdir()
+            (root / validator.DOC_OWNER).write_text(
+                (ROOT / validator.DOC_OWNER).read_text(encoding="utf-8-sig"), encoding="utf-8"
+            )
+            errors = validator.check_audience_and_non_fiction(root)
+            self.assertTrue(
+                any(
+                    "audience/documentary routing file is missing: rules/resource_loading.md" in item
+                    for item in errors
+                ),
+                errors,
             )
 
 
