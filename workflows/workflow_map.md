@@ -48,18 +48,20 @@ Editing不作为独立STATE插入主Pipeline。Storyboard、AUDIO / SEED-AUDIO�
 
 ## Main Workflow Routing
 
-| STATE | Stage | Workflow | Final template owner | Core result |
-|---|---|---|---|---|
-| STATE-00 | Project Setup | `workflows/01_project_setup_workflow.md` | `templates/00_project_start_template.md` | 已建立项目身份、工作空间与状态入口 |
-| STATE-01 | Script Analysis | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Creation Brief生成或Existing Script诊断后确认的Production-Locked Directable Screenplay及分析结果 |
-| STATE-02 | Asset Discovery | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 已分类并可路由的CHAR / ENV / PROP / FX需求 |
-| STATE-03 | Asset Development | 对应资产Workflow | 对应资产Template | 已确认并登记的Canonical视觉资产 |
-| STATE-04 | Visual Development | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 已建立并经STATE-04内部Gate核验的可执行Visual Direction（默认不向用户展示确认，不等于需要用户确认的工件） |
-| STATE-05 | Scene Breakdown | `workflows/08_scene_breakdown_workflow.md` | `templates/07_scene_design_prompt.md` | Scene / Sequence / Unit生产拆解 |
-| STATE-06 | Detailed Shot Design | `workflows/09_shot_design_workflow.md` | `templates/08_shot_design_prompt.md` | Confirmed Professional Detailed Shot Script |
-| STATE-07 | Clip Production | `workflows/10_clip_production_workflow.md` | `templates/20_clip_plan.md` | Confirmed Clip Production Plan |
-| STATE-08 | Clip-based Video Prompt / Video Generation | `workflows/11_video_generation_workflow.md` | `templates/10_video_prompt.md` | 按Confirmed Clip编译并验证的最终视频执行Prompt |
-| STATE-09 | Review | `workflows/13_review_workflow.md` | `templates/16_review_report.md` | PASS或带最小Return Route的REVISE / REBUILD |
+| STATE | Stage | Workflow | Final template owner | Core result | 独立调用 |
+|---|---|---|---|---|---|
+| STATE-00 | Project Setup | `workflows/01_project_setup_workflow.md` | `templates/00_project_start_template.md` | 已建立项目身份、工作空间与状态入口 | 不适用（项目入口） |
+| STATE-01 | Script Analysis | `workflows/02_script_analysis_workflow.md` | `templates/02_script_analysis_prompt.md` | Creation Brief生成或Existing Script诊断后确认的Production-Locked Directable Screenplay及分析结果 | 允许 |
+| STATE-02 | Asset Discovery | `workflows/03_asset_discovery_workflow.md` | `templates/03_asset_discovery_prompt.md` | 已分类并可路由的CHAR / ENV / PROP / FX需求 | 允许 |
+| STATE-03 | Asset Development | 对应资产Workflow | 对应资产Template | 已确认并登记的Canonical视觉资产 | 允许 |
+| STATE-04 | Visual Development | `workflows/07_visual_development_workflow.md` | `templates/01_project_bible_template.md` | 已建立并经STATE-04内部Gate核验的可执行Visual Direction（默认不向用户展示确认，不等于需要用户确认的工件） | 允许 |
+| STATE-05 | Scene Breakdown | `workflows/08_scene_breakdown_workflow.md` | `templates/07_scene_design_prompt.md` | Scene / Sequence / Unit生产拆解 | 允许 |
+| STATE-06 | Detailed Shot Design | `workflows/09_shot_design_workflow.md` | `templates/08_shot_design_prompt.md` | Confirmed Professional Detailed Shot Script | 允许 |
+| STATE-07 | Clip Production | `workflows/10_clip_production_workflow.md` | `templates/20_clip_plan.md` | Confirmed Clip Production Plan | 允许 |
+| STATE-08 | Clip-based Video Prompt / Video Generation | `workflows/11_video_generation_workflow.md` | `templates/10_video_prompt.md` | 按Confirmed Clip编译并验证的最终视频执行Prompt | 允许 |
+| STATE-09 | Review | `workflows/13_review_workflow.md` | `templates/16_review_report.md` | PASS或带最小Return Route的REVISE / REBUILD | 显式调用（不属独立调用） |
+
+`独立调用`列只标识该阶段可作为独立调用范围：进入条件仍是同名`## STATE Route Boundaries`小节的Required boundary，两种形态的判据、不推进主Pipeline与写回口径由`rules/activation_rules.md`的`## Standalone Invocation｜独立调用`拥有。辅助模块的独立调用按下一节的表路由。
 
 ## STATE Route Boundaries
 

@@ -628,3 +628,25 @@ FAIL：只看`automation_mode.md`一处就算通过，使"自动模式可以少�
 PASS：三种状态标签是必备内容，缺一即FAIL；收据只做交付核对，不新增状态字段、不替代Template、不改变Completion Gate判据。`待交付`阶段不得写`State Status: COMPLETE`，下一次普通推进先续交完整工件。
 
 FAIL：把收据简化成没有状态区分的清单（无法区分"已输出"与"只说了完成"）；或让收据承担状态写回职责，使状态合同与Completion Gate出现第二套判据。
+
+
+## R64 Delivered Artifact Completeness Guard Regression
+
+### R64-A The Completeness Rule Has A Consumer On The Packaging Path
+
+输入：一次真实交付把会话里的摘要直接当工件落盘——`05_shots` 是 202 字节的一行一句清单、`04_scenes` 是两条 bullet、`06_clips` 是一句话——然后按目录结构打包。三个 Template 里"保存为文件时必须运行`scripts/validate_delivery_artifacts.py`，未通过不得交付"当时已经写着，包的目录、命名、清单也全部合规；另一份包相同，但三个源工件是完整 Template 形态。
+
+PASS：`scripts/build_asset_package.py` 在写包之前对 `04_scenes` / `05_shots` / `06_clips` 的源工件运行该 owner 的对应`--kind`检查（**导入该 owner，不复制判据**），摘要形态判`BLOCKED`并逐条报出"哪一类 / 哪个文件 / 缺什么"，**不创建包目录、不生成zip**——避免"半个包"被当成已交付；完整形态的包正常通过这一门。文件名、目录结构与`00_MANIFEST.md`正确**不构成**工件完整的证据。
+
+FAIL：规则只写在 Template 里、打包路径上没有任何消费者，靠执行者自觉运行校验器（于是摘要照样进包并被当作已交付）；或反向地把该门做成WARNING / 事后报告，让不合格的包先生成再说；或在校验器不可读时静默跳过该检查。
+
+
+## R65 Standalone Invocation Regression
+
+### R65-A A Standalone Run Never Counts As Progress
+
+输入一：用户说"只重做 STATE-06 分镜表，别推进后面的阶段"，项目当时停在 STATE-04；同一次运行给出完整分镜表、用户确认，系统把 `Current State` 写成 STATE-06、`Next Workflow` 指向 Clip Production。输入二：同一请求，但这次只登记 `Active Artifacts` 与 Revision，`Completed States`、`Current State`、`Next Workflow` 都不变，`Pending Decision` 写明"独立调用交付，未计入主Pipeline进度"。输入三：用户说"只调用 Storyboard 模块"，系统把它登记成 `Completed States` 里的一项。
+
+PASS：输入一被判为违规——独立调用不是顺序豁免，产出工件不等于走过该阶段；输入二通过，且该阶段将来被主Pipeline合法走到时按"已确认工件不重做"沿用这份工件而不重做；输入三同样违规——辅助模块不进入 `Completed States`，它最多登记为 Optional/Auxiliary Artifact。三种情形下 `scripts/validate_sd_film.py` 的 `check_standalone_invocation` 都要求"被调用单元仍满足自己的 Entry Gate"与"不计入项目进度"两句话仍在各自的 owner 里。
+
+FAIL：把独立调用当成本节通道之外的捷径——用它跳过中间 STATE、把产物当成阶段完成、把辅助模块写进主路由，或反向地因为"不计入进度"就把独立交付降级成草稿 / 临时产物 / `Not Applicable`（它是正式 Confirmed Artifact，只是不改变主Pipeline进度）。

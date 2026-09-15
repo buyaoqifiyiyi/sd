@@ -259,7 +259,8 @@
 - Registry登记的Canonical Reference文件不存在或不可读；
 - 已交付Prompt引用了**打包时点已存在且已确认**、却不在包内的文件（打包快照之后才生成的`REF-SKETCH-XX` / `REF-TAIL-XX`按`## Package Timing And Delivery`的快照边界处理，属**报告项**而非阻塞项）；
 - `08_design/`的内部参考材料出现在任何Clip的参考字段，或被登记为Canonical / Active Version；
-- 某`Applicable`类别没有真实文件，或某类别被跳过而未写`Not Applicable`依据。
+- 某`Applicable`类别没有真实文件，或某类别被跳过而未写`Not Applicable`依据；
+- `04_scenes` / `05_shots` / `06_clips`的工件未通过`scripts/validate_delivery_artifacts.py`对应`--kind`的完整性校验（摘要形态、缺区块、缺Brief子项、空单元格或编号断档）——这三个类别装的是用户确认过的**完整Template工件**，不是它们的摘要；被摘要顶替的槽位等于该类别没有真实文件。
 
 包内不写系统无法验证的话：`00_MANIFEST.md`只记录实际打包的真实文件与其校验和，不替代`asset_registry.md`的确认状态。
 
@@ -269,6 +270,8 @@
 
 `scripts/build_asset_package.py`是部分环境下的**可选加固**：它按本文件规范复制文件、生成清单、产出zip，并执行本节的自动化核验（含对已编译的Prompt文件做反向对应性检查）。
 
+- **它同时是三类交付物完整性的强制入口**：写包之前先对`04_scenes` / `05_shots` / `06_clips`的源工件运行`scripts/validate_delivery_artifacts.py`的对应`--kind`检查（**导入该owner，不复制其判据**）。任一工件是摘要或不合格即判`BLOCKED`，**不创建包目录、不生成zip**，并逐条报出是哪一类、哪个文件、缺什么。三个Template里"未通过不得交付"的规则在打包路径上由此获得确定性消费者。
+- **空类别就地声明**：某类别没有任何已认可项时，构建器在该目录写入`NOT_APPLICABLE.md`并写明依据并计入`00_MANIFEST.md`，使"本类别不适用"随目录本身可见，而不是只留在`00_INDEX.md`的警告里；`02_assets`由各`<KIND>/_MANIFEST.md`的逐类`Not Applicable`行承担同一职责。
 - 工具只做确定性文件与格式检查，不判断剧情、资产身份或Prompt质量。
 - 工具不调用任何图像或视频模型，也不向外部服务提交任何内容。
 - 没有Python、没有该脚本或换到别的运行环境，都不构成跳过本文件要求的理由；按本文件手工执行同样的分类、命名、来源与对应性判定即可。

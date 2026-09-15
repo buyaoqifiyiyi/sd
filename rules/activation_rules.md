@@ -61,6 +61,32 @@
 
 用户明确说“帮我写剧本 / 我只有一个想法 / 根据品牌需求从剧本开始”时，目标是STATE-01 Creation Brief分支；用户上传完整/粗略剧本或来源叙事文本时，目标是STATE-01 Existing Script / Material分支。两者都先服从STATE-00项目入口与状态证据，但不得要求Creation Brief用户先在Skill外完成剧本，也不得把Existing Script误路由为从零创作。
 
+## Standalone Invocation｜独立调用
+
+用户明确点名**一个模块或一个主阶段**作为本次交付范围（"只做…""只输出…""只重跑STATE-06""只调用Storyboard模块"等无歧义表达）时，进入独立调用。两种形态都不创建新STATE：
+
+| 形态 | 范围 | 进入条件 |
+|---|---|---|
+| Standalone Module Invocation | 辅助模块（Storyboard、Spatial Blocking、AUDIO / SEED-AUDIO、MUSIC / SEED-MUSIC、Poster / Cover、Sequence Planning、Editing、Series、Reference-Film Study） | 各自既有的显式触发条件；AUDIO / MUSIC 仍必须先过唯一Router |
+| Standalone Stage Invocation | 主Pipeline的单个STATE | 该STATE自己的Required boundary成立——输入是已确认事实，或用户本轮明确提供且可核验；边界判据见`workflows/workflow_map.md`的`## STATE Route Boundaries` |
+
+独立调用必须：
+
+- **不是顺序豁免**：被调用单元仍必须满足自己的Entry Gate。缺上游时停在Pending Decision，列出最小缺失清单与对应owner；不得用合成输入顶替（合成输入只属于`DRY RUN`）。
+- **不计入项目进度**：产物是正式Confirmed Artifact（带Revision，写入`Active Artifacts`与`artifact_registry.md`），但**不写入`Completed States`**、不改变`Current State`与`Next Workflow`。该阶段将来被主Pipeline合法走到时，按"已确认工件不重做"消费这份工件，而不是重做一次。写回口径由`references/project_state_contract.md`拥有。
+- **产物不降级**：输出该单元拥有的完整Template工件，经用户确认后走与主Pipeline相同的确认与登记路径；不因"独立调用"被记为草稿、临时产物或`Not Applicable`。
+- **不扩张授权**：独立调用只授权本次点名的范围——不构成`rules/progression_rules.md`的推进命令，不把`Automation Policy: FAST`的连续链资格带到未点名阶段，也不授权跳过当前Completion Gate。
+- **已完成单元的重跑**：对已Confirmed且未受影响的单元做独立调用属于重做，按Change Protocol建立Revision，不静默覆盖。
+- **交付收据**：按`rules/automation_mode.md`的`### Delivery Receipt｜交付收据`只列本次点名的单元；未点名阶段不列入，也不记为完成。
+
+与相邻概念的区别：
+
+- **不是`DRY RUN`**：独立调用产出真实工件；`DRY RUN`只验证路由与Gate可判定性，不产出交付物。
+- **不是Runtime Reload**：独立调用不要求重新解析Skill定义；命中Reload触发时先按`rules/runtime_reload.md`执行。
+- **不是Review**：独立调用不进入STATE-09，也不审核成片。
+
+可独立调用的阶段由`workflows/workflow_map.md`的`## Main Workflow Routing`表`独立调用`列标识；各模块自身的触发与禁止边界仍由各自owner文件拥有，本节不复制。
+
 ## Optional Storyboard Isolation
 
 - 只有用户明确请求Storyboard、故事板或分镜图时，才调用`workflows/10_storyboard_workflow.md`与`templates/09_storyboard_prompt.md`。

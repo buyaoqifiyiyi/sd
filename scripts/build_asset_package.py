@@ -7,6 +7,13 @@ convention, writes the manifest/index, produces a zip, and checks the
 one-to-one correspondence between a compiled video prompt's reference assets
 and the packaged files.
 
+It also refuses to build a package whose `04_scenes` / `05_shots` / `06_clips`
+artifact is a summary instead of the confirmed Template form, by running the
+checks owned by `scripts/validate_delivery_artifacts.py` (imported, never
+re-implemented). The three Templates already required that validator before
+delivery, but nothing on the packaging path ran it, so a one-line stub could be
+packaged as the 分镜表.
+
 What it does NOT do: it never invents a file, path, controlled ID or
 confirmation state; it never edits, renames or moves anything inside the
 project root; it never calls an image or video model or submits anything to an
@@ -29,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import re
 import shutil
@@ -330,6 +338,38 @@ ASSET_UNCONFIRMED_VALUES = ("no", "not confirmed", "pending", "candidate", "draf
 # table has to be confirmed before the package exists at all.
 CLIP_SOURCE_CANDIDATES = ("07_clip_production_plan.md", "10_clip_plan.md", "20_clip_plan.md")
 
+# The three delivered artifacts have a completeness owner of their own
+# (`scripts/validate_delivery_artifacts.py`, also reachable as a CLI). Until this
+# gate existed the check was only an instruction inside the three Templates, with
+# no consumer on the packaging path: a FAST project packaged a 202-byte one-line
+# list (`SHOT-001 女孩窗边按灭手机；SHOT-002 她走向楼梯；…`) as its 分镜表 while the
+# rule forbidding exactly that was already written down and passing unnoticed.
+DELIVERY_ARTIFACT_KINDS = (
+    ("04_scenes", "scene-breakdown"),
+    ("05_shots", "shot-design"),
+    ("06_clips", "clip-plan"),
+)
+DELIVERY_ARTIFACT_VALIDATOR = "validate_delivery_artifacts.py"
+
+
+def load_delivery_artifact_checks():
+    """Import the artifact checks from their owner next to this script.
+
+    Imported rather than re-implemented so the package gate and the CLI can never
+    disagree about what a complete artifact is. Returns `None` when the owner is
+    unreadable, which the caller reports as a blocking error instead of skipping
+    the check.
+    """
+    path = Path(__file__).resolve().parent / DELIVERY_ARTIFACT_VALIDATOR
+    if not path.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("validate_delivery_artifacts", path)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.CHECKS
+
 
 def confirmation_basis(text: str) -> str | None:
     """Return the traceable acceptance basis carried by a record, if any."""
@@ -568,6 +608,35 @@ class Builder:
                 return preferred_basis(text)
         return ""
 
+    def check_delivery_artifacts(self) -> None:
+        """Refuse to package a summary where a confirmed artifact belongs.
+
+        `references/asset_package.md` admits only the user-confirmed Scene
+        Breakdown / Detailed Shot Design / Clip Production Plan into
+        `04_scenes` / `05_shots` / `06_clips`, never their summaries. An artifact
+        that exists but is a summary is a blocking error here and not a warning:
+        the package is the part the user keeps, so a stub inside it is a delivered
+        defect rather than a diagnostic.
+        """
+        checks = load_delivery_artifact_checks()
+        if checks is None:
+            self.error(
+                f"交付物校验器不可读：scripts/{DELIVERY_ARTIFACT_VALIDATOR}"
+                "（没有它无法证明 04_scenes / 05_shots / 06_clips 是完整Template形态）"
+            )
+            return
+        sources = dict(SOURCE_MAP)
+        for folder, kind in DELIVERY_ARTIFACT_KINDS:
+            for name in sources.get(folder, ()):
+                source = self.project_root / name
+                if not source.is_file():
+                    continue
+                text = source.read_text(encoding="utf-8-sig", errors="replace")
+                for item in checks[kind](text):
+                    self.error(
+                        f"{folder}/{name}: 交付物不完整（--kind {kind}）：{item}"
+                    )
+
     def clip_table_state(self) -> str:
         """`06_clips` is the package's gate condition, so it gets its own verdict."""
         for name in CLIP_SOURCE_CANDIDATES:
@@ -581,6 +650,40 @@ class Builder:
             return "unconfirmed"
         self.excluded.append("06_clips: no Clip Production Plan file found")
         return "missing"
+
+    def write_not_applicable_categories(self) -> None:
+        """Say `Not Applicable` in place when a category has no confirmed item.
+
+        `references/asset_package.md` requires an empty category to carry a
+        `Not Applicable` marker and its basis; a bare empty directory reads as a
+        packaging mistake, and an index warning alone does not travel with the
+        directory the user actually opens. `02_assets` is covered by its per-kind
+        `_MANIFEST.md`, which already prints the marker per kind.
+        """
+        for folder, label in CATEGORIES:
+            if folder == "02_assets":
+                continue
+            target = self.package_root / folder
+            if target.is_dir() and any(path.is_file() for path in target.rglob("*")):
+                continue
+            target.mkdir(parents=True, exist_ok=True)
+            note = (
+                f"# {label}: Not Applicable\n\n"
+                f"`{folder}/` 内没有已认可的该项内容——本项目没有带确认记录的该类源文件，"
+                "或该类别对本项目不适用。入选、门条件与降级形态由 `references/asset_package.md` 拥有。\n"
+            )
+            path = target / "NOT_APPLICABLE.md"
+            path.write_text(note, encoding="utf-8", newline="\n")
+            self.records.append({
+                "file": path.relative_to(self.package_root).as_posix(),
+                "category": label,
+                "identifier": "Not Applicable",
+                "version": "",
+                "basis": "类别无已认可项（就地声明，不是缺件）",
+                "source": "(generated: category has no confirmed item)",
+                "bytes": str(path.stat().st_size),
+                "sha256": sha256(path),
+            })
 
     def _copy(
         self, source: Path, target: Path, category: str, identifier: str, version: str,
@@ -821,6 +924,12 @@ class Builder:
             if asset.asset_id in seen_ids:
                 self.error(f"duplicate asset ID in registry: {asset.asset_id}")
             seen_ids[asset.asset_id] = asset.title
+        self.check_delivery_artifacts()
+        if self.errors:
+            # Do not write a package whose artifacts are summaries: that is the
+            # exact delivery this gate exists to stop, not a package to repair later.
+            self.warn("package 未生成：交付物完整性门未通过（见 errors）")
+            return self._result(None)
         self.package_root.mkdir(parents=True, exist_ok=True)
         built_at = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M:%S %z")
         self.stage_assets(assets)
@@ -832,6 +941,7 @@ class Builder:
                 "(06_clips)"
             )
         self.check_correspondence()
+        self.write_not_applicable_categories()
         self.write_index_and_manifest(assets, built_at)
         archive = self.make_archive()
         if self.errors:

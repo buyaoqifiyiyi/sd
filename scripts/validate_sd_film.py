@@ -840,6 +840,47 @@ def check_fast_invariant_and_receipt(root: Path) -> list[str]:
     return errors
 
 
+# Standalone invocation is the easiest capability to over-read as "skip the
+# pipeline". Every home must keep both halves -- "an independently run unit still
+# meets its own Entry Gate" and "its output is a real artifact but is not counted
+# as progress" -- because dropping the second half from any one file turns a
+# single-stage run into a silently completed stage.
+STANDALONE_INVOCATION_MARKERS = (
+    ("rules/activation_rules.md", "## Standalone Invocation｜独立调用"),
+    ("rules/activation_rules.md", "Standalone Module Invocation"),
+    ("rules/activation_rules.md", "Standalone Stage Invocation"),
+    ("rules/activation_rules.md", "不是顺序豁免"),
+    ("rules/activation_rules.md", "**不计入项目进度**"),
+    ("rules/activation_rules.md", "**产物不降级**"),
+    ("rules/activation_rules.md", "**不扩张授权**"),
+    ("rules/activation_rules.md", "不是`DRY RUN`"),
+    ("workflows/workflow_map.md", "| 独立调用 |"),
+    ("workflows/workflow_map.md", "`## Standalone Invocation｜独立调用`"),
+    ("rules/progression_rules.md", "独立调用不是推进命令"),
+    ("references/project_state_contract.md", "### Apply STANDALONE Invocation Writeback"),
+    ("references/project_state_contract.md", "**不写入`Completed States`**"),
+    ("SKILL.md", "独立调用"),
+    ("USER_GUIDE.md", "只调用一个模块或一个阶段（独立调用）"),
+    ("USER_GUIDE.md", "但不计入项目进度"),
+)
+
+
+def check_standalone_invocation(root: Path) -> list[str]:
+    """A standalone run produces a real artifact without counting as progress.
+
+    Deterministic scope: each sentence is present in the file that owns it. The
+    check does not judge whether a given run obeyed the contract -- that stays a
+    runtime judgement, like the FAST invariant's.
+    """
+    errors: list[str] = []
+    for relative, marker in STANDALONE_INVOCATION_MARKERS:
+        if marker not in read(root, relative):
+            errors.append(
+                f"{relative} lost the standalone-invocation contract text: {marker}"
+            )
+    return errors
+
+
 NO_PROJECT_REGISTRY_SOURCES = (
     "SKILL.md",
     "config.md",
@@ -1407,6 +1448,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_reference_ownership(root))
     errors.extend(check_stage_landing_coverage(root))
     errors.extend(check_fast_invariant_and_receipt(root))
+    errors.extend(check_standalone_invocation(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))
     errors.extend(check_internal_references(root))

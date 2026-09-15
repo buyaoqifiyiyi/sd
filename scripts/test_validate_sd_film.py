@@ -2901,8 +2901,14 @@ Confirmed Status: No
             (project / "assets" / name).write_bytes(self.PIXEL)
         # Present but never confirmed: it must be reported, not packaged.
         (project / "01_script_analysis_locked.md").write_text("# locked\n", encoding="utf-8", newline="\n")
+        # A confirmed Clip表 must also be the complete Template form: the packaging
+        # gate now rejects a summary, so the fixture carries the real 6-column table.
         (project / "07_clip_production_plan.md").write_text(
-            "# Clip Plan\n\nConfirmed Status: Yes\nApproved By / Approval Basis: User Confirmed\n",
+            "# Clip表\n\n"
+            "| Clip ID | 包含镜号 | 核心画面/动作 | 时长 | 起止承接 | 资源 |\n"
+            "|---|---|---|---|---|---|\n"
+            "| CLIP-001 | SHOT-001 / SHOT-002 | 女孩离开走廊 | 8秒 | 站姿 → 出画 → 下一Clip校门 | CHAR-001 |\n\n"
+            "Confirmed Status: Yes\nApproved By / Approval Basis: User Confirmed\n",
             encoding="utf-8", newline="\n",
         )
         return project
@@ -3033,14 +3039,24 @@ Confirmed Status: No
     def test_unconfirmed_clip_table_blocks_the_package(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             project = self._project(Path(temp_dir))
+            # Complete Template form but no confirmation record: the clip gate must
+            # be what blocks, not the artifact-completeness gate.
             (project / "07_clip_production_plan.md").write_text(
-                "# Clip Plan\n\nConfirmed Status: No\n", encoding="utf-8", newline="\n"
+                "# Clip表\n\n"
+                "| Clip ID | 包含镜号 | 核心画面/动作 | 时长 | 起止承接 | 资源 |\n"
+                "|---|---|---|---|---|---|\n"
+                "| CLIP-001 | SHOT-001 / SHOT-002 | 女孩离开走廊 | 8秒 | 站姿 → 出画 → 下一Clip校门 | CHAR-001 |\n\n"
+                "Confirmed Status: No\n",
+                encoding="utf-8", newline="\n",
             )
             result = self._build(project)
             self.assertTrue(
                 any("package gate not met" in item and "06_clips" in item
                     for item in result["errors"]),
                 result["errors"],
+            )
+            self.assertFalse(
+                any("交付物不完整" in item for item in result["errors"]), result["errors"]
             )
 
     def test_prompt_correspondence_accepts_a_matching_prompt(self) -> None:
@@ -3619,12 +3635,210 @@ class R64DeliveredArtifactValidatorTests(unittest.TestCase):
             "templates/20_clip_plan.md",
             "config.md",
             "references/project_workspace.md",
+            "references/asset_package.md",
+            "workflows/11_video_generation_workflow.md",
         ):
             with self.subTest(relative=relative):
                 self.assertIn(
                     "validate_delivery_artifacts.py",
                     (ROOT / relative).read_text(encoding="utf-8-sig"),
                 )
+
+    # -- 打包路径上的消费者：规则不能只在Template里等人自觉执行 ----------------
+
+    PIXEL = bytes.fromhex(
+        "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
+        "0000000a49444154789c6360000002000100ffff03000006000557bfabd4000000"
+        "0049454e44ae426082"
+    )
+    REGISTRY = (
+        "# Asset Registry\n\n## CHAR-001 女孩\n\n"
+        "Asset ID: CHAR-001\nAsset Tier: Core\nStatus: Active\nActive Version: v001\n"
+        "Canonical References: CHAR-001｜Identity.png（用途：Identity，绑定 v001）\n"
+        "Visual Production Status: Asset Confirmed\nConfirmed Status: Yes\n"
+        "Approved By / Approval Basis: User Confirmed\n"
+    )
+
+    def _packaging_fixture(self, root: Path, artifacts: dict[str, str]) -> Path:
+        """A project root whose 04/05/06 sources are exactly `artifacts`."""
+        project = root / "PROJECT-STUB-001"
+        (project / "assets").mkdir(parents=True)
+        (project / "asset_registry.md").write_text(self.REGISTRY, encoding="utf-8", newline="\n")
+        (project / "assets" / "CHAR-001｜Identity.png").write_bytes(self.PIXEL)
+        for name, text in artifacts.items():
+            (project / name).write_text(
+                text + "\nConfirmed Status: Yes\nApproved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+        return project
+
+    def _build_package(self, project: Path) -> dict:
+        return asset_package_builder.Builder(
+            asset_package_builder.argparse.Namespace(
+                project_root=str(project),
+                registry=None,
+                project_id=None,
+                project_name="未读消息",
+                version="001",
+                output=str(project.parent / "PROJECT-STUB-001_packages" / "001"),
+                no_zip=False,
+                check_prompt=None,
+            )
+        ).run()
+
+    def test_package_builder_blocks_a_summary_artifact(self) -> None:
+        """打包路径上必须有确定性消费者，否则"未通过不得交付"只是自觉。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._packaging_fixture(Path(temp_dir), {
+                "06_detailed_shot_design.md": self.SHOT_STUB,
+                "07_clip_production_plan.md": self.CLIP_OK,
+            })
+            result = self._build_package(project)
+            self.assertTrue(
+                any("05_shots/06_detailed_shot_design.md" in item and "交付物不完整" in item
+                    for item in result["errors"]),
+                result["errors"],
+            )
+            self.assertFalse(result["ok"])
+            # 未通过就不出包：目录与zip都不产生，避免"半个包"被当成已交付。
+            self.assertIsNone(result["archive"])
+            self.assertFalse(Path(str(result["package_root"])).exists())
+
+    def test_package_builder_accepts_complete_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._packaging_fixture(Path(temp_dir), {
+                "04_scene_breakdown.md": self.SCENE_OK,
+                "06_detailed_shot_design.md": self.SHOT_OK,
+                "07_clip_production_plan.md": self.CLIP_OK,
+            })
+            result = self._build_package(project)
+            self.assertFalse(
+                [item for item in result["errors"] if "交付物不完整" in item], result["errors"]
+            )
+
+    def test_empty_category_declares_not_applicable_in_place(self) -> None:
+        """空类别必须就地写明依据：空目录会被读成打包失误。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = self._packaging_fixture(Path(temp_dir), {
+                "04_scene_breakdown.md": self.SCENE_OK,
+                "06_detailed_shot_design.md": self.SHOT_OK,
+                "07_clip_production_plan.md": self.CLIP_OK,
+            })
+            result = self._build_package(project)
+            package = Path(str(result["package_root"]))
+            for folder in ("07_references", "08_design"):
+                with self.subTest(folder=folder):
+                    note = (package / folder / "NOT_APPLICABLE.md").read_text(encoding="utf-8")
+                    self.assertIn("Not Applicable", note)
+                    self.assertIn("references/asset_package.md", note)
+            manifest = (package / "00_MANIFEST.md").read_text(encoding="utf-8")
+            self.assertIn("07_references/NOT_APPLICABLE.md", manifest)
+
+    def test_package_builder_imports_the_checks_instead_of_copying_them(self) -> None:
+        """宣称与实现同射程：打包门跑的就是owner那一份判据。"""
+        self.assertEqual(
+            sorted(asset_package_builder.load_delivery_artifact_checks()),
+            ["clip-plan", "scene-breakdown", "shot-design"],
+        )
+        self.assertEqual(
+            asset_package_builder.DELIVERY_ARTIFACT_KINDS,
+            (("04_scenes", "scene-breakdown"), ("05_shots", "shot-design"),
+             ("06_clips", "clip-plan")),
+        )
+        source = (ROOT / "scripts" / "build_asset_package.py").read_text(encoding="utf-8-sig")
+        self.assertIn("load_delivery_artifact_checks", source)
+        self.assertIn("validate_delivery_artifacts.py", source)
+
+
+class R65StandaloneInvocationTests(unittest.TestCase):
+    """独立调用：可以只跑一个模块或一个阶段，但它不计入项目进度。
+
+    这条能力最容易被读成"可以跳过主流程"，所以两份事实必须在位：被调用单元
+    仍要满足自己的 Entry Gate；产物是正式工件但**不写入`Completed States`**。
+    """
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        for relative, _marker in validator.STANDALONE_INVOCATION_MARKERS:
+            text = overrides.get(relative)
+            if text is None:
+                text = (ROOT / relative).read_text(encoding="utf-8-sig")
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8", newline="\n")
+
+    def test_fixture_passes_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_standalone_invocation(root), [])
+
+    def test_dropping_the_no_progress_half_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            target = root / "references/project_state_contract.md"
+            text = target.read_text(encoding="utf-8")
+            self.assertIn("**不写入`Completed States`**", text)
+            target.write_text(
+                text.replace("**不写入`Completed States`**", "按需写入"),
+                encoding="utf-8", newline="\n",
+            )
+            errors = validator.check_standalone_invocation(root)
+            self.assertTrue(
+                any("project_state_contract.md" in item for item in errors), errors
+            )
+
+    def test_dropping_the_entry_gate_half_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            target = root / "rules/activation_rules.md"
+            text = target.read_text(encoding="utf-8")
+            self.assertIn("不是顺序豁免", text)
+            target.write_text(
+                text.replace("不是顺序豁免", "不受前置限制"), encoding="utf-8", newline="\n"
+            )
+            errors = validator.check_standalone_invocation(root)
+            self.assertTrue(
+                any("activation_rules.md" in item for item in errors), errors
+            )
+
+    def test_routing_marks_which_units_are_independently_invocable(self) -> None:
+        route_map = (ROOT / "workflows/workflow_map.md").read_text(encoding="utf-8")
+        header = [
+            line for line in route_map.splitlines()
+            if line.startswith("| STATE | Stage |")
+        ]
+        self.assertTrue(header, "Main Workflow Routing table is missing")
+        self.assertTrue(header[0].rstrip().endswith("| 独立调用 |"), header[0])
+        for state in ("STATE-01", "STATE-03", "STATE-06", "STATE-08"):
+            with self.subTest(state=state):
+                row = next(
+                    line for line in route_map.splitlines()
+                    if line.startswith(f"| {state} |")
+                )
+                self.assertIn("允许", row, row)
+        for state, expected in (("STATE-00", "不适用"), ("STATE-09", "显式调用")):
+            with self.subTest(state=state):
+                row = next(
+                    line for line in route_map.splitlines()
+                    if line.startswith(f"| {state} |")
+                )
+                self.assertIn(expected, row, row)
+
+    def test_a_standalone_run_is_not_a_progression_command(self) -> None:
+        progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8")
+        self.assertIn("独立调用不是推进命令", progression)
+        self.assertIn("把独立调用扩张为推进", progression)
+        activation = (ROOT / "rules/activation_rules.md").read_text(encoding="utf-8")
+        self.assertIn("该STATE自己的Required boundary成立", activation)
+        self.assertIn("不得用合成输入顶替", activation)
+        self.assertIn("不是`DRY RUN`", activation)
+        self.assertIn("不进入STATE-09", activation)
+        # 产物不降级：独立调用不是草稿通道，也不是Not Applicable通道
+        self.assertIn("**产物不降级**", activation)
+        self.assertIn("`Not Applicable`", activation)
 
 
 if __name__ == "__main__":

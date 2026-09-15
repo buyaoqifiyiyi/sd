@@ -20,6 +20,8 @@
 
 ## Advance Gate
 
+先分清命令性质：**点名单个模块或单个主阶段的独立调用不是推进命令**。它只授权`rules/activation_rules.md`的`## Standalone Invocation｜独立调用`所限定的范围，不触发本节路由，也不改变主Pipeline进度。以下处理只适用于纯推进命令。
+
 收到纯推进命令时，必须依次：
 
 1. 按`rules/state_source.md`解析当前State Source。
@@ -60,6 +62,7 @@ STATE-08仍有未交付Clip时：交付轮Next Workflow保持`workflows/11_video
 - 激活Storyboard或AUDIO / SEED-AUDIO辅助模块
 - 跳过当前Completion Gate
 - 重做已接受且未受影响的Artifact
+- 把独立调用扩张为推进：点名单个模块或单个主阶段只授权该范围，不授权接续推进主Pipeline，也不把本次产物计入项目进度（见`rules/activation_rules.md`的`## Standalone Invocation｜独立调用`）
 
 若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；当前确认检查点的纯推进输入按本规则的`Confirmation Input Semantics`处理。`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、GPT Image/外部图像批次、STATE-06/07自动接受、同轮`REF-SKETCH`后Prompt编译和完整Clip之间的Prompt批量交付除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
 

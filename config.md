@@ -41,7 +41,7 @@
 - Module Contracts (production modules): `references/module_contracts_production.md`
 - Module Contracts (auxiliary modules): `references/module_contracts_auxiliary.md`
 - Module Contracts (knowledge contracts): `references/module_contracts_knowledge.md`
-- Production Delivery Package Builder (optional hardening): `scripts/build_asset_package.py`
+- Production Delivery Package Builder (optional hardening; enforces delivered-artifact completeness before writing a package): `scripts/build_asset_package.py`
 - Delivered Artifact Validator (Scene Breakdown / 分镜表 / Clip表 completeness): `scripts/validate_delivery_artifacts.py`（`--kind scene-breakdown | shot-design | clip-plan`）
 - Skill Maintenance Self-Check (per-change entry): `references/maintenance_self_check.md`
 - Skill Maintenance Self-Check Criteria: `references/maintenance_self_check_protocol.md`

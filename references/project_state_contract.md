@@ -343,6 +343,17 @@ STATE-01另有硬门槛：`Script Status`必须为`Production-Locked`。`Source 
 - 在Completed Tasks记录`Not Applicable`及理由。
 - `Last Successful Checkpoint`记录该判定。
 
+### Apply STANDALONE Invocation Writeback
+
+独立调用（判据由`rules/activation_rules.md`的`## Standalone Invocation｜独立调用`拥有）的产物按Confirmed Artifact登记，但**不计入项目进度**：
+
+- `Active Artifacts`与`artifact_registry.md`登记本次产物的路径与Revision ID；`Revision ID`照常递增。
+- **不写入`Completed States`**，不改变`Current State`、`Next Workflow`与`Return Route`——即使该阶段按主Pipeline顺序本可到达，本次运行也不算走过它。
+- `Last Successful Checkpoint`与`Last Completed Step`**不因独立调用前移**；需要留痕时写入`Completed Tasks`，写明"独立调用交付，未计入主Pipeline进度"。
+- `Pending Decision`记录两件事：本次点名的单元，以及该阶段在主Pipeline中尚未完成这一事实（上游未走完时同时列出最小缺失清单与对应owner）。
+- 该阶段将来被主Pipeline合法走进时，按"已确认工件不重做"消费这份已登记产物并作出正常的Completion Decision，不重做一次。
+- 辅助模块的独立调用在完成后的返回路由由该模块owner定义；本节不改变其返回Checkpoint语义。
+
 ### Apply REVIEW_RETURN / REVIEW_PASS Decision
 
 STATE-09必须额外记录：

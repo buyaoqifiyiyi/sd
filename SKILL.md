@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.14-r95
+Skill Version: 2026.09.15-r96
 
-Build ID: sd-film-2026.09.14-r95
+Build ID: sd-film-2026.09.15-r96
 
 ## Core
 
@@ -56,7 +56,7 @@ Build ID: sd-film-2026.09.14-r95
 
 ## Global invariants
 
-- 不跳过 STATE；后续阶段必须有可验证的前置工件与 Completion Gate 证据。
+- 不跳过 STATE；后续阶段必须有可验证的前置工件与 Completion Gate 证据。允许只调用单个模块或单个主阶段（独立调用），但它不计入项目进度——判据与写回口径见`rules/activation_rules.md`的`## Standalone Invocation｜独立调用`。
 - Writer 只拥有故事、人物、因果、Writer Beat、Setup/Payoff；Director 只拥有观众体验、表演、场面调度、空间、镜头语言。模型限制不得污染二者。
 - `REF-SKETCH` 只用无性别技术调度人偶，且只控制空间/姿态/机位关系；不得成为角色外观或 Canonical Asset。
 - A/B/C 尾帧、资产双确认、连续性、Voice opt-in 与视频 Prompt 永久无 BGM 继续由各自现有 owner 执行。
