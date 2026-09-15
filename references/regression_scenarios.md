@@ -4,15 +4,15 @@
 
 ## Regression File Index
 
-为控制单次读取成本，本回归集按编号族拆为六个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
+为控制单次读取成本，本回归集按编号族拆为七个文件。每个文件内部编号保持连续，可按编号直接定位；只读需要的那一个，不整集通读。
 
 | File | 覆盖范围 | 用途 |
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
-| `references/regression_scenarios_craft.md` | R15—R22 | Prompt 编译、表演、视觉阻断与剧本端到端 |
+| `references/regression_scenarios_craft.md` | R15—R22、R64—R65 | Prompt 编译、表演、视觉阻断与剧本端到端 |
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
-| `references/regression_scenarios_maintenance.md` | R48—R62 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖 |
+| `references/regression_scenarios_maintenance.md` | R48—R63 | 交付校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据 |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
 ## Purpose
@@ -226,23 +226,9 @@ PASS路径必须在所有阶段继续引用`CHAR-005@v002`及适用Canonical Ref
 
 ## R12 Runtime Skill Reload / Workflow Re-entry
 
-以下案例覆盖新Chat、旧对话、重复Reload、Workflow Re-entry、资源不可访问、非Reload推进和Work边界。Reload / Re-entry成功判定只服从`rules/runtime_reload.md`；这些案例不创建新的测试协议。
+Runtime Reload / Workflow Re-entry 的判定**唯一服从** `rules/runtime_reload.md`。其固定基线是 `references/recovery_guards.md` 的 `LR-R1—LR-R10`（每次正式修改都必须完整运行，并由 `scripts/test_validate_sd_film.py` 守卫）。本集合**不再重复该矩阵的正文**：原 R12-A / B / D / F / G / H / I / J / K 与其逐项重合，已退休，判定以固定基线为准。
 
-### R12-A Stale Conversation Pipeline vs Current Installed Pipeline
-
-输入：旧对话缓存声称`STATE-07`对应`Storyboard`，磁盘当前`SKILL.md`却声明`STATE-07 Clip Production`并包含更新的Skill Version / Build ID。
-
-PASS：按`rules/runtime_reload.md`重新解析当前runtime可访问资源，重新完整读取Current Skill `SKILL.md`，记录`Reload Status: RELOADED`、Loaded Source、Skill Version / Build ID与Owner Files Resolved；当前Skill Pipeline覆盖旧对话的Skill描述；再只读取状态owner、映射后Workflow与其适用依赖。
-
-FAIL：继续把Storyboard当作固定STATE-07；用历史摘要覆盖磁盘Skill；未实际重读却声称`RELOADED`；强制用户新建对话或项目。
-
-### R12-B Preserve Progress And Map To Current Workflow
-
-输入：旧项目停在标注为`Storyboard`的`STATE-07`，已有Confirmed Detailed Shot Design，无Confirmed Clip Production Plan，并有可验证Last Successful Checkpoint。
-
-PASS：按`Active Project Root/project_status.md > portable_project_status.md > 当前可验证Project Context`选择状态；如使用第三级则先规范化为Portable State；把项目映射到当前`STATE-07 Clip Production`和`10_clip_production_workflow.md`；保留Detailed Shot Design、Checkpoint、已完成States与Storyboard Optional Artifact；只继续尚未完成的Clip Production。
-
-FAIL：回退STATE-00；重做已确认Detailed Shot Design；将旧Storyboard作为STATE-08参考资产；仅按旧STATE编号硬复制而不检查Artifact / Completion Gate。
+以下两例是 LR 固定基线不覆盖的净增量：
 
 ### R12-C Preserve Production Lock And Confirmed Assets
 
@@ -252,14 +238,6 @@ PASS：Reload后上述项目事实全部保留；只更新Skill Definition和必
 
 FAIL：把Script Status降回Source Material；丢失Confirmed Assets、Active Version或Canonical References；因Skill重载重新要求用户确认已接受结果；忽略用户锁定约束。
 
-### R12-D New / Ordinary Chat Uses Current Accessible Skill Resources
-
-输入：新普通Chat中用户说“调用sd”，当前runtime能读取exposed / installed SD Film resources，但不能访问Windows本机路径。
-
-PASS：先从当前Chat runtime可访问资源重读`SKILL.md`与基础路由owner，记录真实Loaded Source并继续State Source / Workflow路由；不要求Work，不要求用户上传本机Skill目录。
-
-FAIL：仅因`C:\Users\Lenovo\.agents\skills\sd`不可读就停止、声称BLOCKED、要求切Work，或未读取当前资源便声称严格按当前Skill。
-
 ### R12-E Repeated Reload, Current Owner And Re-entry Evidence
 
 输入：Skill更新后，用户再次说“重新调用sd”；上一轮已有Reload Evidence与Project Context。
@@ -267,54 +245,6 @@ FAIL：仅因`C:\Users\Lenovo\.agents\skills\sd`不可读就停止、声称BLOCK
 PASS：生成新的Invocation Marker / Load Timestamp（运行时可提供时），重新读取当前Loaded Source，核对当前Skill Version / Build ID与Owner Files Resolved；版本、来源或owner变更时证据随之变化，未变化时也能证明本轮发生实际读取；Project Context保持；重新确认Current STATE / Workflow / Object，并从当前owner入口执行到合法Checkpoint后才报告已重进Workflow。
 
 FAIL：复用上一轮Evidence、只回显缓存版本、继续使用更新前owner、未实际读取却称已重新加载/已重进，或把Reload当作项目重置。
-
-### R12-F Current Skill Unavailable Uses Truthful Fallback
-
-输入：用户显式“重新加载SD”，但当前Skill入口或必需owner实际不可访问；存在有效Portable State或可验证Project Context。
-
-PASS：记录`Reload Status: UNAVAILABLE`、失败资源/原因和实际Fallback Source；保留项目并继续fallback合同允许的安全工作，不声称`RELOADED`、最新安装版或严格按当前Skill，不因本机路径不可见默认切Work。
-
-FAIL：用旧对话Skill摘要冒充Current Skill、隐瞒fallback、清空项目，或仅因路径不可见报告项目BLOCKED。
-
-### R12-G Plain Continue Does Not Force Full Reload
-
-输入：当前runtime已有一次成功loaded Skill Definition和有效Project Context，用户只说“下一步”。
-
-PASS：复用当前loaded definition，按需读取当前Workflow与依赖并推进一个合法Checkpoint；不全量重读Skill，不产生新的Reload Evidence，也不把“下一步”当作显式Reload。
-
-FAIL：每一步无意义重读全部Rules / Workflows / Knowledge，或伪称本轮再次RELOADED。
-
-### R12-H Work Is Only For Local File Operations
-
-输入A：普通制作请求“调用sd，继续CLIP-003”；输入B：用户要求修改本机`C:\Users\Lenovo\.agents\skills\sd`文件。
-
-PASS：A先使用当前Chat可访问Skill资源并正常路由，不默认Work；B进入具备本地文件能力的Work/Codex并遵守Skill维护流程。
-
-FAIL：A强制切Work，或B在无法直接操作本地文件的环境中伪称已经修改。
-
-### R12-I Old Prompt Does Not Bypass STATE-08 Entry
-
-输入：旧对话含CLIP-04旧Prompt、旧Skill摘要与上一次未验证结论；Project Context中已有Confirmed Clip Plan、Current Clip与已确认资产。用户说“重新调用sd，重写CLIP-04”。
-
-PASS：重新读取Current Skill并保留Project Context，重新确认STATE-08与`workflows/11_video_generation_workflow.md`，从Workflow入口依次执行Reference Selection / Routing、Final Visual Blocking Anchor Assessment、Prompt Compiler与Final QA；旧Prompt只作为待比较/修改对象，不成为Gate证据或唯一编译输入。
-
-FAIL：直接润色旧Prompt、沿用旧Skill摘要、跳过Reference Routing / Visual Blocking Gate / Final QA，或因重载清空Confirmed Project Context。
-
-### R12-J Confirmed Sketch Survives Re-entry When Blocking Is Stable
-
-输入：CLIP-04已有与当前Blocking Signature匹配的Confirmed `REF-SKETCH-04`；用户显式重新调用并只要求压缩措辞或优化Prompt，Blocking未实质变化。
-
-PASS：re-entry重新执行Final Assessment并得到`KEEP existing sketch`，复用同一草图、Revision与图片位，不重新生成草图；随后从Prompt Compiler与Final QA产生当前CLIP-04结果。
-
-FAIL：把re-entry解释为重置草图、重复生成`REF-SKETCH`、调用母版替换已确认Anchor，或跳过Assessment直接假设旧图有效。
-
-### R12-K Material Blocking Change Forces Reassessment
-
-输入：CLIP-04原为双人并排共坐，已有Confirmed `REF-SKETCH-04`；用户显式重新调用并把Blocking改为一人起身走到另一人面前，改变Topology、Position与Movement Path。
-
-PASS：保留旧草图Revision追溯，但re-entry重新执行Visual Blocking Anchor Reassessment并只得到`REPLACE / RETIRE / CREATE`中的适用结果；Final=`REQUIRED`且新Anchor尚未确认时停在草图Checkpoint，不沿用旧图或直接输出Prompt。
-
-FAIL：因旧图已存在而`KEEP`、只改Prompt文字掩盖Blocking冲突、跳过草图验证，或删除旧Revision追溯。
 
 ---
 
@@ -375,7 +305,6 @@ PASS：逐项执行“这是不是一张实际会被投喂/引用的视觉资产
 FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片位；删除或重写1—5号视觉条目；把约束迁移到新字段；虚构`PROP-BENCH-01`或其图片路径；把待补正式Canonical道具图当作占位绕过STATE-03。
 
 ---
-
 ## Deterministic Expectations
 
 - Skill、Registry、Project、Asset、Artifact、Execution、Sequence、Clip、Poster、STATE-08和Review Validator通过合法样例。
@@ -385,7 +314,7 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R09-C/E/P均验证`Prompt Draft → Prompt Confirmed → Image Generated → Asset Confirmed`，且Prompt确认前不出图、图片确认前不Active/Canonical。
 - R10验证Canonical Character Appearance And Form Lock从Asset、Visual Development、Storyboard/Poster、Shot Design、Clip、Prompt Generation、Final Video到Review的全阶段继承，并覆盖非人角色禁止未授权拟人化。
 - R11-A至R11-E验证条件性整合阈值、9张加必需尾帧的真实计数、12张自动压缩到≤9、实际资产存在性和多核心角色独立图硬门槛。
-- R12-A至R12-K验证旧对话缓存不能覆盖Latest Successfully Loaded Current Skill Definition、旧STATE按当前Artifact / Completion Gate映射、Project Context在Reload后不丢失、显式重新调用会从当前Workflow入口重跑而非润色旧Prompt、Confirmed草图按Blocking Signature复用或重评，以及普通Chat优先当前可访问Skill resources、重复Reload产生本轮证据、资源不可访问时诚实报告fallback、“下一步”不强制全量重载、Work只用于本地文件操作。
+- Runtime Skill Reload / Workflow Re-entry 的固定基线由 `references/recovery_guards.md` 的 `LR-R1—LR-R10` 承担（每次正式修改必须完整运行）；本集合只保留 LR 未覆盖的 R12-C（Production Lock 与 Confirmed Assets 在重载后保全）与 R12-E（重复 Reload 的本轮证据）。
 - R13-A至R13-C验证尾帧需求先于资产可用性判定、严格承接主动请求截图与草案/最终版边界，以及非严格承接不强制截图。
 - R14验证纯文字“板凳参考说明”从参考资产删除并迁移到既有空间/道具/反向字段，1—5号视觉资产保持不动，真实双人钢琴凳图只以正式资产ID引用。
 - R15-A至R15-L验证文学意图可执行转译、工程级数据按视觉价值压缩、Canonical资产释放Prompt注意力、导演/电影级标签首次出现时的项目特定展开、已锁定项目风格的后续Clip delta压缩、动作复杂Clip中的风格让位、正文正向化、通用负向项末尾唯一收束、局部物理连续性约束保留、CLIP-03字段唯一归属与事故历史式反向段压缩，以及本次调整不破坏Voice opt-in；最终Template结构保持不变。
@@ -401,7 +330,7 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R35-A至R35-C验证用户“已有资产”属于可用性声明而非提交义务：STATE-02照常输出完整清单并标注`已有（用户声明）` / `待制作`，不索取、不催交、不逐项盘问、不写BLOCKED；声明不构成Existing File Check、Candidate / Canonical Reference或Active Version；缺失由用户主动说明或由清单承载。
 - R24-A至R24-K验证Screenwriter Module持续维护人物/故事因果、Scene Value、Writer Beat、Subtext、Setup-Payoff、Information Architecture与Arc，经Writer → Director Handoff传递到Shot / Clip / Prompt / Editing / 三层Review；Genre不被固定公式全局化，Writer不拥有Camera，双入口、Runtime / Reload、Voice / Music、Accepted Take Canon、Shot-State Memory与STATE-08 Schema不回归。
 - R27-A至R27-E验证无动机机位跳变与连续长镜头中途换轴失败、耳镜反光现实→玉境Match Cut可通过、有动机剪辑缺切点或切后稳定重建失败，以及容量不足返回STATE-07拆分Clip；STATE-08固定字段不变。
-- R48-A至R48-L验证交付物校验器与Skill维护校验器职责互不替代、未授权音色字段被拒、Review台账逐镜逐边界全覆盖且不得留空、`画幅：`分镜总数声明与实际数量一致、大全景尺度可由现实关系复算、人物必须响应环境光区、参考代际劣化按顺序处理且不放开线稿/Storyboard禁令、经验必须带P/O/C分类与触发条件、步骤、失效信号、例外、反例且耦合来源不得升级为P，以及三条内容形态断言：包内文件名的扩展名不得进入Canonical参考引用名（同一Asset ID多图必须补View Code或Purpose）、`主风格`不得保留通用负向清单（`禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得`）而Aesthetic Decision Lock的"排除"内容不得被误伤、三段以上的时间线不得是同一语汇的通篇小幅缓动（无静止/停驻/反向/幅度变化时给出非阻断提示）；STATE-08固定Schema、R11预算硬门槛与Voice opt-in保持不变。
+- R48-A至R48-P验证交付物校验器与Skill维护校验器职责互不替代、未授权音色字段被拒、Review台账逐镜逐边界全覆盖且不得留空、`画幅：`分镜总数声明与实际数量一致、大全景尺度可由现实关系复算、人物必须响应环境光区、参考代际劣化按顺序处理且不放开线稿/Storyboard禁令、经验必须带P/O/C分类与触发条件、步骤、失效信号、例外、反例且耦合来源不得升级为P，六条内容形态与覆盖断言：包内文件名的扩展名不得进入Canonical参考引用名（同一Asset ID多图必须补View Code或Purpose）、`主风格`不得保留通用负向清单（`禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得`）而Aesthetic Decision Lock的"排除"内容不得被误伤、三段以上的时间线不得是同一语汇的通篇小幅缓动（无静止/停驻/反向/幅度变化时给出非阻断提示）、STATE-05/06/07用户可见交付物（Scene Breakdown / 默认5列分镜表 / 默认6列Clip表）不得以bullet或一行一句的摘要形态提交、含切场或跨空间却只列母参考`_ENV-01`时给出非阻断提示（路由覆盖不变量的可见性）、出现窗/玻璃/镜面或反射平面却既无侧向反向View又无"人物在哪一侧/反射是否表现"文字锁时给出非阻断提示（主体穿透固定结构与反射副本的可见性），以及类别清单一行一个文件且带`资产名`与`View角色`（环境四视角不得合并，文件名不追溯改名）；STATE-08固定Schema、R11预算硬门槛与Voice opt-in保持不变。
 - R49-A至R49-C验证STATE-04 Aesthetic Decision Lock在四个维度各要求排他性选择与被放弃的选项、无取舍的默认做法不构成决定、决定沿STATE-06与STATE-08继承并由Prompt Scorecard Hard Gate审计；四项决定不新增Project Bible竞争区域、平行Schema或STATE-08字段，逐镜参数仍由STATE-06拥有。
 - R50-A至R50-C验证STATE-04 Aesthetic Decision Lock经STATE-08 Required Resources与Global Projection Matrix进入Prompt编译、四项决定落到既有`主风格`／`画面描述`／`环境一致性`字段、且不被Delta压缩抹除；建立轮的`主风格`必须写足`### 主风格 Minimum Content Rule`四块，不得压成一句风格句；不新增任何Prompt字段。
 - R51-A至R51-D验证Skill可达性纪律：越过复核线不阻断提交但必须给出读取入口或拆分、超Ceiling、僵尸索引条目、指向不存在文件的条目仍使Validator失败；`SKILL.md`保持在Entry预算内；体量本身不构成新增文件的理由，也不与`rules/resource_loading.md`的运行时读取规则重叠。
@@ -417,4 +346,5 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R60-A至R60-D验证「好看」这一环不再悬空：STATE-04在Aesthetic Decision Lock锁定之前允许一次可选Look Frame试片（`templates/25_look_frame_prompt.md`），试片帧属非生产视觉材料、不进资产链、与REF-SKETCH严格分家、判断必须由用户给出；`prompt_scorecard.md`的两项审美维度改按可见取舍评分（视觉重心、明暗层级、色彩主从、取舍可见、不平均）并要求可见证据，权重不变，且仍诚实声明不能替代人工审美判断。
 - R61-A至R61-D验证审美判据收敛到`knowledge/quality/aesthetic_judgement.md`单一owner、STATE-08与STATE-09两处只引用不复制；STATE-09 Review新增`Aesthetic Judgement`判定并可返回STATE-04重做选错的维度（不新增Failure Class）；系统只输出观察、审美结论必须由用户给出，缺失时记`PENDING_USER`且不得判PASS；`Look Frame`开出唯一例外，允许Review把它作为对照参照读取而不成为生成输入。
 - R62-A至R62-B验证每个主STATE（STATE-00至STATE-07）在提示词投影矩阵里都有具名落点行：紧凑写法`STATE-00/01/04`按run展开、矩阵行数有下限、Writer / Director / Scene三行落点仍在，删行不能买覆盖；新增阶段产物必须在同一次变更内补上"来源 → 固定字段 → 必须保留的语义"一行，只能引用既有Gate / Pass，不得新增Prompt字段或把内部ID / `Pending`写进交付；确定性射程由`check_stage_landing_coverage`承担，落点语义仍须人工判定。
+- R63-A至R63-B验证自动模式只自动确认：不变量（不减少阶段 / 检查 / 交付物）与交付收据（阶段 → 工件 → `本轮完整输出` / `已在Accepted Artifact` / `待交付`）必须同时留在`automation_mode` / `05_output_rules` / 状态合同 / 模块合同 / `USER_GUIDE`五处，任一丢失即FAIL；收据不得被简化成没有状态区分的清单，也不得承担状态写回职责或长成第二套判据；确定性射程由`check_fast_invariant_and_receipt`承担，"某次交付是否照做"仍由R32-D / R32-E与人工判定。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

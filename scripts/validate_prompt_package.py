@@ -18,11 +18,14 @@ Ownership:
     suffix when one Asset ID carries several images), and the `主风格` field
     carries no generic negative list (`禁止` / `不要` / `避免` / `不做` / `拒绝` /
     `不得`). It also WARNs -- without blocking -- when `主风格` names none of the
-    four Aesthetic Decision Lock dimensions, and when a Seedance 2.5 time line of
+    four Aesthetic Decision Lock dimensions, when a Seedance 2.5 time line of
     three or more stages is one uniform small/smooth drift (a single camera plan
-    wearing several stage labels), because both stay semantic judgements. It does
-    not judge artistic quality, and passing it is not a substitute for the semantic
-    Output QA described by each Template.
+    wearing several stage labels), and when a cutting or multi-space Clip cites
+    only the master environment view (`_ENV-01`), and when a Clip plays along a
+    glazed or reflective plane with neither a covering view nor a text lock on
+    which side the subject is on, because all of these stay semantic judgements.
+    It does not judge artistic quality, and passing it is not a substitute for the
+    semantic Output QA described by each Template.
 """
 from __future__ import annotations
 
@@ -384,6 +387,130 @@ def check_camera_contrast(lines: list[str], model: str) -> list[str]:
     ]
 
 
+def check_environment_view_coverage(lines: list[str], model: str) -> list[str]:
+    """Warn when a multi-space or cutting Clip cites only the master ENV view.
+
+    Measured case: the package held four views per space, the prompt cited
+    `ENV-00X｜…_ENV-01` only, and the generated clip broke wardrobe/space
+    continuity ("参考图不够导致穿帮" -- the图 existed, they were simply not routed).
+    The routing rule that owns this is `rules/02_asset_rules.md`'s 路由覆盖不变量;
+    this stays a WARNING because one master view is legitimate for a simple,
+    axis-stable Clip, and the script cannot judge whether the risk exists.
+    """
+    field = REFERENCE_FIELD_BY_MODEL[model]
+    position = marker_positions(lines, [field]).get(field, -1)
+    if position < 0:
+        return []
+    stop_names = [name for name in GLOBALS_20 + GLOBALS_25 + GLOBALS_H3 if name != field]
+    block = section_text(lines, position, stop_names)
+    env_views: dict[str, set[str]] = {}
+    for raw in block.splitlines():
+        match = ASSET_ENTRY_RE.match(raw.strip())
+        if not match:
+            continue
+        asset_id, remainder = match.group(1), match.group(2)
+        if not asset_id.startswith("ENV-"):
+            continue
+        view_match = re.search(r"_(ENV-\d{2}|EXT)\b", remainder)
+        if view_match:
+            env_views.setdefault(asset_id, set()).add(view_match.group(1).upper())
+    if not env_views:
+        return []
+    stages = stage_camera_lines(lines)
+    cuts = any(
+        marker in "\n".join(stages) for marker in ("切到", "切至", "切换", "转场", "切场")
+    )
+    if not cuts and len(env_views) < 2:
+        return []
+    incomplete = [
+        asset_id
+        for asset_id, views in env_views.items()
+        if views and not (views - {"ENV-01"})
+    ]
+    if not incomplete:
+        return []
+    return [
+        "环境参考只出现母参考（`_ENV-01`），没有反向或侧向视图："
+        f"{'、'.join(sorted(incomplete))}；本Clip存在切场或跨两个空间，"
+        "反向背景、门窗朝向与轴线仅靠文字难以锁死——请按`rules/02_asset_rules.md`的路由覆盖不变量"
+        "确认是否需要补 `_ENV-02` / `_ENV-03`。本条只提示，不阻断交付"
+    ]
+
+
+PLANE_TOKENS = ("玻璃", "窗", "镜面", "镜", "幕墙", "栏杆", "反光", "倒影", "反射", "映出")
+# `内侧`/`外侧` only count when the plane word sits right in front of them:
+# `校门内侧` is a place name, `窗内侧` is a side lock.
+PLANE_ADJACENT_SIDE_RE = re.compile(r"(?:玻璃|窗|镜面|幕墙|栏杆|门框|墙)(?:的)?(?:内|外)侧")
+PLANE_LOCK_MARKERS = (
+    "哪一侧", "同一侧", "不穿越", "不穿过", "只作前景遮挡", "前景遮挡",
+    "正常镜像", "不表现反射", "不做反射", "无反射",
+)
+PLANE_LOCK_WINDOW = 24
+
+
+def has_plane_lock(text: str) -> bool:
+    """True when a plane token carries a side or reflection lock."""
+    if PLANE_ADJACENT_SIDE_RE.search(text):
+        return True
+    for marker in PLANE_LOCK_MARKERS:
+        start = 0
+        while True:
+            index = text.find(marker, start)
+            if index == -1:
+                break
+            window = text[
+                max(0, index - PLANE_LOCK_WINDOW): index + len(marker) + PLANE_LOCK_WINDOW
+            ]
+            if any(token in window for token in PLANE_TOKENS):
+                return True
+            start = index + 1
+    return False
+
+
+def check_plane_and_reflection_lock(lines: list[str], model: str) -> list[str]:
+    """Warn when a Clip plays along a glazed/reflective plane without a lock.
+
+    Measured case: a corridor Clip had the actor walking beside a window band, the
+    reference set cited only the master view, and the text never said which side of
+    the glass she was on or whether reflections were intended. The result put her
+    body on both sides of the window plane -- a sleeve and a body silhouette visible
+    inside the glass, i.e. penetrating a fixed structure with a duplicate copy.
+    `rules/02_asset_rules.md` owns the routing/lock rule; this stays a WARNING
+    because a plane may legitimately need no lock (it is pure background).
+    """
+    text = "\n".join(lines)
+    if not any(token in text for token in PLANE_TOKENS):
+        return []
+    if has_plane_lock(text):
+        return []
+    field = REFERENCE_FIELD_BY_MODEL[model]
+    position = marker_positions(lines, [field]).get(field, -1)
+    if position < 0:
+        return []
+    stop_names = [name for name in GLOBALS_20 + GLOBALS_25 + GLOBALS_H3 if name != field]
+    block = section_text(lines, position, stop_names)
+    env_views: dict[str, set[str]] = {}
+    for raw in block.splitlines():
+        match = ASSET_ENTRY_RE.match(raw.strip())
+        if not match or not match.group(1).startswith("ENV-"):
+            continue
+        view_match = re.search(r"_(ENV-\d{2}|EXT)\b", match.group(2))
+        if view_match:
+            env_views.setdefault(match.group(1), set()).add(view_match.group(1).upper())
+    master_only = [
+        asset_id for asset_id, views in env_views.items() if views and not (views - {"ENV-01"})
+    ]
+    if not env_views or not master_only:
+        return []
+    return [
+        "本Clip出现窗 / 玻璃 / 镜面或反射平面，环境参考只列母参考（"
+        + "、".join(sorted(master_only))
+        + "），且文字里没有锁定“人物在结构的哪一侧”与反射策略；"
+        "固定结构穿透与反射副本是常见失败——请按`rules/02_asset_rules.md`的固定平面与反射不变量"
+        "补反向 / 侧向View，或在相应字段写明平面关系与反射是否表现。本条只提示，不阻断交付"
+    ]
+
+
 def block_names(lines: list[str], start: int, stop: int) -> list[str]:
     chunk = [line.strip() for line in lines[start: stop]]
     chunk = [line for line in chunk if line and line != "……"]
@@ -501,6 +628,8 @@ def validate(text: str, model: str, allow_voice_field: bool) -> tuple[list[str],
     errors.extend(check_style_field_negatives(line_list, model))
     warnings.extend(check_style_lock_labels(line_list, model))
     warnings.extend(check_camera_contrast(line_list, model))
+    warnings.extend(check_environment_view_coverage(line_list, model))
+    warnings.extend(check_plane_and_reflection_lock(line_list, model))
 
     if terminal_index < 0:
         errors.append(f"缺少终段字段: {terminal}：")

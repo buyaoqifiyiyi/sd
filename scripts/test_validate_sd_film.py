@@ -20,6 +20,13 @@ package_validator = importlib.util.module_from_spec(PKG_SPEC)
 assert PKG_SPEC and PKG_SPEC.loader
 PKG_SPEC.loader.exec_module(package_validator)
 
+DELIVERY_SPEC = importlib.util.spec_from_file_location(
+    "delivery_validator", ROOT / "scripts" / "validate_delivery_artifacts.py"
+)
+delivery_validator = importlib.util.module_from_spec(DELIVERY_SPEC)
+assert DELIVERY_SPEC and DELIVERY_SPEC.loader
+DELIVERY_SPEC.loader.exec_module(delivery_validator)
+
 MODULE_CONTRACT_FILES = (
     "references/module_contracts.md",
     "references/module_contracts_production.md",
@@ -918,6 +925,62 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         errors, warnings = package_validator.validate(two_stage, "seedance-2.5", False)
         self.assertEqual(errors, [])
         self.assertEqual([item for item in warnings if "运镜语汇同质" in item], [])
+
+    def test_cutting_clip_with_only_master_env_view_warns(self) -> None:
+        """包里四张View、Prompt只列Master——'参考图不够导致穿帮'的真实成因。"""
+        refs = (
+            "- @图片3：ENV-001｜教学楼走廊_ENV-01；用途：走廊空间结构\n"
+            "- @图片4：ENV-002｜校门与操场_ENV-01；用途：校门空间结构\n"
+        )
+        cutting = self.build_25(
+            refs=refs,
+            moves=(
+                "摄影机固定观察",
+                "跟随她走过门框后停住",
+                "由湿地倒影自然切到校门内侧后停住",
+            ),
+        )
+        errors, warnings = package_validator.validate(cutting, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("环境参考只出现母参考" in item for item in warnings))
+
+        stable = self.build_25(
+            refs="- @图片3：ENV-001｜教学楼走廊_ENV-01；用途：走廊空间结构\n",
+            moves=("摄影机固定观察", "跟随她走过门框后停住", "缓慢靠近到她的手"),
+        )
+        errors, warnings = package_validator.validate(stable, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertEqual([item for item in warnings if "环境参考只出现母参考" in item], [])
+
+    def test_window_plane_without_a_lock_warns(self) -> None:
+        """窗边行走只列母参考、文字没写她在玻璃哪一侧 → 穿墙/反射副本的成因。"""
+        refs = "- @图片3：ENV-001｜教学楼走廊_ENV-01；用途：走廊空间结构\n"
+        unlocked = self.build_25(
+            refs=refs,
+            moves=("她站在雨窗边看手机", "摄影机跟随她走过门框后停住", "缓慢靠近到她的手"),
+        )
+        errors, warnings = package_validator.validate(unlocked, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("反射平面" in item and "哪一侧" in item for item in warnings))
+
+        locked = self.build_25(
+            refs=refs,
+            moves=("她站在雨窗内侧看手机", "摄影机跟随她走过门框后停住", "缓慢靠近到她的手"),
+        )
+        errors, warnings = package_validator.validate(locked, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertEqual([item for item in warnings if "哪一侧" in item], [])
+
+        covered = self.build_25(
+            refs=(
+                "- @图片3：ENV-001｜教学楼走廊_ENV-01；用途：走廊空间结构\n"
+                "- @图片4：ENV-001｜教学楼走廊_ENV-03；用途：窗平面与走廊纵深校验\n"
+            ),
+            moves=("她站在雨窗边看手机", "摄影机跟随她走过门框后停住", "缓慢靠近到她的手"),
+        )
+        errors, warnings = package_validator.validate(covered, "seedance-2.5", False)
+        self.assertEqual(errors, [])
+        self.assertEqual([item for item in warnings if "哪一侧" in item], [])
 
     def test_package_validator_is_registered_and_documented(self) -> None:
         required = ROOT / "scripts" / "validate_prompt_package.py"
@@ -2858,6 +2921,37 @@ Confirmed Status: No
             )
         ).run()
 
+    def test_category_manifest_is_one_readable_row_per_file(self) -> None:
+        """环境四视角必须四行，并带资产名与View角色——"对应不上"的修复口径。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "PROJECT-DEMO-002"
+            (project / "assets").mkdir(parents=True)
+            references = "、".join(
+                f"ENV-001｜Layout_ENV-0{index}.png（用途：Layout，绑定 v002）"
+                for index in (1, 2, 3, 4)
+            )
+            (project / "asset_registry.md").write_text(
+                "# Asset Registry\n\n## ENV-001 教学楼走廊\n\n"
+                "Asset ID: ENV-001\nAsset Tier: Core\nStatus: Active\nActive Version: v002\n"
+                f"Canonical References: {references}\n"
+                "Visual Production Status: Asset Confirmed\nConfirmed Status: Yes\n"
+                "Approved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+            for index in (1, 2, 3, 4):
+                (project / "assets" / f"ENV-001｜Layout_ENV-0{index}.png").write_bytes(self.PIXEL)
+            result = self._build(project)
+            manifest = (
+                Path(str(result["package_root"])) / "02_assets/ENV/_MANIFEST.md"
+            ).read_text(encoding="utf-8")
+            self.assertIn("| 文件名 | Asset ID | 资产名 | Purpose | View角色 |", manifest)
+            for marker in ("Master Establishing", "Reverse", "Lateral", "Top-Down", "教学楼走廊"):
+                with self.subTest(marker=marker):
+                    self.assertIn(marker, manifest)
+            self.assertIn("ENV-001｜教学楼走廊_ENV-03", manifest)
+            self.assertEqual(manifest.count("| ENV-001｜Layout_"), 4)
+
     def test_builder_stages_every_confirmed_asset_under_its_locked_name(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             project = self._project(Path(temp_dir))
@@ -3321,6 +3415,216 @@ class R62StageLandingCoverageTests(unittest.TestCase):
         self.assertIn(dimension, criteria)
         self.assertIn("check_stage_landing_coverage", card)
         self.assertIn("射程必须说清", criteria)
+
+
+class R63FastInvariantAndReceiptTests(unittest.TestCase):
+    """自动模式只自动确认：不变量与交付收据必须留在各自的 owner 里。
+
+    实测违规是一个 FAST 项目把 STATE-05/06/07 压成一句话就直接给 Prompt。
+    规则当时已经禁止"以摘要代替"，缺的是把不变量写成一句硬话、并让缺件在交付时
+    可见；两者同时散在五个文件里，所以它需要确定性守卫。
+    """
+
+    DIMENSION = "FAST Invariant And Delivery Receipt Check"
+
+    def _fixture(self, root: Path, overrides: dict[str, str] | None = None) -> None:
+        overrides = overrides or {}
+        files: dict[str, list[str]] = {}
+        for relative, marker in validator.FAST_INVARIANT_MARKERS:
+            files.setdefault(relative, []).append(marker)
+        for relative, markers in files.items():
+            text = overrides.get(relative, "\n".join(markers) + "\n")
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+    def test_delivery_receipt_must_keep_the_discipline_self_check_line(self) -> None:
+        """收据漏掉 Prompt纪律自检，六条纪律的漏做就重新变得不可见。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(
+                root,
+                {
+                    "rules/automation_mode.md": (
+                        "### Delivery Receipt｜交付收据\n`本轮完整输出`\n"
+                        "`已在Accepted Artifact`\n`待交付`\n收据只做交付核对\n"
+                    )
+                },
+            )
+            errors = validator.check_fast_invariant_and_receipt(root)
+            self.assertTrue(
+                any("Prompt纪律自检" in item for item in errors),
+                errors,
+            )
+
+    def test_active_skill_keeps_the_invariant_in_every_home(self) -> None:
+        self.assertEqual(validator.check_fast_invariant_and_receipt(ROOT), [])
+
+    def test_fixture_is_clean_before_mutating(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root)
+            self.assertEqual(validator.check_fast_invariant_and_receipt(root), [])
+
+    def test_dropping_the_invariant_from_one_home_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(root, {"rules/05_output_rules.md": "unrelated\n"})
+            errors = validator.check_fast_invariant_and_receipt(root)
+            self.assertTrue(
+                any("rules/05_output_rules.md lost the FAST auto-confirm" in item for item in errors)
+            )
+
+    def test_every_receipt_state_label_is_required(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(
+                root,
+                {
+                    "rules/automation_mode.md": (
+                        "### Delivery Receipt｜交付收据\n`本轮完整输出`\n`待交付`\n"
+                    )
+                },
+            )
+            errors = validator.check_fast_invariant_and_receipt(root)
+            self.assertTrue(any("`已在Accepted Artifact`" in item for item in errors))
+
+    def test_delivery_receipt_must_keep_the_production_package_line(self) -> None:
+        """收据漏掉生产交付包，正是用户第二次拿不到包的原因。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._fixture(
+                root,
+                {
+                    "rules/automation_mode.md": (
+                        "### Delivery Receipt｜交付收据\n`本轮完整输出`\n"
+                        "`已在Accepted Artifact`\n`待交付`\n收据只做交付核对\n"
+                    )
+                },
+            )
+            errors = validator.check_fast_invariant_and_receipt(root)
+            self.assertTrue(
+                any("生产交付包必须单列一行" in item for item in errors),
+                errors,
+            )
+
+    def test_dimension_is_wired_into_the_maintenance_layer(self) -> None:
+        card = (ROOT / "references/maintenance_self_check.md").read_text(encoding="utf-8-sig")
+        criteria = (ROOT / "references/maintenance_self_check_protocol.md").read_text(
+            encoding="utf-8-sig"
+        )
+        self.assertIn(self.DIMENSION, validator.SELF_CHECK_DIMENSIONS)
+        self.assertIn(self.DIMENSION, card)
+        self.assertIn(self.DIMENSION, criteria)
+        self.assertIn("check_fast_invariant_and_receipt", card)
+        self.assertIn("射程必须说清", criteria)
+
+
+class R64DeliveredArtifactValidatorTests(unittest.TestCase):
+    """STATE-05/06/07的用户可见交付物也要有完整性守门人。
+
+    实测违规：一个FAST项目把Scene Breakdown交成两条bullet、把分镜表交成
+    "SHOT-001 女孩窗边按灭手机；SHOT-002 她走向楼梯"这样一行一句的清单。
+    两者都是Template的摘要，不是Template。
+    """
+
+    SCENE_STUB = (
+        "# Scene Breakdown\n\n"
+        "- SCENE-001：雨天教学楼走廊，女孩离开；CHAR-001 / ENV-001。\n"
+        "- SCENE-002：雨天校门与操场，男孩收到未读通知；CHAR-002 / ENV-002。\n"
+    )
+    SHOT_STUB = (
+        "# Detailed Shot Design\n\n"
+        "SHOT-001 女孩窗边按灭手机；SHOT-002 她走向楼梯；SHOT-003 空走廊。\n"
+    )
+    SCENE_OK = (
+        "# Scene Breakdown\n\n## SCENE-001\n\n## Scene Directing Brief\n"
+        "Dramatic / Relationship / Information / Performance Beat Map：女孩决定离开。\n"
+        "Audience Start → End State：从等待转为确认无人回应。\n"
+        "Dramatic Geography / Spatial Evolution：走廊推进到楼梯口。\n"
+        "Reveal / Withhold Timing：先给空走廊，后给手机黑屏。\n"
+        "Scene Camera Strategy：观察，不揭示男孩。\n"
+        "Rhythm Intent：慢起，一次停顿，收在空镜。\n\n"
+        "## Scene Visual Brief\n雨天走廊，冷灰。\n\n"
+        "## Spatial Design\n走廊东西向，窗在左。\n\n"
+        "## Lighting Design\n天光为主。\n\n"
+        "## Color Design\n冷灰蓝为主。\n\n"
+        "## Asset Usage\nCHAR-001 / ENV-001。\n\n"
+        "## Source Traceability\nSource Script Label → SCENE映射：段落A → SCENE-001。\n\n"
+        "## Sequence Planning Decision\nRequired / Not Applicable：Not Applicable。\n理由：单场。\n"
+    )
+    SHOT_OK = (
+        "# 分镜表\n\n"
+        "| 镜号 | 画面与动作 | 画面表达 | 连续性 | 资源 |\n|---|---|---|---|---|\n"
+        "| SHOT-001 | 女孩在窗边按灭手机 | 中近景，窗框切分 | 起始：站姿；结束：转身；承接：走向楼梯 | CHAR-001 |\n"
+        "| SHOT-002 | 她走向楼梯 | 全景，纵深 | 起始：转身；结束：出画；承接：空走廊 | CHAR-001 |\n"
+    )
+    CLIP_OK = (
+        "# Clip表\n\n"
+        "| Clip ID | 包含镜号 | 核心画面/动作 | 时长 | 起止承接 | 资源 |\n|---|---|---|---|---|---|\n"
+        "| CLIP-001 | SHOT-001 / SHOT-002 | 女孩离开走廊 | 8秒 | 站姿 → 出画 → 下一Clip校门 | CHAR-001 |\n"
+    )
+
+    def test_conformant_artifacts_pass(self) -> None:
+        self.assertEqual(delivery_validator.check_scene_breakdown(self.SCENE_OK), [])
+        self.assertEqual(delivery_validator.check_shot_design(self.SHOT_OK), [])
+        self.assertEqual(delivery_validator.check_clip_plan(self.CLIP_OK), [])
+
+    def test_summary_stubs_are_rejected(self) -> None:
+        scene_errors = delivery_validator.check_scene_breakdown(self.SCENE_STUB)
+        self.assertTrue(any("缺少Template区块" in item for item in scene_errors))
+        self.assertTrue(any("Scene Directing Brief子项" in item for item in scene_errors))
+
+        shot_errors = delivery_validator.check_shot_design(self.SHOT_STUB)
+        self.assertTrue(any("缺少分镜表" in item for item in shot_errors))
+
+        clip_errors = delivery_validator.check_clip_plan("# Clip表\n\n已确认CLIP-001，规划完成。\n")
+        self.assertTrue(any("缺少Clip表" in item for item in clip_errors))
+
+    def test_empty_cell_and_shot_gap_are_rejected(self) -> None:
+        empty = self.SHOT_OK.replace("| 全景，纵深 |", "|  |")
+        self.assertTrue(
+            any("为空" in item for item in delivery_validator.check_shot_design(empty))
+        )
+        gap = self.SHOT_OK.replace("SHOT-002", "SHOT-003")
+        self.assertTrue(
+            any("编号必须从001连续" in item for item in delivery_validator.check_shot_design(gap))
+        )
+
+    def test_full_professional_record_is_accepted(self) -> None:
+        header = "| " + " | ".join(delivery_validator.SHOT_COLUMNS_FULL) + " |"
+        row = "| SHOT-001 | " + " | ".join(
+            ["内容"] * (len(delivery_validator.SHOT_COLUMNS_FULL) - 1)
+        ) + " |"
+        text = "# 完整版专业分镜\n\n" + header + "\n" + "|---|" * len(
+            delivery_validator.SHOT_COLUMNS_FULL
+        ) + "\n" + row + "\n"
+        self.assertEqual(delivery_validator.check_shot_design(text), [])
+
+    def test_clip_row_must_reference_a_formal_shot(self) -> None:
+        broken = self.CLIP_OK.replace("SHOT-001 / SHOT-002", "第一个镜头")
+        self.assertTrue(
+            any("未引用任何正式SHOT-xxx" in item for item in delivery_validator.check_clip_plan(broken))
+        )
+
+    def test_validator_is_registered_and_declares_its_scope(self) -> None:
+        source = (ROOT / "scripts" / "validate_delivery_artifacts.py").read_text(encoding="utf-8-sig")
+        self.assertIn("does not judge", source)
+        self.assertIn("templates/07_scene_design_prompt.md", source)
+        self.assertIn("templates/08_shot_design_prompt.md", source)
+        self.assertIn("templates/20_clip_plan.md", source)
+        for relative in (
+            "templates/07_scene_design_prompt.md",
+            "templates/08_shot_design_prompt.md",
+            "templates/20_clip_plan.md",
+            "config.md",
+            "references/project_workspace.md",
+        ):
+            with self.subTest(relative=relative):
+                self.assertIn(
+                    "validate_delivery_artifacts.py",
+                    (ROOT / relative).read_text(encoding="utf-8-sig"),
+                )
 
 
 if __name__ == "__main__":

@@ -180,6 +180,12 @@ validate_sd_film.py --skill-root <skill-root> [--report]
 validate_prompt_package.py <prompt-file> [--clip-plan <confirmed-clip-plan.md>]
 ```
 
+Scene Breakdown、分镜表与Clip表在保存为文件时由`scripts/validate_delivery_artifacts.py`校验完整性（缺区块、缺子项、空单元格或摘要形态一律拒收）：
+
+```text
+validate_delivery_artifacts.py <artifact-file> --kind scene-breakdown | shot-design | clip-plan
+```
+
 生产交付包由`scripts/build_asset_package.py`构建并顺带核验命名与对应性（可选加固，规范真源仍是`references/asset_package.md`）：
 
 ```text

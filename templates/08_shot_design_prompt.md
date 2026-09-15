@@ -193,6 +193,12 @@
 
 ---
 
+## Output QA
+
+分镜表保存为文件时必须运行 `scripts/validate_delivery_artifacts.py <artifact-file> --kind shot-design`；该校验器只做确定性完整性断言（默认5列表头`镜号 / 画面与动作 / 画面表达 / 连续性 / 资源`或完整十八列表头、SHOT编号连续、每行每格非空且不得写“同上”），未通过不得交付；通过也不替代下列语义检查。**「SHOT-001 女孩按灭手机；SHOT-002 她走向楼梯」这样一行一句的清单不是分镜表**——默认交付形态是一张逐镜可独立阅读的5列表；用户明确要求“完整版专业分镜”时才展示十八列内部完整记录。
+
+---
+
 ## Internal Preparation Gate｜不向用户输出
 
 在填写正式表格前，Workflow仍须完成并保存其内部生产判断：Camera Language Decision、Movement Combination分类、Composition Intent、Relational Screen Geometry、Focal Length Design、Lighting、Color Design、Performance Goal、Sound Purpose、FX Behavior、Coverage Mapping、Execution Risk、Transition Class、Start Boundary、End-Frame Constraint、Next-Shot Handoff与Camera Language Integrity。

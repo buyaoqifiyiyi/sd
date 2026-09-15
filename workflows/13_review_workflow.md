@@ -804,6 +804,8 @@ Review必须在兼容的`PASS / REVISE / REBUILD` Result之外选择一个处置
 
 □ Push In、Pull Out、Tracking、Side Tracking、Pan、Tilt、Crane、Handheld、Shoulder Follow、Dolly Tracking与Static优先得到使用；复杂Orbit / 360、穿墙、无人机或多段一镜到底均具有明确必要性、模型容量与稳定降级
 
+□ 固定结构没有被穿透、深度顺序没有反转：人物或道具没有穿过墙、玻璃、窗、门框、栏杆或幕墙；同一主体没有在反射面（玻璃、镜面、强反射地面）里出现第二个副本；窗框、立柱、墙垛在同一帧里只遮挡主体，不与主体互穿；反射只按`环境一致性`锁定的策略出现（正常镜像 / 只作前景遮挡 / 明确不表现）
+
 □ Seedance复杂度可执行：单镜主路径清楚，无不兼容方向反转，人物/FX/口型与摄影机负荷不过载，结尾能够稳定
 
 

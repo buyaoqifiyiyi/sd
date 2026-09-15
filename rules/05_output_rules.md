@@ -22,7 +22,7 @@
 
 # Default Delivery Surface
 
-完整STATE-00至STATE-08流程、确认Gate、状态写回、资产锁、连续性与Writer / Director判断均为必经内部生产工作；STATE-09 Review按显式调用执行（见`rules/activation_rules.md`），未触发时不产出Review报告。它们不自动成为用户可见交付。默认用户可见交付只允许为：剧本、各类设定资源、分镜表、Clip表、最终视频提示词、生产交付包。
+完整STATE-00至STATE-08流程、确认Gate、状态写回、资产锁、连续性与Writer / Director判断均为必经内部生产工作；STATE-09 Review按显式调用执行（见`rules/activation_rules.md`），未触发时不产出Review报告。它们不自动成为用户可见交付。默认用户可见交付只允许为：剧本、各类设定资源、分镜表、Clip表、最终视频提示词、生产交付包——**本清单与各件产物的完整性不因`Automation Policy: FAST`而改变**。**用户可见工件不得以“已完成×××”的摘要代替**：它们必须以自己的完整Template形态输出；聚合交付时按`rules/automation_mode.md`的`### Delivery Receipt｜交付收据`逐项列出阶段、工件与状态，缺项记为`待交付`而不是完成。
 
 项目启动页、项目状态/Portable State、Registry、Visual Guide、Scene Breakdown、色彩体系、镜头语言、情绪/表演设定、导演分析、经验应用、QA清单和Review报告默认静默。用户明确请求查看、导出、保存、恢复、审核或返修其中某项时，才按对应Template或Contract输出。
 

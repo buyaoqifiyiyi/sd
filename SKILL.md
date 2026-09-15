@@ -1,13 +1,13 @@
 ---
 name: sd-film
-description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项目、继续之前的项目：AI影视虚拟制片生产系统。处理剧本、导演转译、资产、镜头、Clip、视频 Prompt、Seedance、项目恢复与海报/封面/Key Art；海报、封面与AUDIO/MUSIC仅在明确请求时调用，视频 Prompt 永久禁止非剧情内配乐。"
+description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项目、继续之前的项目：AI影视虚拟制片生产系统。处理剧本、导演转译、资产、镜头、Clip、视频 Prompt、Seedance、项目恢复与海报/封面/Key Art；参考片拉片、运镜与机位分析、镜头语言学习、风格反编译（用户只说"学习这个视频怎么拍"也应激活）；海报、封面与AUDIO/MUSIC仅在明确请求时调用，视频 Prompt 永久禁止非剧情内配乐。"
 ---
 
 # SD Film
 
-Skill Version: 2026.09.14-r92
+Skill Version: 2026.09.14-r95
 
-Build ID: sd-film-2026.09.14-r92
+Build ID: sd-film-2026.09.14-r95
 
 ## Core
 
@@ -23,11 +23,11 @@ Build ID: sd-film-2026.09.14-r92
 
 写入前必须完成三项判定（本节只列**不变量**，完整判据与执行顺序见`references/maintenance_self_check.md`的`Before You Write`及其`Maintenance System Map`列出的各判据owner）：
 
-- **归属判定**：默认把内容补进既有owner；只有确认没有合适位置才新增文件。新文件不得超过30 KB。
-- **可达性判定**：用字节数对照复核线与Ceiling；越过复核线不阻断，但必须说清它的读取入口或拆分它。新增内容必须有消费者，**没有消费者的内容等于已经丢了**。
-- **减法判定**：每次新增都要判断它是否使某条既有规则过时、被覆盖或可合并。`Additive By Default`保护既有字段与已确认行为，**不保护规则总量**。
+- **归属判定**：默认补进既有owner；只有确认没有合适位置才新增文件。
+- **可达性判定**：到达复核线即触发一次瘦身优化（优先序见`references/context_budget.md`），Ceiling强制拆分。新增内容必须有消费者。
+- **减法判定**：判断本次新增是否使某条既有规则过时、被覆盖或可合并；`Additive By Default`**不保护规则总量**。
 
-写入后必须执行完整自检：`references/maintenance_self_check.md`的17项与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；可达性判据、文件类别与Size Index的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
+写入后必须执行完整自检：`references/maintenance_self_check.md`的全部Check Dimensions与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；可达性判据、文件类别与Size Index的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
 
 **本协议是纯文本的，不依赖任何脚本、工具或外部服务即可手工执行。**`scripts/validate_sd_film.py`只是某些环境下的可选加固；环境里没有它、或没有Python、或换了别的Agent，都不构成跳过自检的理由——按短卡逐项人工判定即可。**版本递增是一次定稿动作，不是每次修改的收尾步骤**：同一对话的改动累积为一个批次，只有维护者确认该批定稿时才同步递增`Skill Version`与`Build ID`（判据见`references/maintenance_self_check_protocol.md`的`Change Classification Check`）。
 
@@ -46,14 +46,13 @@ Build ID: sd-film-2026.09.14-r92
 
 ## Model adapters
 
-STATE-01在Script `Production-Locked`后由`Production Setup Gate`一次确认项目级图像模型默认项、图像交付形态、视频模型偏好与`Project Style Baseline`；STATE-03直接复用图像默认项与风格基线，STATE-06确认后只对视频偏好进行按Clip能力复核并形成唯一Adapter Execution Profile，不重复索取同一选择。STATE-07先保护Natural Unit的剧情、空间、动作与导演事实，再用已验证Adapter将它整合为模型可执行的Execution Clip。Adapter只能控制模型能力、时长、Timeline、真实参考输入与安全降级，不能改写Script、Writer/Director Intent、Confirmed Blocking、Canonical Asset或Template。
+模型选择与执行Profile由`modules/model-selection.md`与`references/module_contracts.md`的`Model Execution Lock`合同唯一拥有：`Production Setup Gate`一次确认，STATE-03复用图像默认项与风格基线，STATE-06后按Clip能力复核视频偏好。Adapter只能控制模型能力、时长、Timeline、真实参考输入与安全降级，不能改写Script、Writer/Director Intent、Confirmed Blocking、Canonical Asset或Template。
 
-- `adapters/seedance-2.0.md`：4–15 秒。
-- `adapters/seedance-2.5.md`：4–30 秒；23 秒通过长时长预检保持单 Clip，34 秒才拆分；按需使用时间戳式 Timeline，并审计 30 图 / 10 视频 / 10 音频、合计最多 50 个参考输入。Dreamina 网页端专有能力必须显式选择该入口，不能误报为方舟 API。
-- `adapters/minimax-h3.md`：4–15 秒；支持首/尾帧、全能多模态参考和已有视频编辑，按官方三段式提示词编译；不继承 Seedance 专属的时码式 Targeted Edit 或长时长能力。
+- `adapters/seedance-2.0.md`、`adapters/seedance-2.5.md`、`adapters/minimax-h3.md`：各模型的时长窗口、Timeline、参考容量、首尾帧与编辑能力以**各自 Adapter 为唯一真源**，属`O｜Operational Parameter`，能力数值到期须重新取证后引用。
+- Dreamina 网页端专有能力只能由用户显式选择该入口，不得误报为方舟 / API 能力。
 - `adapters/other-models.md`：未验证模型不继承 Seedance 能力。
 
-资产创作的图像路由不属于视频Adapter：`Production Setup Gate`由`modules/image-model-selection.md`一次确认项目图像模型默认项，STATE-03在每个资产批次直接继承，并按`rules/02_asset_rules.md`的批次交付在同一轮内提交整批图片；仅用户明确要求例外模型、默认项不可用或当前批次需改用模型时才重新确认。当前可选GPT Image（`adapters/gpt-image.md` + `templates/24_gpt_image_asset_prompt.md`）或Midjourney（`adapters/midjourney.md` + `templates/14_midjourney_asset_prompt.md`）；未来模型必须先有独立Adapter和最终提示词模板。它不影响视频模型偏好、STATE-07 Clip或STATE-08视频 Prompt。
+资产创作的图像路由不属于视频Adapter，由`modules/image-model-selection.md`与`references/module_contracts.md`的`Image Model Prompt Template Isolation`合同唯一拥有（GPT Image：`adapters/gpt-image.md` + `templates/24_gpt_image_asset_prompt.md`；Midjourney：`adapters/midjourney.md` + `templates/14_midjourney_asset_prompt.md`）。它不影响视频模型偏好、STATE-07 Clip或STATE-08视频 Prompt。
 
 ## Global invariants
 
@@ -62,6 +61,6 @@ STATE-01在Script `Production-Locked`后由`Production Setup Gate`一次确认�
 - `REF-SKETCH` 只用无性别技术调度人偶，且只控制空间/姿态/机位关系；不得成为角色外观或 Canonical Asset。
 - A/B/C 尾帧、资产双确认、连续性、Voice opt-in 与视频 Prompt 永久无 BGM 继续由各自现有 owner 执行。
 - Runtime Reload：`rules/runtime_reload.md`；State Source：`rules/state_source.md`；推进：`rules/progression_rules.md`；激活：`rules/activation_rules.md`；资源按需读取：`rules/resource_loading.md`。
-- 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界。
+- 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界，**也不减少阶段、QA与交付物**（自动模式只自动确认）。
 - 空跑测试：只有用户明确说“跑流程测试 / 演练 / dry run / 空跑”时才进入 `DRY RUN`；它只验证 STATE 路由与 Gate 可判定性，不产出交付物、不读写项目状态。规则由 `rules/activation_rules.md` 拥有。
 - 固定且连续性敏感的环境在STATE-03按需读取`knowledge/environment_multi_view_reconstruction.md`：它扩展既有Environment Asset与Canonical Lock，不创建新STATE；STATE-06/07/08只继承已锁定的空间事实和按风险选择的环境参考。

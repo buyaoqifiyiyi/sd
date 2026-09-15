@@ -35,7 +35,7 @@
 
 1. **确认这是正式修改**：只要改到`SKILL.md`、Rules、Workflows、Knowledge、Templates、References、Adapters、Validator、测试或用户文档中任何一个字节，它就是正式修改——不论改动大小、是否只改文案或拼写、是否由人还是由Agent执行。
 2. **归属判定**：先找现有owner。默认把内容补进既有文件；只有确认现有权威位置都不合适才新增文件，且新文件不得超过30 KB。
-3. **可达性判定**：用**字节数**（不是行数）对照`references/context_budget.md`的复核线与Ceiling。越过复核线**不阻断**，但必须在同一次变更内说清它的读取入口，或拆分它；达到Ceiling必须先拆分。无论大小，新增内容都必须有消费者——没有消费者的内容等于已经丢了。任何**读取范围、读取顺序或文件体量**的改动，还必须先按`references/context_budget.md`的`Measure Before You Move`建立**前后同尺度**基线：**直觉不是判据**，实测才是。
+3. **可达性判定**：用**字节数**（不是行数）对照`references/context_budget.md`的复核线与Ceiling。越过复核线**不阻断**，但必须在同一次变更内按`references/context_budget.md`的`### 瘦身优先序`执行一次瘦身优化——**只把内容搬到另一个文件不算瘦身**；瘦身后仍越线才拆分或给出读取入口。达到Ceiling必须先拆分。无论大小，新增内容都必须有消费者——没有消费者的内容等于已经丢了。任何**读取范围、读取顺序或文件体量**的改动，还必须先按`references/context_budget.md`的`Measure Before You Move`建立**前后同尺度**基线：**直觉不是判据**，实测才是。
 4. **减法判定**：本次新增是否使某条既有规则过时、被覆盖或可合并？结论为“无”也要写下依据。`Additive By Default`保护既有字段与已确认行为，**不保护规则总量**。
 
 四项判定都是**读文件即可完成的人工判断**，不需要任何工具。
@@ -54,7 +54,7 @@ Read current rules
 → Classify existing coverage
 → Before You Write: ownership / size / subtraction judgement
 → Apply minimal change
-→ Run the 17 Check Dimensions below
+→ Run the 18 Check Dimensions below
 → Run Standalone Skill Discovery Guard
 → Run Unconditional Chat Runtime Startup And Recovery Guard
 → Classify and resolve every finding by risk
@@ -87,6 +87,7 @@ Read current rules
 | 15 | Context Budget Check | 细节是否仍能读到：Entry / 复核线 / Ceiling，Size Index是否有读取入口且未腐化 |
 | 16 | Claim / Evidence Credibility Check | 判断改动是否成立的**证据本身**是否可信：宣称与实现射程是否一致，测量工具是否先自证，字节与二进制事实是否用权威来源核对，实测与投影是否分开标注，删除前是否普查过独有内容 |
 | 17 | Stage-To-Prompt Landing Coverage Check | 每个已完成阶段的设计是否在提示词投影矩阵里有**具名落点行**，而不是靠"下游会自然继承"；新增或修改阶段产物时是否在同一次变更内补上落点 |
+| 18 | FAST Invariant And Delivery Receipt Check | 自动模式是否仍只是"自动确认"：阶段/QA/交付物不减少的不变量、以及"阶段 → 工件 → 状态"的交付收据，是否仍完整留在各自的 owner（automation_mode / 05_output_rules / 状态合同 / 模块合同 / USER_GUIDE）里 |
 
 ## Required Verification
 
@@ -99,6 +100,7 @@ Read current rules
 | 孤儿内容与不可达文件 | 从`SKILL.md` / `config.md`出发，逐个问“谁会读这个文件”：答不出来的就是不可读内容——路由它、声明`Skill维护层`或删除它；并列出被豁免项及其依据 | 同上（Validator 的 `check_reachability`；`--report`另外列出“不可达但已声明豁免”的清单） |
 | 可达性预算 | 用字节数对照`references/context_budget.md`的复核线／Ceiling与Size Index | 同上（Validator 还检查读取入口、索引一致性与 NON_RUNTIME 自证） |
 | 阶段落点覆盖 | 打开`knowledge/prompt_compilation/state08_projection.md`的`## Global Projection Matrix`与`## Per-Shot Projection Matrix`（外加Writer Gate与Director Pass），对每个已完成阶段问一次"它的产物写在哪个固定字段"；答不出、只能回答"下游会继承"的就是发现项 | `scripts/validate_sd_film.py --skill-root <skill-root>`（`check_stage_landing_coverage`：矩阵区存在、STATE-00至STATE-07各自被标识、行数下限、Writer / Director / Scene三行落点仍在） |
+| FAST 不变量与交付收据 | 打开`rules/automation_mode.md`（Purpose与收据三种状态）、`rules/05_output_rules.md`、`references/project_state_contract.md`、`references/module_contracts_auxiliary.md`与`USER_GUIDE.md`，逐处确认"只自动确认、不减少流程与产物"及其收据仍完整 | 同上（`check_fast_invariant_and_receipt`：五处任一丢失该句或收据状态标签即 FAIL） |
 | `LR-R1—LR-R10` | 按`references/recovery_guards.md`逐条核对 | `scripts/test_validate_sd_film.py` |
 | `SD-R1—SD-R5` | 按`references/recovery_guards.md`逐条核对 | 同上 |
 
@@ -136,6 +138,7 @@ State / Continuity: PASS / FIXED / WARN
 Runtime Claim Integrity: PASS / FIXED / WARN
 Claim / Evidence Credibility: PASS / FIXED / WARN
 Stage-To-Prompt Landing: PASS / FIXED / WARN
+FAST Invariant And Receipt: PASS / FIXED / WARN
 Legacy Recovery Regression: PASS / FAIL / WARN
 Chat Runtime Startup Guard: PASS / FAIL / WARN
 Standalone Skill Discovery: PASS / FAIL / WARN

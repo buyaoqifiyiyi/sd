@@ -57,6 +57,7 @@ SELF_CHECK_DIMENSIONS = (
     "Standalone Skill Discovery Check", "Context Budget Check",
     "Claim / Evidence Credibility Check",
     "Stage-To-Prompt Landing Coverage Check",
+    "FAST Invariant And Delivery Receipt Check",
 )
 
 MAIN_WORKFLOWS = (
@@ -669,6 +670,9 @@ REFERENCE_OWNER_MARKERS = (
     ("references/asset_package.md", "## Package Location And Source Rule"),
     ("references/asset_package.md", "## Optional Interoperable Tooling"),
     ("references/asset_package.md", "`_MANIFEST.md`"),
+    ("references/asset_package.md", "清单必须一行一个文件，且可读可对应"),
+    ("references/asset_package.md", "不得把同一Asset ID的多张Canonical图合并成一行"),
+    ("references/asset_package.md", "View角色"),
     ("references/project_workspace.md", "要求交付生产交付包等同于要求保存或归档"),
 )
 
@@ -788,6 +792,51 @@ def check_stage_landing_coverage(root: Path) -> list[str]:
     for marker in STAGE_LANDING_ROW_MARKERS:
         if marker not in region:
             errors.append(f"{STAGE_LANDING_OWNER} is missing the stage landing row: {marker}")
+    return errors
+
+
+FAST_INVARIANT_MARKERS = (
+    ("rules/automation_mode.md", "FAST只自动确认，不减少流程与产物"),
+    ("rules/automation_mode.md", "不是阶段、检查或交付物本身"),
+    ("rules/automation_mode.md", "用户可见交付清单也不因FAST而缩短"),
+    ("rules/automation_mode.md", "合并的只是展示切片，不是阶段本身"),
+    ("rules/automation_mode.md", "### Delivery Receipt｜交付收据"),
+    ("rules/automation_mode.md", "`本轮完整输出`"),
+    ("rules/automation_mode.md", "`已在Accepted Artifact`"),
+    ("rules/automation_mode.md", "`待交付`"),
+    ("rules/automation_mode.md", "收据只做交付核对"),
+    ("rules/automation_mode.md", "生产交付包必须单列一行"),
+    ("rules/automation_mode.md", "**不使用`已在Accepted Artifact`**"),
+    ("rules/automation_mode.md", "最终Prompt交付轮的收据必须包含`Prompt纪律自检`条目"),
+    ("rules/automation_mode.md", "不把自检升为Hard Gate"),
+    ("USER_GUIDE.md", "`Prompt纪律自检`"),
+    ("references/asset_package.md", "包必须在交付收据里**单列一行**"),
+    ("rules/05_output_rules.md", "本清单与各件产物的完整性不因`Automation Policy: FAST`而改变"),
+    ("rules/05_output_rules.md", "### Delivery Receipt｜交付收据"),
+    ("references/project_state_contract.md", "仅有一句“已完成×××”声明不构成证据"),
+    ("references/module_contracts_auxiliary.md", "自动接受的是确认，不是工件"),
+    ("USER_GUIDE.md", "自动模式只是自动确认，不减少流程与产物"),
+)
+
+
+def check_fast_invariant_and_receipt(root: Path) -> list[str]:
+    """FAST may only auto-confirm: the invariant and its receipt stay in every home.
+
+    Measured failure this guards: a FAST project collapsed STATE-05/06/07 into one
+    sentence (“已完成场景、镜头与执行规划”) and went straight to the prompt, so the
+    missing artifacts were invisible. The rules already forbade it -- what was
+    missing was one stated invariant plus a receipt that makes a missing artifact
+    visible at delivery time, and both had to survive in several files at once.
+    Deterministic scope: every sentence and receipt state label is present in the
+    file that owns it. Whether a given delivery followed them stays a runtime
+    judgement (R32-D / R32-E).
+    """
+    errors: list[str] = []
+    for relative, marker in FAST_INVARIANT_MARKERS:
+        if marker not in read(root, relative):
+            errors.append(
+                f"{relative} lost the FAST auto-confirm invariant or receipt text: {marker}"
+            )
     return errors
 
 
@@ -1291,6 +1340,9 @@ def validate_skill(root: Path) -> list[str]:
         (prompt, "## Package Timing And Delivery"),
         (prompt, "不得静默略过交付包"),
         (assets, "## Asset Naming And Delivery Package"),
+        (scene_template, "scripts/validate_delivery_artifacts.py"),
+        (shot_template, "scripts/validate_delivery_artifacts.py"),
+        (plan, "scripts/validate_delivery_artifacts.py"),
         (contracts_production, "交付包：已确认生产物的分类打包"),
         (contracts_production, "每个Clip的`参考资产：`（或对应模型的参考字段）为每个实际投喂的视觉条目写出"),
     )
@@ -1354,6 +1406,7 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_workflow_routing(root))
     errors.extend(check_reference_ownership(root))
     errors.extend(check_stage_landing_coverage(root))
+    errors.extend(check_fast_invariant_and_receipt(root))
     errors.extend(check_no_project_registry(root))
     errors.extend(check_reachability(root))
     errors.extend(check_internal_references(root))

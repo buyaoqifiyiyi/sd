@@ -58,7 +58,7 @@ Writer Intent只约束`拍什么必须成立`，不得向Prompt注入35mm / 85mm
 2. **Audience Attention Hierarchy**：规定First Look、Second Look与Delayed / Withheld信息，使用动作顺序、构图、焦点、遮挡、景深和人物活动层级控制。
 3. **Performance Beat Translation**：把情绪词变为最小充分的gaze、breath、pause、jaw / mouth / swallow、hand / fingertip tension、shoulder / weight、delayed reaction、suppression / leakage和post-action residue；使用现有PL1/PL2/PL3负荷逻辑，不另建强度Schema。
 4. **Composition Function Translation**：让距离、权力、疏离、亲密、窥视、对立、共享空间、留白、框中框、前景遮挡或Reveal承担当前功能；“电影构图”不是合格结果。
-5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；多Shot或多阶段Clip还必须保留Confirmed Clip Movement Plan中的观察层次。不同Shot Purpose、注意力、关系 / 信息阶段或节奏功能不得被泛化成“同一台摄影机自然跟随 / 保持前进方向 / 轻微推进”；只有上游确认连续长镜理由、受保护注意力对象与稳定终点时，才可保留单一摄影机逻辑。**相邻阶段必须在距离 / 角度 / 运动方向 / 速度 / 是否静止中至少一项上有可指认差异**：把"平稳后退—极小弧移—低降—极小幅靠近—极慢后移"这类同一运动语汇的小幅缓动通篇铺满，判定为单一运镜（等于固定机位），不是克制；此类写法最多作为其中一段，且必须由剧情节点触发。一镜到底只约束"不切"，不约束镜头内运动的幅度与层次；至少一次明确的"停住—再启动"或方向 / 幅度变化应由剧情触发点驱动。上游Clip Movement Plan未给出阶段差异时返回STATE-07补，不在Prompt里另造；上游有差异而被压平则留在STATE-08修复。理论解释留在内部。
+5. **Camera Motivation Translation**：将景别、焦段/距离、机位与运镜写成`保持/起始 → Trigger → Path → Stop → End Composition`；多Shot或多阶段Clip还必须保留Confirmed Clip Movement Plan中的观察层次。不同Shot Purpose、注意力、关系 / 信息阶段或节奏功能不得被泛化成“同一台摄影机自然跟随 / 保持前进方向 / 轻微推进”；只有上游确认连续长镜理由、受保护注意力对象与稳定终点时，才可保留单一摄影机逻辑。**相邻阶段必须在距离 / 角度 / 运动方向 / 速度 / 是否静止中至少一项上有可指认差异**：把"平稳后退—极小弧移—低降—极小幅靠近—极慢后移"这类同一运动语汇的小幅缓动通篇铺满，判定为单一运镜（等于固定机位），不是克制；此类写法最多作为其中一段，且必须由剧情节点触发。一镜到底只约束"不切"，不约束镜头内运动的幅度与层次；至少一次明确的"停住—再启动"或方向 / 幅度变化应由剧情触发点驱动。**运镜变化必须写明触发者**——是谁的哪个可见表演/情绪事件（抬眼、克制吸气、按灭屏幕、听到震动、抬头、收住的半步）让机位 / 距离 / 景别改变；只写"固定观察 / 跟随 / 停住"而不写触发者，视为未完成Camera Motivation Translation。**整片至少一次由关键情绪节点驱动的机位或景别层级变化，并写出可核对的起止**（如`中景 → 近景`、`两人距离 → 手与脸`）；纯功能性触发（走过门框、进出门、雨声、脚步）不能替代这一次情绪响应——全部阶段的运镜都由空间或功能触发时，判定为"没有情绪运镜"并回到Director / STATE-07补，不在STATE-08自己发明。上游Clip Movement Plan未给出阶段差异时返回STATE-07补，不在Prompt里另造；上游有差异而被压平则留在STATE-08修复。理论解释留在内部。
 6. **Information Timing Translation**：以action order、delayed gaze、delayed rack focus、temporary occlusion、hold before reveal或适用的sound-before-image实现Reveal / Withhold / Delay / Confirm / Recontextualize。
 7. **Spatial & Relationship Translation**：继承Spatial Snapshot、Relationship Topology、Pose Hierarchy、Delta Blocking、Confirmed REF-SKETCH与REF-TAIL的授权维度；不重新设计空间。
 8. **Rhythm Translation**：把BUILD / HOLD / PEAK / RELEASE转成动作密度、停顿、镜头保持、延迟反应、Cut与声音尾部；标签不输出。
@@ -224,6 +224,8 @@ Field Ownership QA逐条提问：
 
 执行Positive Specification：把能正向定义的否定约束改写为目标状态，例如`不要下雨 → 晴天，空气清透，阳光照亮地面`，`不要夸张表情 → 表情克制，嘴角和眉眼只有轻微变化`。Style Label Expansion后的Lighting / Color / Camera / Performance carriers同样使用正向执行语言；例如把`避免主动制造戏剧感 / 禁止广告摆拍、MV慢动作与炫技运镜`优先转成`摄影保持安静观察感，表演克制含蓄，镜头调度简洁自然，优先服务人物关系与情绪留白`。
 
+当某个节拍的失败风险不是"违反某条约束"，而是被生成成**另一种相近但错误的动作或表演读法**（例如把"持刀静立、只做呼吸起伏"生成为大幅挥砍，把"定格凝视"生成为夸张瞪眼）时，Positive Specification必须落到该节拍**可枚举的小载体**，而不是只把否定词反写成形容词：写清姿态是否稳定、有无真实呼吸起伏、发丝与衣物的自然摆动、视线移动速度等具体可见元素，并写入该阶段的`画面与镜头`或`人物动作与情绪`。判断方法是问一句"这个节拍被生成错时，最可能错成什么"，把该错误读法对应的正确小载体逐项写进正向字段；该风险的负向部分仍按Negative Placement收束到末尾唯一`反向提示词：`，并按其失败**类别**合并，不逐条罗列实例，也不在逐镜字段保留否定句。
+
 逐Clip在Field Ownership Assignment和Positive Specification之后执行一次Negative Placement Pass：
 
 1. 扫描`主风格 / 人物一致性 / 环境一致性 / 参考区 / 全部逐镜字段`中的`禁止 / 不要 / 避免`及同义负向约束。
@@ -327,7 +329,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 | Composition / Director Patterns | 镜头/机位；画面描述；空间关系；镜头结尾状态 | 主体位置、前中后景、负空间、内框/遮挡/反射/引导线来源、焦点主次、变化过程与最终几何 |
 | Lighting / Color | 起始状态；画面描述；空间关系；道具状态；镜头结尾状态；主风格；环境一致性；反向提示词 | 光源、方向、光质、曝光、介质、颜色来源与层级、材质响应、起止光色状态及连续性；不新增光线或Color字段 |
 | Character Action / Performance | 起始状态；画面描述；人物动作与情绪；台词；音效；镜头结尾状态；人物一致性 | Inherited Baseline、刺激、注意/视线、当前可见的Pre-action / In-action / Post-action阶段、主要面部与身体动作、呼吸、公开状态与泄漏、行动选择、Post-action Residue、Arc Endpoint、Settled State与连续性；Intentional Hold仍有可见证据；多人包含相对表演层级、反应顺序与视觉重点交接 |
-| Dialogue Performance | 人物动作与情绪；台词；音效 | 准确台词、当前情绪/力度/停顿/节奏/韵律、口型与空间声；不得把当前表演写成稳定Voice Identity，也不得因缺少Voice Profile而临时推导 |
+| Dialogue Performance | 人物动作与情绪；台词；音效 | 准确台词、当前情绪/力度/停顿/节奏/韵律、口型与空间声；不得把当前表演写成稳定Voice Identity，也不得因缺少Voice Profile而临时推导。当已确认剧本为当前Clip固定了台词集合时，`台词`按**闭集**编译：逐句列出该集合，并声明不得增补、改写、复述或生成集合外的对白，含画外音、旁白、无人称语音与背景人声；集合为空或本Clip无对白时写出明确的无对白边界，不留空、不省略字段 |
 | Character Count | 画面描述；空间关系；反向提示词 | 每镜实际角色精确数量；唯一角色的正向唯一性和前中后景无第二个同类；复制、分身、镜像重复、背景第二个与相似替身的合并风险类别；人物一致性不重复逐镜数量 |
 | Spatial / Blocking | 起始状态；空间关系；画面描述；镜头结尾状态；反向提示词 | A/B左右、前后景、朝向、视线、距离、路线、遮挡顺序、关系轴线、正脸/侧背许可、同景深许可及最终位置；追逐默认后追前逃并禁止并排合影 |
 | Prop | 起始状态；画面描述；道具状态；镜头结尾状态 | 当前World-State、形态、尺寸、持有者、左右手、位置、方向、悬浮许可、转换完成状态、物理变化过程和最终状态 |

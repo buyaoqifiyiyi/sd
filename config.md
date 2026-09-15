@@ -16,6 +16,7 @@
 - STATE-08 Clip Duration: inherited from the locked Target Video Model and Confirmed Clip Production Plan; duration rules are owned by the Model Execution Lock contract
 - STATE-08 Reference Budget: Seedance 2.5默认按30图 / 10视频 / 10音频 / 合计50项能力上限规划并按需少用；Seedance 2.0与MiniMax H3按各自Adapter限制执行
 - Storyboard Activation: explicit only
+- Automation Policy: STANDARD / FAST；FAST只自动确认（确认往返），阶段、Required Read、QA、Template字段与交付物范围不变（owner：`rules/automation_mode.md`）
 - Review / Finished-Film (STATE-09) Activation: explicit only; the main pipeline closes at the STATE-08 delivery turn (final Prompt + production delivery package)
 - AUDIO / SEED-AUDIO Voice Asset Activation: explicit only
 - STATE-08 Voice Identity Text: omitted by default; conditional minimal Delta only on explicit current-video-Prompt request
@@ -41,6 +42,7 @@
 - Module Contracts (auxiliary modules): `references/module_contracts_auxiliary.md`
 - Module Contracts (knowledge contracts): `references/module_contracts_knowledge.md`
 - Production Delivery Package Builder (optional hardening): `scripts/build_asset_package.py`
+- Delivered Artifact Validator (Scene Breakdown / 分镜表 / Clip表 completeness): `scripts/validate_delivery_artifacts.py`（`--kind scene-breakdown | shot-design | clip-plan`）
 - Skill Maintenance Self-Check (per-change entry): `references/maintenance_self_check.md`
 - Skill Maintenance Self-Check Criteria: `references/maintenance_self_check_protocol.md`
 - Skill Accessibility Discipline And Size Index: `references/context_budget.md`

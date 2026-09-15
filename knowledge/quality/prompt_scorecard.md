@@ -51,6 +51,23 @@ Camera / Lens / Composition Motivation与Lighting / Color / FX / Sound两项必�
 
 ---
 
+## Discipline Self-Check｜六条执行自检
+
+本节的六条是**执行自检**，用于在评分前逐条核对当前Clip的Prompt是否达到可交付密度。它**不替代、不新增也不复制**任何规则：每条都指向既有唯一owner。它**不是Hard Gate**，未通过的条目按剩余风险写入Review，不单独判FAIL，也不得被写成最终Prompt字段。
+
+| # | 自检项 | 判据owner |
+|---|---|---|
+| 1 | **节拍密度**：连续长镜头的每个阶段是否按微节拍逐点推进，而不是一段概括 | `templates/12_seedance_25_video_prompt.md` 的 `### 时间线：` |
+| 2 | **身体兑现**：抽象情绪/氛围词是否已全部由可见或可听执行项承担 | `knowledge/prompt_compilation/state08_projection.md` 的 `## Abstract-To-Executable And Physical Anchoring` |
+| 3 | **意图可读**：本镜要求观众读到的情绪或关系是否由具体物理载体承担，而不是只给一个标签 | 同上，与 `### Prompt Evidence Specificity` |
+| 4 | **失败配对**：进入`全局限制与反向提示词：`的每条风险是否都有对应正向载体写在正文 | 同文件的 `### Positive Specification And Negative Prompt Placement` |
+| 5 | **量化可核对**：光比、色温、占比、距离、构图比例是否为"改一个数就改变可见结果"的值，且未混入无视觉收益的工程小数 | 同文件的 `数字与物理描述按执行价值分层` |
+| 6 | **元素有源**：画面内每个可见元素是否可追溯到已确认资产、参考输入或上游事实，无默认场景包补入 | 同文件的 `执行Semantic Template Decomposition` 段与 `### Executable Style Carrier Rule` |
+
+逐条给出可观察证据；只写"已符合"而不指出证据的，视为该条未执行。
+
+---
+
 ## Decision
 
 - 90–100：Ready for Review。

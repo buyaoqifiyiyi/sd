@@ -72,9 +72,12 @@
 7. 前 / 中 / 后景复杂关系；
 8. 复杂道具交互；
 9. 正反打、并排、背对背、包围、追逐等高漂移Relationship Topology；
-10. A2 / A3复杂动作或复杂机位。
+10. A2 / A3复杂动作或复杂机位；
+11. **固定结构穿透与反射副本**：人物或道具沿墙、玻璃、窗、门框、栏杆、幕墙、镜面或强反射地面行进 / 跨越平面。成片中的三种表现：身体穿过墙体或玻璃；同一主体在反射面里出现第二个副本；**遮挡关系反转**——窗框、立柱或墙垛本该遮挡主体，却与主体在同一帧里互相穿过（躯干嵌进窗框/墙垛、一半在结构这侧一半在另一侧）。
 
 任一维度命中不自动等于REQUIRED。最终判断必须比较：现有Canonical资产、Scene Spatial Snapshot、文字Blocking、REF-TAIL或Accepted Canon是否已足够唯一；新增一张中性草图是否能显著降低Position / Facing / Topology / Axis / Action Path歧义。
+
+命中第11项时处理顺序固定：**先补能建立该平面的环境View**（通常需要反向或侧向，只有母参考时平面位置无据可依），**再在文字里锁定**人物与道具始终在结构的哪一侧、可否跨越、反射是否表现及以何形式（正常镜像 / 只作前景遮挡 / 明确不表现）；只有确实需要真实穿窗时才使用场景草图，并首选`knowledge/camera_language/advanced_camera_movement/traverse_shots.md`的"前景完全遮挡 + 隐藏切换"稳健方案——实体穿透结构风险最高。
 
 ### Sketch Types And REF-SKETCH-MASTER Presentation Routing
 

@@ -85,6 +85,25 @@
 
 本节与`Loading Order`的`Current-Object Fast Path`不冲突：两者都只规定读取上限，同时适用时**取更小者**。命中`rules/runtime_reload.md`的显式Reload时不适用本节——显式Reload必须按该规则完整重读入口与基础owner pointers。
 
+### Reference-Film Study｜参考片拉片的最小读取集
+
+分析参考视频（拉片、学习运镜与机位、反编译风格）时，本轮**缺省读取集只有六项**：
+
+1. `knowledge/visual_styles/index.md` 的 `### Reference-To-System Evidence Gate` 与 `### Temporal Reference Decode`；
+2. `knowledge/camera_language/index.md`；
+3. `knowledge/camera_language/shot_language_router.md`；
+4. **实际观察到的**摄影原子——只在本次观察确实命中时才读对应文件；
+5. 涉及剪辑时读 `knowledge/camera_language/editing_language/`；
+6. 涉及正反打时读对应的 OTS / Reverse Shot 原子。
+
+明确不读：
+
+- 为分析一个对话视频而通读整个Camera Knowledge库；
+- 与本次观察无关的摄影、光色、色彩、声音与FX知识域；
+- 任何生产阶段的Template、Workflow、项目状态与资产登记——参考片分析不产生也不消费项目事实。
+
+本节与`Cross-Session Resume`同属读取上限：两者同时适用时**取更小者**。
+
 ## Actual Read Gate
 
 - 路径被提及、文件曾在旧轮次读取、或SKILL中记录说明，不等于本次已读取。

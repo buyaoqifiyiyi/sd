@@ -403,6 +403,7 @@ Revision ID格式：`REV-0001`、`REV-0002`……。
 - Current State合法，State Status合法。
 - Script Status只能为Source Material、Adaptation Draft、Optimized Proposal或Production-Locked；STATE-01 COMPLETE及STATE-02之后必须为Production-Locked。
 - `COMPLETE`状态必须有Last Completed Step、Checkpoint和Next Workflow；STATE-08全部应交付Clip的最终Prompt交付轮完成（每轮含生产交付包或其降级形态）或STATE-09 PASS可将Next Workflow写为`Project Complete / Post`。
+- `COMPLETE`还必须有该阶段Template的实际产出证据——项目内Accepted Artifact（含Revision）或本轮完整输出；**仅有一句“已完成×××”声明不构成证据**，用户可见阶段（Scene Breakdown / Detailed Shot Design / Clip Plan / Prompt）还必须在聚合交付收据中列出（见`rules/automation_mode.md`的`### Delivery Receipt｜交付收据`）。
 - `IN_PROGRESS`必须有Active Workflow。
 - `BLOCKED`必须有Pending Decision。
 - Review Result为REVISE或REBUILD时，不得标记STATE-09 COMPLETE。

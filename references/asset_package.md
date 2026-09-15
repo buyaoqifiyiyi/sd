@@ -35,7 +35,7 @@
 
 - 构建包是主Pipeline的**正式收尾交付物**：位置固定在STATE-08最终Prompt交付轮，随该轮自动执行，**不需要用户另行下令**；它不是新STATE，也不是进入STATE-08的前置Gate。
 - 门条件全部满足、且当前阶段没有未决风险时，交付最终视频Prompt的那一轮**必须同轮附上包**（或明确给出包路径与“已生成”证据）；不得声称已打包而实际未生成。用户提前或单独要求打包时立即构建。
-- **正式交付是义务，不是新门槛**：STATE-08交付轮未附包、也未按`## Access Precondition`的降级阶梯交付清单 / 命名映射并标注`未打包`时，该交付轮不得判完成；但缺包不阻塞Prompt本身，打包始终不是进入STATE-08的前置条件。全部应交付Clip的交付轮完成后主流程收尾（STATE-09 Review是显式调用阶段，见`rules/activation_rules.md`）。
+- **正式交付是义务，不是新门槛**：STATE-08交付轮未附包、也未按`## Access Precondition`的降级阶梯交付清单 / 命名映射并标注`未打包`时，该交付轮不得判完成；但缺包不阻塞Prompt本身，打包始终不是进入STATE-08的前置条件。全部应交付Clip的交付轮完成后主流程收尾（STATE-09 Review是显式调用阶段，见`rules/activation_rules.md`）。聚合交付时，包必须在交付收据里**单列一行**并写明路径或降级形态（见`rules/automation_mode.md`的`### Delivery Receipt｜交付收据`）。
 - 与`rules/automation_mode.md`的`Unified Delivery Packages`正交：后者的包名是**展示封套**，本文件的包是**真实文件集合**。两者不得互相定义，也不得把一个的实现写进另一个。
 - 门条件未满足时：报告还缺哪一类、缺在哪个Gate，不生成空包，也不把缺失类别静默省略。
 
@@ -147,8 +147,17 @@
 **包目录是本体，zip 是同一个包目录的压缩搬运形态**：两者内容完全相同（同一份`00_INDEX.md`、各类`_MANIFEST.md`与同一批已确认文件），zip 不是第二份交付物、不是第二套内容，也不额外包含任何文件。因此“产出完整生产包”与“产出zip”不是两件事——先构建包目录，再把它整体压成同名 zip；zip 缺失只影响搬运，不影响包的完整性，也不得被写成“包未完成”。
 
 - `00_INDEX.md`：类别清单、每类文件名与来源、包Revision、构建时间与已完成类别的Gate证据。
-- `00_MANIFEST.md`：每个打包文件的`文件名｜类别｜Asset ID或Artifact ID｜版本或Revision｜来源`，以及内容清单（文件字节数与SHA-256）、`Supersedes`与未打包的`待补充`条目。
+- `00_MANIFEST.md`：每个打包文件的`文件名｜类别｜Asset ID或Artifact ID｜资产名｜Purpose或Artifact ID｜View角色｜版本或Revision｜来源`，以及内容清单（文件字节数与SHA-256）、`Supersedes`与未打包的`待补充`条目。
 - 类别清单使用`_MANIFEST.md`后缀（例如`CHAR_MANIFEST.md`），记录本类别全部已确认资产及其文件名。
+
+**清单必须一行一个文件，且可读可对应**（这是"对应不上"的唯一修复口径，文件名本身不变）：
+
+- 资产类别清单（`02_assets/<KIND>/_MANIFEST.md`）列固定为 `文件名｜Asset ID｜资产名｜Purpose｜View角色｜Active Version｜Status｜Approval Basis｜Prompt引用名`。
+- `资产名`写该Asset ID在本项目的中文名（`ENV-001｜教学楼走廊`里的"教学楼走廊"）；`Purpose`写文件名里的枚举值（Identity / Costume / Scale / Layout / Material / State / FX Phase）。
+- `View角色`把View Code译成可读角色：`ENV-01` Master Establishing / `ENV-02` Reverse / `ENV-03` Lateral / `ENV-04` Top-Down / `EXT` 扩展视角；非环境视角文件写`Not Applicable`。词表仍由`knowledge/environment_multi_view_reconstruction.md`拥有，此处只做可读投影。
+- `Prompt引用名`写该文件在最终Prompt里的形态`<Asset ID>｜<资产名>[_<View Code>]`，使清单与Prompt条目可以逐行对照。
+- **不得把同一Asset ID的多张Canonical图合并成一行**——`ENV-001`的四个视角必须四行。合并正是"一个环境对应不上哪张图"的来源。
+- `00_MANIFEST.md`的明细行同样逐文件列出`资产名`与`View角色`。
 
 ## Asset Image Naming
 

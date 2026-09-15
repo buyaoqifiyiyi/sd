@@ -90,6 +90,24 @@ Editing / Review
 
 时相不增加运动数量：一镜仍然只有一个主要路径。无法说明本镜让观众先于、同时于还是晚于人物获得信息时，视为运动动机不足。
 
+## Motion Energy Allocation｜运动能量分配
+
+画面运动由五种载体共同承担，任何一个SHOT的运动都不应默认全部压在摄影机上：
+
+| 载体 | 内容 |
+|---|---|
+| Camera Motion | 摄影机位移或视轴变化（推拉摇移跟升降环绕） |
+| Performance Motion | 人物走位、手势、转头与身体重心变化 |
+| Prop / Environment Motion | 鱼、抄网、水、门、车辆、烟雾、雨雪等 |
+| Focus / Optical Motion | 拉焦、变焦、景深变化 |
+| Editorial Motion | 切镜、景别跳转、正反打与节奏变化 |
+
+每个SHOT在决定摄影机行为前先判断一次：**谁是本镜的主要运动载体？**
+
+**决策规则**：当人物、道具或环境已经承担了充分的运动与注意力变化时，摄影机优先`Static / Hold`；**不得为了让“画面有运动”而重复增加轻推、横移或环绕**。画面可以很活，而摄影机仍然克制——这是允许且常见的高质量组合。
+
+**检查**：一个SHOT若五种载体同时高强度运动，判定为运动过载，按`## Seedance Stability Priority`降级一条或改为静止。静与动是分配关系，不是风格标签。
+
 ## Functional Coverage
 
 Camera Language必须按适用性覆盖：景别功能、构图功能、机位功能、POV / Audience Position、焦段与画面距离感、前中后景调度、遮挡 / Reveal、人物关系构图、脸部信息取舍（Face Economy）、运镜触发点与Movement Phase、Hold / Pause / Cut节奏，以及180°轴线与空间关系。

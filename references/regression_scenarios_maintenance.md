@@ -4,7 +4,7 @@
 
 本文件是回归集的一部分，由`references/regression_scenarios.md`的 Regression File Index 统一索引；本文件内部编号保持连续，可按编号直接定位，不整集通读。
 
-覆盖范围：R48—R62 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断、阶段落点覆盖。
+覆盖范围：R48—R63 —— 交付物校验、美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review审美判断、阶段落点覆盖、FAST不变量与交付收据。
 
 ---
 
@@ -105,6 +105,38 @@ FAIL：把该缺口做成硬阻断，使合法的后续Delta Clip无法交付；
 PASS：输入一得到`WARNING`（"运镜语汇同质…一镜到底只约束不切，不约束镜头内运动层次"）且`errors`为空、退出码为0；输入二与输入三无该提示（静置段构成可指认差异；两段以内不在射程内）。真实成片回放与此一致：提示词五段皆小幅缓动时，生成结果等于一个固定双人全景，t=6s与t=18s的机位、高度、距离、背景结构完全同位。
 
 FAIL：把刻意静止的合法长镜判为不合格或做成硬阻断；或反向地因为提示词写了五种运镜名就认为成片有运镜层次——写入词表不等于画面可达。
+
+### R48-M Scene Breakdown And Storyboard Stubs Are Rejected
+
+输入一：Scene Breakdown交成两条bullet（`SCENE-001：雨天教学楼走廊，女孩离开；CHAR-001 / ENV-001。`）。输入二：分镜表交成一行一句的`SHOT-001 女孩窗边按灭手机；SHOT-002 她走向楼梯；…`。输入三：某行分镜的`画面表达`留空，且镜号从SHOT-001跳到SHOT-003。输入四：Clip表只写"已确认CLIP-001，规划完成"。
+
+PASS：`scripts/validate_delivery_artifacts.py --kind scene-breakdown | shot-design | clip-plan`分别报出缺少Template区块与Scene Directing Brief子项、缺少默认5列表（"一行一句的分镜清单不是Template交付物"）、空单元格与编号断档、缺少默认6列表；改用逐场Brief + 七个区块、默认5列表、默认6列表后全部通过。完整十八列专业分镜（用户明确要求"完整版专业分镜"时）同样被接受。
+
+FAIL：把bullet清单或一行一句当成交付物放过；或反向地要求默认分镜表逐格展示十八个内部字段（`templates/08_shot_design_prompt.md`的`## Default User-facing Delivery`已覆盖该读法）；或要求Clip表展示Preflight、参考预算等内部账本。
+
+### R48-N Category Manifests Stay Readable One Row Per File
+
+输入一：某包有两套环境资产、各四张视角图，类别清单把同一Asset ID的四张图挤进一个`文件名`单元格（`ENV-001｜Layout_ENV-01.png、…_ENV-04.png`）。输入二：用户照着包内文件找Prompt里的`ENV-001｜教学楼走廊_ENV-03`，清单里没有资产名也没有视角角色可读。
+
+PASS：`02_assets/<KIND>/_MANIFEST.md`一行一个文件，列`文件名｜Asset ID｜资产名｜Purpose｜View角色｜Active Version｜Status｜Approval Basis｜Prompt引用名`；`View角色`把View Code译成Master Establishing / Reverse / Lateral / Top-Down / EXT，非环境视角写`Not Applicable`；`Prompt引用名`写出`ENV-001｜教学楼走廊_ENV-03`形态，使包内文件与Prompt参考条目逐行对应；`00_MANIFEST.md`明细同样带`资产名`与`Purpose / View角色`。**文件名本身不变**，已确认资产不被追溯改名。
+
+FAIL：把同一Asset ID的多张Canonical图合并成一行；只列`Layout_ENV-03`而不给视角角色与资产名，逼用户去背View Code表；或反向地为了可读而改名已确认资产图片（那会使已交付Prompt的参考条目失效）。
+
+### R48-O A Cutting Clip May Not Cite Only The Master Environment View
+
+输入：一份30秒Seedance 2.5 Package含切场（`由湿地倒影自然切到校门内侧`）并跨两个空间，`多模态参考资产`只列 `ENV-001｜教学楼走廊_ENV-01` 与 `ENV-002｜校门与操场_ENV-01`；包里当时实际有每套空间四张View。另一份Clip只有一个空间、无切场、轴线稳定，同样只列 `_ENV-01`。
+
+PASS：前者得到非阻断`WARNING`（"环境参考只出现母参考（`_ENV-01`），没有反向或侧向视图…请按路由覆盖不变量确认是否需要补 `_ENV-02` / `_ENV-03`"）且`errors`为空；后者无该提示。真实成片回放与此一致：只列Master时，成片出现外套敞开→立领合襟的服装状态漂移与空间背景不一致——图在包里，但没有被路由进Prompt。
+
+FAIL：把只列Master一律判为不合格或硬阻断（单空间稳定Clip是合法的）；或反向地因为"包里有四张View"就认为Prompt已经覆盖——包内存在不等于已路由。
+
+### R48-P Fixed Structures Are Never Penetrated And Never Duplicated In Reflection
+
+输入一：一份走廊Clip沿窗带行走，`多模态参考资产`只列 `ENV-001｜教学楼走廊_ENV-01`，文字里既没写她在玻璃的哪一侧，也没写反射是否表现。输入二：同一Clip补了 `ENV-001｜教学楼走廊_ENV-03` 侧向View，或写明"人物始终在窗内侧、玻璃只作前景遮挡、不表现反射"。输入三：STATE-09 Technical Review 的固定结构穿透检查项在位。
+
+PASS：输入一得到两条非阻断`WARNING`（环境视图覆盖 + 固定平面与反射未锁定）且`errors`为空；输入二两条都不再出现；技术Review逐项核对"人物/道具没有穿过墙、玻璃、窗、门框、栏杆或幕墙；同一主体没有在反射面里出现第二个副本；窗框、立柱、墙垛在同一帧里只遮挡主体，不与主体互穿；反射只按`环境一致性`锁定的策略出现"。真实成片回放与此一致：只列Master且无平面锁时，8秒处玻璃里出现第二截白袖子与人形剪影（反射副本），10秒处她的躯干嵌进窗框与墙垛、一半在结构这侧一半在另一侧（深度顺序反转）。
+
+FAIL：把`校门内侧`这类地点词当成平面锁（锁必须紧邻平面词，如`窗内侧`）；把提示做成硬阻断；或只检查摄影机穿墙这类S4高风险运镜，而放过"主体穿过固定结构 / 反射里出现第二个副本"这一类失败。
 
 ## R49 Aesthetic Decision Lock Regression
 
@@ -440,6 +472,13 @@ FAIL：保留已达标条目或悬空条目，使索引变成一份越积越长�
 
 ---
 
+### R58-E Reaching The Line Triggers Slimming, Not Relocation
+
+输入：一个回归文件到达 51200 B 阈值。做法一：把其中一族案例整体搬到一个新文件，文件数由五个变六个、语料总量增加。做法二：把与`references/recovery_guards.md`固定基线逐项重合的九个案例退休、原位只留指针，总量下降并回到五个文件。
+
+PASS：按`references/context_budget.md`的`### 瘦身优先序`，**到达**阈值触发一次瘦身优化：先退休与唯一 owner 重合的内容，再合并，再压缩；判据是**总量下降**。搬迁与拆分不是瘦身。瘦身后仍越线才拆分。不得为凑阈值删除已确认的规则、字段归属或回归场景。
+
+FAIL：把到达阈值当成"违规"只做拆分 / 搬迁；或为了立刻回到线下而删除回归案例、规则正文或字段归属；或把"文件回到线下"当作瘦身完成的证据而不看语料总量。
 ## R59 Shot Breakdown Coverage Regression
 
 ### R59-A Shot Size Has One Owner And The Inline List Matches It
@@ -571,3 +610,21 @@ FAIL：矩阵区不再出现某个主STATE却仍然通过；或为通过检查�
 PASS：同一次变更内在投影矩阵补上"来源阶段 → 固定目标字段 → 必须保留的语义"一行，转换规则只引用既有Gate / Pass，不新增Prompt字段、不复制别家协议正文；Loss Check同步加一项可核对的判据。
 
 FAIL：新增设计只在Workflow、Knowledge或Template里被记录，投影矩阵没有任何落点，靠"下游会自然继承"假定它进入Prompt；或为补落点新增最终字段、把内部ID / `Pending`写进交付。
+
+## R63 FAST Invariant And Receipt Guard Regression
+
+### R63-A The Auto-Confirm Invariant Lives In Every Home
+
+输入：一次文案整理把`rules/automation_mode.md`的`## Purpose And Owner`里那句"FAST只自动确认，不减少流程与产物"删掉，只留下"模式只改变确认方式"；另一轮把`USER_GUIDE.md`里用户侧的同一口径删掉。
+
+PASS：`scripts/validate_sd_film.py`的`check_fast_invariant_and_receipt`逐处验证不变量与收据文本仍在位——`rules/automation_mode.md`（Purpose / 连续链 / 聚合包 / 收据三状态）、`rules/05_output_rules.md`（清单不因FAST改变 + 指向收据）、`references/project_state_contract.md`（`COMPLETE`必须有实际产出证据）、`references/module_contracts_auxiliary.md`（"自动接受的是确认，不是工件"）、`USER_GUIDE.md`（用户侧口径）；任一丢失即FAIL并指出缺哪个文件哪句。
+
+FAIL：只看`automation_mode.md`一处就算通过，使"自动模式可以少做几步"的读法在别的入口重新长出来；或反向地因为不变量在位就认定某次交付照做了（是否照做是运行时行为，由R32-D / R32-E覆盖）。
+
+### R63-B The Receipt Cannot Be Reduced To A Receipt Label
+
+输入：有人把`### Delivery Receipt｜交付收据`改成一句话"交付时列出阶段即可"，删掉`本轮完整输出` / `已在Accepted Artifact` / `待交付`三种状态；另有人把收据写成新的Project State字段。
+
+PASS：三种状态标签是必备内容，缺一即FAIL；收据只做交付核对，不新增状态字段、不替代Template、不改变Completion Gate判据。`待交付`阶段不得写`State Status: COMPLETE`，下一次普通推进先续交完整工件。
+
+FAIL：把收据简化成没有状态区分的清单（无法区分"已输出"与"只说了完成"）；或让收据承担状态写回职责，使状态合同与Completion Gate出现第二套判据。

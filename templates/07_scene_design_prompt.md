@@ -131,6 +131,10 @@ Required / Not Applicable：
 
 
 
+## Output QA
+
+Scene Breakdown保存为文件时必须运行 `scripts/validate_delivery_artifacts.py <artifact-file> --kind scene-breakdown`；该校验器只做确定性完整性断言（SCENE编号连续、Scene Directing Brief六个子项逐场到齐且有内容、Scene Visual Brief / Spatial Design / Lighting Design / Color Design / Asset Usage / Source Traceability / Sequence Planning Decision区块存在），未通过不得交付；通过也不替代下列语义检查。**一行「SCENE-001：地点，谁做了什么；资产ID」不是本Template的交付物**——那是摘要，不是Scene Breakdown。
+
 ---
 
 # Rule

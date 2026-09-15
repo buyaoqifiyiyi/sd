@@ -322,8 +322,31 @@ PASS：可以将已经合法完成的相邻成果组合展示，但在当前Deta
 
 FAIL：因为用户要求合并展示就绕过Confirmation Input Semantics、Completion Gate或Hard Stop。
 
----
+### R32-D Aggregated Delivery Carries A Receipt Per Stage
 
+输入：FAST项目里STATE-04已完成，系统在同一轮写道“已完成场景、镜头与执行规划：采用1个30秒Seedance蒙太奇Clip”，随后直接给出`# CLIP-001｜… Seedance 2.5视频提示词`，但没有输出完整Scene Breakdown、Detailed Shot Design与Clip Plan。
+
+PASS：该轮必须给出交付收据（阶段 → 工件 → 本轮状态）；Scene Breakdown / Detailed Shot Design / Clip Plan 未以完整Template形态出现且项目内也没有对应Accepted Artifact时，三项一律记为`待交付`，**不得写`State Status: COMPLETE`**，下一次普通推进先续交这三个完整工件再继续Prompt交付；只有 STATE-04 那类内部工件可以用摘要槽位（Project Bible 写入仍是证据）。
+
+FAIL：把“已完成场景、镜头与执行规划”当成交付证据继续推进；或反向地要求为了让收据好看而补造未确认的Scene / Shot / Clip；或把`待交付`阶段写进`Completed States`。
+
+### R32-E Fast Mode Only Auto-Confirms
+
+输入：FAST项目里STATE-06的Detailed Shot Design已通过QA，Agent以“自动模式已确认”为由跳过该Template输出、省掉一次逐镜QA，直接把设计交给STATE-07；另一轮里Agent完整产出Shot Design Template并写回后继续。
+
+PASS：`rules/automation_mode.md`的`## Purpose And Owner`声明FAST只自动确认、不减少流程与产物；只有后者的自动接受成立并保留Artifact / Version History证据。被自动接受的是"确认"这一步——Required Read、QA、Completion Gate、状态写回与完整Template交付物一件不少，`rules/05_output_rules.md`的用户可见交付清单不因FAST缩短。
+
+FAIL：以自动模式为由少做一个阶段、少跑一次QA或少给一件交付物；或把"自动接受"记成"工件已确认"而项目内既无Artifact也无Revision。
+
+### R32-F The Receipt Carries The Production Package
+
+输入：FAST项目在STATE-08交付轮给出收据，列了Prompt与Clip Plan，但既没有`生产交付包`一行，也没有包路径；另一轮写了"已打包"却没有路径也没有降级标注；第三轮按能力降级交付了清单+命名映射并标注"未打包"。
+
+PASS：收据必须包含`生产交付包`一行，写明`目录 + zip`的实际路径，或按`references/asset_package.md`的`## Access Precondition`降级阶梯的合法形态并标注`未打包`；包位于Project Root之外，其状态只允许`本轮完整输出`或合法降级形态，不使用`已在Accepted Artifact`。缺行或只有"已打包"字样的，该交付轮不得判完成。
+
+FAIL：用"其他都齐了"带过包的缺失；把包当可选附件；声称已打包而实际未生成；或反向地把包登记为Project State字段 / Accepted Artifact。
+
+---
 
 ## R37 No Project Registration Regression
 

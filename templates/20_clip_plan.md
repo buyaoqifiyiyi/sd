@@ -172,3 +172,7 @@
 - 当前Clip每个核心角色是否仍保留各自独立角色资产图/角色锁定图，且没有角色总表或用动作图覆盖外貌基准：
 - 是否已锁定 STATE-08 每个 Clip 一条 Prompt、不得按 Shot 拆分：
 - Pending / Return Route：
+
+## Output QA
+
+Clip表保存为文件时必须运行 `scripts/validate_delivery_artifacts.py <artifact-file> --kind clip-plan`；该校验器只做确定性完整性断言（默认6列表头`Clip ID / 包含镜号 / 核心画面/动作 / 时长 / 起止承接 / 资源`、CLIP编号连续、每行必填格非空、`包含镜号`至少引用一个正式SHOT-xxx），未通过不得交付；通过也不替代下列语义检查。**一句「已完成场景、镜头与执行规划」或只列Clip名不是Clip表**——默认交付形态是这张逐Clip可核对的表；用户明确请求完整制作计划时才输出Preflight、参考预算、风险降级与QA等内部账本。

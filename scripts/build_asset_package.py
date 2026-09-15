@@ -53,6 +53,16 @@ BOARD_PREFIX = "BOARD-"
 # owns (`ENV-01` Master / `ENV-02` Reverse / `ENV-03` Lateral / `ENV-04` Top-Down)
 # plus an extension View, so a file name never invents a second vocabulary.
 VIEW_CODES = ("ENV-01", "ENV-02", "ENV-03", "ENV-04", "EXT")
+# Readable projection of the View Codes the multi-view contract owns. The manifest
+# prints these so a human can read `ENV-002｜Layout_ENV-03.png` as "the lateral view
+# of the second space" without knowing the code table by heart.
+VIEW_ROLE_LABELS = {
+    "ENV-01": "Master Establishing",
+    "ENV-02": "Reverse",
+    "ENV-03": "Lateral",
+    "ENV-04": "Top-Down",
+    "EXT": "Extension",
+}
 IMAGE_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp")
 
 CATEGORIES = (
@@ -89,6 +99,41 @@ def expected_filename(asset_id: str, purpose: str, view: str = "", suffix: str =
         return f"{asset_id}{SEPARATOR}{purpose}{suffix}"
     tail = f"{purpose}_{view}" if view else purpose
     return f"{asset_id}{SEPARATOR}{tail}{suffix}"
+
+
+def describe_locked_name(filename: str) -> tuple[str, str, str]:
+    """Split a locked file name into (asset id, purpose, view code).
+
+    Only used for manifest readability; the naming contract itself stays owned by
+    `references/asset_package.md` and enforced by `filename_conforms`.
+    """
+    stem = filename.rpartition(".")[0]
+    if SEPARATOR not in stem:
+        return filename, "", ""
+    asset_id, purpose = stem.split(SEPARATOR, 1)
+    if asset_id.startswith(BOARD_PREFIX):
+        return asset_id, purpose, ""
+    if purpose in ALLOWED_PURPOSES:
+        return asset_id, purpose, ""
+    base, underscore, view = purpose.partition("_")
+    if underscore:
+        return asset_id, base, view
+    return asset_id, purpose, ""
+
+
+def view_role(view: str) -> str:
+    if not view:
+        return "Not Applicable"
+    return VIEW_ROLE_LABELS.get(view.upper(), view)
+
+
+def asset_display_name(title: str, asset_id: str) -> str:
+    """The project-readable asset name out of a registry heading."""
+    name = title.strip().strip("`*")
+    if not name:
+        return "—"
+    name = re.sub(rf"^{re.escape(asset_id)}[ \t]*[｜|:：\-—]?[ \t]*", "", name).strip()
+    return name or "—"
 
 
 def filename_conforms(filename: str) -> tuple[list[str], list[str]]:
@@ -568,17 +613,38 @@ class Builder:
             lines = [
                 f"# {kind} Manifest",
                 "",
-                "| 文件名 | Asset ID | Active Version | Status | Approval Basis |",
-                "|---|---|---|---|---|",
+                "一行一个文件：同一Asset ID的多张Canonical图不得合并成一行（环境视角尤其如此）。",
+                "`资产名`与`Prompt引用名`用于把包内文件与最终Prompt的参考条目逐行对应；文件名本身不变。",
+                "",
+                "| 文件名 | Asset ID | 资产名 | Purpose | View角色 | Active Version | Status | Approval Basis | Prompt引用名 |",
+                "|---|---|---|---|---|---|---|---|---|",
             ]
-            if not entries:
-                lines.append(f"| Not Applicable | — | — | — | 本项目无{kind}类别已认可资产 |")
-            for asset in sorted(entries, key=lambda item: item.asset_id):
-                names = "、".join(asset.references) or "—"
+            rows: list[tuple[str, ...]] = []
+            for asset in entries:
+                name = asset_display_name(asset.title, asset.asset_id)
+                basis = preferred_basis(asset.text)
+                version = asset.active_version or "—"
+                status = asset.status or "—"
+                if not asset.references:
+                    rows.append((asset.asset_id, asset.asset_id, name, "—", "Not Applicable",
+                                 version, status, basis, f"{asset.asset_id}｜{name}"))
+                    continue
+                for reference in asset.references:
+                    _asset_id, purpose, view = describe_locked_name(reference)
+                    if view:
+                        reference_name = f"{asset.asset_id}｜{name}_{view}"
+                    elif len(asset.references) > 1:
+                        reference_name = f"{asset.asset_id}｜{name}_{purpose}"
+                    else:
+                        reference_name = f"{asset.asset_id}｜{name}"
+                    rows.append((reference, asset.asset_id, name, purpose or "—",
+                                 view_role(view), version, status, basis, reference_name))
+            if not rows:
                 lines.append(
-                    f"| {names} | {asset.asset_id} | {asset.active_version or '—'} | "
-                    f"{asset.status or '—'} | {preferred_basis(asset.text)} |"
+                    f"| Not Applicable | — | — | — | — | — | — | 本项目无{kind}类别已认可资产 | — |"
                 )
+            for row in sorted(rows, key=lambda item: (item[1], item[0])):
+                lines.append("| " + " | ".join(row) + " |")
             target = self.package_root / folder / "_MANIFEST.md"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
@@ -625,15 +691,23 @@ class Builder:
             "",
             "包在Clip表确认后、最终视频Prompt之前生成；包内不含最终视频Prompt。",
             "`Approval Basis`区分逐项确认、批次确认（未提异议）与FAST自动接受。",
+            "`资产名`与`Purpose / View角色`把包内文件与最终Prompt的参考条目逐行对应（文件名不变）。",
             "",
-            "| 文件 | 类别 | Asset ID / Artifact | 版本 | Approval Basis | 来源 | 字节 | SHA-256 |",
-            "|---|---|---|---|---|---|---|---|",
+            "| 文件 | 类别 | Asset ID / Artifact | 资产名 | Purpose / View角色 | 版本 | Approval Basis | 来源 | 字节 | SHA-256 |",
+            "|---|---|---|---|---|---|---|---|---|---|",
         ]
+        titles = {
+            asset.asset_id: asset_display_name(asset.title, asset.asset_id) for asset in assets
+        }
         for record in sorted(self.records, key=lambda item: item["file"]):
+            identifier = record["identifier"]
+            name = titles.get(identifier, "—")
+            _asset_id, purpose, view = describe_locked_name(record["file"])
+            purpose_view = f"{purpose} / {view_role(view)}" if purpose else "—"
             manifest.append(
-                f"| {record['file']} | {record['category']} | {record['identifier']} | "
-                f"{record['version'] or '—'} | {record.get('basis') or '—'} | {record['source']} | "
-                f"{record['bytes']} | {record['sha256']} |"
+                f"| {record['file']} | {record['category']} | {identifier} | {name} | "
+                f"{purpose_view} | {record['version'] or '—'} | {record.get('basis') or '—'} | "
+                f"{record['source']} | {record['bytes']} | {record['sha256']} |"
             )
         if self.excluded:
             manifest += ["", "## 未确认／未打包（未进入本包）", ""] + [
