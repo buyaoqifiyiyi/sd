@@ -390,7 +390,7 @@ Owner：`knowledge/period_and_place/index.md`是登记表、共享Atom Schema、
 
 Module Type：品牌诉求的呈现转译与商业事实边界Knowledge；STATE-01、STATE-04、STATE-06与STATE-08按阶段消费；不创建新STATE、不新增Template字段、不新建节拍模型。
 
-Owner：`knowledge/branded_content/index.md`是登记表、共享Atom Schema、加载规则、商业事实纪律与可校验不变量的唯一owner；`knowledge/branded_content/01_brand_requirement_translation.md`至`03_form_and_delivery.md`是它登记的原子。品牌诉求作为**项目事实**由用户与已确认项目材料拥有，登记于`templates/00_project_start_template.md`的`# Input Material`。
+Owner：`knowledge/branded_content/index.md`是登记表、共享Atom Schema、加载规则、商业事实纪律与可校验不变量的唯一owner；`knowledge/branded_content/01_brand_requirement_translation.md`至`05_commercial_format.md`是它登记的原子（`04_commercial_audience.md`拥有决策链角色的说服路径，`05_commercial_format.md`拥有六类商业形态义务与科普准确性纪律）。品牌诉求作为**项目事实**由用户与已确认项目材料拥有，登记于`templates/00_project_start_template.md`的`# Input Material`。
 
 触发：项目存在**已确认**品牌诉求或商业目标时，在STATE-01（诉求与目标形式）、STATE-04（品牌调性进入`Visual Grammar Baseline`）、STATE-06与STATE-08（产品可读性与呈现落点）按命中原子的对应小节读取。
 
@@ -399,11 +399,13 @@ Owner：`knowledge/branded_content/index.md`是登记表、共享Atom Schema、�
 不变量：
 
 - 真实价格、SKU与组合、可读品牌/Logo文字、功效与资质表述、受监管承诺、免责声明、授权人物与声音是**一等禁项**，不得由制作推断或生成，与`rules/automation_mode.md`的Hard Stop同一口径
+- 医学、健康、法律、金融、安全、工程等**专业结论同属一等禁项**：必须由客户提供，不得推断、不得为可读性简化到失真、不得省略必要前提
 - 资产侧三类归类由`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`唯一拥有，本域只引用
 - 不新建节拍模型：短剧 / 竖屏剧情 / 1—3分钟的节奏适配仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有
 - 时长由用户或已确认交付规格给定；不得按固定秒数分配段落
 - 商业目标不拥有剧情事实：不得为露出改写Production-Locked Script、Canonical资产或已确认Blocking
-- 与媒介、类型、时代地域三条轴正交，任一轴不得覆盖另一轴
+- 受众角色说服路径与形态义务不拥有年龄轴适宜性：`knowledge/audience_profiles.md`优先，不得为说服力突破其分层表
+- 与媒介、类型、时代地域、年龄、平台五条轴正交，任一轴不得覆盖另一轴
 - 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
 - 视频Prompt永久禁止非剧情内配乐
 - 商业片不豁免资产双确认、Completion Gate、Reference Budget与任何Hard Stop
@@ -431,13 +433,42 @@ Owner：`knowledge/audience_profiles.md`拥有受众字段的值域与三档分�
 - 分级条文属外部事实，必须由用户提供来源，不得虚构或声称符合未确认的分级体系
 - 可模仿性判据：受众越小，危险动作越必须在同段落内给出可理解的负面后果
 - 儿童向不等于降智：不得以可理解性为由简化因果或删除冲突
-- 与媒介、类型、时代地域三条轴正交，任一轴不得覆盖另一轴
+- 本文件是**年龄轴**；商业传播中"凭什么被说服"的角色轴由`knowledge/branded_content/04_commercial_audience.md`拥有，两轴正交且冲突时本文件优先
+- 与媒介、类型、时代地域、商业受众角色、平台五条轴正交，任一轴不得覆盖另一轴
 - 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
 - 视频Prompt永久禁止非剧情内配乐，儿童向不构成例外
 
 禁止：为适宜性静默改写Production-Locked Script或已确认剧情事实；用"儿童向"当作删除冲突的理由；把海报渠道差异当作受众分化（那是`knowledge/poster_design/index.md`的边界）。
 
 冲突时：受众未声明或冲突返回用户与已确认项目材料；适宜性与剧情事实冲突返回Writer Owner；理解难度与媒介表达冲突返回`knowledge/medium_profiles.md`；美学方向返回STATE-04；逐镜尺度返回STATE-06。
+
+---
+
+## Platform Profile Knowledge Contract
+
+Module Type：交付渠道引发的注意结构与交付结构分化Knowledge；STATE-01、STATE-05与STATE-06按阶段消费；不创建新STATE、不新增Template字段、不新建节拍模型。
+
+Owner：`knowledge/platform_profiles.md`拥有六个平台剖面字段（`注意窗口` / `完播语义` / `结尾动作` / `静音默认` / `画幅与安全区` / `本批交付量`）与四层分化规则（`## Note Window Layer` / `## Completion And Series Layer` / `## Conversion Landing Layer` / `## Silent Playback And Packaging Layer`），以及可校验不变量。
+
+触发：交付渠道由用户或已确认项目材料声明时，登记在`project_bible.md`的`## Delivery Spec｜交付规格`，在STATE-01（开场与结尾义务）、STATE-05与STATE-06（注意目标顺序与首帧）读取对应小节。
+
+不触发：未声明时记`Platform Profile: PENDING`，不加载任何分化层、按既有通用行为继续，也不得登记为已确认的平台剖面；**不得从媒介、题材、时长、画风或客户行业推定平台**。
+
+不变量：
+
+- **平台事实属外部事实**：推荐机制、算法偏好、时长上限、审核与分级条文、画幅与封面尺寸数值、话题标签与投放留资要求必须由用户提供或引用可核对来源；本文件不虚构平台规则、不声称符合任何未确认的平台机制，也不提供可套用的平台模板
+- 未声明时记`Platform Profile: PENDING`，不加载分化层
+- 短剧 / 竖屏剧情 / 1—3分钟的Hook窗口与五段模型仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有，本文件不新建第二套节拍模型
+- 转化动作是Payoff义务，必须由可见行为或状态收束；未给定时不写转化动作，也不得自行选择"看起来更好卖"的那一个
+- 文字级元素（二维码、价格、免责声明、入口文案、精确Logo）按"优先后期叠加"处理
+- 画幅与安全区构图仍由`knowledge/camera_language/composition_language/vertical_framing.md`拥有；封面与标题落版仍由`knowledge/poster_design/index.md`拥有
+- 与媒介、类型、受众、时代地域四条轴正交，任一轴不得覆盖另一轴
+- 不新增STATE-08字段、不改变主Pipeline、不改变任何Model Adapter能力数值
+- 视频Prompt永久禁止非剧情内配乐
+
+禁止：为平台静默改写Production-Locked Script、Canonical资产或已确认Blocking；把某一平台的常见结构当作通用模板；用"这类片子一般是多少秒"代替用户给定的`注意窗口`；把渠道差异当作受众分化。
+
+冲突时：平台事实缺失、冲突或需要确认返回用户与已确认项目材料及`project_bible.md`的`## Delivery Spec｜交付规格`；注意窗口或结尾义务与剧情事实冲突返回Writer Owner；目标形式节拍返回短剧适配器；画幅返回`vertical_framing.md`；封面标题返回`poster_design/index.md`；品牌诉求与转化事实返回`knowledge/branded_content/index.md`；媒介表达返回`knowledge/medium_profiles.md`。
 
 ---
 

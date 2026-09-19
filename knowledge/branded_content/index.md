@@ -17,14 +17,16 @@
 
 ## Purpose And Boundary
 
-本域拥有**已确认的品牌诉求如何变成呈现层语言**：单一传达目标如何决定注意焦点链、产品在画面中承担什么角色、可信度如何被建立、利益点如何用可见结果而不是形容词表达，以及商业事实的边界。
+本域拥有**已确认的品牌诉求如何变成呈现层语言**：单一传达目标如何决定注意焦点链、产品在画面中承担什么角色、可信度如何被建立、利益点如何用可见结果而不是形容词表达，以及商业事实的边界。它也拥有商业传播的**受众角色说服路径**（决策链上的不同角色凭什么被说服）与**商业影片形态义务**（宣传 / 科普 / 产品 / 案例 / 招商 / 雇主品牌各自必须让观众看见什么）。
 
 **它不拥有**：
 
 - **商业事实本身**——真实SKU、价格、Logo、功效、资质、授权、法务文案由用户与已确认项目材料拥有；**资产侧的三类归类（客户必须提供 / 可由制作生成 / 优先后期叠加）由`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`拥有**，本域只引用不重复。
 - 剧情事实与故事结构（Writer Owner与`knowledge/screenplay_development.md`）。
 - 项目级美学方向（STATE-04）、媒介分化（`knowledge/medium_profiles.md`）、类型呈现（`knowledge/genre/index.md`）、时代与地域（`knowledge/period_and_place/index.md`）、交付画幅（`knowledge/camera_language/composition_language/vertical_framing.md`）。
-- 目标形式的节奏适配：短剧 / 竖屏剧情 / 1—3分钟剧情视频仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有；本域不新建节拍模型。
+- 目标形式的节奏适配：短剧 / 竖屏剧情 / 1—3分钟剧情视频仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有；本域不新建节拍模型。形态原子只决定"必须让观众看见什么"，不决定段落数、秒数或五段模型。
+- **年龄轴的适宜性与理解难度**：`knowledge/audience_profiles.md`拥有`preschool` / `children_family` / `general`三档、三张分层表与"不得推定受众"纪律。`04_commercial_audience.md`是**角色轴**——它回答"凭什么被说服"，不改年龄轴的值域、不新增同义档，两轴冲突时年龄轴优先。
+- **平台事实、注意窗口与结尾结构**：由`knowledge/platform_profiles.md`拥有。本域不登记任何平台的机制、时长上限、审核条文或尺寸数值，也不从平台反推形态或受众角色。
 
 **它不是"广告模板"**：本域不规定段落数与秒数，不提供可以套用的构型；它只回答"这个品牌诉求要求观众看到什么、以及哪些事实不能由制作生成"。
 
@@ -45,6 +47,8 @@
 | 1 | 品牌诉求的呈现转译 | `knowledge/branded_content/01_brand_requirement_translation.md` | 单一传达目标、产品角色、可信度锚点、利益点的可见化 |
 | 2 | 产品可读性与宣称边界 | `knowledge/branded_content/02_product_legibility_and_claims.md` | 产品识别点、模型能生成什么与必须后期叠加什么、宣称与授权边界 |
 | 3 | 形态与交付 | `knowledge/branded_content/03_form_and_delivery.md` | 时长形态的候选用法、结尾落地方式、与画幅、海报、Clip划分的关系 |
+| 4 | 商业受众与说服路径 | `knowledge/branded_content/04_commercial_audience.md` | 决策链角色的说服路径，及其落在画面的哪个位置 |
+| 5 | 商业影片形态 | `knowledge/branded_content/05_commercial_format.md` | 宣传 / 科普 / 产品 / 案例 / 招商 / 雇主品牌六类形态的内容义务与科普准确性纪律 |
 
 本表是原子的**唯一登记处**：新增原子必须同时在此登记，文件与登记项一一对应。
 
@@ -64,13 +68,15 @@
 
 **任何商业事实都不得由制作推断或生成。** 一等禁项（与`rules/automation_mode.md`的Hard Stop同一口径）：真实价格、SKU与组合、可读品牌/Logo文字、功效与资质表述、受监管承诺、免责声明、授权人物或声音、真实机构与合作关系。
 
+**专业结论同样是一等禁项**：医学、健康、法律、金融、安全、工程等领域的结论、数据、剂量、适用范围与前提条件必须由客户提供，制作不得推断、不得为可读性简化到失真，也不得省略必要前提——`05_commercial_format.md`的`### Explainer Discipline｜科普纪律`是这一条在科普形态下的执行入口。
+
 - 缺这些事实时按`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`归类并记录Pending Decision；只有会改变产品身份、商业承诺、法律风险或当前关键剧情时才向用户询问。
 - **不得用"看起来专业"的画面替代缺失的事实**：编造的价格、功效或Logo不是创意，是风险。
 - 需要文字级正确的元素（长文案、价签、免责声明、精确Logo）默认按"优先后期叠加"处理，不写进模型生成承诺。
 
 ## Orthogonality
 
-- **与媒介、类型、时代地域三条轴正交**：品牌诉求不改变媒介档、不改变类型承诺、不改变时代与地域的事实约束；反过来这三条也不得静默抹掉商业目标。
+- **与媒介、类型、时代地域三条轴正交**：品牌诉求不改变媒介档、不改变类型承诺、不改变时代与地域的事实约束；反过来这三条也不得静默抹掉商业目标。它同时与`knowledge/audience_profiles.md`的年龄轴、`knowledge/platform_profiles.md`的平台轴正交——五条轴互不覆盖，任一轴都不得被另一轴静默抹掉。
 - **与叙事的关系**：商业目标不拥有剧情事实，也不得为了露出而改写Production-Locked Script、Canonical资产或已确认Blocking；它能影响的是**呈现的选择与优先级**，且这些影响必须能被说明。
 - **与美学基线的关系**：品牌调性通过已有的`Visual Grammar Baseline`与`Aesthetic Decision Lock`表达，不新建设计体系或平行Schema。
 
@@ -88,6 +94,9 @@
 - 商业事实缺失或冲突 → `workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`与Pending Decision
 - 品牌诉求本身未确认 → STATE-00的`# Input Material`与STATE-01的Creation Brief；不得由本域代替用户确认
 - 目标形式的节奏适配 → `knowledge/adaptation/short_form_drama_adapter.md`（短剧 / 竖屏剧情 / 1—3分钟）
+- 年龄轴的适宜性与理解难度 → `knowledge/audience_profiles.md`；两轴冲突时年龄轴优先，不得为说服力突破其分层表
+- 平台事实、注意窗口与结尾结构 → `knowledge/platform_profiles.md`；本域不猜平台机制
+- 受众角色或形态未声明 → 用户与已确认项目材料；记Pending Decision，不自行推定
 - 交付画幅 → `knowledge/camera_language/composition_language/vertical_framing.md`
 - 项目级美学方向 → STATE-04；剧情事实 → Writer Owner
 - 海报与封面 → `knowledge/poster_design/index.md`（本域不重复其判据）

@@ -153,6 +153,16 @@ Writer决定信息何时进入故事：`Reveal / Withhold / Delay / Mislead / Co
 
 Existing Script默认只读检查：causality、character motivation、scene necessity、scene value change、beat progression、conflict / stakes、dialogue / subtext、setup / payoff、information architecture、pacing / escalation、character / relationship arc与ending payoff。先记录问题、影响与可优化方向；只有用户已明确授权时，才调用`knowledge/screenwriting_optimization.md`或`knowledge/script_adaptation.md`改写。
 
+### Commercial Objective And Writer Beat｜商业目标下的Writer形态
+
+商业目标（品牌诉求、引流与转化）**不拥有剧情事实**，但它是合法的Payoff义务来源，必须长在Writer Beat链上，不能贴在片尾。
+
+- **传达目标=一条注意焦点链**：单一传达目标决定观众的第一注意目标依次落在哪里；多个卖点并列争夺第一注意目标时排序或明确不做，不两头兼顾。
+- **转化动作是Payoff，不是落版**：结尾动作（关注、评论、私信、留资、合作、购买意向）必须由可见行为或状态收束，并回答"前面哪个Setup让它变得可信"；没有Setup支撑的转化动作标记为未兑现。
+- **痛点与利益点都必须可见**：写"更省力"不构成执行内容；痛点落在可观察的处境上，利益点落在前后差异上。不得用恐吓、羞辱或不可解释的威胁制造压力。
+- **专业结论不由作者生成**：知识型内容的结论、数据、剂量、适用范围与免责表述属于客户提供的事实；Writer只负责把它们变成可见过程，不负责推断、简化到失真或补写前提。
+- **边界**：商业目标不得改写已锁定的关键因果、人物动机与Setup / Payoff义务；目标与已成立故事冲突时按`## Proposal And Revision Handoff`做最小修订或回报冲突，不静默改写。受众角色的说服路径与形态义务由`knowledge/branded_content/index.md`拥有；注意窗口与结尾结构由`knowledge/platform_profiles.md`拥有；年龄轴适宜性由`knowledge/audience_profiles.md`拥有且优先。
+
 ## Writer → Director Handoff
 
 Writer交给Director的是：Story Intent、Character Intent、Scene Objective、Writer Beats、Relationship Change、Information Architecture、Subtext / Hidden Objective、Setup / Payoff obligations、Performance Intent、Scene Exit State与故事层AIGC限制。

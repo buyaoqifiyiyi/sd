@@ -610,3 +610,21 @@ FAIL：因"动画片是给孩子看的"或平台是少儿频道就推定受众�
 PASS：输入一按重现处理，可区分并标注依据来源，只补足可核实的事实间隙，不补人物内心、未记录的对话与未发生的动机；输入二使用生成影像时**不得被呈现为档案或真实影像**，不配纪实性字幕、时间码或档案式包装；每条事实陈述可指向可核对来源（来源台账），旁白只讲可核对内容，时间线与事件顺序与来源一致。
 
 FAIL：用无依据的重现填补来源缺口；为叙事顺畅调换事件顺序或制造未记录的前因后果；把生成画面伪装成档案；涉及真实主体却未取得用户提供的授权。
+
+## R95 Platform And Commercial Audience Regression
+
+### R95-A Platform Facts Are Never Invented, And The Profile Only Differentiates Confirmed Facts
+
+输入一：一个动画短剧项目，未声明交付渠道，客户只说"就是发短视频平台"。输入二：交付渠道已确认，`注意窗口`与`结尾动作`由客户给出，但推荐机制与时长上限未提供。
+
+PASS：输入一记`Platform Profile: PENDING`、不加载任何分化层、按既有通用行为继续，也不得登记为已确认的平台剖面——媒介是动画、题材像广告、时长很短、画风像某一站都不构成依据；输入二按已确认的`注意窗口`与`完播语义`执行开场与结尾义务，转化动作由可见行为收束并回答"前面哪个Setup让它可信"，缺失的推荐机制与时长上限记Pending Decision，不猜也不声称符合该平台机制。文字级元素（二维码、价格、免责声明、入口文案）按"优先后期叠加"处理；短剧Hook窗口与五段模型仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有，不新建第二套节拍模型。
+
+FAIL：从媒介、题材、时长、画风或客户行业推定平台；用"这类片子一般是多少秒"代替用户给定的`注意窗口`；虚构平台规则或声称"符合"某平台的推荐机制；把某一平台的常见结构当作通用模板；为平台静默改写Production-Locked Script；用文字落版单独承担转化动作。
+
+### R95-B Commercial Audience And Format Do Not Overwrite The Age Axis Or The Script
+
+输入一：品牌项目要求"给决策者看"，同时受众已声明为儿童向。输入二：品牌项目要求在同一支片子里完成宣传、科普与招商，并需要一段医学结论。
+
+PASS：输入一按`knowledge/branded_content/04_commercial_audience.md`排决策者说服路径（结果与代价落在动作描述与`构图`），但适宜性判据优先——不得为说服力突破`knowledge/audience_profiles.md`的分层表，也不得用恐吓、羞辱或不可解释的威胁制造痛点，两轴冲突时年龄轴优先；输入二先按`01_brand_requirement_translation.md`排序或拆为多条交付，不在单条里并列三套义务；医学结论属**一等禁项**，必须由客户提供，制作不推断、不为可读性简化到失真、不省略必要前提，缺口记Pending Decision。`05_commercial_format.md`的形态只决定"必须让观众看见什么"，不决定段落数或秒数，也不改写已锁定因果、动机与Setup / Payoff义务。
+
+FAIL：用"决策者只关心成本"这类通用假设当项目事实；为说服力加入未成年人不宜内容；一支片子同时承担宣传、科普与招商三套义务；制作自行补写专业结论、数据、剂量或适用范围；为符合形态改写Production-Locked Script、Canonical资产或已确认Blocking；把某一形态的常见段落结构当作通用模板。

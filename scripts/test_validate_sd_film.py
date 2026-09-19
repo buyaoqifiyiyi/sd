@@ -4,6 +4,7 @@
 from __future__ import annotations
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -5395,6 +5396,81 @@ class R86AudienceAndDocumentaryTests(unittest.TestCase):
                     for item in errors
                 ),
                 errors,
+            )
+
+
+class R95PlatformAndCommercialAudienceTests(unittest.TestCase):
+    """反向守卫：平台剖面与商业受众/形态都必须保住各自的门。
+
+    实测缺口：语料反复声明"平台事实必须由用户提供、不得猜测"，却没有任何 owner
+    拥有"一个**已确认**的平台改变了什么"——注意窗口、完播义务与转化落点只能靠短剧
+    适配器那组固定 3s/30s 硬门代替，而它对非短剧目标一律 Not Applicable。商业域
+    同样只有"呈现转译"一个原子：受众角色与影片形态（宣传 / 科普 / 产品 / 案例 /
+    招商 / 雇主品牌）没有内容义务，科普的专业结论也没有与商业事实同口径的禁项。
+    """
+
+    def test_active_skill_passes(self) -> None:
+        self.assertEqual(validator.check_audience_and_non_fiction(ROOT), [])
+        self.assertEqual(validator.check_branded_content(ROOT), [])
+
+    def test_a_missing_platform_owner_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            errors = validator.check_audience_and_non_fiction(Path(temp_dir))
+            self.assertIn(
+                f"platform profile owner file is missing: {validator.PLATFORM_OWNER}", errors
+            )
+
+    def test_lost_platform_gates_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            owner = (ROOT / validator.PLATFORM_OWNER).read_text(encoding="utf-8-sig")
+            (root / validator.PLATFORM_OWNER).write_text(
+                owner.replace("不得推定平台", "建议核对平台").replace(
+                    "Platform Profile: PENDING", "Platform Profile: 未填写"
+                ),
+                encoding="utf-8",
+            )
+            errors = validator.check_audience_and_non_fiction(root)
+            self.assertTrue(
+                any("must keep the no platform inference" in item for item in errors), errors
+            )
+            self.assertTrue(
+                any("must keep the pending platform profile" in item for item in errors), errors
+            )
+
+    def test_lost_platform_routing_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "knowledge").mkdir()
+            (root / validator.PLATFORM_OWNER).write_text(
+                (ROOT / validator.PLATFORM_OWNER).read_text(encoding="utf-8-sig"),
+                encoding="utf-8",
+            )
+            errors = validator.check_audience_and_non_fiction(root)
+            self.assertTrue(
+                any(
+                    "audience/documentary routing file is missing: knowledge/00_knowledge_index.md"
+                    in item
+                    for item in errors
+                ),
+                errors,
+            )
+
+    def test_an_unregistered_commercial_atom_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            shutil.copytree(ROOT / validator.BRANDED_DIR, root / validator.BRANDED_DIR)
+            index_path = root / validator.BRANDED_INDEX
+            index_path.write_text(
+                index_path.read_text(encoding="utf-8-sig").replace(
+                    "`knowledge/branded_content/05_commercial_format.md`", "（形态见商业域）"
+                ),
+                encoding="utf-8",
+            )
+            errors = validator.check_branded_content(root)
+            self.assertTrue(
+                any("is not registered in the roster" in item for item in errors), errors
             )
 
 

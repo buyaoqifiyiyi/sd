@@ -82,6 +82,18 @@ STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；S
 
 受众与媒介、类型、时代地域三条轴正交，不改变任何主STATE、Template字段或STATE-08最终Schema。各国各平台的分级条文属**外部事实**，必须由用户提供来源，本文件不虚构分级标准也不声称符合任何未确认的分级体系。儿童向不等于降智：可理解性要求不等于简化因果或删除冲突。
 
+本文件是**年龄轴**。商业传播中"凭什么被说服"的角色轴由`knowledge/branded_content/04_commercial_audience.md`拥有，两者正交且冲突时年龄轴优先。
+
+---
+
+## Persistent Platform Profile
+
+`knowledge/platform_profiles.md`是发布平台剖面的唯一知识Owner，定义`注意窗口` / `完播语义` / `结尾动作` / `静音默认` / `画幅与安全区` / `本批交付量`六个平台剖面字段，以及这些已确认事实在**注意窗口、完播与系列、转化落点、静音与包装**四层上的分化规则。它回答的是"在观众离开之前的那个窗口里，故事必须已经交付了什么"。
+
+它由用户或已确认项目材料声明的交付渠道触发（登记在`project_bible.md`的`## Delivery Spec｜交付规格`）：已声明时在STATE-01（开场与结尾义务）、STATE-05 / STATE-06（注意目标顺序与首帧）按需读取；未声明时记`Platform Profile: PENDING`，不加载任何分化层、按既有通用行为继续，也不得登记为已确认的平台剖面。**不得推定平台**——媒介是动画、题材像广告、时长很短、画风像某一站的内容都不构成依据。
+
+**它不拥有平台事实本身**：任何平台的推荐机制、算法偏好、时长上限、审核与分级条文、画幅尺寸数值、封面尺寸、话题标签与投放留资要求都是**外部事实**，必须由用户提供或引用可核对来源；本文件不虚构平台规则、不声称符合任何未确认的平台机制，也不提供可以套用的平台模板。短剧 / 竖屏剧情 / 1—3分钟的Hook窗口与五段模型仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有，本文件不新建节拍模型。平台与媒介、类型、受众、时代地域四条轴正交，不改变任何主STATE、Template字段或STATE-08最终Schema，也不得成为静默改写已锁定剧本的理由。
+
 ---
 
 ## Persistent Genre Profile
@@ -117,11 +129,11 @@ STATE-00只建立Project Director Baseline；STATE-01形成Scene source data；S
 
 ## Persistent Branded Content
 
-项目存在**已确认**的品牌诉求或商业目标时，`knowledge/branded_content/index.md`是品牌与商业片知识的唯一Owner（`knowledge/branded_content/01_brand_requirement_translation.md`至`knowledge/branded_content/03_form_and_delivery.md`为其登记的原子）。它把已确认的品牌诉求转译为**呈现层语言**——单一传达目标决定的注意焦点链、产品在画面中的角色、可信度锚点、利益点的可见化——并约束商业事实边界。
+项目存在**已确认**的品牌诉求或商业目标时，`knowledge/branded_content/index.md`是品牌与商业片知识的唯一Owner（`knowledge/branded_content/01_brand_requirement_translation.md`至`knowledge/branded_content/05_commercial_format.md`为其登记的原子）。它把已确认的品牌诉求转译为**呈现层语言**——单一传达目标决定的注意焦点链、产品在画面中的角色、可信度锚点、利益点的可见化——并约束商业事实边界；`04_commercial_audience.md`拥有决策链角色的**说服路径**，`05_commercial_format.md`拥有宣传 / 科普 / 产品 / 案例 / 招商 / 雇主品牌六类**形态义务**与科普准确性纪律。
 
 它由`templates/00_project_start_template.md`的`# Input Material`已勾选`品牌需求`且内容已给出、或STATE-01的Creation Brief含明确品牌目标触发：在STATE-01（诉求与目标形式）、STATE-04（品牌调性进入`Visual Grammar Baseline`）、STATE-06与STATE-08（产品可读性与呈现落点）按需读取。未确认时不加载，也**不得**因为项目时长短、平台是短视频或题材像广告就推定其为商业片。
 
-它不拥有商业事实本身、资产侧三类归类（`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`）、剧情事实、美学方向与目标形式的节奏适配（短剧仍走`knowledge/adaptation/short_form_drama_adapter.md`）；与媒介、类型、时代地域三条轴正交，不新建节拍模型、不新增Template字段或STATE-08 Schema。真实价格、SKU、Logo文字、功效与资质表述、受监管承诺、授权人物与声音是一等禁项，与`rules/automation_mode.md`的Hard Stop同一口径。
+它不拥有商业事实本身、资产侧三类归类（`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`）、剧情事实、美学方向与目标形式的节奏适配（短剧仍走`knowledge/adaptation/short_form_drama_adapter.md`）；与媒介、类型、时代地域、年龄、平台五条轴正交，不新建节拍模型、不新增Template字段或STATE-08 Schema。真实价格、SKU、Logo文字、功效与资质表述、受监管承诺、授权人物与声音是**一等禁项**，与`rules/automation_mode.md`的Hard Stop同一口径；**医学、健康、法律、金融、安全、工程等专业结论同属一等禁项**，必须由客户提供，不得推断、简化到失真或补写前提。
 
 ---
 

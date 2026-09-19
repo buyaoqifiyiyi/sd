@@ -62,6 +62,7 @@
 | `knowledge/period_and_place/` | `## Time Period`或`## Location System`已登记；未登记时不加载，也不得从媒介、类型、平台、导演风格或参考片推定 | `project_bible.md`的`# 2. World Building`字段 |
 | `knowledge/branded_content/` | 项目存在已确认的品牌诉求或商业目标（Input Material的`品牌需求`已给出，或Creation Brief含明确品牌目标）；普通叙事项目不加载，也不得从时长、平台或题材推定 | `templates/00_project_start_template.md`的`# Input Material` / STATE-01的Creation Brief |
 | `knowledge/audience_profiles.md` | 受众定位已由用户或已确认项目材料声明；未声明时不加载分化表，也不得从媒介、类型、平台、画风或时长推定受众 | STATE-01 Adaptation Target的受众项 / 用户当前请求 |
+| `knowledge/platform_profiles.md` | 交付渠道已由用户或已确认项目材料声明；未声明时不加载任何分化层，也不得从媒介、题材、时长、画风或客户行业推定平台 | `project_bible.md`的`## Delivery Spec｜交付规格` / 用户当前请求 |
 | `knowledge/adaptation/documentary_adapter.md` | `Adaptation Target Detection`确认目标为纪实 / 非虚构（纪录片、观察式、访谈式、档案重组、口述史） | STATE-01入口路由 |
 | `rules/automation_mode.md` | `Automation Policy: FAST` | 用户显式启用 |
 | `rules/runtime_reload.md` | 命中显式Reload触发 | `rules/runtime_reload.md`的触发词表 |

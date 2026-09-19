@@ -14,7 +14,7 @@
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
 | `references/regression_scenarios_parameters.md` | R88—R90、R93 | 参数与交付保真：Clip时长整数粒度、打包器按Active Version选版、平面词误报、模型成本替代 |
-| `references/regression_scenarios_maintenance.md` | R49—R63、R66—R67、R79、R83—R86 | 美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据、交付物完整性打包门、独立调用、Skill入口元数据、交付规格owner、时代地域、品牌商业片与受众·纪实 |
+| `references/regression_scenarios_maintenance.md` | R49—R63、R66—R67、R79、R83—R86、R95 | 美学决策与试片、维护体系与可达性、媒介剖面、分镜拆解覆盖、Review 审美判断、阶段落点覆盖、FAST 不变量与交付收据、交付物完整性打包门、独立调用、Skill入口元数据、交付规格owner、时代地域、品牌商业片与受众·纪实、平台剖面与商业受众形态 |
 | `references/regression_scenarios_delivery.md` | R48 | 交付物校验、覆盖与尺度（按编号边界拆出的独立子案例合集） |
 | `references/recovery_guards.md` | R25（LR-R1—R10）、R26（SD-R1—R5） | 每次正式修改都必须运行的固定基线 |
 
@@ -359,4 +359,5 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R84-A至R84-B验证时代与地域结论落在已确认来源 / 合理推断 / 不可确认三类之一、真实人物机构事件品牌为一等禁项，且时代技术边界与照明条件决定夜景的可拍内容。确定性射程由`check_period_and_place`承担。
 - R85-A至R85-B验证品牌诉求收成一条注意焦点链、产品角色明确、商业事实不由制作生成、文字级元素留后期叠加，且不得从时长、平台或题材推定项目为商业片。确定性射程由`check_branded_content`承担。
 - R86-A至R86-B验证受众不得推定（动画不等于儿童向）、可模仿性设定尺度、儿童向不等于降智、分级属外部事实，且纪实四道门与“生成画面不得冒充档案”在位。确定性射程由`check_audience_and_non_fiction`承担。
+- R95-A验证平台不得推定、平台事实不由制作编造、注意窗口与完播义务只按已确认剖面执行、转化动作由可见行为收束、短剧节拍仍归短剧适配器；R95-B验证商业受众角色与形态义务不得覆盖年龄轴、专业结论属一等禁项、单条只承担一个形态。确定性射程由`check_audience_and_non_fiction`与`check_branded_content`承担。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。
