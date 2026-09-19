@@ -3466,6 +3466,65 @@ Confirmed Status: No
                 any("仍有多个同名文件" in item for item in result["errors"]), result["errors"]
             )
 
+    def test_state_keyed_canonical_names_resolve_against_prompt_entries(self) -> None:
+        """同一Asset ID的多张State图：文件名带状态键时，Prompt条目必须能逐条落到唯一文件。
+
+        裸 `CHAR-001｜State.png` 无法区分两张状态图，因此文件名沿用可读状态键
+        （`CHAR-001｜林夏·负伤_State.png`）。引用名写 `<Asset ID>｜<资产名>_<Purpose>`，
+        对应性检查按完整尾串解析，必须唯一命中，不能猜。
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "PROJECT-DEMO-005"
+            version_dir = project / "assets/CHAR/canonical/CHAR-001/v002"
+            (version_dir / "state-负伤").mkdir(parents=True)
+            (version_dir / "state-洞穴").mkdir(parents=True)
+            (version_dir / "state-负伤" / "CHAR-001｜林夏·负伤_State.png").write_bytes(self.PIXEL)
+            (version_dir / "state-洞穴" / "CHAR-001｜林夏·洞穴_State.png").write_bytes(self.PIXEL)
+            (project / "asset_registry.md").write_text(
+                "# Asset Registry\n\n## CHAR-001 林夏\n\n"
+                "Asset ID: CHAR-001\nAsset Tier: Core\nStatus: Active\nActive Version: v002\n"
+                "Canonical References:\n"
+                "- `CHAR-001｜林夏·负伤_State.png` — 用途：State / 现实负伤，绑定 v002\n"
+                "- `CHAR-001｜林夏·洞穴_State.png` — 用途：State / 回忆洞穴，绑定 v002\n"
+                "Visual Production Status: Asset Confirmed\nConfirmed Status: Yes\n"
+                "Approved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+            prompt = project / "prompt.md"
+            prompt.write_text(
+                "多模态参考资产：\n"
+                "- @图片1：CHAR-001｜林夏·负伤_State；用途：现实负伤状态。\n"
+                "- @图片2：CHAR-001｜林夏·洞穴_State；用途：回忆洞穴状态。\n",
+                encoding="utf-8", newline="\n",
+            )
+            # A confirmed Clip表 is a package gate condition, not a file category.
+            (project / "07_clip_production_plan.md").write_text(
+                "# Clip表\n\n"
+                "| Clip ID | 包含镜号 | 核心画面/动作 | 时长 | 起止承接 | 资源 |\n"
+                "|---|---|---|---|---|---|\n"
+                "| CLIP-001 | SHOT-001 | 林夏拔剑 | 8秒 | 站姿 → 出画 → 下一Clip | CHAR-001 |\n\n"
+                "Confirmed Status: Yes\nApproved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+            result = asset_package_builder.Builder(
+                asset_package_builder.argparse.Namespace(
+                    project_root=str(project),
+                    registry=None,
+                    project_id=None,
+                    project_name="状态键",
+                    version="001",
+                    output=str(root / "PROJECT-DEMO-005_packages" / "001"),
+                    no_zip=True,
+                    check_prompt=str(prompt),
+                )
+            ).run()
+            self.assertEqual([], result["errors"], result["errors"])
+            package = Path(str(result["package_root"]))
+            # 同一Asset ID的多张State图各占一行，不得合并。
+            manifest = (package / "02_assets/CHAR/_MANIFEST.md").read_text(encoding="utf-8")
+            self.assertEqual(2, manifest.count("CHAR-001｜林夏·"), manifest)
+
     def test_unconfirmed_work_is_reported_not_packaged(self) -> None:
         """用户认可的才进包：Registry里存在不等于可以打包。"""
         with tempfile.TemporaryDirectory() as temp_dir:

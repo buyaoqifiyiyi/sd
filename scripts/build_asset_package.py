@@ -174,17 +174,37 @@ def filename_conforms(filename: str) -> tuple[list[str], list[str]]:
         if kind == "ENV" and purpose == "Layout":
             soft.append(f"ENV Layout without an explicit view (mother reference): {filename}")
         return hard, soft
-    if purpose in ALLOWED_PURPOSES:
-        hard.append(f"purpose {purpose!r} is not allowed for {kind}: {filename}")
-        return hard, soft
-    base, underscore, view = purpose.partition("_")
-    if base not in allowed:
-        hard.append(f"purpose {base!r} is not allowed for {kind}: {filename}")
+    base, underscore, tail = purpose.partition("_")
     if not underscore:
+        # A bare purpose that is a real Purpose token, but not one this kind may
+        # use, is a different finding from an unreadable purpose form.
+        if purpose in ALLOWED_PURPOSES:
+            hard.append(f"purpose {purpose!r} is not allowed for {kind}: {filename}")
+            return hard, soft
         hard.append(f"unknown purpose form: {filename}")
         return hard, soft
-    if underscore and (kind != "ENV" or view not in VIEW_CODES):
-        hard.append(f"view code {view!r} is not allowed here: {filename}")
+    if kind == "ENV":
+        # Environments are the one kind whose tail vocabulary is a View Code
+        # (`ENV-001｜Layout_ENV-01`).
+        if base not in allowed:
+            hard.append(f"purpose {base!r} is not allowed for {kind}: {filename}")
+        if tail not in VIEW_CODES:
+            hard.append(f"view code {tail!r} is not allowed here: {filename}")
+    elif tail in allowed:
+        # A second and further State image of one Asset ID has to stay readable
+        # *and* stay unique, and the bare `<Purpose>` slot cannot do both: two
+        # state files would share `CHAR-001｜State.png`. The unlocked name already
+        # carries the state in its title (`CHAR-001｜萧炎／药岩·云岚山负伤_State`),
+        # so the file name keeps that title and terminates in a real purpose; the
+        # leading title carries no purpose claim of its own.
+        # The sibling `State-<key>` form leaves the Purpose token unreadable and
+        # is therefore rejected here, and `resolve_source` reports it as an
+        # unresolvable duplicate.
+        pass
+    else:
+        if base not in allowed:
+            hard.append(f"purpose {base!r} is not allowed for {kind}: {filename}")
+        hard.append(f"view code {tail!r} is not allowed here: {filename}")
     return hard, soft
 
 
@@ -213,7 +233,18 @@ REFERENCE_NAME_RE = re.compile(
     + r"([^｜|/\\\s；;，,。、（）()\[\]]*)",
     re.I,
 )
-VIEW_CODE_TAIL_RE = re.compile(r"_(ENV|EXT)-\d{2}$", re.I)
+# The tail that disambiguates one Asset ID owning several Canonical images. An
+# environment disambiguates by View Code; every other kind disambiguates by
+# Purpose (`CHAR-002｜云韵／云芝_Identity` next to `…_State`). Both spellings end
+# up as a `_<tail>` suffix on the locked file name, which is what this matches.
+VIEW_CODE_TAIL_RE = re.compile(
+    r"_(?:ENV|EXT)-\d{2}$|_(?:" + "|".join(sorted(ALLOWED_PURPOSES)) + r")$", re.I
+)
+
+# The reference field itself: the first Markdown list entry that carries both a
+# `<label>：` field name and an Asset ID. Its block ends at the next such label.
+FIELD_LABEL_RE = re.compile(r"^[^|\s].{0,40}?[：:]")
+ASSET_ID_RE = re.compile(r"(?:CHAR|ENV|PROP|FX|BOARD-[A-Za-z]+)-\d+", re.I)
 
 # Non-Canonical model inputs keep the stable reference names their own owners
 # already use (`REF-SKETCH-XX`, `REF-TAIL-XX`), so a compiled prompt can be
@@ -862,6 +893,57 @@ class Builder:
             ]
         (self.package_root / "00_MANIFEST.md").write_text("\n".join(manifest) + "\n", encoding="utf-8", newline="\n")
 
+    def reference_field_entries(self, text: str) -> str:
+        """The reference field's own entry lines, so only they are file references.
+
+        The block starts at the first Markdown list entry whose label is followed
+        immediately by an Asset ID (`- @图片1：CHAR-001｜…`), and ends at the first
+        list line that carries no such entry -- the reference field is a list of
+        entries, so the first non-entry line after it begins the next field. A
+        document with no reference field returns empty, which keeps prose-only
+        text from being judged as a reference list.
+        """
+        block: list[str] = []
+        for line in text.splitlines():
+            match = FIELD_LABEL_RE.match(line)
+            if not (match and ASSET_ID_RE.match(line[match.end():].lstrip())):
+                if block:
+                    break
+                continue
+            block.append(line)
+        return "\n".join(block)
+
+    @staticmethod
+    def _name_variant_hits(variant: str, files: list[str]) -> list[str]:
+        """Every file whose stem ends with `variant`."""
+        return [name for name in files if Path(name).stem.endswith(variant)]
+
+    def reference_match_candidates(self, tail: str) -> list[str]:
+        """The readable spellings a reference entry may use for one file, most specific first.
+
+        A reference entry reads `<Asset ID>｜<资产名>[_<Purpose>]`, and one Asset ID
+        owning several State images puts the state in that title. The matching file
+        either repeats the title (`CHAR-001｜萧炎／药岩·云岚山负伤_State`) or, when
+        the purpose alone is unique for that Asset ID, keeps the short
+        `<Asset ID>｜<Purpose>` form (`CHAR-001｜Identity`). Both are accepted; each
+        candidate still has to resolve to exactly one file, so an entry that could
+        mean two different images stays an error rather than a guess.
+        """
+        candidates = [tail]
+        head, underscore, purpose = tail.rpartition("_")
+        if underscore and head:
+            suffix = underscore + purpose
+            # The title with its purpose, the title alone, then the bare purpose:
+            # a file whose name is only `<Asset ID>｜<Purpose>` (`CHAR-001｜Identity`)
+            # answers to the purpose without the separator.
+            candidates += [head, suffix, purpose]
+            # Drop the state key while keeping the purpose
+            # (`…·云岚山负伤_State` also answers to `…_State`).
+            prefix, separator, _key = head.rpartition("·")
+            if separator and prefix:
+                candidates.append(prefix + suffix)
+        return [item for item in candidates if item]
+
     def check_correspondence(self) -> None:
         if not self.check_prompt:
             return
@@ -892,8 +974,13 @@ class Builder:
         # Full locked file names quoted anywhere in the prompt.
         referenced = {Path(name).name for name in LOCKED_FILENAME_RE.findall(text)}
 
-        # Short reference names: `<Asset ID>｜<title>[_<View Code>]`.
-        remainder = LOCKED_FILENAME_RE.sub(" ", text)
+        # Short reference names: `<Asset ID>｜<title>[_<View Code> / _<Purpose>]`.
+        # Only the reference field's own entries are file references; anywhere
+        # else the same Asset ID may be named as a *capability* ("CHAR locks
+        # identity", "FX-001 controls the wind array"), and such a mention maps
+        # to no single file by design. Applying the disambiguation rule to prose
+        # would report a delivered prompt as defective for describing itself.
+        remainder = LOCKED_FILENAME_RE.sub(" ", self.reference_field_entries(text))
         for asset_id, tail in REFERENCE_NAME_RE.findall(remainder):
             key = asset_id.upper()
             files = packaged.get(key, [])
@@ -911,6 +998,17 @@ class Builder:
                 if view_match
                 else []
             )
+            if len(chosen) != 1:
+                # Neither a View Code nor a unique Purpose tail decided it, so walk
+                # the readable name ladder and stop at the first variant that names
+                # anything. Stopping is what keeps a *specific* variant from being
+                # overruled by a broader one: `…·云岚山负伤_State` matches two files
+                # by the bare `_State` tail but only one by its own full title.
+                for candidate in self.reference_match_candidates(tail):
+                    hits = self._name_variant_hits(candidate, files)
+                    if hits:
+                        chosen = hits
+                        break
             if len(chosen) == 1:
                 referenced.add(chosen[0])
             else:
