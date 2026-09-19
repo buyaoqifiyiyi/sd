@@ -264,7 +264,15 @@ FAIL：要求用户在STATE之间逐次确认、草图后额外等待、仅因�
 
 PASS：首次/变更模型时请求选择；已锁定Midjourney批次只自动交付外部提交包；回传Candidate后停在批次审阅，用户批准后才Active / Canonical；外部视频生成由用户显式提交；未实际查看视频不得Review PASS。
 
-FAIL：替用户选择模型、代投Midjourney或视频服务、把Prompt写成生成结果，或自动把Candidate升级Canonical。
+FAIL：替用户选择模型、代投Midjourney或视频服务、把Prompt写成生成结果，或自动把Candidate升级Canonical。**注意区分**：Prompt交付后不追加提交授权往返是正确收尾，见R30-D；只要没有把未提交的Prompt写成已生成结果，就不因“停在Prompt”而判FAIL。
+
+### R30-D Prompt Delivery Is The Delivery Round Endpoint
+
+输入：Seedance 2.5项目，CLIP-001的最终Prompt已按`templates/12_seedance_25_video_prompt.md`编译并通过Completion Gate，生产交付包已附带；用户本轮只说“下一步”，从未要求代为提交。
+
+PASS：本轮在Prompt加生产交付包处收尾，写回`State Status: COMPLETE`与下一个待交付Clip；正常下一站是CLIP-002的Prompt或主流程收尾。系统不追加“是否授权提交 / 用Dreamina网页端还是方舟API / 是否消耗外部账号额度”一类询问，不把`Delivery Surface`选择、入口询问或“实际提交”写进Pending Decision或Next Workflow，也不宣称已生成。用户尔后明确说“授权提交并指定入口”时，才在该轮内问清入口与素材并按Hard Stop处理这一次外部操作授权。
+
+FAIL：把“实际提交”当作交付轮的默认下一步并要求用户先授权；在Prompt交付后新增提交授权Checkpoint、入口选择问题或额度确认；把“下一步”解读为提交授权；把未提交的Prompt写成已生成结果；或反向地未经显式要求就调用外部服务。
 
 ---
 
@@ -527,3 +535,6 @@ FAIL：把声明当已确认资产直接用于下游Prompt或视频参考；跳�
 PASS：Skill按清单继续当前可推进步骤，不逐项盘问缺失；只有某缺口会改变当前对象身份或阻断当前制作步骤时，才一次性指出该**具体**缺口并给最小路径。
 
 FAIL：连续追问“哪些没有”“请逐项确认是否已有”“请提供素材清单”；或把未声明资产写成缺失、把用户声明过的资产写成待制作。
+
+
+

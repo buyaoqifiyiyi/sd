@@ -8,7 +8,10 @@ header cannot drift out of date on its own.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import re
+import sys
 from pathlib import Path
 
 REQUIRED = (
@@ -36,6 +39,7 @@ REQUIRED = (
     "references/regression_scenarios_craft.md",
     "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
+    "references/regression_scenarios_parameters.md",
     "references/regression_scenarios_maintenance.md",
     "references/recovery_guards.md",
     "scripts/validate_prompt_package.py",
@@ -904,6 +908,7 @@ REGRESSION_CORPUS = (
     "references/regression_scenarios_prompt.md",
     "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
+    "references/regression_scenarios_parameters.md",
     "references/regression_scenarios_maintenance.md",
     "references/regression_scenarios_delivery.md",
 )
@@ -1367,11 +1372,14 @@ def check_vertical_framing(root: Path) -> list[str]:
     """The delivery aspect must stay owned, routable and non-inferable.
 
     Measured risk: 9:16 is a first-class delivery format (character assets
-    default to it, the short-drama adapter targets it, the STATE-08 prompt has a
-    `画幅：` field for it), yet nothing owned how a narrow frame changes
-    composition -- and "项目已确认交付规格" was cited as an overriding authority
-    in a dozen places without an owner. Left alone, a vertical project gets
-    horizontal blocking inside a narrow frame, or a crop presented as delivery.
+    default to it, the short-drama adapter targets it), yet nothing owned how a
+    narrow frame changes composition -- and "项目已确认交付规格" was cited as an
+    overriding authority in a dozen places without an owner. Left alone, a
+    vertical project gets horizontal blocking inside a narrow frame, or a crop
+    presented as delivery. The Prompt body no longer declares the format at all
+    (`画幅：` was removed from every template as a platform parameter chosen at
+    generation time), so this atom is now the only place the composition
+    discipline lives.
 
     Deterministic scope: the atom exists, keeps its distinguishing clauses, and
     is registered and routed. It does not judge whether a vertical shot is well
@@ -1902,8 +1910,10 @@ def validate_skill(root: Path) -> list[str]:
     build = re.search(r"Build ID:\s*(\S+)", skill)
     if not version or not build or build.group(1) != f"sd-film-{version.group(1)}":
         errors.append("Skill Version and Build ID must match")
-    if len(skill.encode("utf-8")) > 8000:
-        errors.append("SKILL.md must remain a compact routing entrypoint")
+    # Entry 体量只由 SKILL_ENTRY_MAX_BYTES / SKILL_ENTRY_MAX_LINES 约束，其唯一
+    # owner 是 references/context_budget.md。此处曾硬编码 `> 8000`，比该 owner
+    # 声明的 12 KB 更严，等于把 Entry 预算静默收紧三分之一：文档说还有余量，
+    # 校验器却报错，维护者只能靠读脚本才能发现真正的门槛。
     for alias in ("调用sd", "调用SD", "用SD Film", "重新调用sd", "恢复旧项目", "继续之前的项目"):
         if alias not in skill:
             errors.append(f"SKILL.md is missing discovery alias: {alias}")
@@ -1988,8 +1998,31 @@ def validate_skill(root: Path) -> list[str]:
     required_markers = (
         (core, "STATE-01 Production Setup：Script锁定后一次确认项目图像模型默认项"),
         (runtime, "PROJECT_IMAGE_MODEL_DEFAULT"),
-        (selection, "不创建Clip、也不输出`KEEP / ADAPT_SPLIT / RETURN`"),
+        (selection, "不输出`KEEP / ADAPT_SPLIT / RETURN`"),
         (selection, "Project Video Model Preference"),
+        (selection, "Project Video Model Lock: PREFERENCE"),
+        (selection, "`REQUIRED`：该Clip确实使用了所选模型的独占能力"),
+        (selection, "## Cost Alternative Note"),
+        (selection, "## Total Production Cost｜总生产成本"),
+        (selection, "不得凭模型名称猜测重试率"),
+        (selection, "待运行证据"),
+        (selection, "Model Planning Envelope"),
+        (selection, "不得读取尚未创建的 Clip 数据"),
+        (selection, "Clip不是模型选择的前置输入，而是模型锁定后的产物"),
+        (selection, "## Clip Adequacy Verification｜Clip适用性验证（STATE-07第三遍，不是模型选择）"),
+        (selection, "`OVERQUALIFIED`不阻断交付"),
+        (clip, "没有`Selected Model`、`Adapter Revision`与`Model Planning Envelope`时，**不得创建任何 Execution Clip**"),
+        (clip, "第一遍｜Natural Unit（不套用任何时长切法）"),
+        (clip, "第二遍｜模型适配（在已锁定 Envelope 内）"),
+        (clip, "不得因为"),
+        (clip, "而提前切碎完整动作链"),
+        (clip, "第三遍｜逐Clip复核（Clip草案形成后）"),
+        (clip, "Model Lock Revision"),
+        (clip, "刻意交叉剪辑"),
+        (selection, "不得填入任何数值或区间"),
+        (selection, "预期成本 = 单次生成价格 × 预计尝试次数"),
+        (selection, "## Mixed-Model Boundary"),
+        (state, "Project Video Model Lock: PREFERENCE / HARD"),
         (image_selection, "Production Setup Proposal"),
         (project_setup, "Production Setup Gate"),
         (script_analysis, "## 07 Production Setup Gate"),
@@ -2002,7 +2035,10 @@ def validate_skill(root: Path) -> list[str]:
         (state, "Project Video Model Preference"),
         (state, "REF-SKETCH Submission Compatibility"),
         (clip, "STATE-07 是 Natural Unit 与 Execution Clip 的唯一决策 owner"),
-        (clip, "具体窗口和条件只由各自 Adapter 拥有"),
+        (clip, "长时能力利用审计｜Long-Duration Capability Utilization"),
+        (clip, "必须评估合并"),
+        (clip, "Duration Underutilized"),
+        (clip, "Continuity Fragmentation"),
         (prompt, "不选择模型、不创建或拆分 Clip、不调用旧 Compiler"),
         (prompt, "templates/10_video_prompt.md"),
         (state, "Adapter Profile"),
@@ -2072,9 +2108,12 @@ def validate_skill(root: Path) -> list[str]:
         (automation, "Asset Candidate Package"),
         (automation, "## Hard Stops"),
         (automation, "将任何Candidate Image标为Canonical / Active"),
+        (automation, "交付轮的终点就是Prompt本身"),
         (progression, "## Confirmation Input Semantics"),
         (progression, "任何语义上表示继续推进的表达"),
         (progression, "不提交外部服务"),
+        (progression, "交付轮的终点是Prompt本身"),
+        (prompt, "不追加外发授权往返"),
         (completion, "确认输入语义由`rules/progression_rules.md`唯一拥有"),
         (state, "Automation Policy: STANDARD / FAST"),
         (performance, "## Behavior Under Pressure"),
@@ -2364,14 +2403,311 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_encoding_prefix(root))
     return errors
 
+def _png_dimensions(path: Path) -> tuple[int, int] | None:
+    """(width, height) out of a PNG IHDR chunk, or None when it is not a readable PNG."""
+    try:
+        with path.open("rb") as handle:
+            header = handle.read(24)
+    except OSError:
+        return None
+    if len(header) < 24 or header[:8] != b"\x89PNG\r\n\x1a\n" or header[12:16] != b"IHDR":
+        return None
+    return (int.from_bytes(header[16:20], "big"), int.from_bytes(header[20:24], "big"))
+
+
+def _sha256_of(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest().upper()
+
+
+SKETCH_REQUIRED_FIELDS = (
+    "schema_version", "clip_id", "assessment", "route", "generator_template",
+    "sketch_type", "master_input_mode", "image_path",
+    "blocking_signature", "layout",
+)
+# `master_asset_path` is required only when the run actually consumed the master. A
+# rebound record (`NONE_REBIND`) is a derived record and must NOT claim a master input,
+# so requiring the field unconditionally would reject the honest form and force a false
+# `VISUAL_REFERENCE` claim instead.
+SKETCH_LAYOUT_KEYS = (
+    "main_blocking_panel", "character_role_labels",
+    "direction_gaze_movement_annotation", "spatial_top_down_diagram",
+    "camera_information", "blocking_movement_notes_or_permission",
+    "usage_authority_note",
+)
+SKETCH_SKETCH_TYPES = ("S", "P", "A", "S+P", "S+A", "P+A", "S+P+A", "Combined")
+SKETCH_FORBIDDEN_TRUE = (
+    "artistic_storyboard_drift", "template_content_leakage",
+    "character_appearance_leakage",
+)
+
+
+def validate_sketch_evidence(evidence_path: Path, skill_root: Path | None = None) -> tuple[list[str], list[str]]:
+    """Deterministic assertions for a REF-SKETCH candidate's evidence record.
+
+    Owner of the evidence schema is `templates/23_visual_blocking_sketch_prompt.md`;
+    this function only checks what can be decided without looking at the picture:
+    field presence and vocabulary, self-consistency between assessment / route /
+    registration status, the layout blocks the template requires, the forbidden
+    drift and contamination flags, and — when the registration record and the
+    bitmap are next to the evidence file — the registered SHA-256 and pixel
+    dimensions. Judging whether the mannequins really are neutral, whether the
+    blocking really matches, and whether the sheet reads as a technical diagram
+    stays a mandatory human visual inspection.
+    """
+    errors: list[str] = []
+    warnings: list[str] = []
+    try:
+        data = json.loads(evidence_path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError) as exc:
+        return [f"草图证据不可读: {exc}"], warnings
+    except json.JSONDecodeError as exc:
+        return [f"草图证据不是合法JSON: {exc}"], warnings
+    if not isinstance(data, dict):
+        return ["草图证据必须是JSON对象（templates/23 的 Candidate Evidence Record）"], warnings
+
+    for field in SKETCH_REQUIRED_FIELDS:
+        if field not in data:
+            errors.append(f"草图证据缺少字段: {field}")
+
+    if data.get("schema_version") != 1:
+        errors.append(f"schema_version 必须为 1，当前为 {data.get('schema_version')!r}")
+
+    clip_id = data.get("clip_id")
+    if not isinstance(clip_id, str) or not re.fullmatch(r"CLIP-\d+", clip_id):
+        errors.append(f"clip_id 必须是正式 CLIP-xxx: {clip_id!r}")
+
+    assessment = data.get("assessment")
+    route = data.get("route")
+    registration = data.get("registration_status")
+    if assessment not in ("REQUIRED", "NONE"):
+        errors.append(f"assessment 只允许 REQUIRED / NONE: {assessment!r}")
+    if assessment == "NONE":
+        if route != "NONE" or registration != "NONE":
+            errors.append("assessment=NONE 时必须 route=NONE 且 registration_status=NONE")
+    elif assessment == "REQUIRED":
+        if route != "TECHNICAL_VISUAL_BLOCKING_SKETCH":
+            errors.append(
+                "assessment=REQUIRED 时 route 必须是 TECHNICAL_VISUAL_BLOCKING_SKETCH，"
+                f"当前为 {route!r}"
+            )
+        if registration not in ("CONFIRMED", "PENDING"):
+            errors.append(
+                f"assessment=REQUIRED 时 registration_status 只允许 CONFIRMED / PENDING: {registration!r}"
+            )
+
+    if data.get("generator_template") != "templates/23_visual_blocking_sketch_prompt.md":
+        errors.append(
+            "generator_template 必须指向 templates/23_visual_blocking_sketch_prompt.md，"
+            f"当前为 {data.get('generator_template')!r}；草图不得由Storyboard模板生成"
+        )
+
+    sketch_type = data.get("sketch_type")
+    if sketch_type not in SKETCH_SKETCH_TYPES:
+        errors.append(f"sketch_type 不在允许集合内: {sketch_type!r}")
+
+    signature = data.get("blocking_signature")
+    if not isinstance(signature, str) or not signature.strip():
+        errors.append("blocking_signature 不得为空：草图必须绑定当前Clip的Blocking Signature")
+
+    layout = data.get("layout")
+    if isinstance(layout, dict):
+        for key in SKETCH_LAYOUT_KEYS:
+            if layout.get(key) is not True:
+                errors.append(f"layout.{key} 必须为 true：技术调度表缺少该必需区域")
+    else:
+        errors.append("layout 必须是对象，并逐项声明模板要求的区域")
+
+    for flag in SKETCH_FORBIDDEN_TRUE:
+        if data.get(flag) is not False:
+            errors.append(f"{flag} 必须为 false：该项为 true 时草图固定 FAIL，不得注册")
+
+    if data.get("neutral_mannequin_representation") is not True:
+        errors.append("neutral_mannequin_representation 必须为 true：人物必须是无性别技术调度人偶")
+    if data.get("blocking_match") is not True:
+        errors.append("blocking_match 必须为 true：草图与当前Blocking Signature不一致时不得注册")
+
+    master_mode = data.get("master_input_mode")
+    master_path = data.get("master_asset_path")
+    if master_mode in ("VISUAL_REFERENCE", "TEXT_CONTRACT_FALLBACK"):
+        if not isinstance(master_path, str) or not master_path.strip():
+            errors.append(f"master_input_mode={master_mode} 时必须记录实际母版路径")
+            master_path = ""
+    if master_mode == "VISUAL_REFERENCE":
+        if isinstance(master_path, str) and master_path.strip():
+            # `references/ref_sketch_master.md` owns this path and resolves it from the
+            # SKILL root, never from the current working directory: a plain
+            # `Path(master_path).is_file()` would pass whenever the validator happens to
+            # be run from the skill root, which is exactly the claim being checked.
+            candidates: list[Path] = []
+            if skill_root is not None:
+                candidates.append(skill_root / master_path)
+            candidates.append(evidence_path.parent / master_path)
+            if not any(candidate.is_file() for candidate in candidates):
+                errors.append(
+                    f"master_input_mode=VISUAL_REFERENCE 但母版文件不可读: {master_path}；"
+                    "应改记 TEXT_CONTRACT_FALLBACK 并写明失败来源"
+                )
+    elif master_mode == "TEXT_CONTRACT_FALLBACK":
+        warnings.append("母版走TEXT_CONTRACT_FALLBACK：最终交付不得声称使用了视觉母版")
+    elif master_mode == "NONE_REBIND":
+        # A rebound sketch is a derived record: the bitmap already exists and was confirmed
+        # under its old Clip, so it never consumed the sketch master. Claiming
+        # VISUAL_REFERENCE here would be a false claim; what it must prove instead is that it
+        # came from a real source record, unchanged. The hash chains are checked below, after
+        # the bitmap itself has been resolved.
+        source = data.get("source_reference")
+        if not (isinstance(source, str) and source.strip()):
+            warnings.append("master_input_mode=NONE_REBIND 但未写 source_reference，源记录未经核验")
+    else:
+        errors.append(
+            "master_input_mode 只允许 VISUAL_REFERENCE / TEXT_CONTRACT_FALLBACK / NONE_REBIND: "
+            f"{master_mode!r}"
+        )
+
+    image_path = data.get("image_path")
+    image_file: Path | None = None
+    if not isinstance(image_path, str) or not image_path.strip():
+        errors.append("image_path 不得为空：REQUIRED候选必须有真实可读图片")
+    else:
+        candidate = Path(image_path)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            errors.append(f"image_path 必须是项目内相对路径: {image_path}")
+        else:
+            for base in (evidence_path.parent, Path.cwd()):
+                if (base / candidate).is_file():
+                    image_file = base / candidate
+                    break
+            if candidate.suffix.lower() != ".png":
+                errors.append(f"草图必须是PNG: {image_path}")
+            if image_file is None:
+                errors.append(f"草图文件不存在或不可读: {image_path}")
+
+    if master_mode == "NONE_REBIND":
+        # Two chains must both hold: rebind record <- source record, and
+        # rebind record <- the actual bitmap. Checking only the source record would let an
+        # edit of both files swap the picture unnoticed; checking only the bitmap would let
+        # the source provenance drift.
+        source = data.get("source_reference")
+        source_sha = ""
+        if isinstance(source, str) and source.strip():
+            source_file = evidence_path.parent / f"{source}_evidence.json"
+            if source_file.is_file():
+                try:
+                    source_data = json.loads(source_file.read_text(encoding="utf-8-sig"))
+                    source_sha = str(source_data.get("sha256", "")).upper()
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    warnings.append(f"重绑定源记录不可读（{source_file.name}）：{exc}")
+            else:
+                warnings.append(f"重绑定源记录不存在：{source_file.name}，母版输入未经核验")
+        own_sha = str(data.get("sha256", "")).upper()
+        captured = str(data.get("source_sha256", "")).upper()
+        if captured:
+            if source_sha and captured != source_sha:
+                errors.append(
+                    "重绑定记录捕获的源哈希与源记录不一致（重绑定记录 ← 源记录 链断）: "
+                    f"捕获 {captured} / 源记录 {source_sha}"
+                )
+            if own_sha and captured != own_sha:
+                errors.append(
+                    "重绑定记录自身声明的哈希与其捕获的源哈希不一致: "
+                    f"捕获 {captured} / 本记录 {own_sha}"
+                )
+            if image_file is not None:
+                actual = _sha256_of(image_file)
+                if actual != captured:
+                    errors.append(
+                        "重绑定位图与其捕获的源哈希不一致（位图已被替换）: "
+                        f"捕获 {captured} / 实际 {actual}"
+                    )
+        else:
+            warnings.append(
+                "master_input_mode=NONE_REBIND 但未写 source_sha256：位图是否与源记录一致未经核验"
+            )
+        if source_sha and own_sha and source_sha != own_sha:
+            errors.append(
+                "重绑定必须与源记录指向同一份位图: "
+                f"源 {source_sha} / 本记录 {own_sha}"
+            )
+
+    registration_path = evidence_path.parent / (
+        evidence_path.name.replace("_evidence.json", "_registration.md")
+    )
+    if registration_path.is_file() and image_file is not None:
+        record = registration_path.read_text(encoding="utf-8-sig")
+        sha_match = re.search(r"SHA256[^\n]*?([0-9A-Fa-f]{64})", record)
+        if sha_match:
+            actual = _sha256_of(image_file)
+            if actual != sha_match.group(1).upper():
+                errors.append(
+                    "草图SHA-256与登记记录不一致: "
+                    f"登记 {sha_match.group(1).upper()} / 实际 {actual}"
+                )
+        else:
+            warnings.append("登记记录没有SHA256，图片完整性未经确定性核验")
+        dim_match = re.search(r"Dimensions[^\n]*?(\d+)\s*[×x]\s*(\d+)", record)
+        if dim_match:
+            actual_dims = _png_dimensions(image_file)
+            if actual_dims is None:
+                warnings.append("无法解析PNG尺寸，尺寸登记未经确定性核验")
+            elif actual_dims != (int(dim_match.group(1)), int(dim_match.group(2))):
+                errors.append(
+                    "草图尺寸与登记记录不一致: "
+                    f"登记 {dim_match.group(1)}×{dim_match.group(2)} / 实际 {actual_dims[0]}×{actual_dims[1]}"
+                )
+        else:
+            warnings.append("登记记录没有Dimensions，尺寸登记未经确定性核验")
+    elif not registration_path.is_file():
+        warnings.append(f"未找到登记记录 {registration_path.name}，图片完整性与注册状态未经核验")
+
+    warnings.append(
+        "射程：本命令不判断人偶是否真的中性、Blocking是否真的匹配、画面是否为技术调度表——"
+        "那三项仍须人工视觉检查"
+    )
+    return errors, warnings
+
+
+def run_sketch_validation(evidence_path: Path, skill_root: Path | None = None) -> int:
+    errors, warnings = validate_sketch_evidence(evidence_path, skill_root)
+    for warning in warnings:
+        print(f"WARNING: {warning}")
+    if errors:
+        for error in errors:
+            print(f"FAIL: {error}", file=sys.stderr)
+        return 1
+    print("PASS: 草图证据通过确定性校验（人工视觉检查仍不可省略）")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--skill-root", type=Path, required=True)
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "--skill-root", type=Path, default=Path.cwd(),
+        help="skill root for the default full validation (default: current directory); "
+             "the `sketch` subcommand validates a project-side evidence file and ignores it",
+    )
+    parser.add_argument("--skill-root", type=Path, default=Path.cwd())
     parser.add_argument(
         "--report", action="store_true",
         help="also print the periodic size and readability audit (sizes, index, reviews)",
     )
+    subparsers = parser.add_subparsers(dest="command")
+    sketch = subparsers.add_parser(
+        "sketch", parents=[common],
+        help="validate a REF-SKETCH Candidate Evidence Record (templates/23)",
+    )
+    sketch.add_argument("evidence", type=Path)
+    sketch.add_argument(
+        "--report", action="store_true",
+        help="accepted for command-form symmetry; the sketch check has no size report",
+    )
     args = parser.parse_args()
+    if args.command == "sketch":
+        return run_sketch_validation(args.evidence, args.skill_root)
     errors = validate_skill(args.skill_root)
     if args.report:
         print(build_report(args.skill_root))

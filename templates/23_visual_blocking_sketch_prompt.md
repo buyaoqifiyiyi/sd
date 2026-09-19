@@ -79,3 +79,32 @@ python scripts/validate_sd_film.py sketch <evidence.json> --skill-root <current-
 ```
 
 `assessment=NONE`时使用`route=NONE`、`registration_status=NONE`且不生成图片。任何`REQUIRED`候选只有命令返回PASS才可注册；单幅叙事插画固定返回`FAIL = Artistic Storyboard Drift`；人物出现真实五官、具体发型 / 服装、明显性别化体态、角色外貌重绘或其他身份污染时固定返回`FAIL = Character Appearance Leakage / Identity Contamination`；其他FAIL也保持`FAILED / REVISE`，不得进入最终Clip【参考资产】。
+
+## Rebind Variant｜重绑定变体
+
+Clip 重组（例如 Execution Clip 边界变化）可能使一张**已确认草图**改属另一个 Clip，而图像内容与 SHA256 完全不变。此时**不重新生成、不消耗草图母版**，因此不写`master_input_mode`与`master_asset_path`——写了就是虚报母版输入。证据记录改用派生形态：
+
+```json
+{
+  "schema_version": 1,
+  "clip_id": "<new CLIP-XXX>",
+  "assessment": "REQUIRED",
+  "route": "TECHNICAL_VISUAL_BLOCKING_SKETCH",
+  "generator_template": "templates/23_visual_blocking_sketch_prompt.md",
+  "sketch_type": "<unchanged>",
+  "master_input_mode": "NONE_REBIND",
+  "source_reference": "REF-SKETCH-XXX",
+  "source_sha256": "<SHA256 captured from the source record at rebind time>",
+  "image_path": "<the same bitmap, under its rebound name>",
+  "blocking_signature": "<signature scoped to the new Clip>",
+  "layout": { "...": "unchanged from the source record" },
+  "artistic_storyboard_drift": false,
+  "template_content_leakage": false,
+  "neutral_mannequin_representation": true,
+  "character_appearance_leakage": false,
+  "blocking_match": true,
+  "registration_status": "CONFIRMED"
+}
+```
+
+重绑定必须同时满足：`source_reference`与`image_path`指向**同一份位图**、且其 SHA256 与源记录一致；`layout`与三个禁项取值不得改动；`blocking_signature`必须重新按新 Clip 的作用范围书写。校验器对`NONE_REBIND`按派生语义校验：缺少母版字段**不是**失败，但必须写 `source_sha256`（重绑定时从源记录捕获的哈希），并同时满足两条链相等——**重绑定记录 ← 源记录**与**重绑定记录 ← 实际位图**；任一条断开即失败，因此只改源记录、或只换位图都会被抓住。源记录不可读时降级为警告，并在报告中说明母版输入未经核验。

@@ -14,6 +14,9 @@
 - Selected Model：Seedance 2.0 / Seedance 2.5 / MiniMax H3
 - Adapter Profile：`adapters/seedance-2.0.md` / `adapters/seedance-2.5.md` / `adapters/minimax-h3.md`；必须与Selected Model一一匹配，仅作内部执行路由，不投影为STATE-08 Prompt字段
 - Model Selection Status：SELECTED（未选择不得进入Execution Clip整合）
+- **Model Lock Revision**：所继承的模型锁定Revision（`Selected Model` + `Adapter Revision` + `Model Planning Envelope`的锁定记录）；**本Clip Plan的创建不得早于该Revision**。缺此项时不得创建Execution Clip，返回 Model Selection
+- **Model Planning Envelope**：时长窗口／长时生成能力／参考图·视频·音频容量／Timeline能力／连续生成能力／首尾帧能力／可用Execution Mode／严格预检触发条件／安全降级条件／规划倾向；本Clip Plan必须逐Clip落在该包络内，内部字段不投影为STATE-08 Prompt字段
+- **Long-Duration Utilization**：逐对相邻Natural Unit的`合并 / 不合并`结论与理由；`Duration Underutilized`与`Continuity Fragmentation`警告状态（含刻意交叉剪辑的降级记录）
 - Execution Profile：Selected Model、Adapter Profile、Execution Mode、Long-duration Route、Effective Gateway Limits、Model Selection Scope、Reference Capacity Audit、Prompt Output Template与Delivery Surface；外部限制只作观察记录，用户选择的生成时长不在规划阶段被它压缩；仅作Confirmed Clip Production Plan内部执行信息，不投影为STATE-08 Prompt字段
 - Model Duration Window：Seedance 2.0为4—15秒；Seedance 2.5为4—30秒且16—30秒须严格预检PASS；MiniMax H3为4—15秒，时长由用户在选定模型窗口内选择
 - Total Formal Shots：

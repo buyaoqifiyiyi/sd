@@ -2,8 +2,11 @@
 """Deterministic validator for a delivered STATE-08 video Prompt Package.
 
 This script guards the *deliverable*, not the skill scaffold: it checks that a
-produced `# CLIP-X｜...` package actually follows the selected final template
-before the package is handed to the user. Structural/routing validation of the
+produced Prompt package actually follows the selected final template
+before the package is handed to the user. The body carries no title line and no
+duration/format declaration: a package is located by file name (`G0N_CLIP-XXX.md`)
+and delivery order, and `时长` is recovered from the Seedance 2.5 timeline's last
+stage boundary. Structural/routing validation of the
 skill itself stays owned by `scripts/validate_sd_film.py`.
 
 Ownership:
@@ -11,6 +14,14 @@ Ownership:
     `templates/10_video_prompt.md` (Seedance 2.0),
     `templates/12_seedance_25_video_prompt.md` (Seedance 2.5),
     `templates/13_minimax_h3_video_prompt.md` (MiniMax H3).
+  - `Clip ID`, `标题`, `目标时长`, `分辨率` and `宽高比` are production-plan /
+    platform facts owned by STATE-07's Confirmed Clip Production Plan; they are
+    never declared in the Prompt body. Seedance 2.0 and MiniMax H3 keep a
+    `时长：` field because they have no time-line structure to carry it; Seedance
+    2.5 has no title, `时长：` or `画幅：` field at all -- its target duration is
+    the end boundary of the last time-line stage, so the equality with the
+    confirmed duration stays a STATE-07/STATE-08 context check rather than a
+    single-file assertion here.
   - This validator only asserts deterministically checkable facts. Beyond field
     structure it also asserts two content-form rules that used to rely on the
     reader noticing: Canonical reference entries keep the
@@ -39,10 +50,25 @@ NO_BGM_SENTENCE = (
     "只保留台词、环境声、动作音效和必要的自然声音。"
 )
 
-TITLE_PATTERN = re.compile(r"^#\s*CLIP-[^｜|]*[｜|].*视频提示词\s*$")
+# Production-plan / platform facts (`Clip ID`, `标题`, `目标时长`, `分辨率`,
+# `宽高比`) are owned by STATE-07's Confirmed Clip Production Plan and located by
+# file name and delivery order, never declared in the Prompt body. No template
+# carries a title heading, a `时长：` or a `画幅：` field any more; Seedance 2.5 has
+# no length field at all, so its target duration is the end boundary of the last
+# time-line stage, while 2.0 and H3 keep their target duration in the Clip Plan
+# only. A body that re-declares any of these drifts back into self-certifying
+# plan values.
+BODY_PROHIBITED_RE = re.compile(r"^\s*(?:时长|画幅)\s*[：:]", re.M)
 SHOT_HEADER = re.compile(r"^分镜\s*(\d+)\s*$")
 SHOT_FIELD = re.compile(r"^([^：:]{1,12})：")
 STAGE_HEADER = re.compile(r"^\[(?:第)?\s*(\d+)\s*[—\-–~至]\s*(\d+)\s*秒\]\s*$")
+# Seedance 2.5 duration window (`templates/12_seedance_25_video_prompt.md`): the
+# regular API path is 4—30s and 16—30s needs a strict pre-check PASS; only the
+# Dreamina web surface reaches 30—180s. The last stage's end boundary is what
+# carries the target duration now that the body declares no `时长：`.
+SEEDANCE_25_MIN_SECONDS = 4
+SEEDANCE_25_MAX_SECONDS = 30
+SEEDANCE_25_LONG_SECONDS = 180
 REF_TAIL_USAGE = ("同镜头连续承接用途", "空间/站位/景别参考用途")
 
 # Canonical reference-entry form (`references/asset_package.md`):
@@ -125,19 +151,29 @@ SHOT_FIELDS_20 = [
     "空间关系", "道具状态", "台词", "音效", "镜头结尾状态",
 ]
 GLOBALS_20 = [
-    "时长", "画幅", "参考资产", "首帧参考", "尾帧限制",
+    "参考资产", "首帧参考", "尾帧限制",
     "主风格", "人物一致性", "环境一致性",
 ]
 STAGE_FIELDS_25 = [
     "画面与镜头", "人物动作与情绪", "空间与道具", "台词", "音效", "阶段结尾状态",
 ]
 GLOBALS_25 = [
-    "时长", "画幅", "多模态参考资产", "参考素材职责与优先级", "首帧参考",
+    "多模态参考资产", "参考素材职责与优先级", "首帧参考",
     "尾帧限制", "主风格", "全局叙事与画面设定", "全局一致性与执行约束", "时间线",
 ]
 GLOBALS_H3 = [
-    "时长", "画幅", "参考素材说明", "核心创意", "画面过程说明", "反向提示词",
+    "参考素材说明", "核心创意", "画面过程说明", "反向提示词",
 ]
+# Each template's first body field, which is also the first global field. The
+# title line and the `时长：` / `画幅：` fields were removed from all three
+# templates: `Clip ID`, `标题`, `目标时长`, `分辨率` and `宽高比` are owned by
+# STATE-07's Confirmed Clip Production Plan, so a Prompt Package opens with its
+# first body field and is located by file name and delivery order instead.
+FIRST_GLOBAL_BY_MODEL = {
+    "seedance-2.0": "参考资产",
+    "seedance-2.5": "多模态参考资产",
+    "minimax-h3": "参考素材说明",
+}
 
 VOICE_FIELD = "音色特征"
 H3_LAST_LINE = "非叙事性音乐：N/A"
@@ -437,10 +473,14 @@ def check_environment_view_coverage(lines: list[str], model: str) -> list[str]:
     ]
 
 
-PLANE_TOKENS = ("玻璃", "窗", "镜面", "镜", "幕墙", "栏杆", "反光", "倒影", "反射", "映出")
+# `镜` alone is NOT a plane token: `画面与镜头`/`运镜`/`分镜` appear in every stage of
+# every Clip, so a bare `镜` matched the shot-language field and made this warning fire
+# on 10/10 Clips of a film with no mirror in it. Mirror/reflection evidence is the
+# compounds below (`镜子`/`镜面`/`反光镜`/`倒影`/`反射`/`反光`), never the bare character.
+PLANE_TOKENS = ("玻璃", "窗", "镜面", "镜子", "反光镜", "幕墙", "栏杆", "反光", "倒影", "反射", "映出")
 # `内侧`/`外侧` only count when the plane word sits right in front of them:
 # `校门内侧` is a place name, `窗内侧` is a side lock.
-PLANE_ADJACENT_SIDE_RE = re.compile(r"(?:玻璃|窗|镜面|幕墙|栏杆|门框|墙)(?:的)?(?:内|外)侧")
+PLANE_ADJACENT_SIDE_RE = re.compile(r"(?:玻璃|窗|镜面|镜子|反光镜|幕墙|栏杆|门框|墙)(?:的)?(?:内|外)侧")
 PLANE_LOCK_MARKERS = (
     "哪一侧", "同一侧", "不穿越", "不穿过", "只作前景遮挡", "前景遮挡",
     "正常镜像", "不表现反射", "不做反射", "无反射",
@@ -562,6 +602,18 @@ def check_stages(lines: list[str], stop_index: int) -> list[str]:
         previous_end = end
     if not contiguous:
         errors.append(f"时间线阶段必须严格递进且无重叠/断档，当前为 {spans}")
+    # Seedance 2.5 has no `时长：` field: the target duration is the end boundary of
+    # the last stage. The header pattern already forces whole seconds, so this
+    # asserts the carrier exists and lands inside the model's duration window;
+    # whether it *equals* STATE-07's confirmed duration needs the plan and stays a
+    # STATE-07/STATE-08 context check, never a value invented from the file alone.
+    last_end = spans[-1][1]
+    if not SEEDANCE_25_MIN_SECONDS <= last_end <= SEEDANCE_25_LONG_SECONDS:
+        errors.append(
+            f"时间线末阶段的末端边界 {last_end} 秒不是有效目标时长；"
+            f"常规为{SEEDANCE_25_MIN_SECONDS}—{SEEDANCE_25_MAX_SECONDS}秒"
+            f"（网页端Long Video可到{SEEDANCE_25_LONG_SECONDS}秒），且必须等于STATE-07确认的目标时长"
+        )
     for position, (line_index, _) in enumerate(headers):
         if position + 1 < len(headers):
             stop = headers[position + 1][0]
@@ -589,8 +641,26 @@ def validate(text: str, model: str, allow_voice_field: bool) -> tuple[list[str],
         errors.append("最终 Prompt Package 不得使用 JSON 格式")
 
     titles = [line for line in line_list if line.strip().startswith("#")]
-    if not titles or not TITLE_PATTERN.match(titles[0].strip()):
-        errors.append("缺少合法标题行: # CLIP-X｜标题 <模型>视频提示词")
+    if titles:
+        errors.append(
+            "Prompt Package 不得出现标题行；`Clip ID`与`标题`属于STATE-07的"
+            "Confirmed Clip Production Plan，Prompt以文件名与交付顺序定位"
+        )
+
+    if BODY_PROHIBITED_RE.search(text):
+        errors.append(
+            "Prompt正文不得声明`时长：`或`画幅：`；`目标时长`、`分辨率`与`宽高比`"
+            "由STATE-07的Confirmed Clip Production Plan拥有"
+            + (
+                "，Seedance 2.5的目标时长由时间线末阶段的末端边界承担"
+                if model == "seedance-2.5"
+                else "，本模型的目标时长只在Clip Plan中声明"
+            )
+        )
+
+    first_field = FIRST_GLOBAL_BY_MODEL[model]
+    if marker_positions(line_list, [first_field])[first_field] != 0:
+        errors.append(f"第一条字段必须是 {first_field}：，其前不得出现标题行、时长或画幅等计划信息")
 
     voice_present = any(
         re.match(rf"^{VOICE_FIELD}\s*[：:]", line.strip()) for line in line_list

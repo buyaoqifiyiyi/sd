@@ -3,6 +3,9 @@
 # Skill维护层：只在修改本Skill时读取，不参与影视生产。
 from __future__ import annotations
 import importlib.util
+import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -40,6 +43,7 @@ REGRESSION_FILES = (
     "references/regression_scenarios_prompt.md",
     "references/regression_scenarios_director.md",
     "references/regression_scenarios_system.md",
+    "references/regression_scenarios_parameters.md",
     "references/regression_scenarios_maintenance.md",
     "references/regression_scenarios_delivery.md",
     "references/recovery_guards.md",
@@ -250,7 +254,7 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("`Script Status: Production-Locked`之后、STATE-01 Completion Gate通过之前", script)
         self.assertIn("Project Style Baseline", script)
         self.assertIn("Production Setup Proposal", image_selection)
-        self.assertIn("STATE-06后读取Confirmed Detailed Shot Design", video_selection)
+        self.assertIn("STATE-06后：交付模型规划包络并锁定 Adapter", video_selection)
         self.assertIn("Project Image Model Default", state)
         self.assertIn("Project Video Model Preference", state)
         self.assertIn("Project Style Baseline", state)
@@ -425,6 +429,28 @@ class R34RegressionTests(unittest.TestCase):
         self.assertIn("`FAST`在草图验证、注册和用途说明后同轮编译", progression)
         self.assertIn("R30-B FAST Carries Verified Internal Work Through Prompt Delivery", scenarios)
         self.assertIn("R30-C FAST Stops At Non-Reversible Boundaries", scenarios)
+
+    def test_prompt_delivery_closes_the_round_without_a_submission_authorization_gate(self) -> None:
+        """R30-D 反向守卫：STATE-08交付轮必须停在Prompt本身。
+
+        实测缺口：Prompt交付后系统把“实际提交/入口选择/额度”当作默认下一步并要求
+        用户先授权——用户要的是Prompt，却多出一轮授权往返。授权边界（未经要求不得
+        提交）本来就在，缺的是“交付轮终点就是Prompt”的正面措辞。
+        """
+        automation = (ROOT / "rules/automation_mode.md").read_text(encoding="utf-8-sig")
+        progression = (ROOT / "rules/progression_rules.md").read_text(encoding="utf-8-sig")
+        prompt_workflow = (ROOT / "workflows/11_video_generation_workflow.md").read_text(
+            encoding="utf-8-sig"
+        )
+        guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8-sig")
+        scenarios = regression_corpus()
+        self.assertIn("交付轮的终点就是Prompt本身", automation)
+        self.assertIn("交付轮的终点是Prompt本身", progression)
+        self.assertIn("不追加外发授权往返", prompt_workflow)
+        self.assertIn("R30-D Prompt Delivery Is The Delivery Round Endpoint", scenarios)
+        self.assertIn("要实际提交时，明确说一句“实际提交”", guide)
+        self.assertIn("不是外部生成提交", automation)
+        self.assertIn("不提交外部服务", progression)
 
     def test_candidate_triage_keeps_one_valid_output_and_only_deletes_safe_temporary_files(self) -> None:
         asset_rules = (ROOT / "rules/02_asset_rules.md").read_text(encoding="utf-8-sig")
@@ -641,6 +667,53 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
     """The delivered STATE-08 Prompt Package validator must accept conformant
     packages and reject structurally broken ones."""
 
+    def _plane_lines(self, camera_or_action: str) -> list[str]:
+        """Minimal 2.5 line set: master-only ENV reference plus one probe phrase.
+
+        The reference line deliberately carries no plane word, so the only plane
+        evidence in the fixture is whatever the probe phrase itself introduces —
+        that is what makes the `镜` probe isolate a single variable.
+        """
+        return [
+            "多模态参考资产：",
+            "- @图片1：ENV-001｜堂屋_ENV-01；用途：空间结构；锁定 / 保持：墙体与结构分区。",
+            "参考素材职责与优先级：",
+            "环境结构由ENV控制。",
+            "画面与镜头：" + camera_or_action,
+        ]
+
+    def test_a_bare_jing_is_not_a_mirror_token(self) -> None:
+        """R90 回归：`镜` 曾对全部10个Clip误报反射平面。
+
+        `画面与镜头`/`运镜`/`分镜` 是每个阶段都有的镜语字段，裸 `镜` 一旦进入
+        PLANE_TOKENS，就会让一个没有任何镜子的片子每个Clip都弹"出现窗/玻璃/镜面
+        或反射平面"——真实的镜面风险被噪声淹没。
+        """
+        for shot_language in (
+            "固定机位，镜头缓慢推进",
+            "运镜保持平稳，分镜数不变，镜头内无新动作",
+        ):
+            with self.subTest(phrase=shot_language):
+                self.assertEqual(
+                    package_validator.check_plane_and_reflection_lock(
+                        self._plane_lines(shot_language), "seedance-2.5"
+                    ),
+                    [],
+                )
+        real_mirror = package_validator.check_plane_and_reflection_lock(
+            self._plane_lines("人物看向镜面，画面右侧留出镜框边缘"), "seedance-2.5"
+        )
+        self.assertTrue(any("反射平面" in item for item in real_mirror), real_mirror)
+        window = package_validator.check_plane_and_reflection_lock(
+            self._plane_lines("人物沿窗边走过"), "seedance-2.5"
+        )
+        self.assertTrue(any("反射平面" in item for item in window), window)
+        # 平面需要的是"人物在结构的哪一侧 + 反射是否表现"的锁，写了锁就不再提示。
+        locked = self._plane_lines("人物在窗内侧走过，不表现反射")
+        self.assertEqual(
+            package_validator.check_plane_and_reflection_lock(locked, "seedance-2.5"), []
+        )
+
     def build_20(self, *, shot_two: bool = False, voice: bool = False, ref_tail: str = "") -> str:
         shots = [1] if not shot_two else [1, 2]
         body = []
@@ -660,9 +733,6 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
             )
         voice_line = "音色特征：低沉男声\n" if voice else ""
         return (
-            "# CLIP-001｜掏耳 Seedance 2.0视频提示词\n"
-            "时长：8秒\n"
-            "画幅：16:9横屏\n\n"
             "参考资产：\n"
             f"CHAR-001｜吴御史｜实际提交图片输入\n{ref_tail}"
             "首帧参考：C【新镜头且无需尾帧】另起新镜头\n"
@@ -720,10 +790,49 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         findings = self.check("{\"clip\": \"CLIP-001\"}")
         self.assertTrue(any("JSON" in item for item in findings))
 
+    def test_plan_metadata_is_not_declared_in_the_prompt_body(self) -> None:
+        """标题、时长与画幅是生成时的平台选择/生产计划信息，不进Prompt正文。
+
+        三个模型的正文都从各自第一个正文字段开始（2.0 `参考资产：`／2.5
+        `多模态参考资产：`／H3 `参考素材说明：`），位于其前的标题行与
+        `时长：`／`画幅：`行必须被拒；这三行曾让Prompt自证计划值。
+        """
+        titled = self.check("# CLIP-001｜掏耳 Seedance 2.0视频提示词\n" + self.build_20())
+        self.assertTrue(any("不得出现标题行" in item for item in titled))
+
+        timed = self.check("时长：8秒\n" + self.build_20())
+        self.assertTrue(any("不得声明`时长：`或`画幅：`" in item for item in timed))
+
+        framed = self.check("画幅：16:9横屏\n" + self.build_20())
+        self.assertTrue(any("不得声明`时长：`或`画幅：`" in item for item in framed))
+
+        # 每张表的第一条字段都必须能被正确定位，且不是被删掉的那两个字段。
+        self.assertEqual(package_validator.FIRST_GLOBAL_BY_MODEL, {
+            "seedance-2.0": "参考资产",
+            "seedance-2.5": "多模态参考资产",
+            "minimax-h3": "参考素材说明",
+        })
+        for model, fields in (
+            ("seedance-2.0", package_validator.GLOBALS_20),
+            ("seedance-2.5", package_validator.GLOBALS_25),
+            ("minimax-h3", package_validator.GLOBALS_H3),
+        ):
+            with self.subTest(model=model):
+                self.assertNotIn("时长", fields)
+                self.assertNotIn("画幅", fields)
+                self.assertEqual(fields[0], package_validator.FIRST_GLOBAL_BY_MODEL[model])
+
+    def test_seedance_25_reads_the_target_duration_from_the_last_stage(self) -> None:
+        """2.5正文没有`时长：`，目标时长由时间线末阶段的末端边界承担。"""
+        self.assertEqual(self.check_25(self.build_25()), [])
+        over_long = self.build_25(
+            moves=("a",) * 37  # 末阶段结束于185秒：超出4—180秒的可用窗口
+        )
+        findings = self.check_25(over_long)
+        self.assertTrue(any("末阶段的末端边界" in item for item in findings), findings)
+
     def test_seedance_25_stages_must_be_contiguous(self) -> None:
         text = (
-            "# CLIP-001｜掏耳 Seedance 2.5视频提示词\n"
-            "时长：10秒\n画幅：16:9横屏\n\n"
             "多模态参考资产：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
             "参考素材职责与优先级：\n- 身份由 CHAR-001 承担\n"
             "首帧参考：C\n尾帧限制：稳定\n\n"
@@ -741,8 +850,6 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
 
     def test_minimax_h3_requires_fixed_last_line(self) -> None:
         text = (
-            "# CLIP-001｜掏耳 MiniMax H3视频提示词\n"
-            "时长：8秒\n画幅：16:9横屏\n\n"
             "参考素材说明：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
             "核心创意：\n主风格：低饱和胶片\n一句话\n"
             "画面过程说明：开始、过程、结束\n\n"
@@ -762,15 +869,12 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         core_tail: str = "一句话\n",
         moves: tuple[str, ...] = ("a", "a"),
     ) -> str:
-        span = 5 * len(moves)
         stage_lines = "".join(
             f"[{index * 5}—{(index + 1) * 5}秒]\n画面与镜头：{move}\n"
             "人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n"
             for index, move in enumerate(moves)
         )
         return (
-            "# CLIP-001｜掏耳 Seedance 2.5视频提示词\n"
-            f"时长：{span}秒\n画幅：16:9横屏\n\n"
             "多模态参考资产：\n" + refs +
             "参考素材职责与优先级：\n- 身份由 CHAR-001 承担\n"
             "首帧参考：C\n尾帧限制：稳定\n\n"
@@ -858,8 +962,6 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
     def test_h3_style_negative_scope_is_the_style_line_only(self) -> None:
         """H3 的`核心创意`第二行承担主体与运镜，不在本断言的射程内。"""
         base = (
-            "# CLIP-001｜掏耳 MiniMax H3视频提示词\n"
-            "时长：8秒\n画幅：16:9横屏\n\n"
             "参考素材说明：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
             "核心创意：\n主风格：低饱和胶片\n主体在室内，运镜说明：避免快摇\n"
             "画面过程说明：开始、过程、结束\n\n"
@@ -2606,7 +2708,325 @@ class R73ReadScopeIndexTests(unittest.TestCase):
             )
 
 
+class R91SketchEvidenceValidatorTests(unittest.TestCase):
+    """`templates/23` 声明的 `validate_sd_film.py sketch` 命令必须真实存在且能判定。
+
+    实测缺口：模板第45行写着一条校验命令，`validate_sd_film.py` 里却没有任何
+    `sketch` 子命令；`REF-SKETCH-004_registration.md` 甚至把自己的校验记成
+    "compatibility validator pre-r12.backup sketch；当前发行版不再暴露该子命令"。
+    一条跑不通的命令比没有命令更坏——读者会以为机器验过了。
+    """
+
+    PIXEL = bytes.fromhex(
+        "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
+        "0000000a49444154789c6360000002000100ffff03000006000557bfabd4000000"
+        "0049454e44ae426082"
+    )
+
+    def _evidence(self, **overrides) -> dict:
+        data = {
+            "schema_version": 1,
+            "clip_id": "CLIP-004",
+            "assessment": "REQUIRED",
+            "route": "TECHNICAL_VISUAL_BLOCKING_SKETCH",
+            "generator_template": "templates/23_visual_blocking_sketch_prompt.md",
+            "sketch_type": "S+P+A",
+            "master_input_mode": "VISUAL_REFERENCE",
+            "master_asset_path": "assets/ref_sketch_master.png",
+            "image_path": "REF-SKETCH-004｜调度草图.png",
+            "blocking_signature": "C0 north fixed; A falls S-SW; B crosses and catches; AX-1 safe side.",
+            "spatial_top_down_required": True,
+            "layout": {
+                "main_blocking_panel": True,
+                "character_role_labels": True,
+                "direction_gaze_movement_annotation": True,
+                "spatial_top_down_diagram": True,
+                "camera_information": True,
+                "blocking_movement_notes_or_permission": True,
+                "usage_authority_note": True,
+            },
+            "artistic_storyboard_drift": False,
+            "template_content_leakage": False,
+            "neutral_mannequin_representation": True,
+            "character_appearance_leakage": False,
+            "blocking_match": True,
+            "registration_status": "CONFIRMED",
+        }
+        data.update(overrides)
+        return data
+
+    def _write(self, root: Path, *, master: bool = True, **overrides) -> Path:
+        (root / "assets").mkdir(parents=True, exist_ok=True)
+        if master:
+            (root / "assets/ref_sketch_master.png").write_bytes(self.PIXEL)
+        evidence = root / "REF-SKETCH-004_evidence.json"
+        evidence.write_text(
+            json.dumps(self._evidence(**overrides), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        (root / "REF-SKETCH-004｜调度草图.png").write_bytes(self.PIXEL)
+        return evidence
+
+    def _skill_root_without_master(self, root: Path) -> Path:
+        """A skill root that really has no `assets/ref_sketch_master.png`.
+
+        The master lives in the skill root, so a "false VISUAL_REFERENCE claim" test
+        must not be run against the real skill root — it would find the real master
+        and correctly report no error.
+        """
+        empty = root / "fake-skill"
+        (empty / "assets").mkdir(parents=True, exist_ok=True)
+        return empty
+
+    def test_a_conformant_evidence_record_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            errors, _warnings = validator.validate_sketch_evidence(self._write(root), root)
+            self.assertEqual(errors, [])
+
+    def test_forbidden_flags_and_missing_layout_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            drift = self._write(root, artistic_storyboard_drift=True)
+            errors, _ = validator.validate_sketch_evidence(drift, root)
+            self.assertTrue(any("artistic_storyboard_drift" in item for item in errors), errors)
+            leak = self._write(root, character_appearance_leakage=True)
+            errors, _ = validator.validate_sketch_evidence(leak, root)
+            self.assertTrue(any("character_appearance_leakage" in item for item in errors), errors)
+            thin = self._evidence()
+            thin["layout"] = {"main_blocking_panel": True}
+            (root / "REF-SKETCH-004_evidence.json").write_text(
+                json.dumps(thin, ensure_ascii=False), encoding="utf-8"
+            )
+            errors, _ = validator.validate_sketch_evidence(
+                root / "REF-SKETCH-004_evidence.json", root
+            )
+            self.assertTrue(any("layout.spatial_top_down_diagram" in item for item in errors), errors)
+
+    def test_assessment_route_and_registration_must_agree(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            wrong_route = self._write(root, route="NONE")
+            errors, _ = validator.validate_sketch_evidence(wrong_route, root)
+            self.assertTrue(any("route 必须是" in item for item in errors), errors)
+            none_case = self._evidence(assessment="NONE", route="NONE", registration_status="REQUIRED")
+            (root / "REF-SKETCH-004_evidence.json").write_text(
+                json.dumps(none_case, ensure_ascii=False), encoding="utf-8"
+            )
+            errors, _ = validator.validate_sketch_evidence(
+                root / "REF-SKETCH-004_evidence.json", root
+            )
+            self.assertTrue(any("assessment=NONE" in item for item in errors), errors)
+
+    def test_a_missing_bitmap_or_false_master_claim_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._write(root)
+            (root / "REF-SKETCH-004｜调度草图.png").unlink()
+            errors, _ = validator.validate_sketch_evidence(
+                root / "REF-SKETCH-004_evidence.json", root
+            )
+            self.assertTrue(any("草图文件不存在" in item for item in errors), errors)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            self._write(root, master=False)
+            errors, _ = validator.validate_sketch_evidence(
+                root / "REF-SKETCH-004_evidence.json", self._skill_root_without_master(root)
+            )
+            self.assertTrue(
+                any("母版文件不可读" in item and "TEXT_CONTRACT_FALLBACK" in item for item in errors),
+                errors,
+            )
+
+    def test_a_rebound_sketch_is_validated_as_a_derived_record(self) -> None:
+        """R94 回归：重绑定草图必须按派生语义校验，而不是被迫谎称消耗过母版。
+
+        实测缺口：一个项目在 Clip 重组后把已确认的 REF-SKETCH-004 以相同字节重新绑定为
+        REF-SKETCH-005。该记录从未经过草图生成，因此写不出 `master_input_mode`——而校验器
+        把 `master_asset_path` 列为无条件必填，于是这份诚实的记录被判 FAIL，唯一的"过检"
+        办法是照抄源记录的 `VISUAL_REFERENCE`，即虚报母版输入。修法：新增 `NONE_REBIND`
+        派生形态，并用两条链固化它——重绑定记录 ← 源记录，以及重绑定记录 ← 实际位图；
+        只改其中一侧都会被抓住。
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bitmap = root / "REF-SKETCH-005｜调度草图.png"
+            bitmap.write_bytes(self.PIXEL)
+            sha = validator._sha256_of(bitmap)
+            source_record = root / "REF-SKETCH-004_evidence.json"
+            source_record.write_text(
+                json.dumps({"schema_version": 1, "sha256": sha}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            record = {
+                "schema_version": 1,
+                "clip_id": "CLIP-002",
+                "assessment": "REQUIRED",
+                "route": "TECHNICAL_VISUAL_BLOCKING_SKETCH",
+                "generator_template": "templates/23_visual_blocking_sketch_prompt.md",
+                "sketch_type": "S+P+A",
+                "master_input_mode": "NONE_REBIND",
+                "source_reference": "REF-SKETCH-004",
+                "source_sha256": sha,
+                "image_path": bitmap.name,
+                "blocking_signature": "rebound signature scoped to CLIP-002",
+                "layout": {key: True for key in validator.SKETCH_LAYOUT_KEYS},
+                "artistic_storyboard_drift": False,
+                "template_content_leakage": False,
+                "neutral_mannequin_representation": True,
+                "character_appearance_leakage": False,
+                "blocking_match": True,
+                "registration_status": "CONFIRMED",
+                "sha256": sha,
+            }
+            evidence = root / "REF-SKETCH-005_evidence.json"
+
+            def check(payload: dict) -> list[str]:
+                evidence.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+                return validator.validate_sketch_evidence(evidence, root)[0]
+
+            self.assertEqual(check(dict(record)), [])
+            self.assertTrue(
+                any("位图已被替换" in item for item in check({**record, "source_sha256": "A" * 64}))
+            )
+            # Editing the source record and following it must still fail: the captured hash
+            # has to equal the real bitmap too.
+            source_record.write_text(
+                json.dumps({"schema_version": 1, "sha256": "C" * 64}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            self.assertTrue(
+                any(
+                    "位图已被替换" in item
+                    for item in check({**record, "source_sha256": "C" * 64, "sha256": "C" * 64})
+                )
+            )
+            self.assertTrue(
+                any(
+                    "只允许 VISUAL_REFERENCE" in item
+                    for item in check({**record, "master_input_mode": "SOMETHING_ELSE"})
+                )
+            )
+
+    def test_the_documented_command_form_is_executable(self) -> None:
+        """模板给出的命令形态必须能跑：`sketch <evidence> --skill-root <root> [--report]`。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            evidence = self._write(root)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "validate_sd_film.py"),
+                    "sketch",
+                    str(evidence),
+                    "--skill-root",
+                    str(ROOT),
+                    "--report",
+                ],
+                capture_output=True,
+                text=True,
+                cwd=str(root),
+            )
+            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+            self.assertIn("PASS", completed.stdout)
+            self.assertIn("人工视觉检查", completed.stdout)
+
+    def test_the_template_documents_the_command_that_exists(self) -> None:
+        template = (ROOT / "templates/23_visual_blocking_sketch_prompt.md").read_text(
+            encoding="utf-8-sig"
+        )
+        self.assertIn("validate_sd_film.py sketch", template)
+        self.assertIn("--skill-root", template)
+
+
+class R92ModelSelectionCapabilityTierTests(unittest.TestCase):
+    """模型选型的三件事必须各有唯一口径：偏好 vs 硬锁、能力使用等级、成本提示的射程。
+
+    这份契约要防两个反向错误：一是把用户随口说的“用2.5”当成全程锁定，从此不再评估
+    更便宜的可行方案；二是让成本理由去自动推翻用户已确认的模型选择——那等于让
+    `OVERQUALIFIED` 变成 `RETURN`，而本模块被明文禁止输出执行判定。
+    """
+
+    def _selection(self) -> str:
+        return (ROOT / "modules/model-selection.md").read_text(encoding="utf-8-sig")
+
+    def test_a_named_model_is_a_preference_until_the_user_says_otherwise(self) -> None:
+        selection = self._selection()
+        state = (ROOT / "references/project_state_contract.md").read_text(encoding="utf-8-sig")
+        self.assertIn("Project Video Model Lock: PREFERENCE / HARD", state)
+        self.assertIn("`Project Video Model Lock: PREFERENCE`", selection)
+        self.assertIn("Project Video Model Lock: HARD", selection)
+        self.assertIn("偏好模式下，系统可以提出更便宜的可行方案供用户决定", selection)
+        self.assertIn("按**偏好**记录", state)
+
+    def test_capability_tiers_are_recorded_but_never_block_promotion(self) -> None:
+        selection = self._selection()
+        for tier in ("`REQUIRED`", "`ADEQUATE`", "`OVERQUALIFIED`"):
+            with self.subTest(tier=tier):
+                self.assertIn(tier, selection)
+        self.assertIn("`OVERQUALIFIED`不阻断交付", selection)
+        self.assertIn("不自动更换已锁定模型", selection)
+        self.assertIn("也不构成`KEEP / ADAPT_SPLIT / RETURN`", selection)
+        self.assertIn("不是只看时长或图片数量", selection)
+        # 审计记录不得漏进交付物
+        self.assertIn("不进入最终Prompt", selection)
+
+    def test_cost_fields_are_pending_not_invented_without_rates(self) -> None:
+        selection = self._selection()
+        self.assertIn("待用户提供", selection)
+        self.assertIn("不得填入任何数值或区间", selection)
+        self.assertIn("不得用“更便宜 / 差不多”这类定性说法冒充价格", selection)
+        self.assertIn("预期成本 = 单次生成价格 × 预计尝试次数", selection)
+        self.assertIn("尝试次数必须来自本项目已记录的生成运行证据", selection)
+        self.assertIn("改模型属于用户决定", selection)
+
+    def test_the_pricing_truth_table_carries_evidence_and_pending_marks(self) -> None:
+        """费率真源必须带来源与日期，未公开的单价格式化成`待提供`而不是估算。"""
+        pricing = (ROOT / "references/platform_pricing.md").read_text(encoding="utf-8-sig")
+        for marker in (
+            "valid_as_of: 2026-09-19",
+            "docs.byteplus.com/en/docs/ModelArk/1544106",
+            "0.569 USD/秒",
+            "| Seedance 2.0（`dreamina-seedance-2-0-260128`） | 0.07 USD/秒 | 0.15 | 0.37 | 0.78 |",
+            "USD 0.41 per second",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, pricing)
+        self.assertIn("不得继续按 0.41 USD/秒 计算", pricing)
+        self.assertIn("H3 暂不支持视频资源包", pricing)
+        # H3 官方按秒价已取证，必须能出数字而不是停在“待用户提供”
+        self.assertIn("| MiniMax-H3 | 768P | 0.50 元/秒 | $0.08/秒 |", pricing)
+        self.assertIn("| MiniMax-H3 | 2K | 0.80 元/秒 | $0.13/秒 |", pricing)
+        # 但推算出的点数汇率不得被当成官方明文
+        self.assertIn("属算术推导而非官方明文", pricing)
+        self.assertIn("待用户提供", pricing)
+        self.assertIn("跨分辨率或跨画幅比较前必须先对齐交付画幅", pricing)
+        self.assertIn("费率不是门", pricing)
+        # 成本字段不得泄漏进最终Prompt或Adapter能力声明
+        self.assertNotIn("@图片", pricing)
+
+    def test_mixed_model_batches_stay_closed(self) -> None:
+        selection = self._selection()
+        self.assertIn("## Mixed-Model Boundary", selection)
+        self.assertIn("同一批不得混模型", selection)
+        self.assertIn("不承诺跨模型画风一致性的自动检查", selection)
+
+    def test_the_contract_markers_are_guarded_by_the_skill_validator(self) -> None:
+        source = (ROOT / "scripts/validate_sd_film.py").read_text(encoding="utf-8-sig")
+        for marker in (
+            "Project Video Model Lock: PREFERENCE",
+            "`OVERQUALIFIED`不阻断交付",
+            "## Cost Alternative Note",
+            "## Mixed-Model Boundary",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, source)
+        errors = validator.validate_skill(ROOT)
+        self.assertEqual(errors, [], errors)
+
+
 class R73EvidenceCredibilityDimensionTests(unittest.TestCase):
+
     """维护层第 16 项：用来判断改动是否成立的**证据本身**必须可信。
 
     它被加进来，是因为本轮出现了四个“显然能省 token”的判断、三个被实测否掉，
@@ -2975,6 +3395,75 @@ Confirmed Status: No
             manifest = (package / "00_MANIFEST.md").read_text(encoding="utf-8")
             self.assertIn("包内不含最终视频Prompt", manifest)
             self.assertTrue(Path(str(result["archive"])).is_file())
+
+    def test_active_version_decides_between_two_versions_of_one_locked_name(self) -> None:
+        """R89 回归：v001 与 v002 并存时，必须按 Registry 的 Active Version 选文件。
+
+        实测缺口：`asset_index()` 按裸文件名建索引，`stage_assets()` 只做
+        `index.get(name)`——同一个锁定文件名在 v001 与 v002 各有一份时报
+        ambiguity 并放弃，Registry 里明明写着 `Active Version: v002` 却不参与选择，
+        最后只能靠人工目录结构兜底。
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "PROJECT-DEMO-003"
+            (project / "assets/CHAR/canonical/CHAR-001/v001/identity").mkdir(parents=True)
+            (project / "assets/CHAR/canonical/CHAR-001/v002/identity").mkdir(parents=True)
+            (project / "asset_registry.md").write_text(
+                "# Asset Registry\n\n## CHAR-001 林夏\n\n"
+                "Asset ID: CHAR-001\nAsset Tier: Core\nStatus: Active\nActive Version: v002\n"
+                "Canonical References: CHAR-001｜Identity.png（用途：Identity，绑定 v002）\n"
+                "Visual Production Status: Asset Confirmed\nConfirmed Status: Yes\n"
+                "Approved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+            older = project / "assets/CHAR/canonical/CHAR-001/v001/identity/CHAR-001｜Identity.png"
+            newer = project / "assets/CHAR/canonical/CHAR-001/v002/identity/CHAR-001｜Identity.png"
+            older.write_bytes(self.PIXEL + b"\x00v001")
+            newer.write_bytes(self.PIXEL)
+            (project / "07_clip_production_plan.md").write_text(
+                "# Clip表\n\n"
+                "| Clip ID | 包含镜号 | 核心画面/动作 | 时长 | 起止承接 | 资源 |\n"
+                "|---|---|---|---|---|---|\n"
+                "| CLIP-001 | SHOT-001 / SHOT-002 | 女孩离开走廊 | 8秒 | 站姿 → 出画 → 下一Clip校门 | CHAR-001 |\n\n"
+                "Confirmed Status: Yes\nApproved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+            result = self._build(project)
+            self.assertEqual(result["errors"], [], result["errors"])
+            staged = (
+                Path(str(result["package_root"])) / "02_assets/CHAR/CHAR-001｜Identity.png"
+            )
+            self.assertTrue(staged.is_file())
+            self.assertEqual(staged.read_bytes(), newer.read_bytes())
+            self.assertTrue(
+                any("Active Version v002" in item for item in result["warnings"]),
+                result["warnings"],
+            )
+
+    def test_active_version_with_two_same_named_states_still_fails(self) -> None:
+        """选版解决的是跨版本歧义，不是同一版本内的同名——后者仍须补状态键。"""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            project = root / "PROJECT-DEMO-004"
+            for state in ("state-药岩", "state-负伤"):
+                (project / "assets/CHAR/canonical/CHAR-001/v002" / state).mkdir(parents=True)
+            (project / "asset_registry.md").write_text(
+                "# Asset Registry\n\n## CHAR-001 林夏\n\n"
+                "Asset ID: CHAR-001\nAsset Tier: Core\nStatus: Active\nActive Version: v002\n"
+                "Canonical References: CHAR-001｜State.png（用途：State，绑定 v002）\n"
+                "Visual Production Status: Asset Confirmed\nConfirmed Status: Yes\n"
+                "Approved By / Approval Basis: User Confirmed\n",
+                encoding="utf-8", newline="\n",
+            )
+            for state in ("state-药岩", "state-负伤"):
+                (
+                    project / "assets/CHAR/canonical/CHAR-001/v002" / state / "CHAR-001｜State.png"
+                ).write_bytes(self.PIXEL)
+            result = self._build(project)
+            self.assertTrue(
+                any("仍有多个同名文件" in item for item in result["errors"]), result["errors"]
+            )
 
     def test_unconfirmed_work_is_reported_not_packaged(self) -> None:
         """用户认可的才进包：Registry里存在不等于可以打包。"""
@@ -3623,6 +4112,29 @@ class R64DeliveredArtifactValidatorTests(unittest.TestCase):
         broken = self.CLIP_OK.replace("SHOT-001 / SHOT-002", "第一个镜头")
         self.assertTrue(
             any("未引用任何正式SHOT-xxx" in item for item in delivery_validator.check_clip_plan(broken))
+        )
+
+    def test_clip_duration_must_be_whole_seconds(self) -> None:
+        """R87 回归：平台`duration`只接受[4,30]整数秒。
+
+        实测缺口：一个项目的Clip表用了 6.5／7.5／9.5／10.5／5.5／8.5 秒六种小数时长，
+        每条的Prompt时间线还都停在小数点前那一秒——0.5秒没有阶段承载，也无法作为
+        `duration`提交。计划层此前只检查表格结构，不检查时长粒度。
+        """
+        fractional = self.CLIP_OK.replace("| 8秒 |", "| 6.5秒 |")
+        self.assertTrue(
+            any(
+                "`时长`必须是整数秒" in item
+                for item in delivery_validator.check_clip_plan(fractional)
+            )
+        )
+        self.assertEqual(delivery_validator.check_clip_plan(self.CLIP_OK), [])
+        blank = self.CLIP_OK.replace("| 8秒 |", "|  |")
+        self.assertTrue(
+            any(
+                "`时长`必须是整数秒" in item
+                for item in delivery_validator.check_clip_plan(blank)
+            )
         )
 
     def test_validator_is_registered_and_declares_its_scope(self) -> None:
@@ -4378,9 +4890,10 @@ class R81DrawnMediumLanguageTests(unittest.TestCase):
 class R82VerticalFramingTests(unittest.TestCase):
     """反向守卫：交付画幅必须有 owner、有路由，且不得被推定或被裁切转换。
 
-    实测缺口：9:16 是一等交付形态（人物资产默认它、短剧适配器面向它、STATE-08
-    有 `画幅：` 字段），但没有任何 owner 说明窄画幅如何改变构图；"项目已确认交付
-    规格"被十几处引用为覆盖性权威却没有 owner。本类钉住它的判据与路由。
+    实测缺口：9:16 是一等交付形态（人物资产默认它、短剧适配器面向它），但没有
+    任何 owner 说明窄画幅如何改变构图；"项目已确认交付规格"被十几处引用为覆盖性
+    权威却没有 owner。本类钉住它的判据与路由。画幅本身不进Prompt正文（`画幅：`
+    已作为平台参数从全部模板删除），因此本原子是构图纪律的唯一落点。
     """
 
     MIN_ATOM = (

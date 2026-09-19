@@ -65,6 +65,11 @@ SHOT_COLUMNS_FULL = (
 # templates/20 — default user-facing Clip表.
 CLIP_COLUMNS = ("Clip ID", "包含镜号", "核心画面/动作", "时长", "起止承接", "资源")
 
+# Clip时长只接受整数秒。取证：BytePlus ModelArk《Dreamina Seedance 2.5 tutorial》的
+# `duration` 参数——"unit: seconds"，[4, 30] 范围内为整数秒（-1 表示由模型自选），
+# 小数秒只出现在 video editing 任务继承源片时长的情形。取证日期 2026-09-19。
+CLIP_DURATION_RE = re.compile(r"^\s*(\d+)\s*秒\s*$")
+
 EXPECTED_KINDS = ("scene-breakdown", "shot-design", "clip-plan")
 MIN_CELL_CHARS = 2
 MIN_LABEL_CONTENT_CHARS = 4
@@ -213,6 +218,13 @@ def check_clip_plan(text: str) -> list[str]:
                 errors.append(f"{clip} 的`{column}`为空；Clip表必须逐Clip可核对")
         if not SHOT_ID_RE.search(row[1]):
             errors.append(f"{clip} 的`包含镜号`未引用任何正式SHOT-xxx")
+        if "时长" in columns:
+            duration = row[columns.index("时长")]
+            if not CLIP_DURATION_RE.fullmatch(duration):
+                errors.append(
+                    f"{clip} 的`时长`必须是整数秒（如 `8秒`）：{duration or '(空)'}；"
+                    "平台`duration`参数只接受[4,30]整数秒，小数秒只属于video editing任务继承源片的时长"
+                )
     return errors
 
 

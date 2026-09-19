@@ -466,6 +466,55 @@ class Builder:
             index.setdefault(path.name, []).append(path)
         return index
 
+    def resolve_source(
+        self, index: dict[str, list[Path]], asset: "Asset", locked_name: str
+    ) -> Path | None:
+        """Resolve one registry reference to exactly one file.
+
+        The registry reference is a locked file NAME, so the name alone cannot say
+        which version directory holds the confirmed copy: `CHAR-001｜Identity.png`
+        exists under both `v001/` and `v002/`, and a state image such as
+        `CHAR-002｜State.png` can exist under several state directories of the same
+        version. `Active Version` is the registry's own answer, so it is applied
+        before the file is accepted, and a version-filtered match is reported as an
+        explicit decision rather than left to whichever path sorted first.
+        """
+        candidates = index.get(locked_name, [])
+        if not candidates:
+            return None
+        active = (asset.active_version or "").strip().lower()
+        if active:
+            in_version = [
+                path for path in candidates
+                if any(part.lower() == active for part in path.parts)
+            ]
+            if in_version:
+                if len(in_version) > 1:
+                    self.error(
+                        f"{asset.asset_id}: Active Version {asset.active_version} 下仍有多个同名文件，"
+                        "必须在Registry中补足以区分的View Code / Purpose或状态键: "
+                        + ", ".join(str(item) for item in in_version)
+                    )
+                    return None
+                outside = len(candidates) - len(in_version)
+                if outside:
+                    self.warn(
+                        f"{asset.asset_id}: 按 Active Version {asset.active_version} 选择 "
+                        f"{in_version[0]}；另有{outside}个同名文件属于其他版本，已忽略"
+                    )
+                return in_version[0]
+            self.warn(
+                f"{asset.asset_id}: 没有位于 Active Version {asset.active_version} 下的同名文件，"
+                "回退为按裸文件名匹配"
+            )
+        if len(candidates) > 1:
+            self.error(
+                f"{asset.asset_id}: file name is ambiguous, {len(candidates)} files share it: "
+                + ", ".join(str(item) for item in candidates)
+            )
+            return None
+        return candidates[0]
+
     def stage_assets(self, assets: list[Asset]) -> None:
         """Copy confirmed asset images under their locked filenames.
 
@@ -483,18 +532,13 @@ class Builder:
                 self.excluded.append(f"{asset.asset_id}: no canonical reference file registered")
                 continue
             locked_name = Path(asset.references[0]).name
-            matches = index.get(locked_name, [])
-            if len(matches) > 1:
-                self.error(
-                    f"{asset.asset_id}: file name is ambiguous, {len(matches)} files share it: "
-                    + ", ".join(str(item) for item in matches)
-                )
-                continue
-            if not matches:
-                self.error(
-                    f"{asset.asset_id}: confirmed asset has no readable file in the project root "
-                    f"({locked_name})"
-                )
+            source = self.resolve_source(index, asset, locked_name)
+            if source is None:
+                if not index.get(locked_name):
+                    self.error(
+                        f"{asset.asset_id}: confirmed asset has no readable file in the project root "
+                        f"({locked_name})"
+                    )
                 continue
             hard, soft = filename_conforms(locked_name)
             for note in soft:
@@ -515,13 +559,13 @@ class Builder:
                 continue
             target = self.package_root / folder / locked_name
             self._copy(
-                matches[0], target, "Assets", asset.asset_id,
+                source, target, "Assets", asset.asset_id,
                 asset.active_version or asset.status, basis,
             )
             for extra in asset.references[1:]:
                 extra_name = Path(extra).name
-                extra_matches = index.get(extra_name, [])
-                if len(extra_matches) != 1:
+                extra_source = self.resolve_source(index, asset, extra_name)
+                if extra_source is None:
                     self.error(
                         f"{asset.asset_id}: additional canonical reference is not uniquely readable "
                         f"({extra_name})"
@@ -535,7 +579,7 @@ class Builder:
                     )
                     continue
                 self._copy(
-                    extra_matches[0], self.package_root / folder / extra_name, "Assets",
+                    extra_source, self.package_root / folder / extra_name, "Assets",
                     asset.asset_id, asset.active_version or asset.status, basis,
                 )
         self._write_category_manifests(assets)

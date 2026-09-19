@@ -364,6 +364,22 @@ PASS：按`rules/automation_mode.md`的`### Delivery Receipt｜交付收据`，�
 
 FAIL：收据缺该条目（漏做不可见）；或把自检升为Hard Gate而改变既有pass/fail；或让该条目承担状态写回职责、长成第二套Completion Gate判据；或把自检文字写进最终Prompt。
 
+### R64-H An Association Failure Is Attributed To Its Owner, Not Restated
+
+输入：用户带回一条已生成Clip并指出"画面里出现了剧本里没有的雨中街景、而且主角出现第二个分身"；另一轮把`knowledge/quality/prompt_scorecard.md`的`## 联想事故归因与禁用词登记`当作交付前必过的检查项。
+
+PASS：按该表逐行定位到已有唯一owner——默认场景包补入按`rules/03_prompt_rules.md`的`### Prompt Pollution Control`第5类与`state08_projection.md`的`执行Semantic Template Decomposition`段，角色复制按`state08_projection.md`的`## Clip Preflight Projection Gate`的`逐镜角色精确数量`投影行——修正只回该owner，归因表本身不复制任何算法、阈值或类别表，也不判pass/fail。
+
+FAIL：把归因表复制成第二套规则正文；或在其中新增判据、阈值、字段或Gate语言；或把归因结论当作交付前预检项使用（该表只处理**实际观察到的产物**，不充当预防性清单）。
+
+### R64-I Attribution Labels Stay Out Of The Closed Failure Class
+
+输入：一次生成失败登记进`templates/17_execution_ledger.md`的`## Generation Attempts`表，登记试图把本节归因类别写进`Failure Class`列；另一轮把`禁用词` / `必用词`写进项目状态。
+
+PASS：`Failure Class`仍只取`templates/16_review_report.md`拥有的封闭分类（不得扩充、不得被归因标签替代）；禁用词与必用词作为证据附在该行`Highest-Impact Variable / Retry Scope`中，并按`Active Model Adapter`分别保留，换模型或Adapter版本时旧档位转`REVIEW`；用户未要求显式保存时只在本轮对话给出表格，不写回项目状态。
+
+FAIL：用归因标签扩充或替代`Failure Class`；或把词表写成跨模型继承的固定结论；或未经用户要求就把词表写回项目状态、或让它成为最终Prompt字段。
+
 ## R65 Reference-Film Study Regression
 
 ### R65-A Study A Reference Film Without Entering The Pipeline

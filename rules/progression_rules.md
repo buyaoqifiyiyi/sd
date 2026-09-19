@@ -66,6 +66,8 @@ STATE-08仍有未交付Clip时：交付轮Next Workflow保持`workflows/11_video
 
 若下一步骤本身需要用户确认、外部输入或生成授权，输出当前检查点与待确认项后停止；当前确认检查点的纯推进输入按本规则的`Confirmation Input Semantics`处理。`Automation Policy: FAST`中由`rules/automation_mode.md`明确授权的Prompt自动确认、GPT Image/外部图像批次、STATE-06/07自动接受、同轮`REF-SKETCH`后Prompt编译和完整Clip之间的Prompt批量交付除外。不得把用户最终目标误解释为本轮立即交付全部后续成果。
 
+STATE-08交付轮的终点是Prompt本身，不是外发授权往返：本轮Checkpoint即Prompt与生产交付包，其正常下一站是下一个待交付Clip的Prompt或主流程收尾。系统不得在交付后追加提交授权询问、提交入口（Dreamina网页端 / 方舟API / 其他）选择、额度或账号确认，也不得把“实际提交”写成Pending Decision或Next Workflow——用户要的是Prompt时，这就是完整交付。只有用户显式要求“实际提交 / 代为提交”时，才按`## Authorization Boundary`处理该次外部操作授权，并在该轮内问清入口与素材；未获该要求时既不做、也不索要。
+
 STATE-08的Before-Single-Clip-Prompt Gate是本规则的窄范围例外：用户请求指定Clip或说“下一个 / 下一步 / 继续”时，已授权系统执行该Clip的Final Visual Blocking Anchor Assessment。Final=`REQUIRED`时，生成并验证一张受限`REF-SKETCH`属于当前Prompt的自动内部生产步骤，不等同于STATE-03资产生图、Storyboard激活或Candidate确认；无需另行把纯推进命令解释为资产Prompt确认。`STANDARD`本轮停在草图、注册与用途说明，下一次推进才输出Prompt；`FAST`在草图验证、注册和用途说明后同轮编译，并按Continuous Chain继续其余符合资格的Clip。任何角色 / 环境 / 道具 / FX资产图、Formal Keyframe或非Gate图片仍服从原授权边界。
 
 ## Revision And Resume

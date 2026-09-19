@@ -75,9 +75,11 @@ Script `Production-Locked`后、STATE-01 Completion Gate通过前，必须在`##
 - Image Delivery Mode: AUTO / DIRECT_IMAGE / PROMPT_ONLY
 - Project Video Model Preference: Seedance 2.0 / Seedance 2.5 / MiniMax H3 / UNSELECTED
 - Project Video Model Preference Status: UNSELECTED / SELECTED
+- Project Video Model Lock: PREFERENCE / HARD（默认`PREFERENCE`；只有用户明确表示不考虑其他模型时才写`HARD`，并记录判定依据）
+- Model Planning Envelope Revision: 锁定记录ID（Selected Model + Adapter Revision + Model Planning Envelope）。STATE-07的Execution Clip Plan必须继承该Revision，且其创建不得早于本Revision；缺失时不得创建Execution Clip
 ```
 
-新项目的两个偏好必须在STATE-01 `Production Setup Gate`的`Production Setup Proposal`确认后才可完成；剧本`Production-Locked`之前不得提出该Proposal，STATE-00也不询问模型或媒介。`Medium Form`在同一Proposal中与它们一起确认一次，并同时写入`project_bible.md`的`Project Information → 媒介形式`；为`PENDING`时是STATE-02之前的合法停点——不得进入STATE-02资产发现或STATE-03的媒介相关资产生产，也不得登记为已确认真人剧。用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。`Image Delivery Mode`未设置时按`AUTO`处理：由当前执行环境在批次路由时的真实出图能力决定，不得用历史推断；它只决定该批次交付图片还是交付Prompt，不改变`Selected Image Model`、双确认实质或Hard Stop。
+新项目的两个偏好必须在STATE-01 `Production Setup Gate`的`Production Setup Proposal`确认后才可完成；剧本`Production-Locked`之前不得提出该Proposal，STATE-00也不询问模型或媒介。`Medium Form`在同一Proposal中与它们一起确认一次，并同时写入`project_bible.md`的`Project Information → 媒介形式`；为`PENDING`时是STATE-02之前的合法停点——不得进入STATE-02资产发现或STATE-03的媒介相关资产生产，也不得登记为已确认真人剧。用户当前请求已经明确指定时可只展示对应候选。旧项目按可验证证据迁移：已有唯一Selected Image Model或Selected Model时分别回填为对应项目偏好；没有证据则保持`UNSELECTED`并在下一个合法入口提出一次最小选择，不倒退或重做已确认项目事实。偏好不替代STATE-03当前资产批次路由，也不替代STATE-06后的按Clip能力复核。用户只说“用Seedance 2.5”这类具体模型名时按**偏好**记录（`Project Video Model Lock: PREFERENCE`）：它决定候选范围，允许系统在STATE-06后提出更便宜的可行方案；只有用户明确表示不考虑其他模型时才写`HARD`。锁定等级与判定依据属于项目状态，不得只存在于对话记忆中。`Image Delivery Mode`未设置时按`AUTO`处理：由当前执行环境在批次路由时的真实出图能力决定，不得用历史推断；它只决定该批次交付图片还是交付Prompt，不改变`Selected Image Model`、双确认实质或Hard Stop。
 
 当`Current State`为STATE-03且当前资产批次需要新建或重编Image Prompt时，必须在`## State Control`保存该批次唯一的图像执行Profile：
 

@@ -4,7 +4,7 @@
 
 本原子拥有**品牌片的形态选择与交付落点**：时长形态怎么用、结尾如何落地、画幅与包装如何接入既有owner。
 
-边界：不拥有节拍模型（短剧 / 竖屏剧情 / 1—3分钟仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有，本原子不新建第二套）；不拥有交付画幅的构图判据（`knowledge/camera_language/composition_language/vertical_framing.md`）；不拥有海报与封面（`knowledge/poster_design/index.md`）；不拥有Clip划分（`knowledge/clip_planning/`）。
+边界：不拥有节拍模型（短剧 / 竖屏剧情 / 1—3分钟仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有，本原子不新建第二套）；不拥有交付画幅的构图判据（`knowledge/camera_language/composition_language/vertical_framing.md`）；不拥有海报与封面（`knowledge/poster_design/index.md`）；不拥有Clip划分（`knowledge/clip_planning/`）。画幅是用户生成时选择的平台参数、记录在`## Delivery Spec｜交付规格`，本原子只把它的构图纪律接进既有字段。
 
 **本原子不规定段落数与秒数。** 它只要求形态选择能被说清，并接到既有owner上。
 
@@ -16,7 +16,7 @@
 | 形态自检三问 | 段落功能至少要能回答：观众**第一眼看到什么**、他如何**理解产品与自己的关系**、片尾**留下什么**。答不出即形态未成立，回到Atom 1重排注意焦点链 | 内部判定，不新增字段 |
 | 结尾落地 | 结尾用**可见行为或状态**收束（完成、交付、使用后的结果、关系变化）；文字级落版默认按后期叠加处理 | 动作描述、末尾`反向提示词` |
 | 时长与Clip划分 | 总时长经`knowledge/clip_planning/`拆为模型适用的Clip；不得为了凑时长增加无信息段落 | `时长`、Clip Plan |
-| 画幅 | 交付画幅按`knowledge/camera_language/composition_language/vertical_framing.md`执行；商业片不豁免其安全区与错位调度纪律 | `画幅`、`构图` |
+| 画幅 | 交付画幅按`knowledge/camera_language/composition_language/vertical_framing.md`执行；商业片不豁免其安全区与错位调度纪律。画幅本身不写进Prompt——分辨率与宽高比由用户在生成时选择 | `构图` |
 | 包装与封面 | 需要海报或封面时路由到`knowledge/poster_design/index.md`，不在本域重复其判据 | 对应Template |
 | 声音 | 对白、环境声、动作声、呼吸、Foley与静默按既有声音规则；**视频Prompt永久禁止非剧情内配乐**，商业片不构成例外 | `声音`字段 |
 

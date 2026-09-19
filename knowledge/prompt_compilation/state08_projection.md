@@ -300,14 +300,14 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 - Dialogue Performance仍投影到`人物动作与情绪 / 台词 / 音效`中的适用位置，只说明当前一句/当前场景怎么说，不得重定义稳定Voice Identity。
 - 雨声、风声、纸张、脚步、道具、钢琴或其他环境声/动作声属于Sound Design，只进入逐镜`音效`及其声音尾部；它们不得被路由成`音色特征：`，也不得作为启用该条件字段的证据。
 
-`时长：`只复制Confirmed Clip Production Plan中用户选择的目标时长，不得重新估算；Seedance 2.0为4—15秒，Seedance 2.5为4—30秒，16—30秒由目标时长自动触发内部严格预检且仅在PASS时成立，MiniMax H3为4—15秒。未知网关状态不得在投影前压缩该时长；实际平台拒绝时才走Return Route。Seedance 2.5的Targeted Edit、或经Adapter判定有必要的多Beat、蒙太奇、复杂连续镜头，可把受控且严格递进的时间戳文本写入既有`画面描述`，不新增时间轴字段；时间段总和不得超过当前Clip时长。其他模型不写逐镜时长、时间码、按秒动作区间、帧率或帧数，也不继承此能力。
+目标时长只复制Confirmed Clip Production Plan中用户选择的值，不得重新估算；Seedance 2.0为4—15秒，Seedance 2.5为4—30秒，16—30秒由目标时长自动触发内部严格预检且仅在PASS时成立，MiniMax H3为4—15秒。该值**不写进Prompt正文**：Seedance 2.5由`时间线：`末阶段的末端边界承担，该边界必须等于确认时长；2.0与H3只在Clip Plan中声明，Prompt按文件名与交付顺序与该Clip一一对应。未知网关状态不得在投影前压缩该时长；实际平台拒绝时才走Return Route。输出分辨率与宽高比同属生成时的平台参数，不进入Prompt。Seedance 2.5的Targeted Edit、或经Adapter判定有必要的多Beat、蒙太奇、复杂连续镜头，可把受控且严格递进的时间戳文本写入既有`画面描述`，不新增时间轴字段；时间段总和不得超过当前Clip时长。其他模型不写逐镜时长、时间码、按秒动作区间、帧率或帧数，也不继承此能力。
 
 ## Global Projection Matrix
 
 | 来源知识 | 固定目标字段 | 必须保留的语义 |
 |---|---|---|
-| Project / Clip Plan（STATE-07） | Markdown标题；时长 | 正式Clip编号、人类可读标题、用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）；不输出独立CLIP标题字段，不把SEQ/BEAT/COV/UNIT变成栏目 |
-| Format / Visual Development / Color（STATE-01/04） | 画幅；主风格 | 已确认画幅、媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度 |
+| Project / Clip Plan（STATE-07） | 文件名 / 交付顺序（**不进入Prompt正文**） | 正式Clip编号与人类可读标题由文件名（`G0N_CLIP-XXX.md`）与交付顺序承担，Prompt正文不写标题行、`时长：`或`画幅：`；用户选择的模型适用平台生成时长（2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS）保留在Clip Plan，2.5另由时间线末阶段边界自证；不把SEQ/BEAT/COV/UNIT变成栏目 |
+| Format / Visual Development / Color（STATE-01/04） | 主风格 | 媒介、色彩来源与层级、明度/对比、白平衡/偏色、肤色保护、光线体系、镜头稳定性与表演尺度；交付画幅是生成时选择的平台参数，记录在`## Delivery Spec｜交付规格`，**不投影为字段**（其构图纪律由`knowledge/camera_language/composition_language/vertical_framing.md`经STATE-06的`构图` / `景别` / `运镜`承担） |
 | Aesthetic Decision Lock（STATE-04） | 主风格；画面描述；环境一致性 | 反差与光比结构的程度及其变化节点、色彩对抗关系与占比、构图主张、视觉母题与变化轨迹；四项是整片承诺，逐镜只投影本镜相对锁定值的可见Delta；不新增字段 |
 | Writer Intent / Writer Beat / Setup-Payoff（STATE-01，经STATE-05/06/07投影） | 画面描述；人物动作与情绪；台词；音效；起始状态；镜头结尾状态 | 关键人物意图与潜台词、Writer Beat因果链的可见承载、Setup / Payoff与信息时机、Relationship Delta与Scene Value Change；核对项与禁止项沿用`## Writer Intent Preservation Gate`，不在此复述，也不新增Writer字段或输出Packet |
 | Director Intent / Director Decision Notes（STATE-00/01/04/05/06/07） | 主风格；画面描述；人物动作与情绪；镜头 / 机位；时间线；镜头结尾状态 | Current Director Intent的Dramatic Priority、Audience Attention、Performance Beat、Composition Function、Camera Motivation、Information Timing、Spatial / Relationship、Rhythm与Sound Function；转换规则沿用`## Director-to-Prompt Translation Pass`的第1—12项，不在此复述，也不输出Packet、dominance或BUILD / HOLD / PEAK / RELEASE等内部标签 |
@@ -336,7 +336,7 @@ Sound属于逐镜必投影模块。每个“音效”包含具体环境底声/�
 | Sound | 音效；台词；镜头结尾状态 | Persistent Ambience、同步Foley/动作声/呼吸/对白/剧情内声源、距离与Sound Bridge/Cut/Fade |
 | FX | 画面描述；人物动作与情绪；空间关系；道具状态；音效；镜头结尾状态；反向提示词 | 来源、触发、阶段、方向、尺度、强度、物理交互、光影/声音影响、残留后果与专项风险 |
 | Editing / Handoff / Transition | 参考资产；首帧参考；尾帧限制；起始状态；镜头结尾状态 | Boundary Source、Transition Class、Outgoing/Incoming Anchor、Cut Point、继承/断点/未决状态与禁止提前动作；不新增边界字段，不输出TRN编号 |
-| Sequence / Coverage / Clip | 画面描述；镜头结尾状态；Markdown标题；时长 | Required Coverage完成证据、Clip内逐镜状态链与跨Clip状态；内部ID不成为栏目 |
+| Sequence / Coverage / Clip | 画面描述；镜头结尾状态；文件名 / 交付顺序（**不进入Prompt正文**） | Required Coverage完成证据、Clip内逐镜状态链与跨Clip状态；内部ID不成为栏目 |
 
 本矩阵的逐镜来源全部由STATE-06 Detailed Shot Design的十八字段投影而来；Shot Purpose Gate、Knowledge选择理由与内部ID只作判断依据，不进入任何字段（见`workflows/09_shot_design_workflow.md`）。
 

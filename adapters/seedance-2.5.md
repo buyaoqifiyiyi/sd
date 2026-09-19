@@ -3,7 +3,7 @@
 ```yaml
 model: Seedance 2.5
 prompt_output_template: templates/12_seedance_25_video_prompt.md
-duration: { min_seconds: 4, max_seconds: 30 }
+duration: { min_seconds: 4, max_seconds: 30, granularity: integer_seconds }
 timeline: { supported: timestamp_text_control, default: omit, use_when: multi_beat_or_montage_or_complex_continuous_take, placement: existing_shot_body_only }
 reference_assets: { minimal_sufficient: true, default_capacity_limit: { combined: 50, images: 30, videos: 10, audio: 10, video_total_seconds: 30, audio_total_seconds: 30 }, actual_submission_limit: verified_gateway_or_surface_limit }
 audio: { explicit_only: true, pure_audio_driver: supported, requires: confirmed_audio_source_and_explicit_motion_or_lipsync_scope }
@@ -14,6 +14,8 @@ capability_valid_as_of: 2026-09-11
 ```
 
 在 Model Selection 后由 STATE-07 消费。23 秒 Natural Unit 经长时长预检 PASS 后保持单 Execution Clip；不因旧 15 秒规则拆分。34 秒 Natural Unit 才按连续性合同适配拆分。
+
+**`duration` 只接受整数秒。** 平台参数为 `duration`（单位秒），取值是 [4, 30] 内的整数，或 `-1`（由模型在 [4, 30] 内自选整数秒）；小数秒只出现在 video editing 任务继承源片时长的情形。因此 Clip时长、Prompt `时长：` 字段与时间线阶段末端都必须写成整数秒，不得出现 6.5 秒这类值——它既不是可提交参数，也必然与时间线末端不一致。取证：BytePlus ModelArk《Dreamina Seedance 2.5 tutorial》的 `duration` 参数说明与示例（`"duration": 10` / `5` / `11` / `20` / `30`），取证日期 2026-09-19。
 
 本Adapter的`duration`、`default_capacity_limit`（30图 / 10视频 / 10音频 / 合计50）等能力数值属于`O｜Operational Parameter`，不是跨项目原则。`capability_valid_as_of`到期、模型版本更新或平台能力变更时，必须先重新取证再引用；未复测前不得作为当前依据，也不得把旧数值当成该模型的不变属性。
 

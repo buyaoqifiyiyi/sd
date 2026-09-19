@@ -5,9 +5,9 @@ description: "调用sd、调用SD、用SD Film、重新调用sd、恢复旧项�
 
 # SD Film
 
-Skill Version: 2026.09.15-r98
+Skill Version: 2026.09.19-r99
 
-Build ID: sd-film-2026.09.15-r98
+Build ID: sd-film-2026.09.19-r99
 
 ## Core
 
@@ -21,11 +21,7 @@ Build ID: sd-film-2026.09.15-r98
 
 本Skill自维护。本节是既有的`Skill Update Self-Check / Change Safety Checklist`的**执行入口**——只是把它的入口前置到本文件，**不构成第二套检查体系**，也不得被复制成并行副本。**任何新增、修改、删除、移动或重命名本Skill内容的操作——不论由谁执行、在哪个平台、用什么工具——都属于正式修改**，必须先读完本节再动手。
 
-写入前必须完成三项判定（本节只列**不变量**，完整判据与执行顺序见`references/maintenance_self_check.md`的`Before You Write`及其`Maintenance System Map`列出的各判据owner）：
-
-- **归属判定**：默认补进既有owner；只有确认没有合适位置才新增文件。
-- **可达性判定**：到达复核线即触发一次瘦身优化（优先序见`references/context_budget.md`），Ceiling强制拆分。新增内容必须有消费者。
-- **减法判定**：判断本次新增是否使某条既有规则过时、被覆盖或可合并；`Additive By Default`**不保护规则总量**。
+写入前完成本节只列**不变量**的四项判定：**提交**、**归属判定**、**可达性判定**、**减法判定**（检查项与执行顺序见`references/maintenance_self_check.md`的`Before You Write`；每项判据、边界与反例由该文件`Maintenance System Map`所列各owner拥有，本节只保留判定名称，不复述细粒度判据）。
 
 写入后必须执行完整自检：`references/maintenance_self_check.md`的全部Check Dimensions与两个Guard；判据真源是`references/maintenance_self_check_protocol.md`；可达性判据、文件类别与Size Index的唯一owner是`references/context_budget.md`；模块归属的唯一owner是`references/module_contracts.md`。
 
@@ -60,6 +56,7 @@ Build ID: sd-film-2026.09.15-r98
 - Writer 只拥有故事、人物、因果、Writer Beat、Setup/Payoff；Director 只拥有观众体验、表演、场面调度、空间、镜头语言。模型限制不得污染二者。
 - `REF-SKETCH` 只用无性别技术调度人偶，且只控制空间/姿态/机位关系；不得成为角色外观或 Canonical Asset。
 - A/B/C 尾帧、资产双确认、连续性、Voice opt-in 与视频 Prompt 永久无 BGM 继续由各自现有 owner 执行。
+- 联想控制｜讨论阶段的措辞纪律由`rules/chat_compatibility.md`拥有；高共现词与平台默认视觉包不得补成项目事实，产物侧的归因索引与词登记位由`knowledge/quality/prompt_scorecard.md`拥有。
 - Runtime Reload：`rules/runtime_reload.md`；State Source：`rules/state_source.md`；推进：`rules/progression_rules.md`；激活：`rules/activation_rules.md`；资源按需读取：`rules/resource_loading.md`。
 - 自动推进：只有用户明确启用时读取`rules/automation_mode.md`；它只压缩可逆、可追溯的确认，不跳过主STATE、事实锁或硬性风险边界，**也不减少阶段、QA与交付物**（自动模式只自动确认）。
 - 空跑测试：只有用户明确说“跑流程测试 / 演练 / dry run / 空跑”时才进入 `DRY RUN`；它只验证 STATE 路由与 Gate 可判定性，不产出交付物、不读写项目状态。规则由 `rules/activation_rules.md` 拥有。
