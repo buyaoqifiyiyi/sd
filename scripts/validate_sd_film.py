@@ -2110,6 +2110,7 @@ WRITER_INDEX_REQUIREMENTS = (
     ("## Purpose And Boundary", "purpose and boundary"),
     ("## Module Contract", "module contract"),
     ("## The Roster", "roster table"),
+    ("### Growth Boundary｜体量边界", "growth boundary"),
     ("## Requirement Router｜需求路由", "requirement router"),
     ("## Shared File Schema", "shared file schema"),
     ("## Validator-Checkable Invariants", "validator-checkable invariants"),
@@ -2203,6 +2204,22 @@ def check_writer_layer(root: Path) -> list[str]:
             f"{WRITER_INDEX} lost the single-confirmation-subject rule for "
             "self-initiated branded work"
         )
+    growth = "### Growth Boundary｜体量边界"
+    if growth not in index:
+        errors.append(f"{WRITER_INDEX} is missing the growth boundary note: {growth}")
+    else:
+        owner_path = root / CRAFT_OWNER
+        if owner_path.is_file():
+            owner_bytes = owner_path.stat().st_size
+            measured = re.search(
+                r"(\d{2},\d{3})\s*B\s*=\s*复核线", roster_section(index, growth)
+            )
+            if owner_bytes > BUDGET_TARGET_BYTES and measured is None:
+                errors.append(
+                    f"{CRAFT_OWNER} is {owner_bytes} B, past the "
+                    f"{BUDGET_TARGET_BYTES} B review line, but {WRITER_INDEX} carries no "
+                    "dated slimming record: growth past the line is silent"
+                )
     owner = read(root, CRAFT_OWNER)
     if "不得把\"有品牌\"等同于\"有客户\"" not in owner:
         errors.append(

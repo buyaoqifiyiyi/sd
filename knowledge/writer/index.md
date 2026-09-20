@@ -8,7 +8,7 @@
 |---|---|
 | 判定该不该进本层、本层给什么 | `## Purpose And Boundary`、`## Module Contract` |
 | 定位当前品牌需求该读哪个文件与哪一节 | `## Requirement Router｜需求路由` |
-| 定位编剧层的文件清单与各自 owner | `## The Roster` |
+| 定位编剧层的文件清单与各自 owner | `## The Roster`、`### Growth Boundary｜体量边界`（新增内容前必读） |
 | 写新的编剧层文件 | `## Shared File Schema`、`## Validator-Checkable Invariants` |
 | 不适用 / 返回路由 | `## Non-Applicable Rule`、`## Return Routing` |
 | 不必在运行时读取 | `## Validator-Checkable Invariants` |
@@ -58,6 +58,23 @@
 | 5 | `knowledge/adaptation/short_form_drama_adapter.md` | 短剧 / 竖屏 / 1—3分钟的Hook窗口、五段功能、单集容量与角色识别卡 | 目标形式确认为上述三类时（加载入口见`## Requirement Router｜需求路由`） |
 
 本表是编剧层的**唯一登记处**：新增文件必须同时在此登记，且文件与登记项一一对应。
+
+### Growth Boundary｜体量边界
+
+编剧层新增内容前先看这一节，它记录本层当前的**物理容量约束**，避免下一次改动直接撞上`references/context_budget.md`的复核线。
+
+| 文件 | 本次实测 | 状态 |
+|---|---|---|
+| `knowledge/writer/screenplay_development.md` | 46,067 B = 复核线 50 KB 的 **90.0%** | **余量不足 4 KB，不得再作为新内容的落点** |
+| `knowledge/writer/index.md`（本文件） | 13,169 B ≈ 26% | 可承接路由与边界层内容 |
+| 回归语料`references/regression_scenarios_craft.md`（97.3%）与`references/regression_scenarios.md`（97.1%） | 均已逼近复核线 | 新增回归场景前必须先做瘦身 |
+
+**分配纪律**：
+
+- 创作判据的补充仍归`screenplay_development.md`所属owner，但**新内容不得落入该文件**；它已承载故事逻辑、工艺手册、两道判定门与商业事实门，再增即越线。
+- 新内容按性质分配：**路由与边界**进本文件；**新的判据族**新开`knowledge/writer/`下的文件并在`## The Roster`登记。
+- 越过复核线时按`references/context_budget.md`的`### 瘦身优先序`在**同一次变更内**瘦身；**只把内容搬到另一个文件不算瘦身**。
+- 本节的字节数为**实测值**，与登记值差异超过20%即视为过期，须在同一次变更内更新。
 
 ## Requirement Router｜需求路由
 
