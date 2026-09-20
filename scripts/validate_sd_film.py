@@ -871,6 +871,28 @@ STANDALONE_INVOCATION_MARKERS = (
 )
 
 
+# The 完整版专业分镜 path failed once in a way every check called healthy: the user
+# asked for the complete 18-column record, the guarded artifact stayed the 5-column
+# default, and the remaining batches arrived as a condensed summary table. "Complete"
+# now means every Shot in one canonical file, and that is asserted mechanically
+# instead of promised in prose.
+FULL_SHOT_DELIVERY_MARKERS = (
+    ("rules/05_output_rules.md", "### 完整版专业分镜 Delivery Gate"),
+    ("rules/05_output_rules.md", "完整版的“完整”指**镜**，不是指**列**"),
+    ("rules/05_output_rules.md", "05_shots/06_detailed_shot_design.md"),
+    ("rules/05_output_rules.md", "--kind shot-design-full"),
+    ("rules/05_output_rules.md", "不得用压缩摘要表代替任一镜的十八列"),
+    ("templates/08_shot_design_prompt.md", "--kind shot-design-full"),
+    ("templates/08_shot_design_prompt.md", "06_detailed_shot_design.md"),
+)
+FULL_SHOT_VALIDATOR_MARKERS = (
+    "shot-design-full",
+    "check_shot_design_full",
+    "SHOT_FULL_FILE_NAMES",
+    "完整版不完整",
+)
+
+
 # The asset canvas default is one rule with two category values, and every asset
 # template and workflow routes to it. Before r97 the ratio lived only in an empty
 # `画幅/分辨率/交付规格：` field, so "character 9:16 / everything else 16:9" had no
@@ -976,6 +998,35 @@ def check_standalone_invocation(root: Path) -> list[str]:
             errors.append(
                 f"{relative} lost the standalone-invocation contract text: {marker}"
             )
+    return errors
+
+
+def check_full_shot_delivery_contract(root: Path) -> list[str]:
+    """完整版专业分镜 is a file delivery, and "complete" means every Shot.
+
+    Measured gap: the user asked for 完整版专业分镜; the guarded artifact stayed the
+    5-column default, the eighteen-column rows existed only in chat and only for two
+    batches, the rest arrived as a condensed summary table, and every existing check
+    passed -- `--kind shot-design` accepts either form and never asks how many Shots
+    the project has. Nothing in the skill said what makes a 完整版 complete.
+
+    Deterministic scope: the delivery gate text stays in the rule that owns output
+    form, the template routes to it and to the new validator kind, and the canonical
+    file name plus the new kind still exist in the validator. It does not judge
+    whether a given delivery honoured the gate.
+    """
+    errors: list[str] = []
+    for relative, marker in FULL_SHOT_DELIVERY_MARKERS:
+        if marker not in read(root, relative):
+            errors.append(f"{relative} lost the 完整版分镜 delivery contract text: {marker}")
+    validator = root / "scripts" / "validate_delivery_artifacts.py"
+    if not validator.is_file():
+        errors.append("complete-form delivery validator is missing: scripts/validate_delivery_artifacts.py")
+        return errors
+    source = validator.read_text(encoding="utf-8-sig")
+    for marker in FULL_SHOT_VALIDATOR_MARKERS:
+        if marker not in source:
+            errors.append(f"validate_delivery_artifacts.py lost the complete-form gate: {marker}")
     return errors
 
 
@@ -1532,6 +1583,8 @@ def check_period_and_place(root: Path) -> list[str]:
 
 BRANDED_INDEX = "knowledge/branded_content/index.md"
 BRANDED_DIR = "knowledge/branded_content"
+CLIENT_BRIEF_SECTION = "# Client Brief｜客户与商业 brief"
+COMMERCIAL_FACT_GATE = "## Client Brief And Commercial Fact Gate｜客户与商业事实门"
 BRANDED_ROSTER_RE = re.compile(r"knowledge/branded_content/(\d{2}_[a-z_]+\.md)")
 BRANDED_ATOM_SECTIONS = (
     "## Purpose And Owner",
@@ -1560,8 +1613,9 @@ BRANDED_ROUTING = (
     ("knowledge/00_knowledge_index.md", BRANDED_INDEX, "knowledge index discovery entry"),
     ("rules/resource_loading.md", f"`{BRANDED_DIR}/`", "project scope gate row"),
     ("references/module_contracts_knowledge.md", "## Branded Content Knowledge Contract", "module contract"),
-    ("knowledge/script_adaptation.md", BRANDED_INDEX, "adaptation target route"),
+    ("knowledge/writer/script_adaptation.md", BRANDED_INDEX, "adaptation target route"),
     ("workflows/07_visual_development_workflow.md", BRANDED_INDEX, "STATE-04 entry gate"),
+    ("templates/00_project_start_template.md", CLIENT_BRIEF_SECTION, "client brief intake section"),
 )
 
 
@@ -1667,8 +1721,8 @@ SECONDARY_ROUTING = (
     ("rules/resource_loading.md", f"`{AUDIENCE_OWNER}`", "audience scope gate row"),
     ("rules/resource_loading.md", f"`{DOC_OWNER}`", "documentary scope gate row"),
     ("rules/resource_loading.md", f"`{PLATFORM_OWNER}`", "platform scope gate row"),
-    ("knowledge/script_adaptation.md", DOC_OWNER, "adaptation target route"),
-    ("knowledge/screenplay_development.md", "Commercial Objective And Writer Beat", "writer commercial objective section"),
+    ("knowledge/writer/script_adaptation.md", DOC_OWNER, "adaptation target route"),
+    ("knowledge/writer/screenplay_development.md", "Commercial Objective And Writer Beat", "writer commercial objective section"),
     ("references/module_contracts_knowledge.md", "## Audience Profile Knowledge Contract", "audience contract"),
     ("references/module_contracts_knowledge.md", "## Documentary And Non-Fiction Knowledge Contract", "documentary contract"),
     ("references/module_contracts_knowledge.md", "## Platform Profile Knowledge Contract", "platform contract"),
@@ -1928,6 +1982,250 @@ def check_no_project_registry(root: Path) -> list[str]:
         for label, pattern in NO_PROJECT_REGISTRY_PATTERNS:
             if pattern.search(text):
                 errors.append(f"project registration must stay removed: {label} (in {relative})")
+    return errors
+
+
+CRAFT_OWNER = "knowledge/writer/screenplay_development.md"
+CRAFT_MANUAL_SECTIONS = (
+    "### 结构操作",
+    "### 人物构建",
+    "### 场景与对白技法",
+)
+CRAFT_ENTRY_RE = re.compile(r"^\*\*[^*]+\*\*$")
+CRAFT_ENTRY_MARKERS = (
+    ("成立条件：", "an applicability condition"),
+    ("反用场景：", "a counter-indication"),
+    ("失效信号：", "a failure signal"),
+)
+CRAFT_MIN_ENTRIES = 20
+CRAFT_GATE_MARKERS = (
+    ("变化可指认", "the identifiable-change item"),
+    ("人物选择可追因", "the traceable-choice item"),
+    ("场面不可随意互换", "the non-interchangeable-scene item"),
+    ("台词具备行动", "the dialogue-as-action item"),
+    ("结尾状态已改变", "the changed-end-state item"),
+)
+CRAFT_FORMULA_BOUNDARY = (
+    ("## Craft And Formula｜工艺与公式", "boundary section"),
+    ("Craft｜工艺", "craft row"),
+    ("Formula｜公式", "formula row"),
+    ("不延伸", "non-extension of the ban to the writer craft manual"),
+)
+
+
+def check_screenplay_craft(root: Path) -> list[str]:
+    """The Writer craft layer must stay conditional, falsifiable and formula-free.
+
+    Measured risk: this is the one knowledge domain that carries no mechanically
+    checked invariant. Three properties have to hold together, and each one can
+    decay silently:
+
+    - `knowledge/writer/screenplay_development.md` carries a craft manual whose every
+      entry declares 成立条件 / 反用场景 / 失效信号. An entry that loses its
+      conditions reads as a recipe even when the surrounding prose denies it.
+    - the manual still declares itself non-Gate, so it cannot silently become a
+      hard gate or a duration requirement.
+    - `knowledge/genre/index.md` still separates Craft from Formula after the
+      ban on beat models, so the ban cannot be read as covering dramaturgy.
+
+    Deterministic scope: section presence, per-entry marker parity, the
+    non-Gate declaration, and the Craft/Formula boundary. It does not judge
+    whether an entry's condition is well chosen or whether a scene obeyed it.
+    """
+    errors: list[str] = []
+    if not (root / CRAFT_OWNER).is_file():
+        return [f"writer craft owner is missing: {CRAFT_OWNER}"]
+    owner = read(root, CRAFT_OWNER)
+    manual = roster_section(owner, "## Craft Manual｜工艺手册")
+    if not manual:
+        errors.append(f"{CRAFT_OWNER} is missing the craft manual section")
+    for heading in CRAFT_MANUAL_SECTIONS:
+        if heading not in manual:
+            errors.append(f"craft manual is missing section: {heading}")
+    entries: list[list[str]] = []
+    current: list[str] | None = None
+    for line in manual.split("\n"):
+        stripped = line.strip()
+        if CRAFT_ENTRY_RE.match(stripped):
+            current = [stripped]
+            entries.append(current)
+        elif stripped.startswith("###"):
+            current = None
+        elif current is not None:
+            current.append(stripped)
+    if len(entries) < CRAFT_MIN_ENTRIES:
+        errors.append(
+            "craft manual carries too few entries to be a manual: "
+            f"{len(entries)} < {CRAFT_MIN_ENTRIES}"
+        )
+    for marker, label in CRAFT_ENTRY_MARKERS:
+        missing = [
+            index + 1
+            for index, block in enumerate(entries)
+            if not any(marker in line for line in block)
+        ]
+        if missing:
+            errors.append(
+                f"craft entries missing {label} ({marker.strip()}): "
+                f"entries {missing[:5]} of {len(entries)}"
+            )
+    if "不是配方" not in manual or "不拥有Camera Language" not in manual:
+        errors.append(
+            "craft manual no longer declares itself a non-formula, "
+            "non-camera owner: the recipe guard is gone"
+        )
+    gate = roster_section(owner, "## Directable Screenplay Gate｜可失败判定")
+    if not gate:
+        errors.append(f"{CRAFT_OWNER} is missing the fail-able screenplay gate")
+    for marker, label in CRAFT_GATE_MARKERS:
+        if marker not in gate:
+            errors.append(f"fail-able screenplay gate is missing {label}: {marker}")
+    boundaries = (
+        ("不得成为Gate、硬门或时长要求", "craft manual is no longer forbidden to become a gate"),
+        ("指不到即不得输出", "proposal may be emitted without the gate being locatable"),
+        (COMMERCIAL_FACT_GATE, "the client brief and commercial fact gate is gone"),
+        ("转化动作是Payoff，不是落版", "the conversion-as-payoff obligation is gone"),
+        ("客户方终审人只决定客户侧由谁确认", "the approval-chain boundary is gone"),
+    )
+    for marker, message in boundaries:
+        if marker not in owner:
+            errors.append(message)
+    triage = "workflows/03_asset_discovery_workflow.md"
+    if not (root / triage).is_file():
+        errors.append(f"commercial fact triage file is missing: {triage}")
+    elif "**分类对象是客户已提供的商业事实**" not in read(root, triage):
+        errors.append(
+            f"{triage} no longer scopes the triage to client-provided facts: "
+            "it would read as an intake mechanism it does not own"
+        )
+    genre_boundary = read(root, GENRE_INDEX)
+    for marker, label in CRAFT_FORMULA_BOUNDARY:
+        if marker not in genre_boundary:
+            errors.append(f"Craft/Formula boundary is missing {label}: {marker}")
+    return errors
+
+
+WRITER_INDEX = "knowledge/writer/index.md"
+WRITER_INDEX_REQUIREMENTS = (
+    ("## Purpose And Boundary", "purpose and boundary"),
+    ("## Module Contract", "module contract"),
+    ("## The Roster", "roster table"),
+    ("## Requirement Router｜需求路由", "requirement router"),
+    ("## Shared File Schema", "shared file schema"),
+    ("## Validator-Checkable Invariants", "validator-checkable invariants"),
+    ("## Non-Applicable Rule", "non-applicable rule"),
+    ("## Return Routing", "return routing"),
+    ("不创建主STATE", "no new main STATE"),
+    ("不新增Template字段", "no new template field"),
+    ("不新建节拍模型", "no second rhythm model"),
+)
+WRITER_LAYER_FILES = (
+    "knowledge/writer/screenplay_development.md",
+    "knowledge/writer/screenwriting_optimization.md",
+    "knowledge/writer/script_adaptation.md",
+    "knowledge/writer/directorial_interpretation.md",
+    "knowledge/adaptation/short_form_drama_adapter.md",
+)
+# The short-form adapter predates the shared schema; these are its equivalents.
+WRITER_FILE_SCHEMA_EQUIVALENTS = {
+    "knowledge/adaptation/short_form_drama_adapter.md": (
+        ("## Purpose And Trigger", "Read Scope / Module Contract equivalent"),
+        ("## Acceptance Checklist", "Completion Check equivalent"),
+    ),
+}
+
+
+def check_writer_layer(root: Path) -> list[str]:
+    """The writer layer is a routed domain, not a pile of files.
+
+    Measured risk: this layer is invoked once per brand and per brief, so its
+    value is whether one call lands on the right rules. Three properties carry
+    that, and each decays silently:
+
+    - `knowledge/writer/index.md` exists and still routes a confirmed
+      requirement to the exact file and section that must be read. Without it
+      the only way in is reading the whole 45 KB owner and judging by hand.
+    - every registered writer file keeps the shared schema (Read Scope, Module
+      Contract, Completion Check, boundary statement), so an agent that is
+      routed to a file can navigate inside it.
+    - the router does not become a third load site for the short-form adapter,
+      whose loader is fixed at two workflow steps.
+
+    Deterministic scope: file presence, roster-to-file correspondence, section
+    presence and the single-load-site rule. It does not judge whether a route is
+    well chosen or whether a script honoured it.
+    """
+    errors: list[str] = []
+    if not (root / WRITER_INDEX).is_file():
+        return [f"writer layer index is missing: {WRITER_INDEX}"]
+    index = read(root, WRITER_INDEX)
+    for marker, label in WRITER_INDEX_REQUIREMENTS:
+        if marker not in index:
+            errors.append(f"{WRITER_INDEX} is missing the {label}: {marker}")
+    registered = {path for path in WRITER_LAYER_FILES if path in index}
+    for relative in WRITER_LAYER_FILES:
+        if not (root / relative).is_file():
+            errors.append(f"writer layer file is missing: {relative}")
+            continue
+        if relative not in index:
+            errors.append(f"{relative} is not registered in {WRITER_INDEX}'s roster")
+        if relative == "knowledge/adaptation/short_form_drama_adapter.md":
+            continue
+        text = read(root, relative)
+        for marker, label in (
+            ("# Read Scope", "read scope"),
+            ("## Module Contract", "module contract"),
+            ("## Completion Check", "completion check"),
+        ):
+            if marker not in text:
+                errors.append(f"{relative} is missing its {label}: {marker}")
+    if not registered:
+        errors.append(f"{WRITER_INDEX}'s roster registers no writer layer file")
+    for relative, equivalents in WRITER_FILE_SCHEMA_EQUIVALENTS.items():
+        if not (root / relative).is_file():
+            continue
+        text = read(root, relative)
+        for marker, label in equivalents:
+            if marker not in text:
+                errors.append(f"{relative} lost its {label}: {marker}")
+    if "本文件是路由说明，**不是第三个加载入口**" not in index:
+        errors.append(
+            f"{WRITER_INDEX} no longer disclaims being a load site for the "
+            "short-form adapter: the two-entry rule would read as three"
+        )
+    if "不得把\"有品牌\"等同于\"有客户\"" not in index:
+        errors.append(
+            f"{WRITER_INDEX} no longer separates commission context from brand "
+            "intent: self-initiated branded work would read as commissioned"
+        )
+    if "不产生第二个确认主体" not in index:
+        errors.append(
+            f"{WRITER_INDEX} lost the single-confirmation-subject rule for "
+            "self-initiated branded work"
+        )
+    owner = read(root, CRAFT_OWNER)
+    if "不得把\"有品牌\"等同于\"有客户\"" not in owner:
+        errors.append(
+            f"{CRAFT_OWNER} no longer separates commission context from brand "
+            "intent in the commercial fact gate"
+        )
+    start_template = "templates/00_project_start_template.md"
+    if not (root / start_template).is_file():
+        errors.append(f"project start template is missing: {start_template}")
+    else:
+        template = read(root, start_template)
+        for marker, label in (
+            ("交付语境", "commission context field"),
+            ("self_initiated", "self-initiated value"),
+            ("client_commissioned", "client-commissioned value"),
+            ("不产生第二个确认主体", "single-confirmation-subject rule"),
+            ("制作建议｜待确认", "maker-proposed delivery spec route"),
+            ("制作不得声称建议值\"符合\"任何未确认的平台机制", "platform-fact boundary"),
+        ):
+            if marker not in template:
+                errors.append(
+                    f"{start_template} client brief lost its {label}: {marker}"
+                )
     return errors
 
 
@@ -2248,6 +2546,8 @@ def validate_skill(root: Path) -> list[str]:
         (visual_workflow, "不得在本阶段首次向用户提出媒介问题"),
         (script_analysis, "媒介剖面与目标形式是两根独立的轴"),
         (script_analysis, "媒介形式：`live_action`（真人 / 实拍）"),
+        (script_analysis, "### Target Form Confirmation｜目标形式确认"),
+        (script_analysis, "Project Information → 目标形式"),
         (script_analysis, "必须在本Proposal中询问一次"),
         (script_analysis, "媒介仍为`Pending`时不得进入STATE-02"),
         (runtime, "MEDIUM_PROFILE"),
@@ -2418,9 +2718,12 @@ def validate_skill(root: Path) -> list[str]:
     errors.extend(check_stage_landing_coverage(root))
     errors.extend(check_fast_invariant_and_receipt(root))
     errors.extend(check_standalone_invocation(root))
+    errors.extend(check_full_shot_delivery_contract(root))
     errors.extend(check_asset_canvas_ratio_default(root))
     errors.extend(check_reference_film_study(root))
     errors.extend(check_genre_knowledge(root))
+    errors.extend(check_screenplay_craft(root))
+    errors.extend(check_writer_layer(root))
     errors.extend(check_anime_language(root))
     errors.extend(check_vertical_framing(root))
     errors.extend(check_delivery_spec(root))

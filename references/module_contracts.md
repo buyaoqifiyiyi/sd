@@ -98,7 +98,7 @@
 
 ### Production Knowledge Rule Owners
 
-- Screenwriter Module / Writer Intelligence Layer、WRITER INTENT PACKET、原创故事开发、Writer Diagnosis、Writer → Director Handoff与Directable Screenplay QA：`knowledge/screenplay_development.md`
+- Screenwriter Module / Writer Intelligence Layer、WRITER INTENT PACKET、原创故事开发、Writer Diagnosis、Writer → Director Handoff与Directable Screenplay QA：`knowledge/writer/screenplay_development.md`
 - Project / Scene / Shot / Clip四层DIRECTOR INTENT PACKET、Director Thinking从STATE-00/01到Scene / Shot / Clip / Prompt / Editing / Review的连续性合同，以及Task Dominance Router：`knowledge/director_decision_layer.md`
 - Camera Language Module、Composition / Movement / Lens-Distance / Shot Rhythm四项核心能力和Script→Scene→Shot→Clip→Prompt→Editing→Review映射：`knowledge/camera_language/index.md`；逐Shot固定决策顺序由`knowledge/camera_language/shot_language_router.md`拥有
 - Scene Spatial Snapshot、Spatial Blocking Decision、camera safe side与合法越轴空间合同：`knowledge/spatial_blocking_layer.md`
@@ -114,7 +114,7 @@ Workflow只负责触发、路由、执行顺序和Completion Gate；Quality只�
 
 Module Type：persistent cross-stage Writer Intelligence Layer；不创建新主STATE、用户问卷、Portable State字段或第二套编剧系统。
 
-Owner：`knowledge/screenplay_development.md`。`knowledge/screenwriting_optimization.md`、`knowledge/script_adaptation.md`与适用genre adapter仅为受控子模块，不得竞争owner。
+Owner：`knowledge/writer/screenplay_development.md`。`knowledge/writer/screenwriting_optimization.md`、`knowledge/writer/script_adaptation.md`与适用genre adapter仅为受控子模块，不得竞争owner。
 
 传递链：`STATE-00 Writer Foundation → STATE-01 Production-Locked Directable Screenplay + WRITER INTENT PACKET → STATE-02/03 Narrative Function → STATE-04 Story / Motif Obligations → STATE-05 Writer Beat / Scene Value Projection → STATE-06 Shot Traceability → STATE-07 Writer Beat Integrity → STATE-08 Writer Intent Preservation → Editing Writer Rhythm Protection → STATE-09 Story Review`。
 

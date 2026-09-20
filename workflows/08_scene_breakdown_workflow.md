@@ -84,7 +84,7 @@ Asset Development。
 
 ## Upstream Writer Intent And Director Intent Projection
 
-先读取Production-Locked Directable Screenplay、与其Revision绑定的Writer Intent Packet及STATE-01轻量Scene Director Intent。按`knowledge/screenplay_development.md`与`knowledge/director_decision_layer.md`的Handoff，将每场的Scene Purpose、Character Objective / Obstacle / Tactic、Value / Relationship / Information Change、Decision / Consequence、Setup / Payoff Function、Writer Beat Map、Scene Exit State及Audience Start / End、Performance / Spatial / Rhythm呈现意图投影到正式SCENE边界、剧情作用、空间关系和节奏阶段。
+先读取Production-Locked Directable Screenplay、与其Revision绑定的Writer Intent Packet及STATE-01轻量Scene Director Intent。按`knowledge/writer/screenplay_development.md`与`knowledge/director_decision_layer.md`的Handoff，将每场的Scene Purpose、Character Objective / Obstacle / Tactic、Value / Relationship / Information Change、Decision / Consequence、Setup / Payoff Function、Writer Beat Map、Scene Exit State及Audience Start / End、Performance / Spatial / Rhythm呈现意图投影到正式SCENE边界、剧情作用、空间关系和节奏阶段。
 
 这些source data只帮助发现Scene边界并保持Writer / Director意图，其投影只落在`templates/07_scene_design_prompt.md`既有的`Scene Directing Brief`区块内（Beat Map / Audience Start → End / Dramatic Geography / Reveal Timing / Scene Camera Strategy / Rhythm Intent），不创建第二套输出Schema、新STATE或SHOT / CLIP；不允许改写Production-Locked剧情。若Intent与锁定剧本冲突，返回STATE-01最小修订Intent；若原项目没有独立Intent Artifact，则从锁定剧本已明确的行动、信息与关系变化提取最小可验证投影，不补造新剧情。
 

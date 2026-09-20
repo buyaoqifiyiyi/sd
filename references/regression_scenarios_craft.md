@@ -2,7 +2,7 @@
 
 > Skill维护层：只在修改本Skill时读取，不参与影视生产。
 
-本文件是回归集的一部分；完整范围与其余文件见 `references/regression_scenarios.md` 的 Regression File Index。脚本仍只把本文件当作回归语料的一部分，不构成独立权威。覆盖 Prompt 编译、表演、视觉阻断与剧本端到端（R16—R22、R64—R65、R69）；R15（Prompt 注意力 / 转译 / 物理数据）是独立可读的子案例合集，已按编号边界拆至 `references/regression_scenarios_prompt.md`。Director Module / Camera Language 端到端与导演、运镜工艺场景见 `references/regression_scenarios_director.md`（R23）。
+本文件是回归集的一部分；完整范围与其余文件见 `references/regression_scenarios.md` 的 Regression File Index。脚本仍只把本文件当作回归语料的一部分，不构成独立权威。覆盖 Prompt 编译、表演、视觉阻断、剧本端到端与Writer层工艺判定（R16—R22、R64—R65、R69、R87、R91）；R15（Prompt 注意力 / 转译 / 物理数据）是独立可读的子案例合集，已按编号边界拆至 `references/regression_scenarios_prompt.md`。Director Module / Camera Language 端到端与导演、运镜工艺场景见 `references/regression_scenarios_director.md`（R23）。
 
 ## R16 Delta / Budget / Scope / Canon / Authority / Retake
 
@@ -497,6 +497,18 @@ FAIL：从平台、目标形式或参考图比例推定交付画幅；把裁切�
 ## R87 Reference-Film Study Measurement Regression
 
 R65（隔离边界与三层结论）仍必须成立；本节只补上**测量层**：切点、时长与运动量从哪来，判断怎么被对账，以及无工具时的降级线。不得新增主STATE，不得让拉片产物获得Artifact ID或Canonical身份。
+
+### R91-A A State Change Must Be Pointable, Not Narrated
+
+输入：一个两分钟的家庭短片提案。儿子把父亲的旧手表放回抽屉，父亲没有抬头，只说了一句"放那儿吧"；提案正文里这一场另写了一句"父亲其实已经原谅了他"。
+PASS：`## Directable Screenplay Gate｜可失败判定`第1项判定失败——关系变化被写成了叙述，正文里没有承载它的动作或反应用；最小修订为让父亲的一个可见动作承担该变化（把表从抽屉取出上弦，或推到儿子那一侧），然后重新指认。
+FAIL：因为"父亲其实已经原谅了他"读起来亲切就放行；用一句解释性台词替代动作并视为已兑现；或声称QA十四项已通过，因此无需本Gate。
+
+### R91-B A Craft Entry Without Its Condition Is Not Applied
+
+输入：一个四分钟的双人关系短片，中段两人对话变成轮流陈述，信息平铺且不再推进。
+PASS：取`## Craft Manual｜工艺手册`的`两人对话僵住时引入第三件事`条目，先读其`成立条件`（两人对话变成轮流陈述、或信息交换平铺）——条件成立；按条目引入一件可被争夺、交代或传手的实物作为争斗出口，让关系通过它变化；同时核对`反用场景`（需要正面摊牌的场景不适用），确认本场不是摊牌场。
+FAIL：因为"三人对话更高级"而引入一个无关人物；把条目当成硬门，要求所有双人场景都必须有第三件事；或用它替代人物动机的补足，把结构手段当成性格解释。
 
 ### R87-A Boundaries And Duration Are Measured, Never Eyeballed
 

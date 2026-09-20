@@ -1,5 +1,19 @@
 # Directorial Interpretation
 
+# Read Scope
+
+层入口与需求路由见`knowledge/writer/index.md`。本文件按当前事项只读对应小节，**不得整文件通读**：
+
+| 当前事项 | 只读 |
+|---|---|
+| 判定本文件何时可用、边界在哪 | `## Purpose`、`## Module Contract` |
+| 执行导演化处理 | `## Required Interpretation Dimensions`、`## Interpretation Method` |
+| 与STATE-06 Director Decision Layer分界 | `## Boundary With Director Decision Layer` |
+| 交给下一步 | `## Production Script Proposal Handoff` |
+| 输出前自检 | `## Completion Check` |
+
+---
+
 ## Purpose
 
 本Knowledge位于STATE-01 Writer → Director Handoff之后，把Screenwriter Module已经建立的故事、人物意图、Writer Beats、Information Architecture与Setup / Payoff义务转换为可拍、可表演、可被观众按预期接收的制作版叙事。它处理“已确认信息和情绪如何在剧本层被看见与听见”，不重新决定“故事发生什么”，也不处理“具体用哪个镜头拍”。
@@ -10,7 +24,7 @@
 
 - **Module Name**：Directorial Interpretation
 - **Module Type**：STATE-01条件性导演化叙事Knowledge
-- **Trigger**：`knowledge/screenplay_development.md`已形成结构成立的原创候选故事，或Screenwriting Optimization已形成结构成立且保护项清楚的候选故事
+- **Trigger**：`knowledge/writer/screenplay_development.md`已形成结构成立的原创候选故事，或Screenwriting Optimization已形成结构成立且保护项清楚的候选故事
 - **Not Triggered As**：导演风格选择、Visual Development、Scene Breakdown、Detailed Shot Design、Director Decision Layer、Storyboard或Seedance Prompt编译
 - **Position**：Creation为`Director-first Screenplay Development → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal`；Existing为`Screenwriting Optimization → Directorial Interpretation → Production Script Proposal`，全部位于STATE-01内部
 - **Required Inputs / Owners**：原创开发或优化后的目标、冲突、Beat、人物动机、信息顺序、保护项、适用的局部范围、时长约束与用户明确要求；事实继续由用户及STATE-01 Workflow拥有
@@ -90,7 +104,7 @@
 - 节奏压缩、高潮与留白
 - Protected Creative Locks、Optimization Scope与Pending Decisions
 
-Creation Brief还必须把Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Strategy、Performance Opportunity、Spatial Potential与Rhythm Intent交回`knowledge/screenplay_development.md`做Directable Screenplay QA。该source data默认不作为用户可见固定栏目。
+Creation Brief还必须把Scene Objective、Audience Start / End State、Character Objective、Relationship Delta、Information Strategy、Performance Opportunity、Spatial Potential与Rhythm Intent交回`knowledge/writer/screenplay_development.md`做Directable Screenplay QA。该source data默认不作为用户可见固定栏目。
 
 不得包含正式镜头表或为后续阶段预先锁死摄影技术。
 

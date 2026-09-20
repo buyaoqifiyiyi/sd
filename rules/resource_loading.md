@@ -46,6 +46,10 @@
 
 | 领域 | 读取条件（不成立即跳过） | 判定依据 |
 |---|---|---|
+| `knowledge/writer/index.md` | STATE-01的**发现入口**：进入STATE-01必读，再按它的`## Requirement Router｜需求路由`只读命中项；本行登记其入口地位，它自身不因条件跳过 | STATE-01入口 |
+| `knowledge/writer/screenwriting_optimization.md` | 用户已明确表示“优化 / 继续优化 / 进入优化”或无歧义同义授权之后 | STATE-01 User Decision Gate结论 |
+| `knowledge/writer/script_adaptation.md` | Input Class为C类、报告已说明Adaptation Need且已获明确改编授权 | STATE-01入口路由与授权记录 |
+| `knowledge/adaptation/short_form_drama_adapter.md` | 目标形式确认为短剧 / 竖屏剧情 / 1—3分钟剧情视频；**加载入口只有两个**（`workflows/02_script_analysis_workflow.md`的`### Adaptation Target Detection`与`### Target Form Confirmation`），本表只登记条件、不创建第三个入口 | `project_bible.md`的`Project Information → 目标形式` / STATE-01的`Production Setup Gate` |
 | `knowledge/fx/`与正式FX资产 | 剧本存在FX义务或已登记FX需求 | Production-Locked Script / STATE-02 FX需求清单 |
 | `knowledge/sound_language/` | 当前镜头存在同期声设计需求 | 当前镜头事实；未激活AUDIO模块时不检查声音身份 |
 | `knowledge/sequence/` | 存在Confirmed Sequence Plan | STATE-05条件路由结论 |
@@ -53,8 +57,8 @@
 | `knowledge/performance/`、`knowledge/action_previs.md` | 当前镜头为Performance-dominant / Action-dominant / Mixed | STATE-06的镜头路由结论 |
 | `knowledge/visual_styles/` | 用户提供了明确视觉参考 | 本轮或已确认的参考输入 |
 | `knowledge/environment_multi_view_reconstruction.md` | 当前Active Core ENV存在Spatial Reconstruction | STATE-03环境资产记录 |
-| `knowledge/adaptation/`、`knowledge/script_adaptation.md`、`knowledge/screenwriting_optimization.md` | 当前为Existing Script / Material或改编 / 优化分支 | STATE-01入口路由 |
-| `knowledge/directorial_interpretation.md` | 当前为导演化 / 改编分支 | STATE-01入口路由 |
+| `knowledge/adaptation/`、`knowledge/writer/script_adaptation.md`、`knowledge/writer/screenwriting_optimization.md` | 当前为Existing Script / Material或改编 / 优化分支 | STATE-01入口路由 |
+| `knowledge/writer/directorial_interpretation.md` | 当前为导演化 / 改编分支 | STATE-01入口路由 |
 | `knowledge/medium_profiles.md` | `媒介形式`已确认为`live_action` / `3d_animation` / `2d_anime`；为`Pending`时不加载 | STATE-01的`Production Setup Gate`确认结果 / `project_bible.md`的`媒介形式`字段 |
 | `knowledge/genre/` | `类型`已登记；未登记时不加载，也不从媒介、平台、题材标签或画风推定 | STATE-00登记结果 / `templates/00_project_start_template.md`的`## Genre` |
 | `knowledge/anime_language/` | `媒介形式`确认为`2d_anime`；其他两档与`Pending`均不加载 | `project_bible.md`的`媒介形式`字段 / STATE-01的`Production Setup Gate`确认结果 |

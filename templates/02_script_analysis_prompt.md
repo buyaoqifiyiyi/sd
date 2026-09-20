@@ -1,5 +1,11 @@
 # Screenplay Development And Script Analysis Template
 
+## Purpose
+
+本文件是`STATE-01 Script Analysis`最终用户可见剧本交付物的唯一格式真源，拥有字段名称、字段顺序与排版，包括`### Production Script Format Baseline`定义的剧本正文契约。
+
+这是强制输出契约，不是示例、建议或可选排版。任何Workflow、Knowledge、Rules、历史输出习惯或模板自带的排版与本文件冲突时，一律以本文件为最高优先级。
+
 
 ## Role
 
@@ -91,6 +97,7 @@ Existing Script / Material首次进入STATE-01且不存在No Revision / Final Sc
 - Adaptation Intensity：LEVEL 1 / LEVEL 2 / LEVEL 3 / Not Applicable / Pending
 - Adapter Load：short_form_drama_adapter / Not Applicable / Pending
 - Script Status：Source Material / Adaptation Draft / Optimized Proposal / Production-Locked
+- 一句话故事：Logline，即本片卖点的一句话；由己方创作或来源素材的Premise与Core Conflict直接产出，不从剧本正文复制，不写成主题陈述或剧情摘要
 
 
 ### Creation Brief Route（仅Idea-to-Screenplay分支）
@@ -165,7 +172,35 @@ Class C额外输出`Adaptation Need`、判断依据、素材离标准制作剧�
 
 ### Production Script Proposal（Creation Brief已明确请求创作，或Existing Script / Material已明确同意优化/改编后的提案分支）
 
-输出可独立阅读的完整制作版剧本提案。必须保留用户核心创意与关键设定，不擅自改变世界观、角色身份或品牌要求；局部优化时只改指定范围，并清楚标注范围边界。
+输出可独立阅读的完整制作版剧本提案。必须保留用户核心创意与关键设定，不擅自改变世界观、角色身份或品牌要求；局部优化时只改指定范围，并清楚标注范围边界。提案正文必须服从下方`### Production Script Format Baseline`，标题区必须含`一句话故事`。
+
+
+### Production Script Format Baseline（剧本正文唯一格式契约）
+
+`Production Script Proposal`、用户确认后的`Production-Locked Directable Screenplay`与`Adaptation Draft`的剧本正文一律按本节输出。`Optimization Opportunity Report`与各类内部诊断结论不输出剧本正文，因而不适用本节。
+
+**四要素与顺序**：剧本正文只由以下四类元素构成，全部必备，不得出现"同上"或省略。
+
+```text
+场景N｜内景·地点·时间
+动作行
+角色名
+台词
+```
+
+- 按场景顺序重复这组元素；同一场景内先写动作行，再写该处的角色名与台词。
+- 场景之间空一行；不得用连续散文段落承载动作与对白，也不得把回忆、闪回、蒙太奇写成说明性指令（例如"此处插入闪回"）而不给出可见内容。
+- 四要素齐备即满足"可独立阅读"：买方、导演与演员可据以阅读、计时与评估。不再另设可读性判据。
+
+**场景标题**：中文项目使用场号制`场景1｜内景·云岚山战台·日`；使用`INT. / EXT.`的英文或国际格式亦可，但同一项目内不得混用。场景号在全剧本内连续，跨场景引用一律用场景号，不得用"上一场""前面那场"。
+
+**动作行**：现在时、主动语态，只写摄影机与麦克风能记录或听到的内容。禁止抽象心理、不可见的内在描写、文学比喻与"内心独白"作为唯一信息载体；情绪、关系与背景必须落在可观察的选择、动作、反应、后果、道具处理或剧情内声音上。动作行不得出现景别、焦段、机位或运镜——镜头语言由`STATE-05 / STATE-06`拥有。
+
+**角色名与台词**：角色名独自成行，台词另起一行。括号只保留当前句必需的表演或语言提示（如`（轻声）`、`（OS）`、`（V.O.）`），不写情绪形容词清单。台词不得复述画面、解释关系或交代背景。
+
+**时长与篇幅校准**：剧本必须与目标时长对齐。中文字符的三档换算为：对白密集段约370—400字符／分钟，动作密集段约270—330，对白极少段约230—260。也可按"一页标准剧本≈一分钟成片"折算。长度只按此区间判定，不虚构精确秒数。
+
+**交付门**：缺任一要素、场景无标头、把镜头语言写进动作行、或正文未与目标时长校准时，不得输出为Proposal或Production-Locked剧本；先做最小修订再交付。目标时长与内容容量确有冲突时按Pending Decision上报，不静默压缩或注水。全片仅一场且总时长不超过两分钟的短形态项目，场景标题可只写`内景·地点·时间`而不带场号——四要素其余要求不变。
 
 
 ### 项目概览

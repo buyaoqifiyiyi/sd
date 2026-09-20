@@ -114,6 +114,14 @@ PASS：`scripts/validate_delivery_artifacts.py --kind scene-breakdown | shot-des
 
 FAIL：把bullet清单或一行一句当成交付物放过；或反向地要求默认分镜表逐格展示十八个内部字段（`templates/08_shot_design_prompt.md`的`## Default User-facing Delivery`已覆盖该读法）；或要求Clip表展示Preflight、参考预算等内部账本。
 
+### R48-Q A Complete-Form Shot Table Must Itself Be Complete
+
+输入一（实测案例）：用户明确要求`完整版专业分镜`；交付物只保存了默认5列表，十八列记录仅存在于聊天中且只覆盖前两批，其余批次改用压缩摘要表；打包路径与`--kind shot-design`全部通过。输入二：十八列文件声明`Total Shots: 30`，实际只有2行。输入三：十八列文件30行齐全，但镜号自`SHOT-002`起或同一镜出现在两张表里。输入四：十八列文件30行齐全，但某镜`时长(s)`与`TC OUT - TC IN`不符、或相邻镜时间码断档。输入五：完整十八列30镜一次落盘为`05_shots/06_detailed_shot_design.md`，另存为`06_detailed_shot_design_full.md`。
+
+PASS：`scripts/validate_delivery_artifacts.py --kind shot-design-full`对输入一报出“完整版专业分镜必须以十八列完整记录交付……默认5列表不能充当完整版，逐批交付的中间状态也不是完整版”；对输入二报出“完整版不完整：正文声明 Total Shots: 30，但十八列表只交付 2 个Shot”；对输入三报出重复镜号与编号不连续；对输入四报出时间码不可复算与断档；输入五报出文件名不一致；只有第五种内容的规范命名版本通过（本案例在真实项目上复跑：`05_shots/06_detailed_shot_design.md`30镜十八列 VALID，同项目的5列表以`--kind shot-design`照旧 VALID）。规则文本、Template路由与校验器射程的一致性由`check_full_shot_delivery_contract`机械守卫。
+
+FAIL：把“十八列”当成“完整”（列齐但只有前两批即报`完整版已交付`）；把“30镜齐全”当成“完整版”（只有五列也放过）；跨轮分批后不再回执已交付区间与`Next Undelivered Shot`；或以聊天里的展开代替落盘文件，使下一次会话再也找不到那份完整版。
+
 ### R48-N Category Manifests Stay Readable One Row Per File
 
 输入一：某包有两套环境资产、各四张视角图，类别清单把同一Asset ID的四张图挤进一个`文件名`单元格（`ENV-001｜Layout_ENV-01.png、…_ENV-04.png`）。输入二：用户照着包内文件找Prompt里的`ENV-001｜教学楼走廊_ENV-03`，清单里没有资产名也没有视角角色可读。

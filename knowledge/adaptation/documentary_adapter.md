@@ -2,7 +2,7 @@
 
 ## Purpose And Trigger
 
-本Knowledge是`knowledge/script_adaptation.md`的条件性**纪实 / 非虚构**适配器。只有STATE-01 `Adaptation Target Detection`确认目标属于以下任一类型时才加载：
+本Knowledge是`knowledge/writer/script_adaptation.md`的条件性**纪实 / 非虚构**适配器。只有STATE-01 `Adaptation Target Detection`确认目标属于以下任一类型时才加载：
 
 - 纪实 / 纪录片
 - 观察式记录 / 访谈式

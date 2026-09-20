@@ -92,7 +92,7 @@ Legacy Project Recovery是Runtime / Project Recovery层的受控路由，不是�
 
 `Legacy Intent Backfill`是恢复时的非STATE、内部additive compatibility pass。固定原则：`Backfill missing intent, do not remake confirmed production.` 它只补当前版本实际需要、且可以从Confirmed Canon可靠推导的缺失intent；不确定项标记Unknown / Pending，不以想象填充，也不把Packet整体写入Portable State或最终Template。
 
-- **Writer Intent Backfill**：仅按需补Premise / Dramatic Question（可靠时）、Character Objective / Hidden Objective / Subtext、Scene Value Change、Writer Beat Map、Information Architecture、Setup / Payoff obligations与Relationship Arc。字段含义与边界仍只由`knowledge/screenplay_development.md`拥有。
+- **Writer Intent Backfill**：仅按需补Premise / Dramatic Question（可靠时）、Character Objective / Hidden Objective / Subtext、Scene Value Change、Writer Beat Map、Information Architecture、Setup / Payoff obligations与Relationship Arc。字段含义与边界仍只由`knowledge/writer/screenplay_development.md`拥有。
 - **Director Intent Backfill**：仅按需补Directorial Thesis / Audience Contract必要部分、Scene Objective / Audience Start-End State、Relationship Delta / Information Presentation、Performance Strategy、Spatial Dramaturgy、当前及后续真正需要的Shot Purpose / Camera Motivation，以及Clip Dramatic Function。字段含义与边界仍只由`knowledge/director_decision_layer.md`拥有；Camera仍只来自当前STATE-06 / Director owner。
 - **Preservation Gate**：不得重写Production-Locked Screenplay，不得重做Confirmed资产或已确认镜头，不得自动使Accepted Take / accepted prompt失效，不得因缺Packet回到STATE-01。Confirmed `REF-SKETCH`在Blocking Signature未变时继续有效；Accepted Take / accepted prompt只做current owner compatibility check。若真实上游事实冲突，按现有owner Return Route最小处理，不以Backfill掩盖。
 

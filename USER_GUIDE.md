@@ -518,7 +518,10 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 **分镜的三种形态（别混）**
 
 - **默认分镜表**：最常用的交付。镜号、画面与动作、画面表达、连续性、资源五列，可直接用于拍摄和验收。**"SHOT-001 女孩按灭手机；SHOT-002 她走向楼梯"这样一行一句的清单不是分镜表**——保存为文件时会跑 `scripts/validate_delivery_artifacts.py --kind shot-design`，缺表头、缺列、空格子或编号断档都会被拒收。
-- **完整版专业分镜**：说`给我完整版专业分镜`，才展开十八个字段的完整记录（时间码、景别/焦段、构图、表演、摄影参数、镜头调度、光色、转场、台词、同期声音、AI制作备注、资产）。用于跨人交接或自己逐镜抠细节；同一校验器按十八列验收。
+- **完整版专业分镜**：说`给我完整版专业分镜`，才展开十八个字段的完整记录（时间码、景别/焦段、构图、表演、摄影参数、镜头调度、光色、转场、台词、同期声音、AI制作备注、资产）。用于跨人交接或自己逐镜抠细节。
+  - **"完整"指镜，不是指列。** 完整版是**一个文件**：项目里 `05_shots/06_detailed_shot_design.md`（旧命名 `08_detailed_shot_design.md`），**一次装下全部已确认镜头**（例如30镜就是30行，按 `SHOT-001` 起连续、不重复），每批重复完整十八列表头。十八列但只有前两批、或者30镜齐全但只给五列，都不算完整版——系统必须自己报"未完成"，不能报"完整版已交付"。
+  - **交付回执**：显示时会逐批报已交付镜号区间、`Last Fully Delivered Shot` 与 `Next Undelivered Shot`，最后一批给时间码核算与 Coverage/UNIT 核对；全部交完之前状态是`待交付`。
+  - **验收命令**：`scripts/validate_delivery_artifacts.py <文件> --kind shot-design-full`。它比默认校验更严：单一文件、十八列表头、每格非空、镜号从 `SHOT-001` 连续、正文声明的总镜数与实际行数一致、时间码可复算且不断档。默认五列形态仍走 `--kind shot-design`，两条路径互不影响。**注意**：聊天里的压缩摘要表只是帮你读，不能代替那份文件；如果哪次只给了摘要就宣称完整版，直接说`完整版没落盘，补齐文件再报`。
 - **Storyboard 视觉分镜板**：另一条可选辅助链路（见下一节），只有显式请求才启动。它不改变上面两种文字分镜，也不作为视频参考资产。
 
 ## 12）Storyboard 分镜板
@@ -940,7 +943,7 @@ SD Film **不维护项目登记表**：不会建立、读取或更新任何项�
 影响范围：<指定Workflow、STATE、Template或规则>。
 完成标准：<列出需要通过的正例、反例和回归场景>。
 
-按SKILL.md的版本纪律处理Skill Version和Build ID（同一对话的改动累积为一个批次，维护者确认定稿时才递增），并自动执行`references/maintenance_self_check.md`中的17项`Skill Update Self-Check`与两个Guard（判据真源为`references/maintenance_self_check_protocol.md`）。如果用户调用方式、模块入口、Prompt输出结构、音色、连续性或Review等用户可见行为变化，同步更新USER_GUIDE.md。最后报告变更分类、修改文件、规则真源、重复/冲突/污染/路由/模板/引用检查、定向回归、USER_GUIDE同步状态和未解决Warning。
+按SKILL.md的版本纪律处理Skill Version和Build ID（同一对话的改动累积为一个批次，维护者确认定稿时才递增），并自动执行`references/maintenance_self_check.md`中的18项`Skill Update Self-Check`与两个Guard（判据真源为`references/maintenance_self_check_protocol.md`）。如果用户调用方式、模块入口、Prompt输出结构、音色、连续性或Review等用户可见行为变化，同步更新USER_GUIDE.md。最后报告变更分类、修改文件、规则真源、重复/冲突/污染/路由/模板/引用检查、定向回归、USER_GUIDE同步状态和未解决Warning。
 ```
 
 **Skill 修改任务建议写清**

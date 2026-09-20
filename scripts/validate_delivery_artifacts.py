@@ -12,12 +12,26 @@ delivered
 as its 分镜表, and a two-bullet list as its Scene Breakdown. Both are summaries of a
 Template, not the Template.
 
+Later measured case, same family, one level deeper: the user explicitly asked for
+`完整版专业分镜`, so the 18-column record was the requested deliverable — but the
+guarded artifact was the 5-column default table, the 18-column rows lived only in
+chat and only for the first two batches, and the remaining batches were handed over
+as a condensed summary table. Nothing failed, because `--kind shot-design` accepts
+either form and never asks how many Shots the project has. `check_shot_design_full`
+below is that missing question: a 完整版 delivery is complete only when every
+declared Shot is present in one canonical file.
+
 Ownership:
   - Field names, order and mandatory-ness belong to the selected Template:
     `templates/07_scene_design_prompt.md` (Scene Breakdown),
     `templates/08_shot_design_prompt.md` (分镜表: the 5-column default form, or the
     18-column full record when the user explicitly asked for 完整版专业分镜),
     `templates/20_clip_plan.md` (Clip表: the 6-column user-facing form).
+  - `--kind shot-design` is the default-form gate consumed by the packaging path.
+    `--kind shot-design-full` is the 完整版 gate: it additionally requires the
+    single-issue, all-Shots-present form; the delivery contract that makes it
+    mandatory lives in `rules/05_output_rules.md`
+    (`### 完整版专业分镜 Delivery Gate`).
   - This script asserts structure and minimal non-emptiness only. It does not judge
     whether the content is any good, and passing it is not a substitute for the
     semantic Output QA each Template describes.
@@ -70,7 +84,22 @@ CLIP_COLUMNS = ("Clip ID", "包含镜号", "核心画面/动作", "时长", "起
 # 小数秒只出现在 video editing 任务继承源片时长的情形。取证日期 2026-09-19。
 CLIP_DURATION_RE = re.compile(r"^\s*(\d+)\s*秒\s*$")
 
-EXPECTED_KINDS = ("scene-breakdown", "shot-design", "clip-plan")
+# 完整版专业分镜：用户显式要求`完整版专业分镜`时的正式交付文件形态。名称不是提示，
+# 而是打包与复核的定位键——用户与打包器都在`05_shots/`里按这个名字找它。
+SHOT_FULL_FILE_NAMES = ("06_detailed_shot_design.md", "08_detailed_shot_design.md")
+
+# 正文里声明总镜数时必须与表格行数一致；缺少声明不是错误（项目状态才是真源）。
+SHOT_TOTAL_RES = (
+    re.compile(r"Total\s*Shots\s*[:：]\s*(\d+)", re.IGNORECASE),
+    re.compile(r"共\s*(\d+)\s*镜"),
+    re.compile(r"(\d+)\s*镜完整"),
+)
+
+# 时间码形态：完整版每行必须可复算，`TC OUT - TC IN = 时长(s)`。
+TIMECODE_RE = re.compile(r"^(\d{1,2}):(\d{2}):(\d{2})\.(\d{3})$")
+DURATION_CELL_RE = re.compile(r"^\d+(?:\.\d+)?$")
+
+EXPECTED_KINDS = ("scene-breakdown", "shot-design", "shot-design-full", "clip-plan")
 MIN_CELL_CHARS = 2
 MIN_LABEL_CONTENT_CHARS = 4
 
@@ -133,6 +162,24 @@ def check_contiguous(ids: list[str], label: str) -> list[str]:
     return errors
 
 
+def check_table_rows(columns: tuple[str, ...], rows: list[list[str]], label: str) -> list[str]:
+    """Shape and minimal content of one table's data rows."""
+    errors: list[str] = []
+    if not rows:
+        errors.append(f"{label}没有数据行")
+    for row in rows:
+        if len(row) != len(columns):
+            errors.append(f"{label}列数({len(row)})与表头({len(columns)})不一致：{' / '.join(row[:2])}")
+            continue
+        shot = row[0] or "(无镜号)"
+        if not SHOT_ID_RE.fullmatch(shot):
+            errors.append(f"{label}镜号列必须写正式SHOT-xxx：{shot}")
+        for column, value in zip(columns, row):
+            if len(value) < MIN_CELL_CHARS:
+                errors.append(f"{shot} 的`{column}`为空；每格必须独立可读，不得留空或写‘同上’")
+    return errors
+
+
 def check_scene_breakdown(text: str) -> list[str]:
     errors: list[str] = []
     ids = collect_ids(text, SCENE_ID_RE)
@@ -173,18 +220,108 @@ def check_shot_design(text: str) -> list[str]:
         return errors
     columns, rows = full if full is not None else default
     errors.extend(check_contiguous(collect_ids(text, SHOT_ID_RE), "SHOT-001"))
-    if not rows:
-        errors.append("分镜表没有数据行")
-    for row in rows:
-        if len(row) != len(columns):
-            errors.append(f"分镜行列数({len(row)})与表头({len(columns)})不一致：{' / '.join(row[:2])}")
+    errors.extend(check_table_rows(columns, rows, "分镜表"))
+    return errors
+
+
+def declared_total_shots(text: str) -> int | None:
+    """The Shot total the document itself declares, if it declares one."""
+    for pattern in SHOT_TOTAL_RES:
+        match = pattern.search(text)
+        if match:
+            return int(match.group(1))
+    return None
+
+
+def timecode_seconds(value: str) -> float | None:
+    match = TIMECODE_RE.match(value.strip())
+    if not match:
+        return None
+    hours, minutes, seconds, milliseconds = (int(part) for part in match.groups())
+    return hours * 3600 + minutes * 60 + seconds + milliseconds / 1000
+
+
+def check_shot_design_full(text: str) -> list[str]:
+    """完整版专业分镜 gate.
+
+    The question `--kind shot-design` cannot ask: does this one file carry the whole
+    film in the eighteen-column form the user asked for? A batch, a partial set or a
+    condensed summary is reported as incomplete instead of passing as 完整版.
+    """
+    errors: list[str] = []
+    tables: list[tuple[list[str], list[list[str]]]] = []
+    lines = text.splitlines()
+    wanted = [normalize(column) for column in SHOT_COLUMNS_FULL]
+    for index, line in enumerate(lines):
+        if not line.strip().startswith("|"):
             continue
-        shot = row[0] or "(无镜号)"
-        if not SHOT_ID_RE.fullmatch(shot):
-            errors.append(f"分镜表镜号列必须写正式SHOT-xxx：{shot}")
-        for column, value in zip(columns, row):
-            if len(value) < MIN_CELL_CHARS:
-                errors.append(f"{shot} 的`{column}`为空；每格必须独立可读，不得留空或写‘同上’")
+        if [normalize(cell) for cell in split_cells(line)] != wanted:
+            continue
+        rows: list[list[str]] = []
+        for candidate in lines[index + 1:]:
+            if not candidate.strip().startswith("|"):
+                break
+            if is_separator_row(candidate):
+                continue
+            rows.append(split_cells(candidate))
+        tables.append((SHOT_COLUMNS_FULL, rows))
+
+    if not tables:
+        errors.append(
+            "完整版专业分镜必须以十八列完整记录交付（镜号 / TC IN / TC OUT / 时长(s) / 景别 / "
+            "焦段 / 场景 / 美术 / 画面内容 / 构图 / 人物动作 / 摄影机 / 镜头 / 摄影参数 / "
+            "镜头调度 / 光线 / 色彩 / 画面特效 / 转场 / 台词 / 旁白 / 口播 / 同期声音设计 / "
+            "AI制作备注 / 素材 / 资产）；默认5列表不能充当完整版，"
+            "逐批交付的中间状态也不是完整版"
+        )
+        return errors
+
+    rows: list[list[str]] = []
+    for columns, table_rows in tables:
+        errors.extend(check_table_rows(columns, table_rows, "完整版分镜表"))
+        rows.extend(row for row in table_rows if len(row) == len(columns))
+
+    if not rows:
+        errors.append("完整版分镜表没有数据行")
+        return errors
+
+    shot_ids = [row[0] for row in rows]
+    if len(set(shot_ids)) != len(shot_ids):
+        errors.append(f"完整版分镜表存在重复镜号或同一镜被拆到多张表：{shot_ids}")
+    errors.extend(check_contiguous(shot_ids, "SHOT-001"))
+
+    expected_total = declared_total_shots(text)
+    if expected_total is not None and expected_total != len(rows):
+        errors.append(
+            f"完整版不完整：正文声明 Total Shots: {expected_total}，"
+            f"但十八列表只交付 {len(rows)} 个Shot——完成版必须一次包含全部已确认Shot，"
+            "不得留待下一轮补交或改用摘要表"
+        )
+
+    body_ids = collect_ids(text, SHOT_ID_RE)
+    strays = [shot for shot in body_ids if shot not in shot_ids]
+    if strays:
+        errors.append(f"正文出现未在任何十八列行中定义的镜号：{strays}")
+
+    # 时间码连续性（仅在每行都给出可解析时间码时校验；字段缺失交由单元格非空检查报出）。
+    previous_out: float | None = None
+    for row in rows:
+        if len(row) != len(SHOT_COLUMNS_FULL):
+            continue
+        shot, duration_cell = row[0], row[3]
+        start, end = timecode_seconds(row[1]), timecode_seconds(row[2])
+        if start is None or end is None or not DURATION_CELL_RE.match(duration_cell):
+            previous_out = None
+            continue
+        if round(end - start, 3) != round(float(duration_cell), 3):
+            errors.append(
+                f"{shot} 时间码不可复算：`TC OUT - TC IN` = {round(end - start, 3)}s，"
+                f"`时长(s)` = {duration_cell}"
+            )
+        if previous_out is not None and round(start, 3) != round(previous_out, 3):
+            errors.append(f"{shot} 时间码断档：上一镜结束于 {previous_out}s，本镜从 {start}s 开始")
+        previous_out = end
+
     return errors
 
 
@@ -231,6 +368,7 @@ def check_clip_plan(text: str) -> list[str]:
 CHECKS = {
     "scene-breakdown": check_scene_breakdown,
     "shot-design": check_shot_design,
+    "shot-design-full": check_shot_design_full,
     "clip-plan": check_clip_plan,
 }
 
@@ -247,7 +385,14 @@ def main() -> int:
         print(f"INVALID: 无法读取 UTF-8 交付物: {exc}", file=sys.stderr)
         return 1
 
-    errors = CHECKS[args.kind](raw)
+    errors: list[str] = []
+    if args.kind == "shot-design-full" and args.artifact_file.name not in SHOT_FULL_FILE_NAMES:
+        errors.append(
+            "完整版专业分镜必须保存为 `05_shots/06_detailed_shot_design.md`"
+            "（或 `08_detailed_shot_design.md`）：文件名是用户与打包器在 `05_shots/` 里定位"
+            f"完整版的键，当前为 `{args.artifact_file.name}`"
+        )
+    errors.extend(CHECKS[args.kind](raw))
     if errors:
         for error in errors:
             print(f"INVALID: {error}", file=sys.stderr)

@@ -2,13 +2,24 @@
 
 ## Purpose And Trigger
 
-本Knowledge是`knowledge/script_adaptation.md`的条件性短剧适配器。只有STATE-01 `Adaptation Target Detection`确认目标为以下任一类型时才加载：
+本Knowledge是**已确认目标形式**的节奏适配器。目标经确认为以下任一类型时加载——**与Input Route、Input Class无关**：
 
 - 短剧
 - 竖屏剧情
 - 1—3分钟剧情视频
 
-其他广告、电影短片、儿童动画、纪录表达、长篇影视或未确认目标一律Not Applicable。它只约束C类Source Material的改编；B类粗略剧本只进入Screenwriting Optimization，不因时长相近而自动触发本Adapter。
+它约束的是**目标形式**，不是输入类别：`Creation Brief`的原创短剧、品牌与商业片（品牌诉求由`knowledge/branded_content/index.md`拥有）、以及C类素材改编，目标命中即加载并按其判据执行；品牌与纪实目标另按各自的Knowledge读取，三者互不套用，也都不新建节拍模型。
+
+**加载入口固定为两个，只有两个**，且共用本文件同一套判据：
+
+- `workflows/02_script_analysis_workflow.md`的`### Adaptation Target Detection`——C类素材改编路径，目标来自素材目标。
+- `workflows/02_script_analysis_workflow.md`的`### Target Form Confirmation`——生产准备路径，目标来自用户确认；命中时按该节的时序后果复核已锁定Script。
+
+无目标证据时记`Adapter Load: Pending`并请求确认，不得从时长、平台、题材或画风推定目标形式，也不得由下游Knowledge自行加载本文件。
+
+其他广告、电影短片、儿童动画、纪录表达、长篇影视或**未确认**目标一律Not Applicable。
+
+B类粗略剧本的**内容改写**走Screenwriting Optimization，本Adapter不因时长相近而自动触发其改编路径；但它的节奏与硬门按目标形式照常生效——**目标形式是加载条件，不是改写授权**。
 
 ## Machine-executable Decision Contract
 

@@ -26,7 +26,7 @@
 它**不拥有**：
 
 - **平台事实本身**——任何平台的推荐机制、算法偏好、时长上限、审核与分级条文、画幅尺寸数值、封面尺寸、话题与标签规则、投放与留资要求，都是**外部事实**，必须由用户提供或引用可核对来源。本文件不虚构平台规则、不声称"符合"任何平台的推荐机制，也不提供可以套用的"平台模板"。**它也不是分级或审核制度本身。**
-- 剧情事实与故事结构（Writer Owner与`knowledge/screenplay_development.md`）。
+- 剧情事实与故事结构（Writer Owner与`knowledge/writer/screenplay_development.md`）。
 - 媒介分化（`knowledge/medium_profiles.md`）、受众适宜性与理解难度（`knowledge/audience_profiles.md`）、类型承诺（`knowledge/genre/index.md`）、时代与地域（`knowledge/period_and_place/index.md`）。
 - 目标形式的节拍与硬门：短剧 / 竖屏剧情 / 1—3分钟的Hook窗口与五段模型仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有，本文件不新建第二套节拍模型，也不复述其秒数判据。
 - 商业诉求与商业事实（`knowledge/branded_content/index.md`）。
@@ -65,7 +65,7 @@
 
 | 维度 | 分化要求 | 写进哪个既有字段 |
 |---|---|---|
-| 主要矛盾的进入 | 在注意窗口内进入主要矛盾，而不是仍在介绍人物、世界或日常过程 | Writer Beat Map（`knowledge/screenplay_development.md`） |
+| 主要矛盾的进入 | 在注意窗口内进入主要矛盾，而不是仍在介绍人物、世界或日常过程 | Writer Beat Map（`knowledge/writer/screenplay_development.md`） |
 | 第一屏的建立 | 窗口内的开场必须已建立异常、欲望、危机、关系张力或视觉问题之一；本文件不复制短剧适配器的五类判据与其硬门 | 动作描述、`构图` |
 | 建立性信息预算 | 人物、关系、规则与日常过程只保留理解核心事件所需的最小量 | Writer Beat Map、`时长` |
 | 核心目标的推迟 | 核心目标与阻力不得因前置说明被推迟到窗口之后 | Writer Beat Map |

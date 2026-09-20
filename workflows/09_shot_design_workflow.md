@@ -99,7 +99,7 @@ Scene Breakdown中来自原剧本的“镜头1 / 镜头2 / Scene 1 / 段落A / C
 
 - knowledge/spatial_blocking_layer.md（所有Scene；在正式分镜生成前完成Spatial Blocking Decision）
 - knowledge/environment_multi_view_reconstruction.md（仅当前Active Core ENV存在Spatial Reconstruction时；继承Spatial Lock与View Set，不重做环境资产）
-- knowledge/screenplay_development.md（所有Scene；读取Writer Intent Packet与Writer → Director Handoff，不从中提取Camera参数）
+- knowledge/writer/screenplay_development.md（所有Scene；读取Writer Intent Packet与Writer → Director Handoff，不从中提取Camera参数）
 - knowledge/director_decision_layer.md（所有Scene / Shot Group；在STATE-06结束前形成内部Director Decision Notes）
 - knowledge/action_previs.md（Action-dominant / Mixed，以及需要展开物理动作的Performance-dominant镜头）
 - knowledge/camera_language/shot_language_router.md（所有正式SHOT）

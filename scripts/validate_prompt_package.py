@@ -23,12 +23,18 @@ Ownership:
     confirmed duration stays a STATE-07/STATE-08 context check rather than a
     single-file assertion here.
   - This validator only asserts deterministically checkable facts. Beyond field
-    structure it also asserts two content-form rules that used to rely on the
-    reader noticing: Canonical reference entries keep the
+    structure it also asserts content-form rules that used to rely on the reader
+    noticing: Canonical reference entries keep the
     `<Asset ID>｜<资产名>` form (no package file extension; a View Code or Purpose
-    suffix when one Asset ID carries several images), and the `主风格` field
+    suffix when one Asset ID carries several images), the `主风格` field
     carries no generic negative list (`禁止` / `不要` / `避免` / `不做` / `拒绝` /
-    `不得`). It also WARNs -- without blocking -- when `主风格` names none of the
+    `不得`), and a confirmed asset name that appears nowhere in the body while
+    the body carries a close variant of it is reported as `已确认资产名逐字保留`.
+    That last one is the semantic rule that a confirmed name is never rewritten
+    or replaced by a synonym; a name under four characters is left alone because
+    short Chinese names overlap by chance, a variant counts only when it shares a
+    run of four characters with the confirmed name, and every report names the
+    matching text so the judgement stays visible instead of silent. It also WARNs -- without blocking -- when `主风格` names none of the
     four Aesthetic Decision Lock dimensions, when a Seedance 2.5 time line of
     three or more stages is one uniform small/smooth drift (a single camera plan
     wearing several stage labels), and when a cutting or multi-space Clip cites
@@ -313,6 +319,113 @@ def check_reference_entries(lines: list[str], model: str) -> list[str]:
             errors.append(
                 f"参考条目 {asset_id}｜{name} 在同一 Prompt 中出现 {counts[asset_id]} 次，"
                 "必须补 View Code 或 Purpose 后缀（如 `_ENV-01`、`_Identity`、`_State`）以区分是哪一张"
+            )
+    return errors
+
+
+def confirmed_asset_names(lines: list[str], model: str) -> list[tuple[str, str]]:
+    """Return the `(Asset ID, 资产名)` pairs declared in the reference field.
+
+    A second reader of the same block `check_reference_entries` validates, so the
+    delivery-time name check below does not re-derive the entry syntax and cannot
+    drift from it. Entries that name a platform attachment slot, a `REF-` asset or
+    a user-provided frame carry no Asset ID and are simply absent here.
+    """
+    field = REFERENCE_FIELD_BY_MODEL[model]
+    position = marker_positions(lines, [field]).get(field, -1)
+    if position < 0:
+        return []
+    stop_names = [
+        name for name in GLOBALS_20 + GLOBALS_25 + GLOBALS_H3 if name != field
+    ]
+    block = section_text(lines, position, stop_names)
+    names: list[tuple[str, str]] = []
+    for raw in block.splitlines():
+        match = ASSET_ENTRY_RE.match(raw.strip())
+        if not match:
+            continue
+        asset_id, remainder = match.group(1), match.group(2).strip()
+        if not remainder.startswith("｜"):
+            continue
+        name = remainder[1:].split("｜", 1)[0]
+        name = re.split(r"[；;]", name, maxsplit=1)[0].strip()
+        if name:
+            names.append((asset_id, name))
+    return names
+
+
+def longest_common_run(left: str, right: str) -> int:
+    """Length of the longest run of characters shared by both strings.
+
+    `difflib.SequenceMatcher` is not a substitute here: for
+    `沈砚青色长衫` / `沈砚藏青长` it reports a longest match of two even with
+    `autojunk=False`, because it aligns matching *blocks* rather than searching
+    for the longest contiguous run, and that is exactly the pair this check has to
+    separate. Strings here are a handful of characters, so the direct scan costs
+    nothing and returns the number the rule actually means.
+    """
+    best = 0
+    for start in range(len(left)):
+        for end in range(start + best + 1, len(left) + 1):
+            if left[start:end] in right:
+                best = end - start
+            else:
+                # A longer span is missing, so this start position is done -- but
+                # the next start may still extend past `best`.
+                break
+    return best
+
+
+def check_confirmed_asset_names(lines: list[str], model: str) -> list[str]:
+    """A confirmed asset name the body never uses verbatim, while a close variant appears.
+
+    The rule that a confirmed entity name is carried into the Prompt unchanged --
+    never rewritten, translated or swapped for a synonym -- is semantic, but its
+    common failure is not: the reference entry keeps the Canonical name while the
+    body silently renames the subject, and a reader scanning for a rename finds
+    nothing because both strings look natural. A name that appears nowhere while
+    a long variant of it does is that failure, and it is deterministic.
+
+    Names shorter than four characters stay out, because two- and three-character
+    Chinese names overlap by chance (`林薇` inside `林薇安`) and a check that fires
+    on those trains its reader to ignore it. The required common run is four
+    characters, which is where a deliberate rename separates from an incidental
+    overlap in names of the length this library actually carries.
+    """
+    field = REFERENCE_FIELD_BY_MODEL[model]
+    position = marker_positions(lines, [field]).get(field, -1)
+    if position < 0:
+        return []
+    stop_names = [
+        name for name in GLOBALS_20 + GLOBALS_25 + GLOBALS_H3 if name != field
+    ]
+    block = section_text(lines, position, stop_names)
+    # The declaration itself is not the body: counting its lines would satisfy the
+    # check by reading the very entry that declares the name.
+    body = "\n".join(lines[position + len(block.splitlines()) :])
+    errors: list[str] = []
+    for asset_id, name in confirmed_asset_names(lines, model):
+        if name in body or len(name) < 4:
+            continue
+        required = min(4, len(name) - 1)
+        variants: set[str] = set()
+        for run in re.findall(r"[\u4e00-\u9fff]{2,}", body):
+            # Compare sliding windows, not whole runs: a name may appear inside a
+            # longer Chinese clause, and a whole-run comparison would never match.
+            for size in range(len(name) - 1, required - 1, -1):
+                for start in range(0, len(run) - size + 1):
+                    window = run[start : start + size]
+                    if window in variants or window == name:
+                        continue
+                    if longest_common_run(window, name) >= required:
+                        variants.add(window)
+        if variants:
+            # Longest first: the informative variant is the longest shared run, and
+            # its own substrings would otherwise crowd it out of the report.
+            listed = "、".join(sorted(variants, key=lambda item: (-len(item), item))[:3])
+            errors.append(
+                f"已确认资产名逐字保留：{asset_id}｜{name} 未在正文逐字出现，"
+                f"正文出现近似写法“{listed}”；已确认名称不得改写、翻译或替换为同义词"
             )
     return errors
 
@@ -695,6 +808,7 @@ def validate(text: str, model: str, allow_voice_field: bool) -> tuple[list[str],
         errors.extend(check_ref_tail(line_list, model))
 
     errors.extend(check_reference_entries(line_list, model))
+    errors.extend(check_confirmed_asset_names(line_list, model))
     errors.extend(check_style_field_negatives(line_list, model))
     warnings.extend(check_style_lock_labels(line_list, model))
     warnings.extend(check_camera_contrast(line_list, model))
@@ -753,5 +867,45 @@ def main() -> int:
     return 0
 
 
+def demo() -> None:
+    """Self-check for the rule added here: `check_confirmed_asset_names`.
+
+    A minimal body is enough: the check reads only the reference field and the
+    lines after it. It runs on every invocation, so the rule cannot rot silently.
+    """
+    # Anchored pairs, so the rule cannot pass by accident.
+    assert longest_common_run("沈砚青色长衫", "青色长衫") == 4
+    assert longest_common_run("沈砚青色长衫", "沈砚青色长衫") == 6
+    assert longest_common_run("林薇", "林薇安") == 2
+    assert longest_common_run("沈砚青色长衫", "藏青长") == 1
+
+    named = [
+        "参考资产：",
+        "- PROP-004｜沈砚青色长衫；用途：造型基准；锁定 / 保持：颜色与领口",
+        "首帧参考：",
+        "画面描述：",
+        "沈砚青色长衫的下摆扫过门槛。",
+    ]
+    assert not check_confirmed_asset_names(named, "seedance-2.0"), "逐字保留的名称被误报"
+
+    renamed = list(named)
+    renamed[-1] = "沈砚青色长袍的下摆扫过门槛。"
+    issues = check_confirmed_asset_names(renamed, "seedance-2.0")
+    assert len(issues) == 1, f"近似改名未被检出: {issues}"
+    assert "青色长袍" in issues[0], f"报错未点名匹配文本: {issues[0]}"
+
+    # Short names overlap by chance in Chinese, so a shorter variant stays silent
+    # rather than training the reader to ignore this check.
+    short = [
+        "参考资产：",
+        "- CHAR-001｜林薇；用途：身份基准",
+        "首帧参考：",
+        "画面描述：",
+        "林薇安抬手按住门框。",
+    ]
+    assert not check_confirmed_asset_names(short, "seedance-2.0"), "短名碰撞被误报"
+
+
 if __name__ == "__main__":
+    demo()
     raise SystemExit(main())

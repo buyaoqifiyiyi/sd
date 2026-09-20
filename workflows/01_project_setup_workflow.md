@@ -130,7 +130,7 @@ rules/05_output_rules.md
 
 knowledge/director_decision_layer.md
 
-knowledge/screenplay_development.md（按其Read Scope只读STATE-00相关节）
+knowledge/writer/screenplay_development.md（按其Read Scope只读STATE-00相关节）
 
 templates/00_project_start_template.md
 
@@ -554,7 +554,7 @@ STATE-00只登记用户已明确输入的`媒介形式`，并写入`project_bibl
 
 STATE-00从用户已明确输入中提取最小Writer Foundation：`Premise / Theme or Thematic Question / Dramatic Question / Genre Promise / Story Engine / Core Conflict`。只记录当前可证实内容与清楚标记的Assumption；不要求用户填写完整WRITER INTENT PACKET，不在STATE-00分析完整人物心理、创建Scene、生成剧本或决定Camera。
 
-该Foundation由`knowledge/screenplay_development.md`拥有，Work/Codex只投影到`project_bible.md`既有Story Foundation / Project Intent区域，普通Chat保留在当前Checkpoint。未知项留给STATE-01，不新增Portable State字段或平行Writer文件。
+该Foundation由`knowledge/writer/screenplay_development.md`拥有，Work/Codex只投影到`project_bible.md`既有Story Foundation / Project Intent区域，普通Chat保留在当前Checkpoint。未知项留给STATE-01，不新增Portable State字段或平行Writer文件。
 
 ---
 

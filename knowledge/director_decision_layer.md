@@ -28,7 +28,7 @@
 
 ## Boundary With Screenwriter Module
 
-`knowledge/screenplay_development.md`是唯一Screenwriter owner。Writer负责故事发生什么以及为什么成立：Premise / Theme、人物Want / Need / Objective / Hidden Objective、关键因果、Writer Beat、Scene Value Change、Dialogue / Subtext、Information Architecture、Setup / Payoff及Character / Relationship Arc。Director负责观众如何经历这些事实：Audience Experience、Performance Strategy、Blocking、Mise-en-scène、Composition、Camera Language、Rhythm Presentation与Reveal Presentation。
+`knowledge/writer/screenplay_development.md`是唯一Screenwriter owner。Writer负责故事发生什么以及为什么成立：Premise / Theme、人物Want / Need / Objective / Hidden Objective、关键因果、Writer Beat、Scene Value Change、Dialogue / Subtext、Information Architecture、Setup / Payoff及Character / Relationship Arc。Director负责观众如何经历这些事实：Audience Experience、Performance Strategy、Blocking、Mise-en-scène、Composition、Camera Language、Rhythm Presentation与Reveal Presentation。
 
 `Information Architecture = Writer Authority`，`Information Presentation = Director Authority`。Director可以决定用动作、沉默、声音、遮挡或镜头关系呈现一个Writer Beat，但不得改变其锁定的因果、动机、信息时机与Setup / Payoff义务。发现不可导演或执行容量冲突时，走REDIRECT / rewrite feedback返回STATE-01最小受影响范围。
 

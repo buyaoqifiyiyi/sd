@@ -241,7 +241,7 @@ Preflight必须在既有Previous-Clip Continuity Decision中先明确A【同镜�
 
 ## 输出前字段完整性检查
 
-每个 Clip 在最终输出前必须按以下顺序执行两遍检查：Template Mapping 后一次，交付前一次。保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.0`；该校验器只做确定性断言（字段存在与顺序、分镜编号与十字段完整性、终段位置、无BGM固定句，以及两条内容形态：Canonical参考条目的`<资产ID>｜<资产名>`形态与`主风格`不得保留通用负向清单），未通过不得交付，通过也不替代下列语义检查。用户明确要求把声音控制写入当前Prompt时追加 `--allow-voice-field`。
+每个 Clip 在最终输出前必须按以下顺序执行两遍检查：Template Mapping 后一次，交付前一次。保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.0`；该校验器只做确定性断言（字段存在与顺序、分镜编号与十字段完整性、终段位置、无BGM固定句，以及三条内容形态：Canonical参考条目的`<资产ID>｜<资产名>`形态、`主风格`不得保留通用负向清单，以及已确认资产名必须在正文逐字出现，未逐字出现而正文出现近似写法时报告`已确认资产名逐字保留`），未通过不得交付，通过也不替代下列语义检查。用户明确要求把声音控制写入当前Prompt时追加 `--allow-voice-field`。
 
 ### A. 全局字段
 

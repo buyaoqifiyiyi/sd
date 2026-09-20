@@ -1,8 +1,23 @@
 # Script Adaptation
 
+# Read Scope
+
+层入口与需求路由见`knowledge/writer/index.md`。本文件按当前事项只读对应小节，**不得整文件通读**：
+
+| 当前事项 | 只读 |
+|---|---|
+| 判定本文件何时可用、边界在哪 | `## Purpose`、`## Module Contract` |
+| 锁定改编强度 | `## Adaptation Intensity` |
+| 执行改编六层 | `## Required Adaptation Process` |
+| 逐项核对是否忠于来源 | `### 6. Adaptation Fidelity Check` |
+| 交给下一步 | `## Handoff` |
+| 输出前自检 | `## Completion Check` |
+
+---
+
 ## Purpose
 
-本Knowledge是`knowledge/screenplay_development.md`所拥有Screenwriter Module的授权后改编子模块。它只在STATE-01已经把非制作剧本诊断为需要Adaptation、输出Optimization Opportunity Report并取得用户明确优化/改编授权后，把Source Material改编为可继续编剧优化的`Adaptation Draft`。报告与授权之前不得执行实际改编。它不创建独立STATE、不拥有平行Writer系统或用户可见Schema，也不创建SCENE、SHOT、CLIP、资产或Seedance Prompt。
+本Knowledge是`knowledge/writer/screenplay_development.md`所拥有Screenwriter Module的授权后改编子模块。它只在STATE-01已经把非制作剧本诊断为需要Adaptation、输出Optimization Opportunity Report并取得用户明确优化/改编授权后，把Source Material改编为可继续编剧优化的`Adaptation Draft`。报告与授权之前不得执行实际改编。它不创建独立STATE、不拥有平行Writer系统或用户可见Schema，也不创建SCENE、SHOT、CLIP、资产或Seedance Prompt。
 
 核心原则：改编优先忠于核心叙事价值，而不是忠于原文字面结构。
 
@@ -16,10 +31,10 @@
 - **Required Inputs / Owners**：用户Source Material、Project Bible已确认事实、目标形式/时长/平台/受众、品牌与IP约束、Protected Creative Locks；事实由用户与已确认项目资料拥有
 - **Output Owner**：本Knowledge只提供改编判断与`Adaptation Draft`内容；最终可见字段、顺序与排版由`templates/02_script_analysis_prompt.md`拥有
 - **Read / Write Boundary**：只读用户素材和已确认项目事实；只把改编结论交给STATE-01 Workflow写入当前项目Artifact与Script Status，不修改资产、Visual Direction、SHOT、CLIP、Portable Schema或后续Prompt
-- **Downstream Consumers**：`knowledge/screenwriting_optimization.md`、`knowledge/directorial_interpretation.md`及用户确认后的Production-Locked Script
+- **Downstream Consumers**：`knowledge/writer/screenwriting_optimization.md`、`knowledge/writer/directorial_interpretation.md`及用户确认后的Production-Locked Script
 - **Protected Upstream Facts**：核心事件、核心人物关系、主题、关键情绪、名场面、关键道具、世界观、品牌诉求、用户明确锁定的台词/事件及授权边界
 - **Conflict Route**：改编需要突破Protected Creative Locks、目标形式不明且会实质改变结构、或来源事实互相冲突时，保持STATE-01 IN_PROGRESS并记录Pending Decision；不得擅自补造
-- **Deterministic Invariants**：报告与明确授权之前不改编；六层改编过程全部完成；每项删并改排可追溯；Adaptation Intensity合法且有依据；No Revision与Optimization Rejected不加载本模块；短剧Adapter只按Target Detection条件加载；Adaptation Draft不得进入STATE-02
+- **Deterministic Invariants**：报告与明确授权之前不改编；六层改编过程全部完成；每项删并改排可追溯；Adaptation Intensity合法且有依据；No Revision与Optimization Rejected不加载本模块；短剧Adapter按**目标形式**加载、与Input Route及Input Class无关，加载不等于改写授权；Adaptation Draft不得进入STATE-02
 
 ## Adaptation Intensity
 
@@ -55,7 +70,7 @@
 
 明确本次改编的目标形式、目标时长/集长、平台/画幅、受众、单集或系列、主情绪与商业目标。目标必须来自用户或已确认项目资料；缺失且会改变结构时记录Pending Decision。
 
-随后执行`Adaptation Target Detection`：只有目标为短剧、竖屏剧情或1—3分钟剧情视频时，才读取并执行`knowledge/adaptation/short_form_drama_adapter.md`。电影短片、品牌广告、儿童动画、纪录表达、长片段落等其他目标不得强制套用短剧规则。其中**品牌广告 / 品牌内容**目标改按`knowledge/branded_content/index.md`读取（品牌诉求的呈现转译与商业事实边界），**纪实 / 非虚构**目标（纪录片、观察式、访谈式、档案重组、口述史）改按`knowledge/adaptation/documentary_adapter.md`读取（来源台账、重现边界、生成影像不得冒充档案）；三者互不套用，也都不新建节拍模型。
+随后执行`Adaptation Target Detection`：目标为短剧、竖屏剧情或1—3分钟剧情视频时读取并执行`knowledge/adaptation/short_form_drama_adapter.md`；该Adapter按**目标形式**加载，与Input Route及Input Class无关，唯一加载入口是`workflows/02_script_analysis_workflow.md`的`### Adaptation Target Detection`。电影短片、儿童动画、长篇剧情等其他目标不得强制套用短剧规则。其中**品牌广告 / 品牌内容**目标改按`knowledge/branded_content/index.md`读取（品牌诉求的呈现转译与商业事实边界），**纪实 / 非虚构**目标（纪录片、观察式、访谈式、档案重组、口述史）改按`knowledge/adaptation/documentary_adapter.md`读取（来源台账、重现边界、生成影像不得冒充档案）；三者互不套用，也都不新建节拍模型。
 
 ### 3. Preserve / Compress / Rewrite / Remove Decision
 
@@ -83,7 +98,7 @@
 - 目标时长内角色、地点、信息、台词、动作阶段与转折容量可执行
 - 核心欲望、阻力、升级、兑现与结束功能清楚
 - 叙事顺序服务目标受众与平台，但不越过Protected Creative Locks
-- 短剧目标的具体节奏只由`short_form_drama_adapter.md`提供；其他类型按自身目标组织
+- 短剧目标的具体节奏只由`short_form_drama_adapter.md`提供，且按目标形式加载，不限于本模块的C类路径；其他类型按自身目标组织
 
 ### 6. Adaptation Fidelity Check
 
@@ -117,6 +132,6 @@ Workflow只能在用户明确授权后把`Script Status`从`Source Material`更�
 - Input Classification确为C类，Optimization Opportunity Report已输出，用户已明确授权改编/优化，且不存在No Revision / Final Script或Optimization Rejected指令。
 - 六层Required Adaptation Process均有结论。
 - Adaptation Intensity合法、有证据且未越级。
-- Target Detection只在适用目标加载短剧Adapter。
+- Target Detection按目标形式加载短剧Adapter，与Input Route及Input Class无关，且不把加载当作改写授权。
 - 改编结果可独立进入编剧优化，但未创建后续STATE实体或技术方案。
 - Fidelity Check通过；未通过项已修正或转为Pending Decision。

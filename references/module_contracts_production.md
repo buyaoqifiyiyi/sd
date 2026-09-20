@@ -16,13 +16,13 @@ Module Type：STATE-01 Script Analysis内部双入口Workflow Gate、原创剧�
 
 所属位置：`STATE-01 Script Analysis`内部。Creation Brief的创作请求本身授权生成Proposal，不先输出Optimization Opportunity Report，也不要求用户先在普通Chat完成剧本；只在真正关键缺失时最小澄清。Existing Script / Material默认入口固定为`Script Input → Script Diagnosis → Optimization Opportunity Report → User Decision Gate`并在没有改写授权时停止。报告只写问题、影响与方向，至少检查开场钩子、核心冲突进入时机、信息重复、台词效率、动作可视化、人物记忆点、节奏、高潮力度、情绪价值、结尾Hook、时长适配、场景/人物复杂度；结论只使用A无明显优化必要、B有轻度优化空间、C有明显结构问题。当前请求已明确“分析并优化 / 直接优化 / 直接改写 / 按指定范围优化”时，报告后不重复询问改写授权；C类继续`Adaptation Target Detection → Script Adaptation → Adaptation Draft → Screenwriting Optimization → Directorial Interpretation → Production Script Proposal → User Confirmation`，A/B从Screenwriting Optimization开始。所有未确认提案不得进入STATE-02。
 
-Adaptation Target Detection：只有目标为短剧、竖屏剧情或1—3分钟剧情视频时加载`knowledge/adaptation/short_form_drama_adapter.md`；其他类型记录Not Applicable，不强制套用短剧规则。
+Adaptation Target Detection：目标为短剧、竖屏剧情或1—3分钟剧情视频时加载`knowledge/adaptation/short_form_drama_adapter.md`，**与Input Route及Input Class无关**（Creation Brief原创、品牌与商业片、C类素材改编同规则）；其他类型记录Not Applicable，不强制套用短剧规则。目标形式是加载条件，不是改写授权。该Step是此Adapter的唯一加载入口；下游Knowledge只引用其判据，不自行加载。
 
 Adaptation Intensity：只允许LEVEL 1 Light Adaptation、LEVEL 2 Structural Adaptation、LEVEL 3 Free Adaptation，并选择最低足够等级。用户明确“基本不要改剧情”时只能LEVEL 1；不可静默升级。
 
 Required Inputs及唯一来源：用户Idea / Brief或原始故事文本、Project Bible中的已确认项目事实、目标形式/时长/平台/受众、用户明确的创作/改编/优化范围与锁定要求。世界观、角色身份、核心创意、主题、名场面、关键设定与品牌要求只由用户或已确认项目事实拥有。
 
-Output拥有者：`templates/02_script_analysis_prompt.md`独占STATE-01用户可见字段、顺序与排版；`workflows/02_script_analysis_workflow.md`拥有入口识别、分类、目标检测、路由、确认门槛与状态转换；`knowledge/screenplay_development.md`是唯一Screenwriter owner，拥有WRITER INTENT PACKET、原创故事开发、Writer Diagnosis、Writer → Director Handoff与Directable Screenplay QA；`knowledge/script_adaptation.md`拥有通用六层改编方法；`knowledge/adaptation/short_form_drama_adapter.md`只拥有适用短剧规则；`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`只拥有各自专业子方法。
+Output拥有者：`templates/02_script_analysis_prompt.md`独占STATE-01用户可见字段、顺序与排版；`workflows/02_script_analysis_workflow.md`拥有入口识别、分类、目标检测、路由、确认门槛与状态转换；`knowledge/writer/screenplay_development.md`是唯一Screenwriter owner，拥有WRITER INTENT PACKET、原创故事开发、Writer Diagnosis、Writer → Director Handoff与Directable Screenplay QA；`knowledge/writer/script_adaptation.md`拥有通用六层改编方法；`knowledge/adaptation/short_form_drama_adapter.md`只拥有适用短剧规则；`knowledge/writer/screenwriting_optimization.md`与`knowledge/writer/directorial_interpretation.md`只拥有各自专业子方法。
 
 允许读取：Selected State Source、Active Project Root中的project_bible.md、用户Idea / Brief、剧本/Source Material/设定与已确认约束。允许写入：Active Project Root的STATE-01 Screenplay / Script Analysis Artifact、适用的Optimization Opportunity Report、获得合法授权后的Adaptation Draft和Production Script Proposal，以及随确认版本传递的轻量Scene Director Intent source data；并写Selected State Source中的Script Status / Pending Decision / Checkpoint。不得写入Skill根目录项目兼容入口。
 

@@ -14,7 +14,7 @@
 |---|---|---|---|---|
 | SHOT-001 | 可见人物、动作及必要台词/同期声 | 仅写理解画面所必需的景别、构图或运动语义 | 起始状态、结束状态及与下一镜的承接 | 已确认资产ID与必要参考 |
 
-每镜仍须完整、可独立阅读，不得使用“同上”或省略连续性。下文十八字段、时间码、摄影/光色/声音、风险和QA要求均是内部`Detailed Shot Record`，用于计算、连续性核验和STATE-07交接；任何将它们称为用户可见或要求逐项展示的文字，均由本节覆盖。用户明确要求“完整版专业分镜”时，才展示内部完整Schema。
+每镜仍须完整、可独立阅读，不得使用“同上”或省略连续性。下文十八字段、时间码、摄影/光色/声音、风险和QA要求均是内部`Detailed Shot Record`，用于计算、连续性核验和STATE-07交接；任何将它们称为用户可见或要求逐项展示的文字，均由本节覆盖。用户明确要求“完整版专业分镜”时，才展示内部完整Schema，并且按`rules/05_output_rules.md`的`### 完整版专业分镜 Delivery Gate`以文件交付：`05_shots/06_detailed_shot_design.md`（或`08_detailed_shot_design.md`）一次包含全部已确认Shot，配交付回执，并运行`scripts/validate_delivery_artifacts.py <artifact-file> --kind shot-design-full`。**完整版的“完整”指镜，不是指列**：十八列但只有前两批，与30镜齐全但只有五列，都不是完整版。
 
 视觉Storyboard是另一条独立的可选辅助链路（`workflows/10_storyboard_workflow.md`与`templates/09_storyboard_prompt.md`），只有用户显式请求时才启动。它是本分镜表的**旁路而不是升级档**：不改变本节交付结构，不参与Clip划分，也不进入STATE-07 / STATE-08参考资产。需要看图时另行显式请求，不得以它替代或补充本表字段。
 
@@ -62,7 +62,7 @@
 
 每个单元格必须独立可读。禁止使用“同上”“沿用上一镜”“见前文”“其余一致”“略”或空白代替当前Shot内容；连续事实仍要写明本镜继承的状态、当前可见结果与锁定限制。确实不适用时写`不适用`及具体理由。
 
-若全部Shot无法一次完整容纳，自动按完整Shot连续分批，默认每批4—5个Shot，可按单镜复杂度和实际长度调整。每批使用标题`Batch NN / Total｜SHOT-xxx—SHOT-yyy`并重复完整十八列表头；批次边界只能位于Shot之间，绝不能把单个Shot拆到两批。完成当前批后从下一尚未输出的Shot继续，直到全部交付；不得通过压缩单镜结构换取一次输出完毕。
+若全部Shot无法一次完整容纳，自动按完整Shot连续分批，默认每批4—5个Shot，可按单镜复杂度和实际长度调整。每批使用标题`Batch NN / Total｜SHOT-xxx—SHOT-yyy`并重复完整十八列表头；批次边界只能位于Shot之间，绝不能把单个Shot拆到两批。完成当前批后从下一尚未输出的Shot继续，直到全部交付；不得通过压缩单镜结构换取一次输出完毕。用户要求完整版时，分批只发生在**同一个文件**内：不得把批次拆到多轮、不得用压缩摘要表代替任一镜的十八列；文件必须一次包含全部已确认Shot，再按`rules/05_output_rules.md`的`### 完整版专业分镜 Delivery Gate`给出交付回执并与`--kind shot-design-full`校验结果一同交付。
 
 如果运行环境必须在批次间结束本轮，保存并显示`Last Fully Delivered Shot`与`Next Undelivered Shot`，下一次只从`Next Undelivered Shot`继续，不重复、不遗漏、不重排。`Timeline And Coverage Summary`只在最后一批输出；中间批的局部自检不得替代任何逐镜字段。
 

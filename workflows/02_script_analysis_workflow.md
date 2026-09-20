@@ -132,9 +132,9 @@ Creation Brief不强行套用A/B/C Input Class和Optimization Opportunity Grade�
 
 ## Screenwriter Module Continuity And Writer → Director Boundary
 
-Creation与Existing两条入口都先读取唯一Writer owner `knowledge/screenplay_development.md`，建立或从现有剧本提取最小充分`WRITER INTENT PACKET`。STATE-01由Screenwriter Module拥有Premise / Theme、Dramatic Question、Character Intent、Causality、Scene Value Change、Writer Beat、Dialogue / Subtext、Setup / Payoff、Information Architecture、Character / Relationship Arc与故事层AIGC Directability。Existing Script首次无改写授权时只做Writer Diagnosis，不借Packet生成改写正文。
+Creation与Existing两条入口都先读取唯一Writer owner `knowledge/writer/screenplay_development.md`，建立或从现有剧本提取最小充分`WRITER INTENT PACKET`。STATE-01由Screenwriter Module拥有Premise / Theme、Dramatic Question、Character Intent、Causality、Scene Value Change、Writer Beat、Dialogue / Subtext、Setup / Payoff、Information Architecture、Character / Relationship Arc与故事层AIGC Directability。Existing Script首次无改写授权时只做Writer Diagnosis，不借Packet生成改写正文。
 
-随后读取`knowledge/director_decision_layer.md`和`knowledge/directorial_interpretation.md`完成Writer → Director Handoff。Writer交付Story / Character / Scene Intent、Writer Beats、关系与信息变化、Subtext、Setup / Payoff义务及Performance Intent；Director决定Audience Experience、Performance Strategy、Blocking potential、Mise-en-scène与信息呈现方式。剧本阶段只识别可导演机会，不得写Shot List、特写、35mm、低机位、浅景深或推拉摇移。
+随后读取`knowledge/director_decision_layer.md`和`knowledge/writer/directorial_interpretation.md`完成Writer → Director Handoff。Writer交付Story / Character / Scene Intent、Writer Beats、关系与信息变化、Subtext、Setup / Payoff义务及Performance Intent；Director决定Audience Experience、Performance Strategy、Blocking potential、Mise-en-scène与信息呈现方式。剧本阶段只识别可导演机会，不得写Shot List、特写、35mm、低机位、浅景深或推拉摇移。
 
 `Information Architecture = Writer Authority`，`Information Presentation = Director Authority`。Director发现关键因果、动机、信息时机或Setup / Payoff无法成立时返回Writer最小修订，不在导演化处理中静默改写。
 
@@ -144,8 +144,8 @@ Creation与Existing两条入口都先读取唯一Writer owner `knowledge/screenp
 
 必须读取：
 
-- `knowledge/screenplay_development.md`
-- `knowledge/directorial_interpretation.md`
+- `knowledge/writer/screenplay_development.md`
+- `knowledge/writer/directorial_interpretation.md`
 - `knowledge/director_decision_layer.md`
 
 固定执行：
@@ -154,8 +154,8 @@ Creation与Existing两条入口都先读取唯一Writer owner `knowledge/screenp
 
 1. 从当前输入和Project Bible提取目标形式/容量、受众、核心人物、世界/场景、主情绪或品牌目标、保护项与禁止项。
 2. 只有缺失项会实质改变架构或造成品牌/事实风险时才询问；其他可安全项采用明确、可修订的Assumption继续。
-3. 按`knowledge/screenplay_development.md`建立项目、场景与必要Beat层Writer Intent：Dramatic Question / Core Conflict、Character Engine、因果链、Scene Purpose / Value Change、Writer Beat Map、Dialogue / Subtext、Information Architecture、Setup / Payoff、Character / Relationship Arc、Structural Rhythm与故事层AIGC Directability。按任务复杂度调用，不把Packet变成表格问卷。
-4. 执行Writer → Director Handoff，再由`knowledge/directorial_interpretation.md`决定观众如何经历已成立的信息与情绪，并把Character Performance Intent转交Performance Layer；不得让Writer提前写机位、焦段、运镜、SHOT、CLIP或分镜表。
+3. 按`knowledge/writer/screenplay_development.md`建立项目、场景与必要Beat层Writer Intent：Dramatic Question / Core Conflict、Character Engine、因果链、Scene Purpose / Value Change、Writer Beat Map、Dialogue / Subtext、Information Architecture、Setup / Payoff、Character / Relationship Arc、Structural Rhythm与故事层AIGC Directability。按任务复杂度调用，不把Packet变成表格问卷。
+4. 执行Writer → Director Handoff，再由`knowledge/writer/directorial_interpretation.md`决定观众如何经历已成立的信息与情绪，并把Character Performance Intent转交Performance Layer；不得让Writer提前写机位、焦段、运镜、SHOT、CLIP或分镜表。
 5. 为每个候选场景内部维护Scene-level Writer Intent与轻量Scene Director Intent source data，明确Scene Purpose、Objective / Obstacle、Value / Relationship / Information Change、Decision / Consequence、Writer Beats、Subtext、Setup / Payoff Function、Scene Exit State及Audience Start / End、Performance / Spatial / Rhythm机会，并完成Directable Screenplay QA；这些内部字段不机械输出进最终剧本。
 6. 使用`templates/02_script_analysis_prompt.md`输出可独立阅读的完整Production Script Proposal；写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`并停止。
 7. 用户要求“修改这一场 / 改台词 / 调整人物线 / 改结局”等时，保持Script Development，只修订明确范围与必要相邻因果，重跑受影响QA后再次等待确认；不得跳到STATE-05/06。
@@ -179,7 +179,7 @@ Creation Brief不得输出Optimization Opportunity Report、Adaptation Draft或�
 
 本分支优先于默认入口和A/B/C内容改写路由：
 
-1. Optimization Opportunity Report记录为Not Applicable；将`knowledge/script_adaptation.md`、`knowledge/adaptation/short_form_drama_adapter.md`、`knowledge/screenwriting_optimization.md`和`knowledge/directorial_interpretation.md`记录为Not Applicable，理由为用户禁止内容改写。
+1. Optimization Opportunity Report记录为Not Applicable；将`knowledge/writer/script_adaptation.md`、`knowledge/adaptation/short_form_drama_adapter.md`、`knowledge/writer/screenwriting_optimization.md`和`knowledge/writer/directorial_interpretation.md`记录为Not Applicable，理由为用户禁止内容改写。
 2. 不执行Script Adaptation、Screenwriting Optimization或Directorial Interpretation，不生成改写版Production Script Proposal。
 3. 仍完整执行下方Story、Character、Environment、Visual Element与Visual Requirement Analysis。
 4. 用户的明确No Revision / Final Script指令构成锁定授权；分析完成后将用户版本登记为`Script Status: Production-Locked`。
@@ -268,13 +268,15 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 必须读取：
 
-- `knowledge/script_adaptation.md`
-- `knowledge/screenwriting_optimization.md`
-- `knowledge/directorial_interpretation.md`
+- `knowledge/writer/script_adaptation.md`
+- `knowledge/writer/screenwriting_optimization.md`
+- `knowledge/writer/directorial_interpretation.md`
 
 ### Adaptation Target Detection
 
-从用户要求与已确认项目事实判断目标形式。只有目标明确为短剧、竖屏剧情或1—3分钟剧情视频时，才读取并执行`knowledge/adaptation/short_form_drama_adapter.md`。其他类型将该Adapter记录为Not Applicable及理由，不得强制套用前3秒、前30秒或五段短剧模型。目标缺失且会实质改变改编结构时，写`Adapter Load: Pending`与Pending Decision，不得猜测平台规则。
+从用户要求与已确认项目事实判断目标形式。目标明确为短剧、竖屏剧情或1—3分钟剧情视频时，**无论Input Route与Input Class为何**（Creation Brief原创、品牌与商业片、C类素材改编）都读取并执行`knowledge/adaptation/short_form_drama_adapter.md`——目标形式是它的加载条件，不是改写授权。其他类型将该Adapter记录为Not Applicable及理由，不得强制套用前3秒、前30秒或五段短剧模型。目标缺失且会实质改变结构时，写`Adapter Load: Pending`与Pending Decision，不得猜测平台规则，也不得从时长、平台、题材或画风推定目标形式。
+
+本Step是**该Adapter的唯一加载入口**：品牌与商业片、平台与发布形态等下游Knowledge只引用它的判据，不自行加载、不复述其秒数；因此目标形式已确认而本Step未执行时，引用方不得宣称已按其判据执行。
 
 媒介剖面与目标形式是两根独立的轴：本阶段同时读取已确认的`媒介形式`，按`knowledge/medium_profiles.md`的Screenwriter Layer决定信息承载方式（`2d_anime`下信息必须外化为可见动作、符号化表情或OS，不得依赖微表情留白）。媒介为`Pending`时记`Medium Profile: PENDING`、不加载Screenwriter Layer分化表，由本阶段的`Production Setup Gate`确认后按该Gate的时序后果补做信息承载复核；不得从Genre、目标形式或平台推定媒介，也不得因目标为短剧就默认真人剧。
 
@@ -288,27 +290,27 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 
 ### Class C Execution
 
-1. 按`knowledge/script_adaptation.md`完成Source Essence Extraction、Adaptation Objective、Preserve / Compress / Rewrite / Remove Decision、Screen Translation、Duration & Dramatic Restructuring和Adaptation Fidelity Check。
+1. 按`knowledge/writer/script_adaptation.md`完成Source Essence Extraction、Adaptation Objective、Preserve / Compress / Rewrite / Remove Decision、Screen Translation、Duration & Dramatic Restructuring和Adaptation Fidelity Check。
 2. 形成完整Adaptation Draft并写`Script Status: Adaptation Draft`；该状态仍是STATE-01 IN_PROGRESS，不得进入STATE-02。
 3. 对Adaptation Draft执行Screenwriting Optimization。
 4. 先建立更新后的Writer Intent Packet并执行Writer → Director Handoff，再执行Directorial Interpretation，把优化结果转换为可视、可听、可表演的制作版叙事；不得创建SHOT、CLIP、焦段、机位、运镜或Director Decision Notes。
-5. 对候选Proposal执行Directable Screenplay QA（检查项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
+5. 对候选Proposal执行Directable Screenplay QA（检查项见`knowledge/writer/screenplay_development.md`），未通过项先做最小修订再输出。
 6. 使用`templates/02_script_analysis_prompt.md`输出完整Production Script Proposal及其Script Analysis。
 7. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止；不得进入STATE-02。
 
 ## 05 Class A/B Approved Route — Optimization Without Forced Adaptation
 
-触发：Class A或B的报告已输出，且用户已明确同意优化。不得读取`knowledge/script_adaptation.md`或短剧Adapter，不形成Adaptation Draft。即使目标时长为1—3分钟，也不得仅因此把A/B类强制改走Script Adaptation。
+触发：Class A或B的报告已输出，且用户已明确同意优化。不得读取`knowledge/writer/script_adaptation.md`或短剧Adapter，不形成Adaptation Draft。即使目标时长为1—3分钟，也不得仅因此把A/B类强制改走Script Adaptation。
 
 固定执行：
 
 `Screenwriting Optimization → Directorial Interpretation → Directable Screenplay QA → Production Script Proposal → User Confirmation`
 
-必须读取`knowledge/screenwriting_optimization.md`与`knowledge/directorial_interpretation.md`：
+必须读取`knowledge/writer/screenwriting_optimization.md`与`knowledge/writer/directorial_interpretation.md`：
 
 1. 只在已授权范围内执行Screenwriting Optimization。
 2. 更新受影响Writer Intent并执行Writer → Director Handoff；随后执行Directorial Interpretation，不提前进入后续技术层。
-3. 对候选Proposal执行Directable Screenplay QA（检查项见`knowledge/screenplay_development.md`），未通过项先做最小修订再输出。
+3. 对候选Proposal执行Directable Screenplay QA（检查项见`knowledge/writer/screenplay_development.md`），未通过项先做最小修订再输出。
 4. 使用Template输出Production Script Proposal与Script Analysis。
 5. 写`Script Status: Optimized Proposal`、`State Status: IN_PROGRESS`、`Pending Decision: 等待用户确认Production Script Proposal`，并停止。
 
@@ -348,6 +350,17 @@ Class C还必须先判断`Adaptation Need`，指出素材离标准制作剧本�
 `Project Style Baseline`只回答“主风格是什么、在本项目指什么”，是STATE-03资产Prompt的“已确认的项目视觉风格”唯一来源；它不展开焦段、运镜、综合色彩或Lighting体系——那些仍由STATE-04在它之上建立`Visual Grammar Baseline`与`Aesthetic Decision Lock`。基线只从用户已明确输入或已Production-Locked剧本可证实的内容提取，不得自行选择导演风格。
 
 用户已在项目请求中指定模型时，对应项只展示该唯一候选；未指定时不得默认选择。展示后用户说`下一步`、`继续`等按`rules/progression_rules.md`确认；确认后写入`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`及各自`SELECTED`状态，把风格基线写入`## Visual Direction Lock`的基线行与`project_bible.md`既有Visual Direction区域，并把媒介形式写入`project_bible.md`的`Project Information → 媒介形式`字段；不新增Schema字段。这些设置只取得执行能力与项目风格基线，不是资产、Clip或外部提交授权；图像默认项供STATE-03资产批次继承，视频偏好供STATE-06按每Clip能力复核。
+
+### Target Form Confirmation｜目标形式确认
+
+本Gate是本Gate所属Workflow中**目标形式的唯一确认点**，与媒介形式同格式、同权威：用户已明确指定时只展示该唯一候选，未指定时必须询问一次，不得从媒介、题材、平台、时长或画风推定。值域为`短剧 / 竖屏剧情 / 1—3分钟剧情视频 / 电影短片 / 儿童动画 / 纪实非虚构 / 长篇影视 / 品牌与商业片 / Pending`；确认后写入`project_bible.md`的`Project Information → 目标形式`（不新增Schema字段）。
+
+确认的时序后果由目标形式分两档：
+
+- **命中短剧 / 竖屏剧情 / 1—3分钟剧情视频时**：必须加载`knowledge/adaptation/short_form_drama_adapter.md`，并把其Hook窗口、主要矛盾进入位置、单集核心事件、五段功能、结尾Hook、角色数量与场景数量上限**复核进已锁定Script**。这些节奏与信息承载必须在剧本层成立，不得留给STATE-05或STATE-06补；复核只改变信息承载、段落功能与开场结尾位置，不改剧情、因果、人物与结局。一旦触及剧情事实，按`references/artifact_revision_contract.md`出新Revision并在Proposal Gate重新确认，不得静默改写已锁定的Script。
+- **未命中时**：将该Adapter记为Not Applicable及理由，不加载其判据。目标形式为`Pending`时不得进入STATE-02，也不得按任一形态默认生产。
+
+本Gate同时闭合该Adapter在Creation Brief路径上的入口：`### Adaptation Target Detection`是C类素材改编路径的加载入口，本Gate是**目标形式后确认时**的加载入口，两者共用同一个Adapter与同一套判据，不产生第二套节拍模型。目标形式在STATE-01之前已由用户明确给出时，本Gate只做展示与登记，不重复询问。
 
 媒介确认的时序后果：本Gate运行在Script `Production-Locked`之后，因此当确认的媒介非`live_action`时，必须在进入STATE-02之前按`knowledge/medium_profiles.md`的Screenwriter Layer复核已锁定Script的信息承载——该档读不到的微表情层次、沉默留白或未言明潜台词，按承载外化改写为可见动作、符号化表情或OS。承载外化只改表达方式，不改剧情、因果、人物、对白与结局；一旦触及剧情事实，按`references/artifact_revision_contract.md`出新Revision并在Proposal Gate重新确认，不得静默改写已锁定的Script。媒介仍为`Pending`时不得进入STATE-02，也不得按默认档生产资产。
 
@@ -652,6 +665,7 @@ Creation Brief入口直接输出Script Control、完整Production Script Proposa
 - Directable Screenplay QA已在Production Script Proposal输出前完成（Creation与Existing授权分支同样适用）
 - Script Status已经是Production-Locked
 - Production Setup已经确认：`Project Image Model Default`、`Image Delivery Mode`、`Project Video Model Preference`与`Project Style Baseline`均已写入且为`SELECTED`
+- 目标形式已确认并写入`project_bible.md`的`Project Information → 目标形式`；命中短剧 / 竖屏剧情 / 1—3分钟剧情视频时，`knowledge/adaptation/short_form_drama_adapter.md`已按其`### Target Form Confirmation`时序后果复核已锁定Script，未命中或记Not Applicable并留存依据
 
 
 未完成情况：

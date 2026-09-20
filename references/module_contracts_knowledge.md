@@ -327,7 +327,7 @@ Owner：`knowledge/genre/index.md`是登记表、共享Genre File Schema、加�
 
 禁止：用类型替代Writer / Director判断；把单项目做法升级为通用规则；用类型知识解释或改写剧情事实；以"类型需要"为由绕过Completion Gate、资产锁、Reference Budget或任何硬停点。
 
-冲突时：类型登记缺失或冲突返回STATE-00的项目登记；类型承诺与已锁定剧本冲突返回Writer Owner（`knowledge/screenplay_development.md`）；项目级呈现取舍冲突返回STATE-04；逐镜呈现冲突返回STATE-06；媒介相关表达在非实拍档不成立返回`knowledge/medium_profiles.md`。
+冲突时：类型登记缺失或冲突返回STATE-00的项目登记；类型承诺与已锁定剧本冲突返回Writer Owner（`knowledge/writer/screenplay_development.md`）；项目级呈现取舍冲突返回STATE-04；逐镜呈现冲突返回STATE-06；媒介相关表达在非实拍档不成立返回`knowledge/medium_profiles.md`。
 
 ---
 

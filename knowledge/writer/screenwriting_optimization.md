@@ -1,8 +1,23 @@
 # Screenwriting Optimization
 
+# Read Scope
+
+层入口与需求路由见`knowledge/writer/index.md`。本文件按当前事项只读对应小节，**不得整文件通读**：
+
+| 当前事项 | 只读 |
+|---|---|
+| 判定本文件何时可用、边界在哪 | `## Purpose`、`## Module Contract` |
+| 首次Opportunity Report与获准后的逐项诊断 | `## Required Diagnosis Dimensions` |
+| 已获授权、执行实际优化 | `## Optimization Method` |
+| 局部优化、范围边界 | `## Partial Optimization Rule` |
+| 交给导演化处理 | `## Handoff To Directorial Interpretation` |
+| 输出前自检 | `## Completion Check` |
+
+---
+
 ## Purpose
 
-本Knowledge是`knowledge/screenplay_development.md`所拥有Screenwriter Module的授权后优化子模块。它只在STATE-01已经输出Optimization Opportunity Report且用户明确同意优化，或Class C获准改编并形成Adaptation Draft之后使用。首次报告阶段只执行统一Writer Diagnosis，不得借本Knowledge自动改写。它负责把已获授权的优化方向转化为更适合影视生产与目标时长的制作版叙事方案；不创建新STATE，不替代Workflow，不拥有用户可见Schema或第二套Writer Packet。
+本Knowledge是`knowledge/writer/screenplay_development.md`所拥有Screenwriter Module的授权后优化子模块。它只在STATE-01已经输出Optimization Opportunity Report且用户明确同意优化，或Class C获准改编并形成Adaptation Draft之后使用。首次报告阶段只执行统一Writer Diagnosis，不得借本Knowledge自动改写。它负责把已获授权的优化方向转化为更适合影视生产与目标时长的制作版叙事方案；不创建新STATE，不替代Workflow，不拥有用户可见Schema或第二套Writer Packet。
 
 ## Module Contract
 

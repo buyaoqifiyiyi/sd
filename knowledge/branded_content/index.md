@@ -22,7 +22,7 @@
 **它不拥有**：
 
 - **商业事实本身**——真实SKU、价格、Logo、功效、资质、授权、法务文案由用户与已确认项目材料拥有；**资产侧的三类归类（客户必须提供 / 可由制作生成 / 优先后期叠加）由`workflows/03_asset_discovery_workflow.md`的`## Commercial Fact Triage`拥有**，本域只引用不重复。
-- 剧情事实与故事结构（Writer Owner与`knowledge/screenplay_development.md`）。
+- 剧情事实与故事结构（Writer Owner与`knowledge/writer/screenplay_development.md`）。
 - 项目级美学方向（STATE-04）、媒介分化（`knowledge/medium_profiles.md`）、类型呈现（`knowledge/genre/index.md`）、时代与地域（`knowledge/period_and_place/index.md`）、交付画幅（`knowledge/camera_language/composition_language/vertical_framing.md`）。
 - 目标形式的节奏适配：短剧 / 竖屏剧情 / 1—3分钟剧情视频仍由`knowledge/adaptation/short_form_drama_adapter.md`拥有；本域不新建节拍模型。形态原子只决定"必须让观众看见什么"，不决定段落数、秒数或五段模型。
 - **年龄轴的适宜性与理解难度**：`knowledge/audience_profiles.md`拥有`preschool` / `children_family` / `general`三档、三张分层表与"不得推定受众"纪律。`04_commercial_audience.md`是**角色轴**——它回答"凭什么被说服"，不改年龄轴的值域、不新增同义档，两轴冲突时年龄轴优先。

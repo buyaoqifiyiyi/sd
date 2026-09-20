@@ -63,7 +63,7 @@ Portable候选若使用READY / INITIALIZED、缺少Required Header / Sections或
 
 迁移与Reload必须保留当前项目、Production-Locked Script、Confirmed Assets / Active Versions / Canonical References、Accepted Take Canon / Accepted Canon State、accepted prompt、Shot-State Memory、Director Decision Notes（shots/director_decision_notes.md）、与确认剧本Revision绑定的Writer Intent Packet、Blocking Canon / Spatial Snapshot、Confirmed `REF-SKETCH`、已完成Checkpoint、Accepted Unaffected Artifacts与用户明确约束。只更新旧路由标签和必要状态摘要，不得因Skill升级、STATE名称、owner/file routing或Writer / Director schema变化强制重开或重做。
 
-Legacy项目缺少新版Writer / Director intent时，调用`rules/runtime_reload.md`唯一拥有的`Legacy Intent Backfill`，只消费`knowledge/screenplay_development.md`与`knowledge/director_decision_layer.md`定义的字段语义，并把结果作为当前Workflow所需的内部source data。不得在本Workflow重定义Packet、回STATE-01重写已锁定剧本、重做资产/已确认镜头，或自动失效Accepted Take / accepted prompt。Confirmed `REF-SKETCH`在Blocking Signature未变时继续有效。
+Legacy项目缺少新版Writer / Director intent时，调用`rules/runtime_reload.md`唯一拥有的`Legacy Intent Backfill`，只消费`knowledge/writer/screenplay_development.md`与`knowledge/director_decision_layer.md`定义的字段语义，并把结果作为当前Workflow所需的内部source data。不得在本Workflow重定义Packet、回STATE-01重写已锁定剧本、重做资产/已确认镜头，或自动失效Accepted Take / accepted prompt。Confirmed `REF-SKETCH`在Blocking Signature未变时继续有效。
 
 不一致时不合并猜测；记录Recovery Item并返回事实拥有者。
 

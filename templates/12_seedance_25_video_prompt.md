@@ -125,7 +125,7 @@
 
 ## Output QA
 
-保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.5`；该校验器只做确定性断言（字段存在与顺序、阶段递进无重叠、终段位置、无BGM固定句，以及两条内容形态：Canonical参考条目的`<资产ID>｜<资产名>`形态与`主风格`不得保留通用负向清单），未通过不得交付，通过也不替代下列语义检查。参考条目与包内文件的一一对应不在该校验器的断言范围内，必须按`references/asset_package.md`的`Final Prompt Correspondence`单独完成。
+保存为文件时必须运行 `scripts/validate_prompt_package.py <prompt-file> --model seedance-2.5`；该校验器只做确定性断言（字段存在与顺序、阶段递进无重叠、终段位置、无BGM固定句，以及三条内容形态：Canonical参考条目的`<资产ID>｜<资产名>`形态、`主风格`不得保留通用负向清单，以及已确认资产名必须在正文逐字出现，未逐字出现而正文出现近似写法时报告`已确认资产名逐字保留`），未通过不得交付，通过也不替代下列语义检查。参考条目与包内文件的一一对应不在该校验器的断言范围内，必须按`references/asset_package.md`的`Final Prompt Correspondence`单独完成。
 
 - 多模态参考资产、参考素材职责与优先级、首帧参考、尾帧限制、主风格、全局叙事与画面设定、全局一致性与执行约束、时间线、全局限制与反向提示词均存在且非空；正文没有标题行、`时长：`或`画幅：`（标题、目标时长、分辨率与宽高比由STATE-07的Confirmed Clip Production Plan拥有，不入Prompt正文）。
 - 每条参考条目均为`@图片N：<资产ID>｜<资产名>`形态，`@图片N`连续且与上传顺序一致；环境View已补View Code；同一Asset ID对应多张Canonical图时必须补View Code或Purpose（如`PROP-001｜花灯_Identity`、`PROP-001｜花灯_State`），**包内文件名的扩展名不进入引用名**；每条都能一对一落到包内真实文件，无孤儿图、无同一Asset ID对应多个文件名。

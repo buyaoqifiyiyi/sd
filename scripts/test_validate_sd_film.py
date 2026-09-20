@@ -2609,7 +2609,7 @@ class R73ReadScopeIndexTests(unittest.TestCase):
         "workflows/workflow_map.md",
         "references/project_state_contract.md",
         "knowledge/director_decision_layer.md",
-        "knowledge/screenplay_development.md",
+        "knowledge/writer/screenplay_development.md",
         "knowledge/clip_preflight_check.md",
         "knowledge/reference_budget.md",
         "references/asset_lock_contract.md",
@@ -4087,6 +4087,100 @@ class R63FastInvariantAndReceiptTests(unittest.TestCase):
         self.assertIn("射程必须说清", criteria)
 
 
+class R48QCompleteFormShotDeliveryTests(unittest.TestCase):
+    """用户要求的完整版专业分镜，必须真的是完整版。
+
+    实测违规：用户明确说"完整版专业分镜"；交付物只保存了默认5列表，十八列记录只
+    出现在聊天里且只覆盖前两批，其余批次改用压缩摘要表，而所有既有检查都通过——
+    `--kind shot-design` 两种形态都收，且从不问这个项目一共有多少镜。"完整"因此
+    必须同时约束**列**（十八列）与**镜**（全部已确认Shot同文件一次交付）。
+    """
+
+    FULL = delivery_validator.SHOT_COLUMNS_FULL
+
+    def _row(self, shot: str, tc_in: str, tc_out: str, duration: str) -> str:
+        cells = [shot, tc_in, tc_out, duration] + ["内容"] * (len(self.FULL) - 4)
+        return "| " + " | ".join(cells) + " |"
+
+    def _doc(self, rows: list[str], total: int | None = None, extra: str = "") -> str:
+        head = "# 分镜表｜完整版专业分镜\n\n"
+        if total is not None:
+            head += f"- Total Shots: {total}\n"
+        header = "| " + " | ".join(self.FULL) + " |"
+        separator = "|" + "---|" * len(self.FULL)
+        return head + extra + "\n" + header + "\n" + separator + "\n" + "\n".join(rows) + "\n"
+
+    def setUp(self) -> None:
+        self.complete = [
+            self._row("SHOT-001", "00:00:00.000", "00:00:02.500", "2.5"),
+            self._row("SHOT-002", "00:00:02.500", "00:00:04.000", "1.5"),
+        ]
+
+    def test_complete_all_shot_record_passes(self) -> None:
+        self.assertEqual(
+            delivery_validator.check_shot_design_full(self._doc(self.complete, total=2)), []
+        )
+
+    def test_declared_total_with_fewer_rows_is_incomplete(self) -> None:
+        """本轮实测缺口：声明30镜，只交付2镜，其余批次用摘要表代替。"""
+        errors = delivery_validator.check_shot_design_full(self._doc(self.complete, total=30))
+        self.assertTrue(any("完整版不完整" in item for item in errors))
+
+    def test_default_five_column_form_is_not_a_complete_form(self) -> None:
+        default = (
+            "# 分镜表\n\n"
+            "| 镜号 | 画面与动作 | 画面表达 | 连续性 | 资源 |\n|---|---|---|---|---|\n"
+            "| SHOT-001 | 女孩在窗边按灭手机 | 中近景 | 起始：站姿；结束：转身 | CHAR-001 |\n"
+        )
+        errors = delivery_validator.check_shot_design_full(default)
+        self.assertTrue(any("十八列完整记录" in item for item in errors))
+        self.assertEqual(delivery_validator.check_shot_design(default), [])
+
+    def test_broken_timecode_and_duplicate_shot_are_rejected(self) -> None:
+        recomputed = self._doc([self._row("SHOT-001", "00:00:00.000", "00:00:02.500", "3.0")])
+        self.assertTrue(any("时间码不可复算" in item for item in
+                            delivery_validator.check_shot_design_full(recomputed)))
+        gapped = self._doc([self.complete[0],
+                            self._row("SHOT-002", "00:00:03.000", "00:00:04.500", "1.5")])
+        self.assertTrue(any("时间码断档" in item for item in
+                            delivery_validator.check_shot_design_full(gapped)))
+        doubled = self._doc([self.complete[0], self.complete[0]])
+        self.assertTrue(any("重复镜号" in item for item in
+                            delivery_validator.check_shot_design_full(doubled)))
+
+    def test_shot_cited_in_prose_but_never_delivered_is_rejected(self) -> None:
+        doc = self._doc(self.complete, extra="后续镜号写法参考 SHOT-007。\n")
+        self.assertTrue(any("未在任何十八列行中定义" in item for item in
+                            delivery_validator.check_shot_design_full(doc)))
+
+    def test_empty_cell_is_rejected(self) -> None:
+        broken = self._doc([self.complete[0].replace("| 内容 |", "|  |", 1)])
+        self.assertTrue(any("为空" in item for item in
+                            delivery_validator.check_shot_design_full(broken)))
+
+    def test_kind_registered_with_canonical_file_names(self) -> None:
+        self.assertIn("shot-design-full", delivery_validator.EXPECTED_KINDS)
+        self.assertEqual(
+            delivery_validator.SHOT_FULL_FILE_NAMES,
+            ("06_detailed_shot_design.md", "08_detailed_shot_design.md"),
+        )
+        self.assertIn("shot-design-full", delivery_validator.CHECKS)
+
+    def test_rule_template_and_validator_agree(self) -> None:
+        """确定性一致性：规则、Template与校验器不得各自表述一套完整版。"""
+        output_rules = (ROOT / "rules" / "05_output_rules.md").read_text(encoding="utf-8-sig")
+        template = (ROOT / "templates" / "08_shot_design_prompt.md").read_text(encoding="utf-8-sig")
+        for marker in ("### 完整版专业分镜 Delivery Gate", "指**镜**，不是指**列**",
+                       "--kind shot-design-full", "06_detailed_shot_design.md"):
+            self.assertIn(marker, output_rules)
+        for marker in ("--kind shot-design-full", "06_detailed_shot_design.md"):
+            self.assertIn(marker, template)
+        skipped = "\n".join(
+            validator.check_full_shot_delivery_contract(ROOT)
+        )
+        self.assertEqual(skipped, "")
+
+
 class R64DeliveredArtifactValidatorTests(unittest.TestCase):
     """STATE-05/06/07的用户可见交付物也要有完整性守门人。
 
@@ -4310,9 +4404,17 @@ class R64DeliveredArtifactValidatorTests(unittest.TestCase):
 
     def test_package_builder_imports_the_checks_instead_of_copying_them(self) -> None:
         """宣称与实现同射程：打包门跑的就是owner那一份判据。"""
+        checks = asset_package_builder.load_delivery_artifact_checks()
         self.assertEqual(
-            sorted(asset_package_builder.load_delivery_artifact_checks()),
-            ["clip-plan", "scene-breakdown", "shot-design"],
+            sorted(checks),
+            ["clip-plan", "scene-breakdown", "shot-design", "shot-design-full"],
+        )
+        # 打包门只消费默认形态；完整版形态是交付门，不改变05_shots的入包判据。
+        for _, kind in asset_package_builder.DELIVERY_ARTIFACT_KINDS:
+            self.assertIn(kind, checks)
+        self.assertNotIn(
+            "shot-design-full",
+            [kind for _, kind in asset_package_builder.DELIVERY_ARTIFACT_KINDS],
         )
         self.assertEqual(
             asset_package_builder.DELIVERY_ARTIFACT_KINDS,
@@ -5374,7 +5476,7 @@ class R85BrandedContentTests(unittest.TestCase):
             errors = validator.check_branded_content(root)
             self.assertTrue(
                 any(
-                    "branded content routing file is missing: knowledge/script_adaptation.md" in item
+                    "branded content routing file is missing: knowledge/writer/script_adaptation.md" in item
                     for item in errors
                 ),
                 errors,
