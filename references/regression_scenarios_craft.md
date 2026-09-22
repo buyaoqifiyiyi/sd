@@ -2,7 +2,7 @@
 
 > Skill维护层：只在修改本Skill时读取，不参与影视生产。
 
-本文件是回归集的一部分；完整范围与其余文件见 `references/regression_scenarios.md` 的 Regression File Index。脚本仍只把本文件当作回归语料的一部分，不构成独立权威。覆盖 Prompt 编译、表演、视觉阻断、剧本端到端与Writer层工艺判定（R16—R22、R64—R65、R69、R87、R91）；R15（Prompt 注意力 / 转译 / 物理数据）是独立可读的子案例合集，已按编号边界拆至 `references/regression_scenarios_prompt.md`。Director Module / Camera Language 端到端与导演、运镜工艺场景见 `references/regression_scenarios_director.md`（R23）。
+本文件是回归集的一部分；完整范围与其余文件见 `references/regression_scenarios.md` 的 Regression File Index，脚本只把本文件当作回归语料的一部分，不构成独立权威。覆盖Prompt编译、表演、视觉阻断、剧本端到端与Writer层工艺（R16—R22、R64—R65、R69、R80—R82、R87、R91、R96）；R15见`references/regression_scenarios_prompt.md`，导演与运镜工艺场景见`references/regression_scenarios_director.md`。
 
 ## R16 Delta / Budget / Scope / Canon / Authority / Retake
 
@@ -20,15 +20,15 @@ FAIL：删除正式资产引用；在多个字段重复完整角色/环境设定
 
 输入：同一候选Clip要求完美身份、复杂奔跑打斗、五人群体、繁忙雨景、环绕运镜、多人对白口型、强FX和变化灯光。
 
-PASS：内部先明确一个Primary Spend（例如双主角身份与核心攻防Beat）、最多一至两个Secondary（例如主空间关系与单一路径跟随），并把群体活动、复杂环绕、非必要口型、额外FX或光色变化写入Economized / Safe Downgrade；Five-Dimensional Matrix只高控制必要未锁定项。若仍超载则返回STATE-07/06拆分。
+PASS：内部先明确一个Primary Spend与最多一至两个Secondary，把群体活动、复杂环绕、非必要口型、额外FX与光色变化写入Economized / Safe Downgrade；Five-Dimensional Matrix只高控制必要未锁定项。若仍超载则返回STATE-07/06拆分。
 
-FAIL：五维全部补满；Primary不唯一；Economized为空；把`Primary Spend / Secondary Spend / Economized`打印成最终Prompt字段。
+FAIL：五维全部补满；Primary不唯一；Economized为空；把`Primary Spend / Secondary Spend / Economized`写进最终Prompt字段。
 
 ### R16-C Accepted Take Overrides Planned Transient State
 
 输入：CLIP-03 Planned End为“左手搭手背”，实际Take的Observed End为“右手搭手腕”，用户明确接受该Take；Run、Prompt Revision、Review与接受证据齐全。
 
-PASS：Execution Ledger分别保存Planned与Observed；Accepted Canon State采用“右手搭手腕”。CLIP-04从右手/手腕状态继续，不无过程纠回左手/手背，也不重播接触动作；正式角色/环境/道具资产身份仍不变。
+PASS：Execution Ledger分别保存Planned与Observed；Accepted Canon State采用“右手搭手腕”。CLIP-04从该状态继续，不无过程纠回左手/手背，也不重播接触动作；正式资产身份仍不变。
 
 FAIL：未记录Observed；下一Clip强行按原计划恢复左手；把未接受Take写入Canon；因接受动作结果而改变正式资产身份。
 
@@ -36,7 +36,7 @@ FAIL：未记录Observed；下一Clip强行按原计划恢复左手；把未接�
 
 输入：上一Accepted Take / `REF-TAIL`的脸部略漂移，但Active Character Canonical Reference正确；下一Clip需要继承尾帧姿态、站位与动作阶段。
 
-PASS：角色Canonical Reference声明Identity Authority，`REF-TAIL`声明Transient State Primary Role；下一Clip保持正式角色身份，只从尾帧/Accepted Canon继承姿态、站位、朝向、人物距离与动作阶段，并把脸部漂移列为Continuity Risk。
+PASS：角色Canonical Reference声明Identity Authority，`REF-TAIL`声明Transient State Primary Role；下一Clip保持正式角色身份，只从尾帧/Accepted Canon继承姿态、站位、朝向与动作阶段，并把脸部漂移列为Continuity Risk。
 
 FAIL：让尾帧覆盖正式脸部身份；完全丢弃尾帧导致站位/动作阶段重置；不写Primary Role / Purpose；把漂移尾帧升级为角色Canonical资产。
 
@@ -44,7 +44,7 @@ FAIL：让尾帧覆盖正式脸部身份；完全丢弃尾帧导致站位/动作
 
 输入：生成结果只有人物站位错误，身份、动作、镜头、光线、道具与其他连续性均正确。
 
-PASS：Review诊断为Spatial / Blocking，选择它为最高影响变量；第一轮只修Affected Clip的空间关系/Blocking与必要相邻边界，保留其他已接受内容；Retake后只比较站位及其边界是否改善。若可后期安全修复则路由Editing并说明范围。
+PASS：Review诊断为Spatial / Blocking并选它为最高影响变量；第一轮只修Affected Clip的空间关系/Blocking与必要相邻边界，保留其他已接受内容；Retake后只比较站位及其边界是否改善。可后期安全修复时路由Editing并说明范围。
 
 FAIL：整段Prompt全部重写；同时更换角色资产、动作、运镜、光线与道具；没有前后Take比较；以“整体感觉”直接REBUILD。
 
@@ -56,7 +56,7 @@ FAIL：整段Prompt全部重写；同时更换角色资产、动作、运镜、�
 
 输入：角色有对白，用户只要求继续主Pipeline或输出当前Seedance Clip Prompt，没有提出音色制作或当前视频声音控制要求。
 
-PASS：不进入AUDIO模块；默认外部已有可用角色音色资源；STATE-02/03/08均不阻塞；视频Prompt完全省略`音色特征：`、Voice Profile、Voice/Audio Reference及“已有/缺失/无需音色”等状态文字。台词只保留准确文本与必要Dialogue Performance。
+PASS：不进入AUDIO模块；默认外部已有可用角色音色资源；STATE-02/03/08均不阻塞；视频Prompt完全省略`音色特征：`、Voice Profile、Voice/Audio Reference及“已有/缺失/无需音色”状态文字，台词只保留准确文本与必要Dialogue Performance。
 
 FAIL：要求补建Voice Profile；创建Not Applicable；返回STATE-03；输出`No Voice Asset`或无对白占位；把音色描述写进视频Prompt。
 
@@ -64,7 +64,7 @@ FAIL：要求补建Voice Profile；创建Not Applicable；返回STATE-03；输�
 
 输入：`为女主设计音色。`
 
-PASS：Router返回`AUDIO / SEED-AUDIO Voice Asset`，从当前项目阶段独立进入音色模块；输出独立Voice Profile和明确标记为“SD Film为Seed Audio 1.0组织的兼容模板”的Prompt。Prompt描述speaker，分离稳定Voice Identity与当前Dialogue Performance，并只按需输出Voice Description、Emotional Tone、Delivery / Prosody、Dialogue、Timing、Ambience、Key Sound Effects、Scene Progression和获授权Reference Audio；不强行并入视频Prompt。
+PASS：Router返回`AUDIO / SEED-AUDIO Voice Asset`，从当前项目阶段独立进入音色模块；输出独立Voice Profile和明确标记为“SD Film为Seed Audio 1.0组织的兼容模板”的Prompt，Prompt内按该模板字段按需输出，并分离稳定Voice Identity与当前Dialogue Performance；不强行并入视频Prompt。
 
 FAIL：继续普通Character Asset；把声音交付塞进STATE-08；冒充官方唯一字段模板；固定要求15秒、八条`No...`声明或无关视觉描述。
 
@@ -84,7 +84,7 @@ FAIL：自动复制Voice Profile；写“由参考音色锁定”；仅因已有
 
 输入：同一教室连续场景，A与B并排坐在唯一横向长凳上，A始终在观众画面左、B在画面右；先给双人建立镜，再做同一轴线侧的正反打。中段导演有意让A起身绕到B另一侧，并要求越轴后继续对话。
 
-PASS：Scene Spatial Snapshot锁定长凳、门、窗、钢琴等Fixed Environment Anchors、A/B起始位置、Eyeline Axis与camera safe side；普通正反打保持相反眼线与同侧机位。A换位时记录`Start Position → Visible Movement Path → End Position`，通过角色镜内明确换位并以固定地标建立新轴线侧，随后屏幕左右翻转被判为合法；Environment Canonical继续锁空间身份，不因人物换位重做环境资产。Shot-State Memory记录换位后的局部状态，A/B/C `REF-TAIL`仍按边界需要选择。
+PASS：Scene Spatial Snapshot锁定长凳、门、窗、钢琴等Fixed Environment Anchors、A/B起始位置、Eyeline Axis与camera safe side；普通正反打保持相反眼线与同侧机位。A换位时记录`Start Position → Visible Movement Path → End Position`，镜内明确换位并以固定地标建立新轴线侧，屏幕左右翻转因此合法；Environment Canonical继续锁空间身份，Shot-State Memory记录换位后的局部状态，A/B/C `REF-TAIL`按边界需要选择。
 
 FAIL：下一镜A/B无过程换边；把所有屏幕左右当成场景东/西；只写“创意越轴”而没有可感知过渡；或把合法新轴线一律判错并强迫永不越轴。
 
@@ -92,7 +92,7 @@ FAIL：下一镜A/B无过程换边；把所有屏幕左右当成场景东/西；
 
 输入：4秒青春片反应镜头。角色听见朋友轻声道别，选择不挽留；剧本要求克制，没有崩溃、哭喊或重大揭示。
 
-PASS：路由为Performance-dominant，使用PL1；只选择1—2个载体，例如视线停在对方手上后短暂移开、呼吸停半拍再缓慢恢复，并以手指停止动作或肩膀保持不动作为可选支持。保留“想挽留但压住”的公开状态/局部泄漏与稳定余韵，不强制完整递进链，不自动加入落泪、吞咽、瞳孔变化或大幅后退。
+PASS：路由为Performance-dominant，使用PL1；只选1—2个载体，例如视线停在对方手上后短暂移开、呼吸停半拍再缓慢恢复，并以手指停止动作或肩膀保持不动作为可选支持。保留“想挽留但压住”的公开状态与稳定余韵，不强制完整递进链，不自动加入落泪、吞咽、瞳孔变化或大幅后退。
 
 FAIL：机械输出触发—瞳孔—下颌—吞咽—指尖发白—呼吸粗重—失控哭泣的完整链；或仍只写“她悲伤而复杂地看着对方”。
 
@@ -100,7 +100,7 @@ FAIL：机械输出触发—瞳孔—下颌—吞咽—指尖发白—呼吸粗�
 
 输入：一段经过剧情授权的复杂格挡—转身—反制动作，起始双方站位、主Action Axis、道具状态与最终“攻击者失衡、主角稳定防守架”结果已确认。
 
-PASS：路由为Action-dominant并选择A3；Action PREVIS写清Trigger、Preparation、Weight Shift、Ground / Foot Drive、Hip / Torso Transfer、Limb / Prop Trajectory、Contact / Near-contact、Force Response、Follow-through、Recovery / End State与Next-action Carryover中的必要链节。景别与Coverage让支撑、轨迹、接触和结果可见；结尾把攻击者失衡方向、主角支撑脚/朝向、道具持有与摄影机safe side写入Shot-State Memory，供下一Shot或Accepted Canon继承。
+PASS：路由为Action-dominant并选A3；动力链按`knowledge/action_previs.md`只写本例必要链节，不逐条抄全。景别与Coverage让支撑、轨迹、接触和结果可见；结尾把攻击者失衡方向、主角支撑脚与朝向、道具持有与摄影机safe side写入Shot-State Memory，供下一Shot或Accepted Canon继承。
 
 FAIL：只写“主角猛地反击、双方激烈打斗”；接触、受力和结束状态缺失；下一镜双方恢复初始架势；或因为A3自动加入玄幻FX、0.5秒硬撞、机枪式对招和高潮定格。
 
@@ -108,7 +108,7 @@ FAIL：只写“主角猛地反击、双方激烈打斗”；接触、受力和�
 
 输入：角色从桌面拿起一封信，转身看向门口，Clip内没有追逐、对抗、复杂道具、FX或高强度表演。
 
-PASS：路由为Action-dominant或Mixed中的低复杂度动作，选择A1，只写右手从桌边起始、沿短路径握住信封、信封离开桌面并稳定保持在右手、角色转头后视线落向门口的Start / Path / End；不添加完整动力链、精密角度、速度、受力参数或复杂运镜。STATE-08不输出A1、Kinetic Chain、PL等级、Shot Purpose、QA或路由标签，继续按`Source Carries State, Prompt Carries Delta`只保留当前Clip必要Delta。
+PASS：路由为Action-dominant或Mixed中的低复杂度动作，选A1，只写右手从桌边起始、沿短路径握住信封、信封离开桌面并稳定保持在右手、角色转头后视线落向门口的Start / Path / End；不添加动力链、精密角度、速度、受力参数或复杂运镜。STATE-08不输出A1、Kinetic Chain、PL等级、Shot Purpose、QA或路由标签，继续按`Source Carries State, Prompt Carries Delta`只保留当前Clip必要Delta。
 
 FAIL：为拿信加入蹬地、腰胯、脊柱传导、空气反馈、接触力数值与多段摄影机；或把内部11环、六阶段和Purpose列表逐项塞进最终Prompt。
 
@@ -118,9 +118,9 @@ FAIL：为拿信加入蹬地、腰胯、脊柱传导、空气反馈、接触力�
 
 ### R19-A CLIP-04 First Prompt Requires One Confirmed S+P Anchor
 
-输入：CLIP-04中林夏在左、许栀在右，共坐同一张长琴凳，共同面向钢琴 / 窗外；许栀仅允许`Gaze + LIMITED Head`，Position / Torso / Shoulder / Distance锁定；林夏持续弹琴且不转头。用户首次请求`输出CLIP-04提示词`或只说`下一个`。
+输入：CLIP-04中林夏在左、许栀在右，共坐同一张长琴凳，共同面向钢琴 / 窗外；许栀仅允许`Gaze + LIMITED Head`，其余身体锁定；林夏持续弹琴且不转头。用户首次请求`输出CLIP-04提示词`或只说`下一个`。
 
-PASS：STATE-07已记录Visual Blocking Risk Pre-Assessment；STATE-08 Final Assessment判`HIGH / REQUIRED`，本轮先生成中性S+P综合草图，核对role mapping、林夏左 / 许栀右、Side-by-side、Same Bench、Shared Facing、许栀Gaze→林夏、`Head LIMITED`、Pose Hierarchy、Eyeline Axis与Camera Safe Side。林夏与许栀必须使用同一套无性别技术人偶，只靠蓝 / 红角色标签、姓名和左右位置区分，不以长发 / 短发、裙装 / 裤装或身体曲线区分。通过后注册`REF-SKETCH-04｜CLIP-04空间与姿态调度草图`，说明`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`加入当前Clip参考资产并更新预算，本轮不输出Prompt。用户下一次继续且Signature未变时才输出Prompt。即使A/B左右未换，Side-by-side漂成Face-to-face仍判Blocking Drift。
+PASS：STATE-07已记录Visual Blocking Risk Pre-Assessment；STATE-08 Final Assessment判`HIGH / REQUIRED`，本轮先生成中性S+P综合草图，核对role mapping、林夏左 / 许栀右、Side-by-side、Same Bench、Shared Facing、许栀Gaze→林夏、`Head LIMITED`与owner其余Blocking维度。林夏与许栀必须使用同一套无性别技术人偶，只靠蓝 / 红角色标签、姓名和左右位置区分，不以长发 / 短发、裙装 / 裤装或身体曲线区分。通过后注册`REF-SKETCH-04｜CLIP-04空间与姿态调度草图`，说明`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`加入当前Clip参考资产并更新预算；本轮不输出Prompt，下一次继续且Signature未变时才输出。
 
 FAIL：第一次请求直接输出Prompt；生成草图后未验证或未列入参考资产；把草图当角色 / 环境Canonical；用性别、发型、服装或体型区分林夏 / 许栀；让“许栀看林夏”自动导致全身转向；或认为左右没交换所以Face-to-face不算漂移。
 
@@ -128,7 +128,7 @@ FAIL：第一次请求直接输出Prompt；生成草图后未验证或未列入�
 
 输入：CLIP-04已经有Confirmed `REF-SKETCH-04`。用户连续多次要求压缩措辞、优化主风格、整理反向提示词、调整台词 / 音效，Blocking不变；随后大幅重构为许栀起身走到林夏面前。
 
-PASS：普通改写每次只比较Current Revision与Blocking Signature，结果为KEEP并复用同一草图 / 图片位，不重复生成。起身、移动到面前使Same Bench、Position、Topology、Distance、Movement Path与Clip End Blocking实质变化，触发Reassessment并得到`REPLACE with REF-SKETCH-04-v2`或`RETIRE + CREATE`；新草图重新验证后才输出重构Prompt。
+PASS：普通改写每次只比较Current Revision与Blocking Signature，结果为KEEP并复用同一草图 / 图片位，不重复生成。起身、移动到面前使Same Bench、Position、Topology与Clip End Blocking实质变化，触发Reassessment并得到`REPLACE with REF-SKETCH-04-v2`或`RETIRE + CREATE`；新草图重新验证后才输出重构Prompt。
 
 FAIL：每次措辞优化都重新出图；Prompt改写导致草图版本自身漂移；或大幅Blocking重构仍盲用旧图且不重新评估。
 
@@ -144,7 +144,7 @@ FAIL：为了流程统一强制生成P-SKETCH或Formal Keyframe。
 
 输入：A3复杂格挡—转身—反制动作，双方起点、主Action Axis、道具、接触 / 近接触、受力方向、恢复终点与Next-action Carryover已确认，但单纯文字仍存在路径 / 接触漂移风险。
 
-PASS：Final Assessment可判`ACTION HIGH / REQUIRED`，选择A-SKETCH或S+P+A综合草图；双方使用同一套无性别技术人偶，以箭头、轴线、接触点和受力方向锁定Start / Path / Contact / Force / End / Carryover。只有动作可达性必需的身体比例可以表达，仍不恢复性别、脸、发型、服装或角色体型身份。通过Sketch Validation与Character Appearance Leakage Check后作为受限Visual Blocking Anchor进入参考资产。角色、环境与道具身份继续由各自Canonical资产控制；Prompt正文只保留当前动作Delta与必要局部约束。
+PASS：Final Assessment可判`ACTION HIGH / REQUIRED`，选A-SKETCH或S+P+A综合草图；双方使用同一套无性别技术人偶，以箭头、轴线、接触点和受力方向锁定Start / Path / Contact / Force / End / Carryover。只有动作可达性必需的身体比例可以表达，仍不恢复性别、脸、发型与服装身份。通过Sketch Validation与Character Appearance Leakage Check后作为受限Visual Blocking Anchor进入参考资产；角色、环境与道具身份继续由各自Canonical资产控制，Prompt正文只保留当前动作Delta与必要局部约束。
 
 FAIL：A3一律强制多张正式Keyframe；草图带入写实五官、正式服装 / 灯光 / 画风并覆盖Canonical；或把全部动力链和草图标注复制进Prompt。
 
@@ -156,15 +156,15 @@ FAIL：A3一律强制多张正式Keyframe；草图带入写实五官、正式服
 
 输入：CLIP-04仍为林夏左 / 许栀右、Side-by-side、Shared Facing、Same Bench，许栀只有`Gaze + LIMITED Head` Delta；`REF-SKETCH-MASTER`注册为真实可读视觉输入，示例图本身也包含两女与钢琴内容。
 
-PASS：Final=`REQUIRED`时把母版只作为Sketch Presentation Authority输入，当前Blocking Signature作为内容权威。输出是自适应Technical Director Blocking Sheet，Main Blocking、Spatial / Top-down、Camera Information、Permission与Usage区能直接证明林夏左 / 许栀右、Side-by-side、Shared Facing、Same Bench、许栀Gaze→林夏和`Head LIMITED`；两人使用同一套无性别人偶，只由蓝 / 红角色标签、姓名与位置区分，不继承母版或Character Asset中的性别、发型、服装、体型。当前`REF-SKETCH-04`通过验证后进入视频参考资产；母版本身不进入。
+PASS：母版只作为Sketch Presentation Authority输入，当前Blocking Signature是内容权威。输出为Technical Director Blocking Sheet，各分区直接证明林夏左 / 许栀右、Side-by-side、Shared Facing、Same Bench、许栀Gaze→林夏和`Head LIMITED`；两人用同一套无性别人偶，只由蓝 / 红标签、姓名与位置区分，不继承母版或角色身份。当前`REF-SKETCH-04`通过验证后进入视频参考资产，母版本身不进入。
 
-FAIL：提示词核心仍是唯美铅笔Storyboard、雨天青春电影或人物插画；以长发 / 短发、裙装、脸或身体曲线区分两人；缺少Topology / Facing / Gaze / Camera证明；或因为案例内容与母版相似就把母版本身当当前Clip Blocking Authority。
+FAIL：提示词核心仍是唯美铅笔Storyboard、雨天青春电影或人物插画；以长发 / 短发、裙装、脸或身体曲线区分两人；缺少Topology / Facing / Gaze / Camera证明；或因案例内容与母版相似就把母版当当前Clip Blocking Authority。
 
 ### R20-B Three People Around A Table Has No Template Content Leakage
 
 输入：Current Clip是A / B / C三人围圆桌交谈，环境为干燥会议室，无钢琴、长琴凳、窗边雨景或乐谱；需要锁定三人座位、共同视线中心、Camera Safe Side和发言者局部转头。
 
-PASS：继承母版的信息层级和技术标注语言，但Main Blocking与Top-down重新布局为三人环桌Topology；三人使用同一套无性别技术人偶，只靠A / B / C角色标签、技术颜色和座位位置区分；角色数量、位置、环境锚点和Camera完全来自Current Clip。Template Content Leakage Check确认没有两女、钢琴、琴凳、窗户、乐谱、雨景、母版文字、示例发型 / 服装或示例光色；Character Appearance Leakage Check确认没有任何身份化外观。
+PASS：继承母版的信息层级和技术标注语言，但Main Blocking与Top-down重新布局为三人环桌Topology；三人使用同一套无性别技术人偶，只靠A / B / C标签、技术颜色和座位位置区分，角色数量、位置、环境锚点和Camera完全来自Current Clip。Template Content Leakage Check与Character Appearance Leakage Check均须通过：母版示例内容与身份化外观都不得出现。
 
 FAIL：复制两个人物、钢琴 / 琴凳、窗户、乐谱、雨线、黑板文字或示例人物造型；用三种发型、服装、性别或体型区分A / B / C；为贴合母版把三人删成两人；或像素级复刻版式导致三人关系不可读。
 
@@ -172,7 +172,7 @@ FAIL：复制两个人物、钢琴 / 琴凳、窗户、乐谱、雨线、黑板�
 
 输入：A3武打Clip需要A-SKETCH或S+P+A；Current Clip已确认双方起点、Action Axis、道具路径、接触 / 近接触、受力方向、恢复终点与Next-action Carryover。
 
-PASS：母版只提供Technical Director Blocking Sheet表达，双方使用同一套无性别技术人偶，以Start / Path / Contact / Force / End箭头、轴线、Camera side与动作Permission完成技术预演；布局可为动作路径重新分区，必要身体比例只表达可达性 / 接触 / 受力约束。没有性别化体态、角色外貌重绘、高燃海报、能量爆炸、姿势美术定稿、电影光效或无依据FX；Canonical角色 / 环境 / 道具身份不受影响。
+PASS：母版只提供Technical Director Blocking Sheet表达，双方使用同一套无性别技术人偶，以Start / Path / Contact / Force / End箭头、轴线、Camera side与动作Permission完成技术预演；布局可为动作路径重新分区，必要身体比例只表达可达性 / 接触 / 受力约束。不出现性别化体态、外貌重绘、海报化定稿或无依据FX，Canonical身份不受影响。
 
 FAIL：生成高燃概念插画、武打海报或动作Key Art；根据Character Asset恢复双方脸、发型、服装、性别或体型身份；用母版的静态双人并排版式压扁动作路径；或把技术颜色标记当最终服装 / 光色设计。
 
@@ -196,9 +196,9 @@ FAIL：每次Prompt Rewrite都重新读取母版并生成新草图；母版成�
 
 输入：候选S-SKETCH / P-SKETCH / A-SKETCH版式、标签、箭头、Camera和Blocking均正确，但任一人物出现写实五官、具体长短发、具体服装设计、明显胸腰臀性别体态、年龄 / 美貌 / 气质身份，或根据Character Asset重画外观。
 
-PASS：实际视觉检查把`character_appearance_leakage`记录为`true`或无法确认`neutral_mannequin_representation=true`；`scripts/validate_sd_film.py sketch`固定返回`FAIL = Character Appearance Leakage / Identity Contamination`。候选保持`FAILED / REVISE`并沿同一Technical Visual Blocking Sketch route重做，不注册Confirmed、不进入Clip参考资产，也不通过修改Character Asset或Blocking事实迁就草图。
+PASS：实际视觉检查把`character_appearance_leakage`记录为`true`或无法确认`neutral_mannequin_representation=true`；`scripts/validate_sd_film.py sketch`固定返回`FAIL = Character Appearance Leakage / Identity Contamination`。候选保持`FAILED / REVISE`并沿同一Technical Visual Blocking Sketch route重做，不注册Confirmed、不进入Clip参考资产，也不改Character Asset或Blocking事实迁就草图。
 
-FAIL：因为版式与Blocking正确就忽略人物外观泄漏；用“只是代理”解释后仍注册；或把中性人偶QA扩写进最终Seedance Prompt的反向提示词。
+FAIL：因版式与Blocking正确就忽略外观泄漏；用“只是代理”解释后仍注册；或把中性人偶QA扩写进最终Prompt的反向提示词。
 
 ---
 
@@ -208,7 +208,7 @@ FAIL：因为版式与Blocking正确就忽略人物外观泄漏；用“只是�
 
 输入：同一Scene有三个已确认SHOT。角色先冷静检查异常，第二镜确认目标，第三镜完成处理并恢复克制；剧情、SHOT数量、机位、时长和动作结果均已锁定，不允许加镜头。
 
-PASS：STATE-06建立同一角色的Performance Arc Map：Inherited Baseline为专业冷静；第一镜通过视线先移、一次短暂停眼或呼吸变浅表现疑惑；第二镜在确认刺激后眼神稳定、下颌或手部张力略增并选择行动；第三镜动作完成后先复核结果、缓慢释放肩颈/呼吸，再回到新的受控Settled State。每镜只承载当前可见段，`Previous Settled State = Current Inherited Baseline`，STATE-07/08 Performance / Emotion Check为PASS，最终只写入既有`人物动作 / 人物动作与情绪 / 镜头结尾状态 / Performance State`语义，不新增SHOT、Clip、STATE或Template字段。
+PASS：STATE-06建立同一角色的Performance Arc Map：Inherited Baseline为专业冷静；第一镜以视线先移、一次短暂停眼或呼吸变浅表现疑惑；第二镜确认刺激后眼神稳定、下颌或手部张力略增并选择行动；第三镜动作完成后先复核结果、缓慢释放肩颈与呼吸，再回到新的受控Settled State。每镜只承载当前可见段，`Previous Settled State = Current Inherited Baseline`，STATE-07/08 Performance / Emotion Check为PASS，最终只写入既有表演字段语义，不新增SHOT、Clip、STATE或Template字段。
 
 FAIL：三镜都只写“角色始终冷静从容”；每镜从默认脸重新开始；为了补情绪增加无必要特写/反应镜；或在STATE-08用“更有情绪、更生动”形容词替代上游表演链。
 
@@ -216,7 +216,7 @@ FAIL：三镜都只写“角色始终冷静从容”；每镜从默认脸重新�
 
 输入：同一Clip含克制处理者、受惊逃跑者、刚解除痛苦的委托者与旁观者。剧情要求处理者始终最克制，受惊者最外放；委托者只在确认危险解除后放松，旁观者延迟反应。
 
-PASS：每个Beat只有一个清楚Primary Performer；受惊者可使用Open / Heightened并承担大幅逃跑，处理者用PL1/PL2眼神、呼吸或动作后停顿承接，委托者从谨慎倾听到确认安静再肩膀放松，旁观者作为Listener / Background Holder先保持低幅、收到共享刺激后才升级。视觉重点交接由刺激、视线或动作结果触发，四个角色各有不同Arc Endpoint和Next-shot Carryover。
+PASS：每个Beat只有一个清楚Primary Performer；受惊者可用Open / Heightened并承担大幅逃跑，处理者用PL1/PL2眼神、呼吸或动作后停顿承接，委托者从谨慎倾听到确认安静再肩膀放松，旁观者作为Listener / Background Holder先保持低幅、收到共享刺激后才升级。视觉重点交接由刺激、视线或动作结果触发，四个角色各有不同Arc Endpoint和Next-shot Carryover。
 
 FAIL：所有人同时瞪眼、张嘴、后退；所有人都用同一`紧张→放松`模板；为保持主角“高冷”让处理者完全无注意/呼吸/停顿变化；或让背景人物无刺激抢走视觉重点。
 
@@ -224,7 +224,7 @@ FAIL：所有人同时瞪眼、张嘴、后退；所有人都用同一`紧张→
 
 输入：4秒近景中角色必须保持面无表情以隐藏真实反应，只听完一句关键信息，不说话、不移动位置。
 
-PASS：表演被定义为Intentional Hold：视线先停在说话者、关键字后眨眼短暂停止或呼吸轻微受抑，手部原动作停住，延迟一拍后恢复控制但视线未完全放松；Post-action Residue进入镜头结尾。动作/口型容量没有被无关微表情堆满。
+PASS：表演被定义为Intentional Hold：视线先停在说话者、关键字后眨眼短暂停止或呼吸轻微受抑，手部原动作停住，延迟一拍后恢复控制但视线未完全放松；Post-action Residue进入镜头结尾，动作与口型容量不被无关微表情堆满。
 
 FAIL：只写“全程面无表情”；或为了避免面瘫同时加入挑眉、瞪眼、吞咽、握拳、后退、落泪和转身。
 
@@ -236,7 +236,7 @@ FAIL：只写“全程面无表情”；或为了避免面瘫同时加入挑眉�
 
 输入：`调用sd，写一个雨夜双女主重逢短片。`
 
-PASS：STATE-00登记`Creation Brief`，STATE-01进入Director-first Screenplay Development；不要求先提供完整剧本，不对尚不存在的文本输出Optimization Opportunity Report。Proposal具有视觉动作、关系变化、信息层次、表演机会、空间潜力与AIGC Directability，并在用户确认Gate停止。
+PASS：STATE-00登记`Creation Brief`，STATE-01进入Director-first Screenplay Development；不要求先提供完整剧本，不对尚不存在的文本输出Optimization Opportunity Report。Proposal按owner具备视觉动作、信息层次与AIGC Directability等可拍摄要素，并在用户确认Gate停止。
 
 FAIL：把创意归为Existing Class C后要求先批准改编；要求去普通Chat写完剧本；或直接进入Shot Design。
 
@@ -276,7 +276,7 @@ FAIL：进入STATE-05/06、重写全稿、把`下一步`当确认，或保留旧
 
 输入：从零生成一支情感短片剧本。
 
-PASS：剧本通过Scene Purpose、Audience Experience、Character Objective / Conflict、Relationship Change、Visual Action、Performance Opportunity、Spatial Dramaturgy、Information Strategy、Rhythm Curve、AIGC Directability、开场钩子、高潮兑现、情绪体验与结尾兑现十四项内部QA；最终文本是可独立阅读的剧本，没有35mm、特写、推镜、摇镜、机位、SHOT / CLIP或分镜表字段。
+PASS：剧本通过`knowledge/writer/screenplay_development.md`的`## Directable Screenplay QA`十四项内部QA（含开场钩子、高潮兑现与结尾兑现）；最终文本是可独立阅读的剧本，没有35mm、特写、推镜、摇镜、机位、SHOT / CLIP或分镜表字段。
 
 FAIL：只写说明性对白和内心独白；把QA清单机械输出成剧本正文；或在STATE-01预先锁定摄影机。
 
@@ -300,7 +300,7 @@ FAIL：新增主STATE、让Storyboard进入主路由、自动触发Voice/Music�
 
 输入：STATE-04后用户请求“给短剧设计一张平台竖屏封面”；另一会话未请求任何海报或封面。
 
-PASS：显式封面请求进入`workflows/17_poster_design_workflow.md`封面系Lane；渠道尺寸、安全区与导出格式来自渠道官方规范或用户提供规格，缺失记待确认；大字标题在缩略图尺寸可读；沿用已确认资产不重设计；输出仍由`templates/15_poster_design_package.md`拥有。未请求时不追加海报或封面交付，主Pipeline推进权不变。
+PASS：显式封面请求进入`workflows/17_poster_design_workflow.md`封面系Lane；渠道尺寸、安全区与导出格式来自官方规范或用户规格，缺失记待确认；大字标题缩略图可读；沿用已确认资产不重设计；输出仍由`templates/15_poster_design_package.md`拥有。未请求时不追加海报或封面交付，主Pipeline推进权不变。
 
 FAIL：未请求时自动加海报或封面；凭记忆硬编码平台像素；把封面做成与影片内容无关的通用营销图；或电影海报系Lane混入电视剧宣传图、广告KV气质。
 
@@ -328,7 +328,7 @@ FAIL：Prompt出现集合外的对白、旁白或背景人声；或把无对白C
 
 输入：某节拍确认"人物持械静立、只做呼吸起伏"，其最可能的失败是被生成成大幅挥砍；另一节拍确认"定格凝视"，最可能失败是夸张瞪眼。
 
-PASS：按`### Positive Specification And Negative Prompt Placement`在对应阶段的`画面与镜头` / `人物动作与情绪`写出可枚举的小载体（姿态稳定、真实呼吸起伏、发丝与衣物自然摆动、视线缓慢移动），并把该风险按失败**类别**收束进末尾唯一`反向提示词：`。
+PASS：按`### Positive Specification And Negative Prompt Placement`在`画面与镜头` / `人物动作与情绪`写出可枚举的小载体（姿态稳定、真实呼吸起伏、发丝与衣物自然摆动、视线缓慢移动）；该风险的负向部分按失败**类别**归位——属该节拍内容的留在其所属字段，真正跨阶段的部分才进入末尾唯一`反向提示词：`。
 
 FAIL：只在末尾写"不要大幅挥砍 / 不要夸张瞪眼"而没有正向载体；或在逐镜字段保留否定句、把风险实例逐条罗列成清单。
 
@@ -358,25 +358,25 @@ FAIL：把六条复制成第二套规则正文；或把它们升格为新Hard Ga
 
 ### R64-G The Receipt Carries The Discipline Self-Check
 
-输入：一个FAST项目在STATE-08最终Prompt交付轮给出交付收据，但收据只有"阶段 → 工件 → 状态"，没有`Prompt纪律自检`条目；另一轮把该自检升成Hard Gate，使一条`不过`直接把原本可交付的提示词判FAIL；第三轮把六条自检的文字写进了最终Prompt末尾。
+输入：一个FAST项目在STATE-08交付轮的收据只有"阶段 → 工件 → 状态"，缺`Prompt纪律自检`条目；另一轮把该自检升成Hard Gate，使一条`不过`把原本可交付的提示词判FAIL；第三轮把六条自检文字写进了最终Prompt末尾。
 
 PASS：按`rules/automation_mode.md`的`### Delivery Receipt｜交付收据`，该轮收据必须含`Prompt纪律自检`条目，逐条写`过` / `不过` / `不适用`并附一句可观察证据，`不过`项同时进入该轮剩余风险；它只提高可见性——不改变该轮能否判完成、不升为Hard Gate、不新增Project State字段、不进入最终Prompt正文。
 
-FAIL：收据缺该条目（漏做不可见）；或把自检升为Hard Gate而改变既有pass/fail；或让该条目承担状态写回职责、长成第二套Completion Gate判据；或把自检文字写进最终Prompt。
+FAIL：收据缺该条目；或把它升为Hard Gate而改变既有pass/fail；或让它承担状态写回职责、长成第二套Completion Gate判据；或把自检文字写进最终Prompt。
 
 ### R64-H An Association Failure Is Attributed To Its Owner, Not Restated
 
 输入：用户带回一条已生成Clip并指出"画面里出现了剧本里没有的雨中街景、而且主角出现第二个分身"；另一轮把`knowledge/quality/prompt_scorecard.md`的`## 联想事故归因与禁用词登记`当作交付前必过的检查项。
 
-PASS：按该表逐行定位到已有唯一owner——默认场景包补入按`rules/03_prompt_rules.md`的`### Prompt Pollution Control`第5类与`state08_projection.md`的`执行Semantic Template Decomposition`段，角色复制按`state08_projection.md`的`## Clip Preflight Projection Gate`的`逐镜角色精确数量`投影行——修正只回该owner，归因表本身不复制任何算法、阈值或类别表，也不判pass/fail。
+PASS：按该表逐行定位到已有唯一owner（默认场景包补入→`rules/03_prompt_rules.md`的`### Prompt Pollution Control`与`state08_projection.md`的`Semantic Template Decomposition`；角色复制→`## Clip Preflight Projection Gate`的`逐镜角色精确数量`投影行），修正只回该owner；归因表不复制算法、阈值或类别表，也不判pass/fail。
 
-FAIL：把归因表复制成第二套规则正文；或在其中新增判据、阈值、字段或Gate语言；或把归因结论当作交付前预检项使用（该表只处理**实际观察到的产物**，不充当预防性清单）。
+FAIL：把归因表复制成第二套规则正文、在其中新增判据 / 阈值 / 字段 / Gate语言，或把归因结论当作交付前预检项（该表只处理**实际观察到的产物**，不是预防性清单）。
 
 ### R64-I Attribution Labels Stay Out Of The Closed Failure Class
 
 输入：一次生成失败登记进`templates/17_execution_ledger.md`的`## Generation Attempts`表，登记试图把本节归因类别写进`Failure Class`列；另一轮把`禁用词` / `必用词`写进项目状态。
 
-PASS：`Failure Class`仍只取`templates/16_review_report.md`拥有的封闭分类（不得扩充、不得被归因标签替代）；禁用词与必用词作为证据附在该行`Highest-Impact Variable / Retry Scope`中，并按`Active Model Adapter`分别保留，换模型或Adapter版本时旧档位转`REVIEW`；用户未要求显式保存时只在本轮对话给出表格，不写回项目状态。
+PASS：`Failure Class`仍只取`templates/16_review_report.md`拥有的封闭分类；禁用词与必用词作为证据附在该行`Highest-Impact Variable / Retry Scope`中，并按`Active Model Adapter`分别保留，换模型或Adapter版本时旧档位转`REVIEW`；用户未要求显式保存时只在本轮对话给出表格。
 
 FAIL：用归因标签扩充或替代`Failure Class`；或把词表写成跨模型继承的固定结论；或未经用户要求就把词表写回项目状态、或让它成为最终Prompt字段。
 
@@ -412,15 +412,15 @@ FAIL：直接把参考片镜头表当成本项目分镜；把推断的器材或�
 
 输入：一个`live_action`项目的Core角色资产批次，用户没有指定任何画幅比例。
 
-PASS：按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`，Appearance Reference与五区角色设定图Prompt的`画幅/分辨率/交付规格：`写明`9:16`竖版；GPT Image路线写`1152×2048`（4K为`2160×3840`），Midjourney路线写`--ar 9:16`；五区版式不变——上排三区共用同一水平基准线、正面区肩线以上为连续中性空白、下排两个头肩特写区仍大于上排任一区，人物头顶、手与脚未被裁切。
+PASS：按`rules/02_asset_rules.md`的`Asset Canvas Ratio Default｜资产图画幅默认`，Appearance Reference与五区角色设定图Prompt的`画幅/分辨率/交付规格：`写明`9:16`竖版；GPT Image写`1152×2048`（4K为`2160×3840`），Midjourney写`--ar 9:16`；五区版式仍按该文件定义，人物头顶、手与脚未被裁切。
 
-FAIL：把人物类默认写成16:9；比例只写在正文形容词里而`画幅/分辨率/交付规格：`留空或写`Not specified`；为配合竖版压掉分区、把下排特写缩到小于上排，或给正面区补画头部与头发。
+FAIL：把人物类默认写成16:9；比例只写在正文形容词里而`画幅/分辨率/交付规格：`留空或写`Not specified`；为配合竖版压分区、缩下排或给正面区补画头部。
 
 ### R69-B Other Asset Categories Default To 16:9 Landscape
 
 输入：同一项目的环境（含多视角）、道具（`1×4`）、正式FX与Support Board批次，用户没有指定任何画幅比例。
 
-PASS：四类Prompt都按owner取其他类`16:9`横版（GPT Image写`2048×1152`，Midjourney写`--ar 16:9`）；环境每个View各自一张16:9画布、道具保持`1×4`四格等宽、Board按多对象横版排布；同一批次内画幅一致并进入`Shared Style Lock`。
+PASS：四类Prompt都按owner取其他类`16:9`横版（GPT Image写`2048×1152`，Midjourney写`--ar 16:9`）；环境每View一张画布、道具保持`1×4`等宽、Board横版排布；同一批次内画幅一致并进入`Shared Style Lock`。
 
 FAIL：环境View改竖版或把多视角塞进一张画布；道具四格改成纵向排列或不等宽；Board用9:16排到对象互相遮挡；任一类继续沿用没有画幅的旧空字段。
 
@@ -428,7 +428,7 @@ FAIL：环境View改竖版或把多视角塞进一张画布；道具四格改成
 
 输入一：用户明确说“这一批角色资产图我要横版16:9”。输入二：用户给了一张竖版参考图但没有提比例。输入三：项目已确认交付规格写明本项目全部资产图16:9。
 
-PASS：输入一按用户当前明确例外取16:9并在当前批次记录该例外；输入二仍取人物类默认9:16，且不把参考图的宽高比当作画幅依据（判据见`### Reference Provenance And Degradation｜参考来源与代际劣化`）；输入三以已确认交付规格为准，覆盖类别默认。
+PASS：输入一按用户当前明确例外取16:9并在当前批次记录该例外；输入二仍取人物类默认9:16，且不把参考图的宽高比当作画幅依据（判据见`Reference Provenance And Degradation`）；输入三以已确认交付规格为准，覆盖类别默认。
 
 FAIL：把参考图的宽高比当成新资产图的画幅；用“参考图是竖的”替代用户指令；把一次例外扩散到其他批次或其他类别而不记录；或让三处输入互相矛盾却仍判PASS。
 
@@ -436,7 +436,7 @@ FAIL：把参考图的宽高比当成新资产图的画幅；用“参考图是�
 
 输入一：人物五区设定图在9:16下被要求“上下排都放大”。输入二：道具图被要求写成`4:1`。
 
-PASS：五区在竖版下仍保持区域分工与“下排两区大于上排任一区”，不为放大而裁切、改分区数或拆成多张图；`4:1`超出现行图像模型可交付边界（`adapters/gpt-image.md`的`gpt-image-2`为比例≤3:1）时据实说明并回到合法比例或改选模型，不写成已交付。
+PASS：五区在竖版下仍保持区域分工，不为放大而裁切、改分区数或拆成多张图；`4:1`超出现行图像模型可交付边界（`adapters/gpt-image.md`的`gpt-image-2`为比例≤3:1）时据实说明并回到合法比例或改选模型，不写成已交付。
 
 FAIL：为满足宽比例把`1×4`道具图拆成两张或四张独立图；把超边界比例写成可交付参数；或版式已随比例漂移而Image QA仍判PASS。
 
@@ -446,7 +446,7 @@ FAIL：为满足宽比例把`1×4`道具图拆成两张或四张独立图；把�
 
 输入一：项目登记`类型：悬疑`。输入二：项目未登记类型，素材里只有平台标签"悬疑向"，媒介确认为`2d_anime`。输入三：用户给了一段参考片，未说明本项目类型。
 
-PASS：输入一在STATE-04按`knowledge/genre/index.md`的`## Loading Rule`只读命中类型文件（带次类型时最多两个），把类型承诺落进`Visual Grammar Baseline`；输入二与输入三记`Genre Profile: PENDING`，不加载任何类型文件，也不从媒介档、平台、题材标签、画风或参考片推定类型。
+PASS：输入一在STATE-04按`knowledge/genre/index.md`的`## Loading Rule`只读命中类型文件（带次类型时最多两个），把类型承诺落进`Visual Grammar Baseline`；输入二与输入三记`Genre Profile: PENDING`，不加载类型文件，也不从媒介档、平台、标签、画风或参考片推定类型。
 
 FAIL：因媒介是`2d_anime`、平台是短剧或参考片是惊悚片就推定类型并加载；为"全面"整目录读取六个类型文件；类型未登记却写出`Genre Profile`结论。
 
@@ -496,25 +496,13 @@ FAIL：从平台、目标形式或参考图比例推定交付画幅；把裁切�
 
 ## R87 Reference-Film Study Measurement Regression
 
-R65（隔离边界与三层结论）仍必须成立；本节只补上**测量层**：切点、时长与运动量从哪来，判断怎么被对账，以及无工具时的降级线。不得新增主STATE，不得让拉片产物获得Artifact ID或Canonical身份。
-
-### R91-A A State Change Must Be Pointable, Not Narrated
-
-输入：一个两分钟的家庭短片提案。儿子把父亲的旧手表放回抽屉，父亲没有抬头，只说了一句"放那儿吧"；提案正文里这一场另写了一句"父亲其实已经原谅了他"。
-PASS：`## Directable Screenplay Gate｜可失败判定`第1项判定失败——关系变化被写成了叙述，正文里没有承载它的动作或反应用；最小修订为让父亲的一个可见动作承担该变化（把表从抽屉取出上弦，或推到儿子那一侧），然后重新指认。
-FAIL：因为"父亲其实已经原谅了他"读起来亲切就放行；用一句解释性台词替代动作并视为已兑现；或声称QA十四项已通过，因此无需本Gate。
-
-### R91-B A Craft Entry Without Its Condition Is Not Applied
-
-输入：一个四分钟的双人关系短片，中段两人对话变成轮流陈述，信息平铺且不再推进。
-PASS：取`## Craft Manual｜工艺手册`的`两人对话僵住时引入第三件事`条目，先读其`成立条件`（两人对话变成轮流陈述、或信息交换平铺）——条件成立；按条目引入一件可被争夺、交代或传手的实物作为争斗出口，让关系通过它变化；同时核对`反用场景`（需要正面摊牌的场景不适用），确认本场不是摊牌场。
-FAIL：因为"三人对话更高级"而引入一个无关人物；把条目当成硬门，要求所有双人场景都必须有第三件事；或用它替代人物动机的补足，把结构手段当成性格解释。
+本节只补上拉片的**测量层**：切点、时长与运动量从哪来，判断怎么被对账，以及无工具时的降级线。不得新增主STATE，不得让拉片产物获得Artifact ID或Canonical身份。
 
 ### R87-A Boundaries And Duration Are Measured, Never Eyeballed
 
 输入：用户给出一条成片并要求拉片，本机有node与ffmpeg。
 
-PASS：按`workflows/22_reference_film_study_workflow.md`的Step 2执行测量：切点来自ffmpeg场景检测、时长由切点相减（两位小数），汇报中给出片长、帧率、检测切点数与合并后镜头数；模型只判景别、类别、运镜、画面、节奏，**不报时间**。阈值不合适的判断依据是"平均镜长与镜头数"这一行输出，而不是观感。
+PASS：按`workflows/22_reference_film_study_workflow.md`的Step 2执行测量，汇报给出片长、帧率、切点数与合并后镜头数；模型只判景别、类别、运镜、画面、节奏，**不报时间**。阈值不合适的依据是"平均镜长与镜头数"这一行输出，不是观感。
 
 FAIL：凭目测写出"这个镜头大约3秒"并把它当读数；手改`start` / `end` / `seconds` / `motion` / `seedCuts` / `meta`；缺少`node`或`ffmpeg`时仍声称有实测数值。
 
@@ -522,7 +510,7 @@ FAIL：凭目测写出"这个镜头大约3秒"并把它当读数；手改`start`
 
 输入：运行环境没有`node`或`ffmpeg`。
 
-PASS：按`knowledge/visual_styles/index.md`的`#### Measured Boundary And Motion｜边界与运动量实测`末段执行一次纯人工拉片，结论仍按可见证据 / 推断 / 不可确认三层写出，并在汇报中**明确说明本次未实测、没有任何实测数值**；声称大动却看不出画面位移的一律降级为不可确认。
+PASS：按`knowledge/visual_styles/index.md`的`#### Measured Boundary And Motion｜边界与运动量实测`末段执行一次纯人工拉片，结论仍按三层证据写出，并在汇报中**明确说明本次未实测、没有任何实测数值**；声称大动却看不出画面位移的一律降级为不可确认。
 
 FAIL：因为无法实测就把"看起来像推镜"写成推镜；或反过来以"没有工具"为由跳过拉片、跳过运镜验收或降低结论分层要求。
 
@@ -546,6 +534,48 @@ FAIL：把`⊘ 跳过（视为通过）`汇报成"质量门全绿"；用占位�
 
 输入（Windows）：按Workflow执行`seed`并把stdout重定向到`shots.json`；随后合成对照视频。
 
-PASS：重定向写**原始字节**（本机实测PowerShell 5.1的`>`会写出UTF-8 BOM `EF BB BF`，下游解析报`Unexpected token ''`；`cmd /c`写出`7B 0A 20`）；合成走`scripts/reference-film/compose-win.mjs`而不是上游`compose`（上游把绝对路径写进`sendcmd=f='…'`，Windows的`\`与`:`会被滤镜解析器吃掉，只把反斜杠转正斜杠仍然失败，必须写成`C\:/…`）；平台差异与实测射程记在`scripts/reference-film/vendor/README.md`，**不改上游vendoring文件**；合成后抽帧确认画面对应的镜号与面板高亮行一致。
+PASS：重定向写**原始字节**（PowerShell 5.1的`>`会写出UTF-8 BOM，下游JSON解析即失败）；合成走`scripts/reference-film/compose-win.mjs`而不是上游`compose`（Windows的`\`与`:`会被滤镜解析器吃掉，绝对路径必须写成`C\:/…`）；平台差异与实测射程记在`scripts/reference-film/vendor/README.md`，**不改上游vendoring文件**；合成后抽帧确认镜号与面板高亮行一致。
 
-FAIL：把BOM导致的JSON解析失败当成拉片数据错误去改底稿；遇到`No option name near '\Users\…'`就声称本机不支持合成；直接编辑`scripts/reference-film/vendor/`里的上游文件来"修"平台问题；不抽帧验收就交付对照视频。
+FAIL：把BOM导致的JSON解析失败当成拉片数据错误去改底稿；遇到滤镜路径报错就声称本机不支持合成；直接编辑`scripts/reference-film/vendor/`里的上游文件；不抽帧验收就交付对照视频。
+
+## R91 Directable Screenplay And Craft-Entry Regression
+
+### R91-A A State Change Must Be Pointable, Not Narrated
+
+输入：一个两分钟的家庭短片提案。儿子把父亲的旧手表放回抽屉，父亲没有抬头，只说了一句"放那儿吧"；提案正文里这一场另写了一句"父亲其实已经原谅了他"。
+PASS：`## Directable Screenplay Gate｜可失败判定`第1项判定失败——关系变化被写成了叙述，正文里没有承载它的动作或反应用；最小修订为让父亲的一个可见动作承担该变化（把表从抽屉取出上弦，或推到儿子那一侧），然后重新指认。
+FAIL：因为"父亲其实已经原谅了他"读起来亲切就放行；用一句解释性台词替代动作并视为已兑现；或声称QA十四项已通过，因此无需本Gate。
+
+### R91-B A Craft Entry Without Its Condition Is Not Applied
+
+输入：一个四分钟的双人关系短片，中段两人对话变成轮流陈述，信息平铺且不再推进。
+PASS：取`## Craft Manual｜工艺手册`的`两人对话僵住时引入第三件事`条目，先读其`成立条件`（两人对话变成轮流陈述、或信息交换平铺）——条件成立；按条目引入一件可被争夺、交代或传手的实物作为争斗出口，让关系通过它变化；同时核对`反用场景`（需要正面摊牌的场景不适用），确认本场不是摊牌场。
+FAIL：因为"三人对话更高级"而引入一个无关人物；把条目当成硬门，要求所有双人场景都必须有第三件事；或用它替代人物动机的补足，把结构手段当成性格解释。
+
+## R96 Performance Evidence Regression
+
+本节四组验收细则都是既有owner内的知识补足，不新增主STATE、Template字段或Prompt栏目；AU编号与节拍编号仍不得进入最终Prompt。
+
+### R96-A Skin Acceptance Fails Before The Reference Is Locked, And Not For 2D
+
+输入一：`live_action`角色外观参考图，脸被磨成塑料质感，鼻梁与额头连成油亮高光。输入二：`2d_anime`角色资产被指"没有次表面散射"。
+PASS：输入一按`rules/02_asset_rules.md`的`### Appearance Reference Acceptance｜外观参考图验收`判第4项「高光分布」与第3项「克制瑕疵」不通过——该图不锁定，返回补足后重新确认，不得登记Candidate / Canonical / Active。输入二判**不适用**（该档对应物是线稿、上色法与网点），验收改走`templates/04_character_asset_prompt.md`的`#### 2D Character Asset Sheet Prompt｜设定集与画风锚`。
+FAIL：因五官与服装都对而放行，或记成"画质不够高"、靠下游Prompt加`8K、真人皮肤、电影感`补救；把六项当成要逐条写进Prompt的模板；把实拍词表套到绘制媒介上；或以"不适用"为由跳过该档自己的画风锚与色指定检查。
+
+### R96-B Detail Budget Follows Scale Instead Of Accumulating
+
+输入：全员中景的双人对白Clip，`人物动作与情绪`写了`额头毛孔、鼻翼纹理、唇纹`，却没写地面接触与衣料反光。
+PASS：按`knowledge/camera_language/lens_language/framing_and_scale.md`的`## Detail Budget By Scale｜景别细节预算`判越预算——中近景及更远只写整体肤色、皮肤与衣料反光差异与大面积受压受光结果，毛孔与唇纹属近景 / 特写预算；替换为当前景别真正看得见的结果（移动方向、接触点、面部朝向）。
+FAIL：认为"写得更细总是更好"；或反向把近景写成`整体肤色`而与上一镜无差别；或借本条新增肤质、湿度与光源事实。
+
+### R96-C A Disfluency Lands On One Hard Word And Reaches Sound, Breath And Mouth
+
+输入：一个争吵场，女主要说"我一直觉得自己挺……"，剧本没写不流畅；导演要她表现出"难以承认自己的付出没被看见"。
+PASS：按`knowledge/performance/dialogue_performance.md`的`## Speech Disfluency｜言语不流畅`取`启动失败`——口型已准备但未出声，一次失败吸气后才开口；不流畅落在最难面对的那个词，不平均分布；声音、呼吸与口型三处同步，在`人物动作与情绪 / 台词 / 音效`落成证据。
+FAIL：写"她有些犹豫地说话"这类形容词；把不流畅均匀撒在每个字上读成喜剧节奏；或只改台词文本而不改呼吸与口型。
+
+### R96-D Overlap Names Its Entry And The Listener Reacts Only After The Trigger
+
+输入：男主在女主尾词尚未结束时抢入一句话；台词表把两人句子排成先后两行，听者反应被写成"听到这句话后她崩溃"。
+PASS：按`knowledge/performance/dialogue_performance.md`的`## Turn-Taking｜话轮`改写——写明重叠入口（在上一句尾词口型尚未结束时进入）、相对时长与音量关系（起音低于被抢话者，被抢话者不突然静音）；听者反应写成只在听到主触发词后出现的信息延迟；台词仍按闭集编译。
+FAIL：用绝对秒数（提前0.1秒、重叠0.2秒）替代关系描述；让被抢话者立刻静音；让听者在关键词之前就反应；或忽略重叠仍是高风险项。

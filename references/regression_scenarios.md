@@ -9,7 +9,7 @@
 | File | 覆盖范围 | 用途 |
 |---|---|---|
 | `references/regression_scenarios.md`（本文件） | R00—R14 与 Deterministic Expectations | 管线、资产、预算、Runtime Reload 与准入的基础场景；总期望清单 |
-| `references/regression_scenarios_craft.md` | R16—R22、R64—R65、R69、R80—R82、R87 | Prompt 编译、表演、视觉阻断与剧本端到端，以及资产图默认画幅、类型剖面、绘制媒介语言、交付画幅构图与参考片拉片的测量层 |
+| `references/regression_scenarios_craft.md` | R16—R22、R64—R65、R69、R80—R82、R87、R91、R96 | Prompt 编译、表演、视觉阻断与剧本端到端，以及资产图默认画幅、类型剖面、绘制媒介语言、交付画幅构图、参考片拉片的测量层与表演证据层 |
 | `references/regression_scenarios_prompt.md` | R15 | Prompt 注意力、文学意图转译与工程级数据压缩（按编号边界拆出的独立子案例合集） |
 | `references/regression_scenarios_director.md` | R23 | Director Module / Camera Language 端到端（剧本→场景→镜头→Clip→Prompt→Review 与导演、运镜工艺场景） |
 | `references/regression_scenarios_system.md` | R24、R27—R37 | 写作、Runtime、模型适配、FAST 与交付管线（含 R36 生产交付包、R37 无项目登记） |
@@ -320,7 +320,7 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - Runtime Skill Reload / Workflow Re-entry 的固定基线由 `references/recovery_guards.md` 的 `LR-R1—LR-R10` 承担（每次正式修改必须完整运行）；本集合只保留 LR 未覆盖的 R12-C（Production Lock 与 Confirmed Assets 在重载后保全）与 R12-E（重复 Reload 的本轮证据）。
 - R13-A至R13-C验证尾帧需求先于资产可用性判定、严格承接主动请求截图与草案/最终版边界，以及非严格承接不强制截图。
 - R14验证纯文字“板凳参考说明”从参考资产删除并迁移到既有空间/道具/反向字段，1—5号视觉资产保持不动，真实双人钢琴凳图只以正式资产ID引用。
-- R15-A至R15-L验证文学意图可执行转译、工程级数据按视觉价值压缩、Canonical资产释放Prompt注意力、导演/电影级标签首次出现时的项目特定展开、已锁定项目风格的后续Clip delta压缩、动作复杂Clip中的风格让位、正文正向化、通用负向项末尾唯一收束、局部物理连续性约束保留、CLIP-03字段唯一归属与事故历史式反向段压缩，以及本次调整不破坏Voice opt-in；最终Template结构保持不变。
+- R15-A至R15-N验证文学意图可执行转译、工程级数据按视觉价值压缩、Canonical资产释放Prompt注意力、导演/电影级标签首次出现时的项目特定展开、已锁定项目风格的后续Clip delta压缩、动作复杂Clip中的风格让位、正文正向化、内容相关负向写在所属阶段而通用负向项末尾唯一收束、局部物理连续性约束保留、阶段内固定写法（镜头号+焦段光圈换来的可见结果、八维编号子项用`｜`分隔、阶段头保持纯`[N—M秒]`、AU编号译成可见动作）、CLIP-03字段唯一归属与事故历史式反向段压缩，以及本次调整不破坏Voice opt-in；最终Template结构保持不变。
 - R16-A至R16-E验证Canonical来源携带已锁定状态、Generation Budget先于五维、Accepted Observed State覆盖Planned瞬时状态、`REF-TAIL`不越权覆盖身份，以及站位失败优先单变量复拍；全部复用现有Pipeline、Execution Ledger与Template结构。
 - R17-A至R17-C验证角色声音身份严格opt-in、常规STATE-08 Prompt完全省略声音身份文字、显式声音设计进入独立Seed Audio兼容模板，以及已有Confirmed Voice Source不会在只请求Clip Prompt时被自动序列化。
 - R18-A至R18-D验证Scene Spatial Snapshot与合法越轴、PL1克制表演、A3动作动力因果和A1简洁降级；四类均不得新增主STATE、Template字段或Prompt内部标签。
@@ -360,4 +360,6 @@ FAIL：保留6号；仅因加入“参考说明/用途”就把它算作图片�
 - R85-A至R85-B验证品牌诉求收成一条注意焦点链、产品角色明确、商业事实不由制作生成、文字级元素留后期叠加，且不得从时长、平台或题材推定项目为商业片。确定性射程由`check_branded_content`承担。
 - R86-A至R86-B验证受众不得推定（动画不等于儿童向）、可模仿性设定尺度、儿童向不等于降智、分级属外部事实，且纪实四道门与“生成画面不得冒充档案”在位。确定性射程由`check_audience_and_non_fiction`承担。
 - R95-A验证平台不得推定、平台事实不由制作编造、注意窗口与完播义务只按已确认剖面执行、转化动作由可见行为收束、短剧节拍仍归短剧适配器；R95-B验证商业受众角色与形态义务不得覆盖年龄轴、专业结论属一等禁项、单条只承担一个形态。确定性射程由`check_audience_and_non_fiction`与`check_branded_content`承担。
+- R96-A至R96-D验证外观参考图六项验收（含`2d_anime`不适用）、按景别分配的细节预算、言语不流畅落在单一难点词且同时到达声音/呼吸/口型、话轮重叠写入口与音量关系而非绝对秒数、以及听者信息延迟只在主触发词之后反应；四条均为既有owner内的知识补足，不新增Prompt字段。
+- R88-C验证Seedance 2.5时间线的中间阶段边界可以是小数（平台`duration`只约束Clip目标时长，该约束只落在末阶段末端边界），精确度仍受数值执行价值规则约束。
 - LR-R1至LR-R10验证普通Chat不因Windows路径不可读默认要求Work、Skill / Project双source独立、Current Skill压过历史摘要、Legacy STATE向前映射、Intent Backfill只增补、Confirmed `REF-SKETCH`持久、STATE-08从current owner entry重进、Claim Gate诚实、Work只在真实必要时升级，以及普通`下一步`不重复全量恢复。

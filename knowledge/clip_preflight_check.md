@@ -137,7 +137,7 @@ Reassessment只能得到：`KEEP existing sketch`、`REPLACE with REF-SKETCH-XX-
 
 ### Prompt Pollution Boundary
 
-Confirmed Visual Anchor进入`参考资产`时只写ID、用途、Authority、必要状态与一句：`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`不复制草图全部标注，也不把中性人偶规则展开成负面词清单。Prompt正文继续执行`Source Carries State, Prompt Carries Delta`：只保留当前Clip Delta与仍需贴近局部动作 / 空间才能消歧的最小高风险约束；不得在人物一致性、环境一致性、首帧、每个分镜和反向段反复重述同一Blocking。反向提示词继续在末尾唯一收束，除非现有规则允许的最小局部连续性约束确需留在对应字段。
+Confirmed Visual Anchor进入`参考资产`时只写ID、用途、Authority、必要状态与一句：`草图人物为无性别调度人偶，仅用于空间 / 姿态 / 机位关系，不作为人物外观参考。`不复制草图全部标注，也不把中性人偶规则展开成负面词清单。Prompt正文继续执行`Source Carries State, Prompt Carries Delta`：只保留当前Clip Delta与仍需贴近局部动作 / 空间才能消歧的最小高风险约束；不得在人物一致性、环境一致性、首帧、每个分镜和反向段反复重述同一Blocking。与该内容相关的负向约束留在其所属字段；末尾`反向提示词：`只收束真正跨阶段、无法下放到任何单一阶段的残余风险。
 
 Scene Top-down Blocking Map、Storyboard、多格分镜板与设计表截图继续禁止进入STATE-08；经本Gate生成、验证、确认且绑定单一Clip / Blocking Signature的Visual Blocking Sketch是严格受限的执行参考例外，不是Canonical Asset或Storyboard。
 

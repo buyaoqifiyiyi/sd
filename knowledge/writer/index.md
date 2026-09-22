@@ -67,7 +67,7 @@
 |---|---|---|
 | `knowledge/writer/screenplay_development.md` | 46,067 B = 复核线 50 KB 的 **90.0%** | **余量不足 4 KB，不得再作为新内容的落点** |
 | `knowledge/writer/index.md`（本文件） | 13,169 B ≈ 26% | 可承接路由与边界层内容 |
-| 回归语料`references/regression_scenarios_craft.md`（97.3%）与`references/regression_scenarios.md`（97.1%） | 均已逼近复核线 | 新增回归场景前必须先做瘦身 |
+| 回归语料`references/regression_scenarios_craft.md`（99.6%）与`references/regression_scenarios.md`（98.3%） | 均已逼近复核线 | 新增回归场景前必须先做瘦身 |
 
 **分配纪律**：
 

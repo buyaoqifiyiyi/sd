@@ -558,6 +558,25 @@ Asset Design
 - **否定表述必须环境化**：不得用设备或场所名词做否定（例如"不要工作室""不要影棚"），此类否定会激活其对应概念与默认视觉模板；改为否定环境本身，例如"没有墙、没有设备、没有地面"。判据与`rules/03_prompt_rules.md`的`Negative Pollution`、`Semantic Trigger Pollution`一致。
 - **适用范围**：本节适用于`Character`与`Prop`资产。**不适用于`Environment`资产**——光源方向、光质、天气与时间状态是环境资产的身份组成部分，必须按`workflows/05_environment_asset_workflow.md`正常指定，不得中性化。
 
+### Appearance Reference Acceptance｜外观参考图验收
+
+外观参考图获用户确认前，除身份与结构一致性外，还要按下面六项核对它**是否会被下游当成人物属性反复放大**。低分辨率、磨皮、油亮或材质关系错误的参考图会被视频模型继续放大；母图一旦确认，它就是最强视觉锚点。
+
+适用于`live_action`与`3d_animation`。`2d_anime`不适用本节：该档不承认次表面散射作为美学载体，皮肤与材质对应物是线稿、上色法与网点，判据见`knowledge/medium_profiles.md`的Aesthetic Layer。
+
+| # | 核对项 | 判据 |
+|---|---|---|
+| 1 | 物理状态 | 一次只选一个主状态（自然半哑光 / 运动后微汗 / 带灰尘擦伤等）。不得把干燥、出汗、水润、淋雨与精致底妆同时塞进同一张脸 |
+| 2 | 区域纹理 | 额头毛孔较细、鼻翼略明显、面颊纹理大小不一、眼下是细薄纹理而非粗大毛孔、唇部有纵向唇纹且中央略湿唇缘略干；各区域纹理强度不统一 |
+| 3 | 克制瑕疵 | 只保留少量可观察证据（轻微肤色不均、鼻翼泛红、眼下细纹或淡色斑）；不得出现"完美无瑕" |
+| 4 | 高光分布 | 小而破碎的局部高光只出现在鼻梁、上颧骨、下唇中央等受光曲面；双颊与下颌保持较低反射，不得全脸统一油光 |
+| 5 | 光线触发 | 不单写"皮肤真实"，要写抬头、转脸、眨眼或抿唇时，哪一束光沿哪个曲面移动或消失 |
+| 6 | 时间连续性 | 跨镜头与镜头运动中，肤色、局部高光、纹理强度与主光方向连续，不随切镜随机换妆、换肤或换光 |
+
+六项是**验收量表**，不要求每条都机械写成Prompt句子；但任一项目测不可判定时，该外观参考图视为未锁定，返回本Workflow补足后再确认。第5、6项描述的是生成后的可见结果，在参考图阶段只核对它是否具备可判定的曲面与光向信息。
+
+外观参考图确认后，母图即成为人物最强的视觉锚点：下游视频Prompt不再重复"漂亮女生、真人皮肤、8K、电影感"一类身份形容词，只锁定母图并写当前Clip的Delta；该纪律由`rules/03_prompt_rules.md`的`Source Carries State, Prompt Carries Delta`与`knowledge/prompt_compilation/state08_projection.md`承担，本节不另立规则。
+
 ## Tool Availability
 
 当前环境不能直接生成图片时，最低交付仍是完整Image Prompt与当前Prompt Confirmation Checkpoint。用户按全局确认语义确认后保持STATE-03 `IN_PROGRESS`，等待外部生成图片回传或图像工具恢复；不得把纯文字设定登记为已确认视觉资产。
@@ -568,4 +587,3 @@ Asset Design
 Asset Registry登记Active CHAR Version后，以下阶段和产物必须显式继承同一版本及其适用Canonical References：STATE-04 Visual Development与Poster/Key Art、STATE-05场景示意、Optional Storyboard、STATE-06 Detailed Shot Design、STATE-07 Clip Production、STATE-08图片/视频Prompt与最终视频生成、STATE-09 Review，以及角色设定图、动作状态图、比例图和封面。
 
 任何阶段发现新参考、风格指令、Prompt文本或生成结果与锁定角色资产冲突，必须以锁定资产为准并拒绝冲突内容；不得折中拼接不同外貌。只有按Change Protocol获批并切换的新Active Version可以改变继承基准。
-

@@ -343,13 +343,13 @@ STATE-08必须使用templates/10_video_prompt.md规定的逐镜字段，Rules不
 
 # Rule 12
 
-# Clip Duration / No Timeline In Final Prompt
+# Clip Duration / Timeline Declaration Route
 
 
-STATE-08最终视频Prompt使用`# CLIP-X｜标题 Seedance视频提示词`区块并保留Clip内`分镜X`编号；不得使用方头括号或独立CLIP标题字段。Gxx如用于尾帧资产命名，只能出现在字段内容中。
+STATE-08最终视频Prompt的区块结构、字段与顺序以当前Selected Template为唯一真源；Rules不得另立区块名、标题行或竞争字段。Gxx如用于尾帧资产命名，只能出现在字段内容中。
 
 
-只允许在【时长】写一次Confirmed Clip中由用户选择的模型适用平台生成时长：2.0为4—15秒；2.5为4—30秒，16—30秒须严格预检PASS。未知网关状态不得预先压缩该时长；实际平台拒绝时才返回Clip规划。禁止输出时间码、起止时间戳、总片时长、单分镜时长、按秒动作区间、帧率、帧数或帧区间限制。
+任何模板都没有`时长：`字段：Seedance 2.0与MiniMax H3的目标时长只在Confirmed Clip Production Plan中声明，Prompt按文件名与交付顺序与该Clip一一对应；Seedance 2.5由`时间线：`末阶段的末端边界承担，该边界必须是整数秒并等于确认时长。用户选择的模型适用平台生成时长不得因未知网关状态被预先压缩，窗口数值以对应Adapter为唯一真源；实际平台拒绝时才返回Clip规划。除Seedance 2.5模板内与确认时长一致、严格递进的`时间线：`阶段区间外，正文不得输出时间码、起止时间戳、总片时长、单分镜时长、按秒动作区间、帧率、帧数或帧区间限制。
 
 
 除Clip平台生成时长外，上游时长只用于内部动作密度和执行性检查。

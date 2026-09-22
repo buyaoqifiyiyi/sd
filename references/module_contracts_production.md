@@ -104,7 +104,7 @@ Module Type：STATE-08语义投影Knowledge。
 - 先执行Voice Identity Omission Gate：默认不检查或投影Voice Profile / Voice Audio Reference，不输出`音色特征：`或声音资产状态；只有用户明确要求把声音控制写进当前视频模型Prompt时，才按`Source Carries State, Prompt Carries Delta`输出当前Clip最小必要控制
 - 风格标签行为只由`knowledge/prompt_compilation/state08_projection.md`的Style Label Expansion Rule拥有：重要标签可保留，首次出现必须在同一风格段获得项目特定、可执行解释；正式Style Source锁定后的连续Clip只补当前delta；具象化本身不是默认删除标签的理由
 - Repetition Pollution只由`knowledge/prompt_compilation/state08_projection.md`的Field Ownership Assignment / State Once Gate处理：每条约束先指定唯一权威字段，其他位置只保留状态变化、边界接口或局部高风险所需的最短Delta；Template字段完整不得被解释为全文重复授权
-- Negative Compression只保留固定禁BGM首句与当前Clip少量难以正向锁死的高风险类别；历史事故、其他Clip状态、未来泄漏、未出场资产、正文重复与同义枚举必须删除或合并
+- Negative Compression只保留固定禁BGM首句、阶段 / 分镜总数兜底句与真正跨阶段且难以正向锁死的高风险类别；内容相关约束写在所属阶段，不搬进末尾段；历史事故、其他Clip状态、未来泄漏、未出场资产、正文重复与同义枚举必须删除或合并
 
 禁止：
 

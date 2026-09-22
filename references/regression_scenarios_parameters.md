@@ -12,7 +12,7 @@
 
 输入：一个Seedance 2.5项目的Clip表写着 CLIP-001 `6.5秒`、CLIP-002 `7.5秒`、CLIP-006 `9.5秒`、CLIP-007 `10.5秒`、CLIP-008 `5.5秒`、CLIP-010 `8.5秒`，合计75.0秒；Adapter只声明`duration: 4—30秒`。
 
-PASS：判定这些值不可提交。平台`duration`参数是 [4, 30] 内的整数秒或 `-1`；小数秒只属于video editing任务继承源片时长的情形。按项目已记录的授权区间与工作目标取整（本例取floor得72.0s，等于项目自己的72.0s工作目标），逐Clip重算时长与Prompt时间线，写回Clip Plan、Prompt `时长：`、全片索引与两个Ledger，按`references/artifact_revision_contract.md`建立新Revision（旧Revision记Superseded、下游记Invalidates），并在Adapter的`O｜Operational Parameter`补上整数秒约束与取证日期。
+PASS：判定这些Clip时长不可提交。平台`duration`参数是 [4, 30] 内的整数秒或 `-1`；小数秒只属于video editing任务继承源片时长的情形。按项目已记录的授权区间与工作目标取整（本例取floor得72.0s，等于项目自己的72.0s工作目标），逐Clip重算时长与Prompt时间线，写回Clip Plan、全片索引与两个Ledger，按`references/artifact_revision_contract.md`建立新Revision（旧Revision记Superseded、下游记Invalidates），并在Adapter的`O｜Operational Parameter`补上整数秒约束与取证日期。**该约束只作用Clip目标时长**：Seedance 2.5时间线的中间阶段边界是提示词文本，可以是小数（见R88-C），只有末阶段末端边界仍需整数并与确认时长相等。
 
 FAIL：把 `6.5秒` 当作可提交参数直接生成；只改Prompt数字而不改时间线；把0.5秒余量留在末尾静帧句里继续声明该时长；不经用户确认就改变总时长或剧情容量；或只在报告里口头提醒而不修计划层与交付物。
 
@@ -23,6 +23,14 @@ FAIL：把 `6.5秒` 当作可提交参数直接生成；只改Prompt数字而不
 PASS：阶段必须严格递进、无重叠、无断档。余量放在末段（吸收为结尾保持），或按邻近节点整体重算，使首尾相接；改完用`scripts/validate_prompt_package.py`复验，`INVALID: 时间线阶段必须严格递进且无重叠/断档`必须消失。
 
 FAIL：只让首段与末段对上就交付；把中间断档当作"模型会自动补"；或为了让数字对上而删除、合并阶段或改变剧情动作。
+
+### R88-C Fractional Intermediate Stage Boundaries Are Legal
+
+输入：一个10秒Seedance 2.5 Clip的时间线写作 `[0—3.2秒] [3.2—7秒] [7—10秒]`，中间边界落在3.2秒。
+
+PASS：判定合法并交付。平台`duration`参数只约束Clip目标时长，而目标时长只由时间线**末阶段的末端边界**承担；中间边界是提示词文本，没有对应的可提交参数，因此`3.2秒`与`3秒`同样可用，只要求严格递进、无重叠无断档。末阶段末端`10秒`仍必须是整数且等于Confirmed Clip Production Plan的确认时长。仍按`rules/03_prompt_rules.md`的数值执行价值规则检查精度：`3.2秒`这类标住真实节拍的边界保留，`3.27秒`这类无可见收益的精度压缩。
+
+FAIL：把中间小数边界判为不可提交参数并强制取整；或用"时间线只能写整数秒"为由改写已确认的动作节拍；或让末阶段末端跟随中间精度变成小数，使目标时长脱离平台参数窗口。
 
 ---
 

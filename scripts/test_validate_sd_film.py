@@ -849,6 +849,39 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         errors, _ = package_validator.validate(text, "seedance-2.5", False)
         self.assertTrue(any("阶段" in item for item in errors))
 
+    def test_seedance_25_allows_fractional_intermediate_stage_boundaries(self) -> None:
+        """阶段边界是提示词文本，不是平台参数：中间边界可以是小数。
+
+        平台`duration`只约束Clip目标时长，而目标时长只落在时间线末段的末端边界；
+        中间边界没有对应的可提交参数，因此`3.2秒`这类写法与`3秒`同样合法，
+        只受递进、无重叠无断档与数值执行价值约束。
+        """
+        self.assertEqual(
+            self.check_25(self.build_25(moves=("a", "a"), headers=("[0—3.2秒]", "[3.2—7秒]"))),
+            [],
+        )
+        gap = self.check_25(
+            self.build_25(moves=("a", "a"), headers=("[0—3.2秒]", "[3.3—7秒]"))
+        )
+        self.assertTrue(any("递进" in item for item in gap), gap)
+        self.assertFalse(any("整数秒" in item for item in gap), gap)
+
+    def test_seedance_25_requires_whole_seconds_at_the_last_boundary(self) -> None:
+        """小数约束只落在末段末端：该边界同时承担STATE-07确认的目标时长。"""
+        findings = self.check_25(
+            self.build_25(moves=("a", "a"), headers=("[0—3.2秒]", "[3.2—7.5秒]"))
+        )
+        self.assertTrue(any("必须是整数秒" in item for item in findings), findings)
+        self.assertEqual(
+            self.check_25(
+                self.build_25(
+                    moves=("a", "a", "a"),
+                    headers=("[0—2.5秒]", "[2.5—5秒]", "[5—8秒]"),
+                )
+            ),
+            [],
+        )
+
     def test_minimax_h3_requires_fixed_last_line(self) -> None:
         text = (
             "参考素材说明：\n- @图片1：CHAR-001｜吴御史；用途：身份基准\n"
@@ -869,11 +902,14 @@ class R47PromptPackageValidatorTests(unittest.TestCase):
         style: str = "低饱和胶片\n",
         core_tail: str = "一句话\n",
         moves: tuple[str, ...] = ("a", "a"),
+        headers: tuple[str, ...] | None = None,
     ) -> str:
+        if headers is None:
+            headers = tuple(f"[{index * 5}—{(index + 1) * 5}秒]" for index in range(len(moves)))
         stage_lines = "".join(
-            f"[{index * 5}—{(index + 1) * 5}秒]\n画面与镜头：{move}\n"
+            f"{header}\n画面与镜头：{move}\n"
             "人物动作与情绪：b\n空间与道具：c\n台词：无\n音效：d\n阶段结尾状态：e\n"
-            for index, move in enumerate(moves)
+            for header, move in zip(headers, moves)
         )
         return (
             "多模态参考资产：\n" + refs +

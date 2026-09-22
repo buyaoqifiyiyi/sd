@@ -19,9 +19,11 @@ Ownership:
     never declared in the Prompt body. Seedance 2.0 and MiniMax H3 keep a
     `时长：` field because they have no time-line structure to carry it; Seedance
     2.5 has no title, `时长：` or `画幅：` field at all -- its target duration is
-    the end boundary of the last time-line stage, so the equality with the
-    confirmed duration stays a STATE-07/STATE-08 context check rather than a
-    single-file assertion here.
+    the end boundary of the last time-line stage. That last boundary is the only
+    one carrying the platform's whole-second `duration` constraint; intermediate
+    stage boundaries are prompt text and may be fractional (`[0—3.2秒]`), so the
+    equality with the confirmed duration stays a STATE-07/STATE-08 context check
+    rather than a single-file assertion here.
   - This validator only asserts deterministically checkable facts. Beyond field
     structure it also asserts content-form rules that used to rely on the reader
     noticing: Canonical reference entries keep the
@@ -49,6 +51,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 NO_BGM_SENTENCE = (
@@ -67,7 +70,18 @@ NO_BGM_SENTENCE = (
 BODY_PROHIBITED_RE = re.compile(r"^\s*(?:时长|画幅)\s*[：:]", re.M)
 SHOT_HEADER = re.compile(r"^分镜\s*(\d+)\s*$")
 SHOT_FIELD = re.compile(r"^([^：:]{1,12})：")
-STAGE_HEADER = re.compile(r"^\[(?:第)?\s*(\d+)\s*[—\-–~至]\s*(\d+)\s*秒\]\s*$")
+# 这条正则就是"分镜/阶段块内不得出现`维度：`行"的来源：`block_names` 把块内每一行
+# `名称：`都收进字段名列表，再与十字段或六项字段逐项比对，多一条少一条都报错。
+# 因此块内的编号子项（如表演八维）必须写成`1 时间｜…`这类不带冒号的形式——
+# 模板里同一条约定写在 `templates/12_seedance_25_video_prompt.md` 的
+# `**阶段内编号维度**`与 `templates/10_video_prompt.md` 的对应分镜段落。
+# Stage boundaries are text inside the prompt body, not a platform parameter. The
+# platform `duration` owns the Clip length in whole seconds, so only the *last*
+# stage's end boundary inherits that constraint (it carries the target duration);
+# intermediate boundaries may be fractional (`[0—3.2秒]`).
+STAGE_HEADER = re.compile(
+    r"^\[(?:第)?\s*(\d+(?:\.\d+)?)\s*[—\-–~至]\s*(\d+(?:\.\d+)?)\s*秒\]\s*$"
+)
 # Seedance 2.5 duration window (`templates/12_seedance_25_video_prompt.md`): the
 # regular API path is 4—30s and 16—30s needs a strict pre-check PASS; only the
 # Dreamina web surface reaches 30—180s. The last stage's end boundary is what
@@ -149,7 +163,8 @@ PLATFORM_ENTRY_RE = re.compile(
 PLATFORM_PLACEHOLDER_RE = re.compile(r"^(?:图片|视频|音频|附件)\s*\d*$")
 GENERIC_NEGATIVE_RULE = (
     "主风格：不得保留通用负向清单（出现“{token}”）；"
-    "这类约束按 Negative Placement 收束到末尾唯一反向提示词段"
+    "通用负向清单按 Negative Placement 收束到末尾唯一反向提示词段，"
+    "内容相关约束写在它所约束的阶段"
 )
 
 SHOT_FIELDS_20 = [
@@ -452,8 +467,10 @@ def check_style_field_negatives(lines: list[str], model: str) -> list[str]:
     """`主风格` carries executable style, not a generic negative list.
 
     `## Field Ownership Assignment / State Once Gate` and the Negative Placement
-    Pass move generic prohibitions into the single trailing 反向提示词 section;
-    leaving them in the style field duplicates that control and splits ownership.
+    Pass keep generic prohibitions in the single trailing 反向提示词 section while
+    content-related constraints live in the stage they govern; either way a
+    generic list left in the style field duplicates that control and splits
+    ownership.
     Deterministic scope is a fixed token list inside the 主风格 content
     (禁止 / 不要 / 避免 / 不做 / 拒绝 / 不得, the rule's own "同义负向约束" set);
     the fix is to rewrite the boundary positively. Bare `不X` phrasings and other
@@ -697,6 +714,11 @@ def check_shot_draft(lines: list[str], stop_index: int) -> tuple[list[str], list
     return errors, numbers
 
 
+def format_seconds(value: Decimal) -> str:
+    """Render a stage boundary as `3` / `3.2` (no trailing zeros, no `.0`)."""
+    return f"{value.normalize():f}"
+
+
 def check_stages(lines: list[str], stop_index: int) -> list[str]:
     errors: list[str] = []
     headers = [(i, STAGE_HEADER.match(line.strip())) for i, line in enumerate(lines)
@@ -704,26 +726,38 @@ def check_stages(lines: list[str], stop_index: int) -> list[str]:
     if not headers:
         errors.append("时间线未找到“[第N—M秒]”阶段结构")
         return errors
-    spans = [(int(match.group(1)), int(match.group(2))) for _, match in headers]
-    previous_end: int | None = None
+    spans = [(Decimal(match.group(1)), Decimal(match.group(2))) for _, match in headers]
+    previous_end: Decimal | None = None
     contiguous = True
     for start, end in spans:
         if end <= start:
-            errors.append(f"阶段区间 {start}—{end} 秒不合法")
+            errors.append(
+                f"阶段区间 {format_seconds(start)}—{format_seconds(end)} 秒不合法"
+            )
         if previous_end is not None and start != previous_end:
             contiguous = False
         previous_end = end
     if not contiguous:
-        errors.append(f"时间线阶段必须严格递进且无重叠/断档，当前为 {spans}")
-    # Seedance 2.5 has no `时长：` field: the target duration is the end boundary of
-    # the last stage. The header pattern already forces whole seconds, so this
-    # asserts the carrier exists and lands inside the model's duration window;
-    # whether it *equals* STATE-07's confirmed duration needs the plan and stays a
-    # STATE-07/STATE-08 context check, never a value invented from the file alone.
-    last_end = spans[-1][1]
-    if not SEEDANCE_25_MIN_SECONDS <= last_end <= SEEDANCE_25_LONG_SECONDS:
         errors.append(
-            f"时间线末阶段的末端边界 {last_end} 秒不是有效目标时长；"
+            "时间线阶段必须严格递进且无重叠/断档，当前为 "
+            + "、".join(f"{format_seconds(a)}—{format_seconds(b)}" for a, b in spans)
+        )
+    # Seedance 2.5 has no `时长：` field: the target duration is the end boundary of
+    # the last stage, and that boundary is the single place inside the prompt that
+    # carries the platform `duration` constraint -- so it must be whole seconds.
+    # Intermediate boundaries stay free text. Whether the last boundary *equals*
+    # STATE-07's confirmed duration needs the plan and stays a STATE-07/STATE-08
+    # context check, never a value invented from the file alone.
+    last_end = spans[-1][1]
+    if last_end != last_end.to_integral_value():
+        errors.append(
+            f"时间线末阶段的末端边界 {format_seconds(last_end)} 秒必须是整数秒；"
+            "平台`duration`参数只接受整数秒，而该边界同时承担STATE-07确认的目标时长"
+            "（中间阶段边界可以是小数）"
+        )
+    elif not SEEDANCE_25_MIN_SECONDS <= last_end <= SEEDANCE_25_LONG_SECONDS:
+        errors.append(
+            f"时间线末阶段的末端边界 {format_seconds(last_end)} 秒不是有效目标时长；"
             f"常规为{SEEDANCE_25_MIN_SECONDS}—{SEEDANCE_25_MAX_SECONDS}秒"
             f"（网页端Long Video可到{SEEDANCE_25_LONG_SECONDS}秒），且必须等于STATE-07确认的目标时长"
         )
@@ -735,7 +769,8 @@ def check_stages(lines: list[str], stop_index: int) -> list[str]:
         names = block_names(lines, line_index + 1, stop)
         if names != STAGE_FIELDS_25:
             errors.append(
-                f"时间线阶段 {spans[position]} 的六项字段缺失、超量或顺序错误，"
+                f"时间线阶段 {format_seconds(spans[position][0])}—"
+                f"{format_seconds(spans[position][1])}秒 的六项字段缺失、超量或顺序错误，"
                 f"当前为: {' → '.join(names) or '空'}"
             )
     return errors

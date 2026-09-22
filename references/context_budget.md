@@ -62,7 +62,7 @@ Skill分三层加载：`description`常驻、`SKILL.md`在被调用时整体注�
 
 | File | Class | Size (实测 KB) | Read Entry | Review By |
 |---|---|---|---|---|
-| knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 62.7 KB | STATE-08每个Clip只读当前Clip相关的Projection Matrix行、Serialization Rules与`### 主风格 Minimum Content Rule`；Applicability Gate在编译前读 | 2026-10-11 |
+| knowledge/prompt_compilation/state08_projection.md | INTEGRAL | 68.4 KB | STATE-08每个Clip只读当前Clip相关的Projection Matrix行、Serialization Rules与`### 主风格 Minimum Content Rule`；Applicability Gate在编译前读 | 2026-10-11 |
 | workflows/09_shot_design_workflow.md | INTEGRAL | 54.7 KB | 按Step读：Professional Detailed Shot Script Schema Gate与Completion Requirement为常用入口 | 2026-10-11 |
 
 `USER_GUIDE.md`已移出：它是`NON_RUNTIME`，不参与运行时读取，不属于本纪律的管辖范围。

@@ -6,7 +6,7 @@
 - [Focal Length Patterns](focal_length_patterns.md)：FLN-01至FLN-07七档内部选择与稳定降级。
 - [Focal Length Continuity](focal_length_continuity.md)：跨镜焦段、机位距离、脸部几何、背景尺度与焦点连续性。
 - [Focus And Optical Language](focus_and_optics.md)：双重焦点、拉焦转移、光学变焦、推拉变焦、光晕和超长焦压缩。
-- [Framing And Scale](framing_and_scale.md)：大全景至大特写的规范景别，以及局部和细节插入镜头。
+- [Framing And Scale](framing_and_scale.md)：大全景至大特写的规范景别、局部和细节插入镜头，以及按景别分配的细节预算。
 
 ## Shared Rules
 

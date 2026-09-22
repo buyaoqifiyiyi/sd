@@ -27,6 +27,6 @@ MiniMax H3 的全能参考模式支持最多9张图、3段视频、3段音频，
 
 Final Assessment=`REQUIRED`的`REF-SKETCH`只在`All-Reference`模式可提交：必须作为真实可访问的`@图片N`，计入9图/12文件预算。Start / End、Start-End和Video Edit输入承担帧或原视频语义，不能把草图伪装成其中一帧或并声称已提交；遇到Required Sketch时，STATE-07必须改为可兼容的All-Reference模式，或改选模型/返回Blocking，不能编译为输入就绪Prompt。草图只控制Position / Facing / Distance / Topology / Axis / Camera / Pose / Gaze / Action Path，绝不控制身份、服装、环境外观、材质、灯光、色彩或最终画风。
 
-负面提示词只收束当前高风险错误，并保留全局无 BGM 不变量；H3 编译时在末尾额外写`非叙事性音乐：N/A`。所有H3结果原生带双声道输出，但对白、口型、跨Shot J-cut/L-cut、音频复用或声音身份控制只有用户明确要求当前 H3 视频包含该控制时才投影到既有 `台词：`、`音效：` 和条件 `音色特征：`；不触发 AUDIO 模块，也不自动使用声音身份参考。
+负面提示词只收束真正全局、跨阶段且难以正向锁定的高风险错误，内容相关约束写在`画面过程说明`的对应段落内（位置口径见`rules/03_prompt_rules.md`的`# Negative Prompt Boundary Rule`），并保留全局无 BGM 不变量；H3 编译时在末尾额外写`非叙事性音乐：N/A`。所有H3结果原生带双声道输出，但对白、口型、跨Shot J-cut/L-cut、音频复用或声音身份控制只有用户明确要求当前 H3 视频包含该控制时才投影到既有 `台词：`、`音效：` 和条件 `音色特征：`；不触发 AUDIO 模块，也不自动使用声音身份参考。
 
 H3支持在已有视频基础上做人物、物体、场景、声音与细节编辑；仅在用户明确要求编辑且提供实际视频输入时，按`CHANGE`/`PRESERVE`最小变更执行，不写未获官方验证的逐秒时码。不得移植 Seedance 2.5 的 Video Extension、长时长、Clay Render或Seedance时码式Targeted Edit。现有 A/B/C `REF-TAIL` 可在H3首/尾帧或全能参考入口作为真实图片使用；缺图仍按C的Canonical + Spatial Blocking文字重建路径执行。
