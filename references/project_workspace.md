@@ -186,10 +186,10 @@ Scene Breakdown、分镜表与Clip表在保存为文件时由`scripts/validate_d
 validate_delivery_artifacts.py <artifact-file> --kind scene-breakdown | shot-design | clip-plan
 ```
 
-生产交付包由`scripts/build_asset_package.py`构建并顺带核验命名与对应性，以及在写包之前强制核验`04_scenes` / `05_shots` / `06_clips`三类交付物的完整性（不合格即不出包；可选加固，规范真源仍是`references/asset_package.md`）：
+生产交付包由`scripts/build_asset_package.py`构建并顺带核验命名与对应性，以及在写包之前强制核验`04_scenes` / `05_shots` / `06_clips`三类交付物的完整性（不合格即不出包；本地交付轮的确定性消费者，规范真源仍是`references/asset_package.md`）：
 
 ```text
-build_asset_package.py --project-root <project-root> [--check-prompt <compiled-prompt.md>]
+build_asset_package.py --project-root <project-root> --check-prompt <compiled-prompt.md> --prompt-model <selected-model> --require-prompt
 ```
 
 项目根内的`project_status.md` / `asset_registry.md` / `artifact_registry.md` / `execution_ledger.md`当前**没有**独立的确定性CLI校验器：它们由各Workflow的Required Read、`# Completion Gate`与`references/project_state_contract.md`的写回要求人工判定。本节不发布不存在的子命令。

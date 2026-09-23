@@ -30,6 +30,69 @@
 
 ## Eye And Attention Language
 
+## Temporal Action Shape
+
+局部面部动作必须按时间过程设计，而不是把肌肉从第一帧直接写成峰值：
+
+`Onset（开始）→ Apex（峰值）→ Offset（消退/保持）`
+
+- **Onset**：由已确认刺激或台词触发词启动，写清先动哪一处、是否有延迟；
+- **Apex**：只达到当前表演所需的可见强度，不默认拉满；
+- **Offset**：写消退、停留或转入新的稳定状态，不能在切镜时凭空归零。
+
+AU 编号只用于内部校准，最终仍写成可观察的自然语言；同一 AU 组合不能脱离目光、咬合、身体和情境直接命名情绪。
+
+### Common Calibration Set｜常用辅助校准集
+
+以下是对白与情绪转折中优先使用的辅助项，不是情绪公式：
+
+- AU1：眉毛内侧抬起；
+- AU4：眉毛下压；
+- AU5：上眼睑抬起；
+- AU7：眼睑收紧；
+- AU15：嘴角下沉；
+- AU17：下巴抬起并绷紧；
+- AU23：嘴唇收紧；
+- AU25 / AU26：嘴唇分开 / 下颚张开，可用于短促爆发。
+
+使用时先写目光、咬合、身体、呼吸和情境，再用一个或少量 AU 校准；不要把整组编号直接堆进最终 Prompt。
+
+## Research Reference: Prototypical And Compound Combinations
+
+FACS 没有一份官方的“情绪 = 唯一 AU 组合”字典。下表是公开人工 FACS 研究中的原型参考：核心项在该研究类别中由多数被试使用，括号内为常见变体；它们用于内部起草和反查，不是硬性触发器，也不能替代角色、目光、身体、声音与情境。
+
+| 类别 | 核心 AU | 常见变体 |
+|---|---|---|
+| Happy | AU12 + AU25 | AU6 |
+| Sad | AU4 + AU15 | AU1 / AU6 / AU11 / AU17 |
+| Fearful | AU1 + AU4 + AU20 + AU25 | AU2 / AU5 / AU26 |
+| Angry | AU4 + AU7 + AU24 | AU10 / AU17 / AU23 |
+| Surprised | AU1 + AU2 + AU25 + AU26 | AU5 |
+| Disgusted | AU9 + AU10 + AU17 | AU4 / AU24 |
+| Happily surprised | AU1 + AU2 + AU12 + AU25 | AU5 / AU26 |
+| Happily disgusted | AU10 + AU12 + AU25 | AU4 / AU6 / AU9 |
+| Sadly fearful | AU1 + AU4 + AU20 + AU25 | AU2 / AU5 / AU6 / AU15 |
+| Sadly angry | AU4 + AU15 | AU6 / AU7 / AU11 / AU17 |
+| Sadly surprised | AU1 + AU4 + AU25 + AU26 | AU2 / AU6 |
+| Sadly disgusted | AU4 + AU10 | AU1 / AU6 / AU9 / AU11 / AU15 / AU17 / AU25 |
+| Fearfully angry | AU4 + AU20 + AU25 | AU5 / AU7 / AU10 / AU11 |
+| Fearfully surprised | AU1 + AU2 + AU5 + AU20 + AU25 | AU4 / AU10 / AU11 / AU26 |
+| Fearfully disgusted | AU1 + AU4 + AU10 + AU20 + AU25 | AU2 / AU5 / AU6 / AU9 / AU15 |
+| Angrily surprised | AU4 + AU25 + AU26 | AU5 / AU7 / AU10 |
+| Angrily disgusted | AU4 + AU10 + AU17 | AU7 / AU9 / AU24 |
+| Disgustedly surprised | AU1 + AU2 + AU5 + AU10 | AU4 / AU9 / AU17 / AU24 |
+| Appalled | AU4 + AU10 | AU6 / AU9 / AU17 / AU24 |
+| Hatred | AU4 + AU10 | AU7 / AU9 / AU17 / AU24 |
+| Awed | AU1 + AU2 + AU5 + AU25 | AU4 / AU20 / AU26 |
+
+研究中反复检验的高频同时出现组合包括：AU1+AU2、AU1+AU4、AU4+AU7、AU6+AU12、AU6+AU7。组合必须先通过口部容量、咬合、视线与身体状态检查；发生冲突时保留能证明当前剧情变化的最小组合，不把两个互斥动作同时拉到峰值。
+
+来源：
+
+- [Compound facial expressions of emotion](https://pmc.ncbi.nlm.nih.gov/articles/PMC3992629/)
+- [Dynamic Facial Expression of Emotion and Observer Inference](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2019.00508/full)
+- [Automated Facial Image Analysis](https://sites.pitt.edu/~jeffcohn/biblio/cohn%26kanade2007.pdf)
+
 “眼神温柔、眼神冰冷、眼神坚定”仍是抽象词，至少拆成：
 
 - **目标**：看谁、看哪个物体、看远处还是短暂失焦；

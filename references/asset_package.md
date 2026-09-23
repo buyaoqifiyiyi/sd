@@ -268,7 +268,7 @@
 
 ## Optional Interoperable Tooling
 
-`scripts/build_asset_package.py`是部分环境下的**可选加固**：它按本文件规范复制文件、生成清单、产出zip，并执行本节的自动化核验（含对已编译的Prompt文件做反向对应性检查）。
+`scripts/build_asset_package.py`是本地 Work / Codex 交付轮的**确定性消费者**：它按本文件规范复制文件、生成清单、产出zip，并执行本节的自动化核验（含对已编译的Prompt文件做反向对应性检查）。STATE-08本地交付必须传入`--check-prompt`与`--require-prompt`；没有已校验的最终Prompt不得生成正式包。没有该脚本或没有本地文件访问能力时，才按`## Access Precondition`走降级阶梯。
 
 - **它同时是三类交付物完整性的强制入口**：写包之前先对`04_scenes` / `05_shots` / `06_clips`的源工件运行`scripts/validate_delivery_artifacts.py`的对应`--kind`检查（**导入该owner，不复制其判据**）。任一工件是摘要或不合格即判`BLOCKED`，**不创建包目录、不生成zip**，并逐条报出是哪一类、哪个文件、缺什么。三个Template里"未通过不得交付"的规则在打包路径上由此获得确定性消费者。
 - **空类别就地声明**：某类别没有任何已认可项时，构建器在该目录写入`NOT_APPLICABLE.md`并写明依据并计入`00_MANIFEST.md`，使"本类别不适用"随目录本身可见，而不是只留在`00_INDEX.md`的警告里；`02_assets`由各`<KIND>/_MANIFEST.md`的逐类`Not Applicable`行承担同一职责。

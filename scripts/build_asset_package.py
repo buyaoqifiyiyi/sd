@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Optional deterministic builder for the SD Film production delivery package.
 
-This script is *optional hardening* for `references/asset_package.md`: it copies
+This script is the local delivery consumer for `references/asset_package.md`: it copies
 already-confirmed files by category, enforces the stable asset image filename
 convention, writes the manifest/index, produces a zip, and checks the
 one-to-one correspondence between a compiled video prompt's reference assets
@@ -29,7 +29,8 @@ Usage::
 
     build_asset_package.py --project-root <dir> [--registry <file>]
         [--project-id <id>] [--project-name <name>] [--version 001]
-        [--output <dir>] [--no-zip] [--check-prompt <compiled-prompt.md>]
+        [--output <dir>] [--no-zip] --check-prompt <compiled-prompt.md>
+        [--prompt-model seedance-2.5] [--require-prompt]
         [--json]
 """
 from __future__ import annotations
@@ -381,6 +382,7 @@ DELIVERY_ARTIFACT_KINDS = (
     ("06_clips", "clip-plan"),
 )
 DELIVERY_ARTIFACT_VALIDATOR = "validate_delivery_artifacts.py"
+PROMPT_VALIDATOR = "validate_prompt_package.py"
 
 
 def load_delivery_artifact_checks():
@@ -400,6 +402,19 @@ def load_delivery_artifact_checks():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module.CHECKS
+
+
+def load_prompt_validator():
+    """Import the final Prompt validator owned by STATE-08's template path."""
+    path = Path(__file__).resolve().parent / PROMPT_VALIDATOR
+    if not path.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("validate_prompt_package", path)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def confirmation_basis(text: str) -> str | None:
@@ -455,6 +470,8 @@ class Builder:
         self.package_root = self.output_dir / self.package_name
         self.make_zip = not args.no_zip
         self.check_prompt = Path(args.check_prompt).resolve() if args.check_prompt else None
+        self.prompt_model = getattr(args, "prompt_model", "seedance-2.5")
+        self.require_prompt = bool(getattr(args, "require_prompt", False))
         self.errors: list[str] = []
         self.warnings: list[str] = []
         self.records: list[dict[str, str]] = []
@@ -1038,6 +1055,40 @@ class Builder:
         for name in sorted(packaged_files - referenced):
             self.warn(f"packaged asset file is not referenced by this prompt: {name}")
 
+    def check_prompt_package(self) -> None:
+        """Fail closed before writing a package when a final Prompt is supplied."""
+        if self.check_prompt is None:
+            if self.require_prompt:
+                self.error(
+                    "package gate not met: final Prompt is required; pass "
+                    "--check-prompt <compiled-prompt.md>"
+                )
+            return
+        if not self.check_prompt.is_file():
+            self.error(f"prompt file to check is not readable: {self.check_prompt}")
+            return
+        # Legacy correspondence-only callers remain supported. The STATE-08
+        # delivery route passes --require-prompt, which upgrades this optional
+        # correspondence check into the full final-Prompt gate below.
+        if not self.require_prompt:
+            return
+        validator = load_prompt_validator()
+        if validator is None:
+            self.error(f"Prompt validator is not readable: scripts/{PROMPT_VALIDATOR}")
+            return
+        try:
+            raw = self.check_prompt.read_text(encoding="utf-8-sig")
+            errors, warnings = validator.validate(
+                validator.strip_fence(raw), self.prompt_model, False,
+            )
+        except (OSError, UnicodeError, KeyError, AttributeError) as exc:
+            self.error(f"final Prompt validation failed to run: {exc}")
+            return
+        for warning in warnings:
+            self.warn(f"Prompt: {warning}")
+        for error in errors:
+            self.error(f"Prompt: {error}")
+
     def make_archive(self) -> str | None:
         if not self.make_zip:
             return None
@@ -1067,6 +1118,7 @@ class Builder:
                 self.error(f"duplicate asset ID in registry: {asset.asset_id}")
             seen_ids[asset.asset_id] = asset.title
         self.check_delivery_artifacts()
+        self.check_prompt_package()
         if self.errors:
             # Do not write a package whose artifacts are summaries: that is the
             # exact delivery this gate exists to stop, not a package to repair later.
@@ -1114,6 +1166,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output")
     parser.add_argument("--no-zip", action="store_true")
     parser.add_argument("--check-prompt")
+    parser.add_argument(
+        "--prompt-model",
+        default="seedance-2.5",
+        choices=["seedance-2.0", "seedance-2.5", "minimax-h3"],
+    )
+    parser.add_argument(
+        "--require-prompt",
+        action="store_true",
+        help="block local package creation unless --check-prompt is supplied",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
